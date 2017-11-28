@@ -5,3 +5,7 @@
 - Markus and Xudong will work together on the "work" branch
 - Create seperate branches for individul work
 
+# Status track
+
+https://docs.google.com/document/d/1DAMW55o8vmMjoRgkVvuzp9b3hn_Md0RkJiwNNnXccB8/edit
+
