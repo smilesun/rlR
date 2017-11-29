@@ -13,12 +13,12 @@ InteractionObserver = R6Class("InteractionObserver",
     virtual.makeObserverList = function() {
     },
 
-    notify = function("") {
-      list.observerst = lis[[""](
+    notify = function(name) {
+      list.observerst = list[[name]]
       for(name in names(self$list.observers)) {
          do.call(name)
 
-      }
+      }},
     #  self$rl.agent$observe(s.old, action, s_r_done_info[[2L]], s_r_done_info[[1L]])
     #  self$perf$list.reward.epi[[self$perf$epi.idx]] = vec.epi
     #  self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = idx.step -1L
