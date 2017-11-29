@@ -1,0 +1,3 @@
+source("Rxd/rl_h.R")
+run examples in "Rxd/rf_gym.R"
+for example test_gym_dqn()
