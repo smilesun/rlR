@@ -1,0 +1,105 @@
+---
+title: "Reinforcement Learning API"
+author: "Markus Dumke"
+date: "27 November 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = TRUE, eval = TRUE, collapse = TRUE, comment = "#>")
+source("R/environment.R")
+source("R/gridworld.R")
+```
+
+## Environment Class
+
+A reinforcement learning problem is specified by its step function, which takes an action and returns the next state, reward and done.
+
+```{r}
+# mountain car example
+# a custom step function
+step = function(env, action) {
+  position = env$state[1]
+  velocity = env$state[2]
+  velocity = velocity + 0.001 * (action - 1) - 0.0025 * cos(3 * position)
+  velocity = min(max(velocity, -0.07), 0.07)
+  position = position + velocity
+  if (position < -1.2) {
+    position = -1.2
+    velocity = 0
+  }
+  state = matrix(c(position, velocity), ncol = 2)
+  reward = -1
+  if (position >= 0.5) {
+    done = TRUE
+    reward = 0
+  } else {
+    done = FALSE
+  }
+  return(list(state, reward, done))
+}
+
+reset = function() {
+  position = runif(1, -0.6, -0.4)
+  velocity = 0
+  state = matrix(c(position, velocity), ncol = 2)
+  return(state)
+}
+```
+
+The user can create a custom environment with the `makeEnvironment` function.
+
+```{r}
+mcar = makeEnvironment(step, reset)
+```
+
+The user could also pass on a custom `visualize` function.
+
+This will create an R6 class which can be used for interaction.
+
+```{r}
+print(mcar)
+mcar$reset()
+mcar$state
+mcar$step(1L)
+mcar$state
+```
+
+For common problems, there are already predefined subclasses, e.g. for gym environments.
+
+```{r}
+gym = makeEnvironment(gym.name = "MountainCar-v0")
+gym$reset()
+gym$state
+gym$step(1L)
+gym$state
+
+for (i in 1:200) {
+  gym$step(sample(0:2, 1))
+  gym$visualize()
+}
+gym$gym.env$close()
+```
+
+Example with visualization function.
+
+```{r}
+grid = gridworld(shape = c(4, 4), goal.states = c(0, 15))
+grid$reset()
+grid$state
+grid$visualize()
+grid$step(0L)
+grid$state
+grid$visualize()
+```
+
+Arguments to `makeEnvironment`:
+
+- `step`: a custom step function
+- `reset`: a custom reset function (optional)
+- `visualize`: a custom visualization of the environment
+- `gym.name`: name of gym environment
+- `transitions`, `rewards`: mdp environment
+
+## Agent Class
+
