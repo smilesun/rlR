@@ -151,13 +151,13 @@ makeEnvironment = function(step, reset, visualize, gym.name,
   transitions, rewards, initial.state) {
 
   if (!missing(step)) {
-    rl.env = env$new(step, reset, visualize)
+    rl.env = Environment$new(step, reset, visualize)
   }
   if (!missing(transitions)) {
-    rl.env = mdpEnv$new(transitions, rewards, initial.state, visualize)
+    rl.env = MdpEnvironment$new(transitions, rewards, initial.state, visualize)
   }
   if (!missing(gym.name)) {
-    rl.env = gymEnv$new(gym.name)
+    rl.env = GymEnvironment$new(gym.name)
   }
   return(rl.env)
 }
