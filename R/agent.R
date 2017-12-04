@@ -1,3 +1,53 @@
+Agent = R6::R6Class("Agent",
+  public = list(
+    policy = NULL,
+    action.value = NULL,
+    learner = NULL,
+
+    initialize = function(learner, action.value, policy) {
+      self$policy = policy
+      self$learner = learner
+      self$action.value = action.value
+    },
+
+    act = function(state) {
+      action.vals = self$action.value$predictQ(state)
+      policy.probs = self$policy$getActionProbs(action.vals)
+      action = self$policy$sampleAction(policy.probs)
+      action
+    },
+
+    learn = function(state, action, new.state, reward, discount = 1) {
+      action.vals = self$action.value$predictQ(new.state)
+      target = self$learner$getTarget(reward, discount, action.vals)
+      old.action.vals = self$action.value$predictQ(state) # this is unnecessary computation, because already computed in act!!
+      target = fillTarget(old.action.vals, target, action)
+      self$action.value$train(state, target) # we need the old action vals here!
+    }
+  )
+)
+
+fillTarget = function(old.action.vals, target, action) {
+  old.action.vals[action + 1] = target
+  old.action.vals
+}
+
+# ValueAgent = R6::R6Class("ValueAgent",
+#   inherit = Agent,
+#   public = list(
+#     value.fun = NULL
+#   )
+# )
+
+QLearning = R6::R6Class("QLearning",
+  # inherit = ValueAgent,
+  public = list(
+    getTarget = function(reward, discount, action.values) {
+      reward + discount * max(action.values)
+    }
+  )
+)
+
 ## components of agents
 # state preprocessing
 # explorer, e.g. epsilon.greedy
@@ -20,48 +70,15 @@
 # - ... (add2Replay, sampleFromReplay ...)
 # a reset when episode is done
 
-Agent = R6::R6Class("Agent",
-  public = list(
-    policy = NULL, # maybe active field
-    action = NULL,
-    initialize = function() {
-
-    }
-  )
-)
-
-valueAgent = R6::R6Class("valueAgent",
-  inherit = agent,
-  public = list(
-    value.fun = NULL
-  )
-)
-
-qLearning = R6::R6Class(
-  inherit = valueAgent,
-  public = list(
-    learn = function() {
-      # update action values
-    }
-  )
-)
 
 # testAgent = agent$new()
 # testAgent$getPolicy()
 
 # target policy, behaviour policy?
 
-# maybe interaction / experiment class
-interaction = R6::R6Class(environment, agent)
-
 # exploration: e.g. epsilon-greedy
 
 # policyGradientAgent
-
-learner = R6::R6Class()
-
-
-
 
 # rl.exp = experiment(task, agent)
 
