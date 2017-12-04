@@ -11,7 +11,6 @@
 
 <meta name="author" content="Markus Dumke" />
 
-<meta name="date" content="2017-11-27" />
 
 <title>Reinforcement Learning API</title>
 
@@ -121,115 +120,93 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Reinforcement Learning API</h1>
 <h4 class="author"><em>Markus Dumke</em></h4>
-<h4 class="date"><em>27 November 2017</em></h4>
+<h4 class="date"><em>Mon Dec 04 10:39:37 2017</em></h4>
 
 </div>
 
 
-<div id="environment-class" class="section level2">
-<h2>Environment Class</h2>
-<p>A reinforcement learning problem is specified by its step function, which takes an action and returns the next state, reward and done.</p>
-<pre class="r"><code># mountain car example
-# a custom step function
-step = function(env, action) {
-  position = env$state[1]
-  velocity = env$state[2]
-  velocity = velocity + 0.001 * (action - 1) - 0.0025 * cos(3 * position)
-  velocity = min(max(velocity, -0.07), 0.07)
-  position = position + velocity
-  if (position &lt; -1.2) {
-    position = -1.2
-    velocity = 0
-  }
-  state = matrix(c(position, velocity), ncol = 2)
-  reward = -1
-  if (position &gt;= 0.5) {
-    done = TRUE
-    reward = 0
-  } else {
-    done = FALSE
-  }
-  return(list(state, reward, done))
+<pre class="r"><code>library(keras)
+devtools::load_all()</code></pre>
+<pre><code>## Loading rlR</code></pre>
+<p>Environment</p>
+<pre class="r"><code>env = GridworldEnvironment$new(shape = c(4, 4), goal.states = c(0), initial.state = 15)</code></pre>
+<p>State Preprocessor</p>
+<pre class="r"><code>preprocessState = function(state) {
+  reinforcelearn::nHot(state + 1, env$n.states)
 }
 
-reset = function() {
-  position = runif(1, -0.6, -0.4)
-  velocity = 0
-  state = matrix(c(position, velocity), ncol = 2)
-  return(state)
-}</code></pre>
-<p>The user can create a custom environment with the <code>makeEnvironment</code> function.</p>
-<pre class="r"><code>mcar = makeEnvironment(step, reset)</code></pre>
-<p>The user could also pass on a custom <code>visualize</code> function.</p>
-<p>This will create an R6 class which can be used for interaction.</p>
-<pre class="r"><code>print(mcar)
-#&gt; &lt;env&gt;
-#&gt;   Public:
-#&gt;     clone: function (deep = FALSE) 
-#&gt;     done: FALSE
-#&gt;     initialize: function (step, reset, visualize) 
-#&gt;     n.steps: 0
-#&gt;     reset: function () 
-#&gt;     reward: NULL
-#&gt;     state: NULL
-#&gt;     step: function (action) 
-#&gt;     visualize: function () 
-#&gt;   Private:
-#&gt;     reset_: function () 
-#&gt;     step_: function (env, action) 
-#&gt;     visualize_: NULL
-mcar$reset()
-mcar$state
-#&gt;            [,1] [,2]
-#&gt; [1,] -0.4383019    0
-mcar$step(1L)
-mcar$state
-#&gt;            [,1]         [,2]
-#&gt; [1,] -0.4389347 -0.000632768</code></pre>
-<p>For common problems, there are already predefined subclasses, e.g. for gym environments.</p>
-<pre class="r"><code>gym = makeEnvironment(gym.name = &quot;MountainCar-v0&quot;)
-gym$reset()
-gym$state
-#&gt; [1] -0.5117949  0.0000000
-gym$step(1L)
-gym$state
-#&gt; [1] -5.118834e-01 -8.851059e-05
+(s = env$reset())</code></pre>
+<pre><code>## [1] 15</code></pre>
+<pre class="r"><code>(s = preprocessState(s))</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+## [1,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+##      [,14] [,15] [,16]
+## [1,]     0     0     1</code></pre>
+<p>ActionValueNetwork</p>
+<pre class="r"><code>model.keras = keras_model_sequential()
+model.keras %&gt;% layer_dense(units = 4, activation = &quot;linear&quot;, input_shape = c(16),
+  use_bias = FALSE, kernel_initializer = &quot;zeros&quot;)
+keras::compile(model.keras, loss = &quot;mae&quot;, optimizer = keras::optimizer_sgd(lr = 0.4))
 
-for (i in 1:200) {
-  gym$step(sample(0:2, 1))
-  gym$visualize()
-}
-gym$gym.env$close()</code></pre>
-<p>Example with visualization function.</p>
-<pre class="r"><code>grid = gridworld(shape = c(4, 4), goal.states = c(0, 15))
-grid$reset()
-grid$state
-#&gt; [1] 14
-grid$visualize()
-#&gt;  - - - - 
-#&gt;  - - - - 
-#&gt;  - - - - 
-#&gt;  - - o -
-grid$step(0L)
-grid$state
-#&gt; [1] 13
-grid$visualize()
-#&gt;  - - - - 
-#&gt;  - - - - 
-#&gt;  - - - - 
-#&gt;  - o - -</code></pre>
-<p>Arguments to <code>makeEnvironment</code>:</p>
-<ul>
-<li><code>step</code>: a custom step function</li>
-<li><code>reset</code>: a custom reset function (optional)</li>
-<li><code>visualize</code>: a custom visualization of the environment</li>
-<li><code>gym.name</code>: name of gym environment</li>
-<li><code>transitions</code>, <code>rewards</code>: mdp environment</li>
-</ul>
-</div>
-<div id="agent-class" class="section level2">
-<h2>Agent Class</h2>
-</div>
+action.vals = ActionValueNetwork$new(model.keras, preprocessState)
+action.vals$model</code></pre>
+<pre><code>## Model
+## ___________________________________________________________________________
+## Layer (type)                     Output Shape                  Param #     
+## ===========================================================================
+## dense_1 (Dense)                  (None, 4)                     64          
+## ===========================================================================
+## Total params: 64.0
+## Trainable params: 64
+## Non-trainable params: 0.0
+## ___________________________________________________________________________</code></pre>
+<pre class="r"><code>(Q = action.vals$predictQ(s))</code></pre>
+<pre><code>##      [,1] [,2] [,3] [,4]
+## [1,]    0    0    0    0</code></pre>
+<pre class="r"><code># action.vals$train(state, target)</code></pre>
+<p>Policy</p>
+<pre class="r"><code>policy = EpsilonGreedyPolicy$new(epsilon = 0.1)
+policy$epsilon</code></pre>
+<pre><code>## [1] 0.1</code></pre>
+<pre class="r"><code>(probs = policy$getActionProbs(Q))</code></pre>
+<pre><code>##       [,1]  [,2]  [,3]  [,4]
+## [1,] 0.925 0.025 0.025 0.025</code></pre>
+<pre class="r"><code>(action = policy$sampleAction(probs))</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>Learner</p>
+<pre class="r"><code>learner = QLearning$new()</code></pre>
+<p>Agent</p>
+<pre class="r"><code>agent = Agent$new(learner, action.vals, policy)</code></pre>
+<p>Interaction</p>
+<pre class="r"><code>interaction(env, agent, n.steps = 200)</code></pre>
+<pre><code>## Episode 1 finished after 29 steps with a return of -29</code></pre>
+<pre><code>## Episode 2 finished after 29 steps with a return of -29</code></pre>
+<pre><code>## Episode 3 finished after 37 steps with a return of -37</code></pre>
+<pre><code>## Episode 4 finished after 15 steps with a return of -15</code></pre>
+<pre><code>## Episode 5 finished after 28 steps with a return of -28</code></pre>
+<pre><code>## Episode 6 finished after 21 steps with a return of -21</code></pre>
+<pre><code>## Episode 7 finished after 15 steps with a return of -15</code></pre>
+<pre><code>## Episode 8 finished after 22 steps with a return of -22</code></pre>
+<p>Get Action Value Function</p>
+<pre class="r"><code>agent$action.value$model %&gt;% get_weights()</code></pre>
+<pre><code>## [[1]]
+##            [,1]      [,2]      [,3]      [,4]
+##  [1,]  0.000000  0.000000  0.000000  0.000000
+##  [2,] -1.000000 -1.000000 -1.000000 -1.000000
+##  [3,] -2.000000 -2.000000 -2.000000 -2.000000
+##  [4,] -2.000000 -2.000000 -2.000000 -2.000000
+##  [5,] -2.000000 -2.000000 -1.000000 -1.000000
+##  [6,] -2.000000 -2.000000 -2.000000 -2.000000
+##  [7,] -2.999999 -2.999999 -2.999999 -2.999999
+##  [8,] -2.999999 -2.999999 -2.999999 -2.000000
+##  [9,] -2.999999 -2.999999 -2.000000 -2.000000
+## [10,] -2.999999 -2.999999 -2.000000 -2.999999
+## [11,] -2.999999 -2.999999 -2.999999 -2.000000
+## [12,] -2.999999 -2.999999 -2.999999 -2.000000
+## [13,] -3.999998 -3.999998 -2.999999 -3.999998
+## [14,] -3.999998 -3.999998 -2.999999 -2.999999
+## [15,] -3.999998 -3.999998 -2.999999 -3.999998
+## [16,] -3.999998 -3.999998 -2.999999 -2.999999</code></pre>
 
 
 
