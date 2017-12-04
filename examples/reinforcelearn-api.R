@@ -1,11 +1,19 @@
 #' ---
 #' title: "Reinforcement Learning API"
 #' author: Markus Dumke
-#' output: html_document
+#' output:
+#'   html_document:
+#'     keep_md: TRUE
 #' ---
 
-library(keras)
+#+ setup, include=FALSE
+library(knitr)
+opts_chunk$set(comment = "#>", collapse = FALSE, message = TRUE)
+
+#'
+# Switch to branch "markus"
 devtools::load_all()
+library(keras)
 
 #' Environment
 env = GridworldEnvironment$new(shape = c(4, 4), goal.states = c(0), initial.state = 15)

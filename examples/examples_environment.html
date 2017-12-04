@@ -120,7 +120,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Environments</h1>
 <h4 class="author"><em>Markus Dumke</em></h4>
-<h4 class="date"><em>Sun Dec 03 23:54:26 2017</em></h4>
+<h4 class="date"><em>Mon Dec 04 11:17:11 2017</em></h4>
 
 </div>
 
@@ -236,10 +236,10 @@ grid$reset()</code></pre>
 <h3>Gym</h3>
 <pre class="r"><code>gym = GymEnvironment$new(gym.name = &quot;MountainCar-v0&quot;)
 gym$reset()</code></pre>
-<pre><code>#&gt; [1] -0.4448441  0.0000000</code></pre>
+<pre><code>#&gt; [1] -0.4010265  0.0000000</code></pre>
 <pre class="r"><code>gym$step(1L)</code></pre>
 <pre><code>#&gt; $state
-#&gt; [1] -0.4454292946 -0.0005851801
+#&gt; [1] -0.4019251778 -0.0008987148
 #&gt; 
 #&gt; $reward
 #&gt; [1] -1
@@ -289,11 +289,11 @@ step = function(env, action) {
 mcar = Environment$new(step, reset)
 mcar$reset()</code></pre>
 <pre><code>#&gt;            [,1] [,2]
-#&gt; [1,] -0.5252908    0</code></pre>
+#&gt; [1,] -0.5492477    0</code></pre>
 <pre class="r"><code>mcar$step(1L)</code></pre>
 <pre><code>#&gt; $state
-#&gt;            [,1]        [,2]
-#&gt; [1,] -0.5252781 1.26901e-05
+#&gt;            [,1]         [,2]
+#&gt; [1,] -0.5490555 0.0001921771
 #&gt; 
 #&gt; $reward
 #&gt; [1] -1

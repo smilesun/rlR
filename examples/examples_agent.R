@@ -1,7 +1,9 @@
 #' ---
 #' title: "Agent"
 #' author: Markus Dumke
-#' output: html_document
+#' output:
+#'   html_document:
+#'     keep_md: TRUE
 #' ---
 
 #+ setup, include=FALSE

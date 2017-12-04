@@ -120,14 +120,15 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Reinforcement Learning API</h1>
 <h4 class="author"><em>Markus Dumke</em></h4>
-<h4 class="date"><em>Mon Dec 04 10:39:37 2017</em></h4>
+<h4 class="date"><em>Mon Dec 04 11:18:53 2017</em></h4>
 
 </div>
 
 
-<pre class="r"><code>library(keras)
+<pre class="r"><code># Switch to branch &quot;markus&quot;
 devtools::load_all()</code></pre>
-<pre><code>## Loading rlR</code></pre>
+<pre><code>#&gt; Loading rlR</code></pre>
+<pre class="r"><code>library(keras)</code></pre>
 <p>Environment</p>
 <pre class="r"><code>env = GridworldEnvironment$new(shape = c(4, 4), goal.states = c(0), initial.state = 15)</code></pre>
 <p>State Preprocessor</p>
@@ -136,12 +137,12 @@ devtools::load_all()</code></pre>
 }
 
 (s = env$reset())</code></pre>
-<pre><code>## [1] 15</code></pre>
+<pre><code>#&gt; [1] 15</code></pre>
 <pre class="r"><code>(s = preprocessState(s))</code></pre>
-<pre><code>##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
-## [1,]    0    0    0    0    0    0    0    0    0     0     0     0     0
-##      [,14] [,15] [,16]
-## [1,]     0     0     1</code></pre>
+<pre><code>#&gt;      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]
+#&gt; [1,]    0    0    0    0    0    0    0    0    0     0     0     0     0
+#&gt;      [,14] [,15] [,16]
+#&gt; [1,]     0     0     1</code></pre>
 <p>ActionValueNetwork</p>
 <pre class="r"><code>model.keras = keras_model_sequential()
 model.keras %&gt;% layer_dense(units = 4, activation = &quot;linear&quot;, input_shape = c(16),
@@ -150,63 +151,64 @@ keras::compile(model.keras, loss = &quot;mae&quot;, optimizer = keras::optimizer
 
 action.vals = ActionValueNetwork$new(model.keras, preprocessState)
 action.vals$model</code></pre>
-<pre><code>## Model
-## ___________________________________________________________________________
-## Layer (type)                     Output Shape                  Param #     
-## ===========================================================================
-## dense_1 (Dense)                  (None, 4)                     64          
-## ===========================================================================
-## Total params: 64.0
-## Trainable params: 64
-## Non-trainable params: 0.0
-## ___________________________________________________________________________</code></pre>
+<pre><code>#&gt; Model
+#&gt; ___________________________________________________________________________
+#&gt; Layer (type)                     Output Shape                  Param #     
+#&gt; ===========================================================================
+#&gt; dense_1 (Dense)                  (None, 4)                     64          
+#&gt; ===========================================================================
+#&gt; Total params: 64.0
+#&gt; Trainable params: 64
+#&gt; Non-trainable params: 0.0
+#&gt; ___________________________________________________________________________</code></pre>
 <pre class="r"><code>(Q = action.vals$predictQ(s))</code></pre>
-<pre><code>##      [,1] [,2] [,3] [,4]
-## [1,]    0    0    0    0</code></pre>
+<pre><code>#&gt;      [,1] [,2] [,3] [,4]
+#&gt; [1,]    0    0    0    0</code></pre>
 <pre class="r"><code># action.vals$train(state, target)</code></pre>
 <p>Policy</p>
 <pre class="r"><code>policy = EpsilonGreedyPolicy$new(epsilon = 0.1)
 policy$epsilon</code></pre>
-<pre><code>## [1] 0.1</code></pre>
+<pre><code>#&gt; [1] 0.1</code></pre>
 <pre class="r"><code>(probs = policy$getActionProbs(Q))</code></pre>
-<pre><code>##       [,1]  [,2]  [,3]  [,4]
-## [1,] 0.925 0.025 0.025 0.025</code></pre>
+<pre><code>#&gt;       [,1]  [,2]  [,3]  [,4]
+#&gt; [1,] 0.925 0.025 0.025 0.025</code></pre>
 <pre class="r"><code>(action = policy$sampleAction(probs))</code></pre>
-<pre><code>## [1] 0</code></pre>
+<pre><code>#&gt; [1] 3</code></pre>
 <p>Learner</p>
 <pre class="r"><code>learner = QLearning$new()</code></pre>
 <p>Agent</p>
 <pre class="r"><code>agent = Agent$new(learner, action.vals, policy)</code></pre>
 <p>Interaction</p>
 <pre class="r"><code>interaction(env, agent, n.steps = 200)</code></pre>
-<pre><code>## Episode 1 finished after 29 steps with a return of -29</code></pre>
-<pre><code>## Episode 2 finished after 29 steps with a return of -29</code></pre>
-<pre><code>## Episode 3 finished after 37 steps with a return of -37</code></pre>
-<pre><code>## Episode 4 finished after 15 steps with a return of -15</code></pre>
-<pre><code>## Episode 5 finished after 28 steps with a return of -28</code></pre>
-<pre><code>## Episode 6 finished after 21 steps with a return of -21</code></pre>
-<pre><code>## Episode 7 finished after 15 steps with a return of -15</code></pre>
-<pre><code>## Episode 8 finished after 22 steps with a return of -22</code></pre>
+<pre><code>#&gt; Episode 1 finished after 28 steps with a return of -28</code></pre>
+<pre><code>#&gt; Episode 2 finished after 31 steps with a return of -31</code></pre>
+<pre><code>#&gt; Episode 3 finished after 20 steps with a return of -20</code></pre>
+<pre><code>#&gt; Episode 4 finished after 19 steps with a return of -19</code></pre>
+<pre><code>#&gt; Episode 5 finished after 30 steps with a return of -30</code></pre>
+<pre><code>#&gt; Episode 6 finished after 20 steps with a return of -20</code></pre>
+<pre><code>#&gt; Episode 7 finished after 9 steps with a return of -9</code></pre>
+<pre><code>#&gt; Episode 8 finished after 18 steps with a return of -18</code></pre>
+<pre><code>#&gt; Episode 9 finished after 13 steps with a return of -13</code></pre>
 <p>Get Action Value Function</p>
 <pre class="r"><code>agent$action.value$model %&gt;% get_weights()</code></pre>
-<pre><code>## [[1]]
-##            [,1]      [,2]      [,3]      [,4]
-##  [1,]  0.000000  0.000000  0.000000  0.000000
-##  [2,] -1.000000 -1.000000 -1.000000 -1.000000
-##  [3,] -2.000000 -2.000000 -2.000000 -2.000000
-##  [4,] -2.000000 -2.000000 -2.000000 -2.000000
-##  [5,] -2.000000 -2.000000 -1.000000 -1.000000
-##  [6,] -2.000000 -2.000000 -2.000000 -2.000000
-##  [7,] -2.999999 -2.999999 -2.999999 -2.999999
-##  [8,] -2.999999 -2.999999 -2.999999 -2.000000
-##  [9,] -2.999999 -2.999999 -2.000000 -2.000000
-## [10,] -2.999999 -2.999999 -2.000000 -2.999999
-## [11,] -2.999999 -2.999999 -2.999999 -2.000000
-## [12,] -2.999999 -2.999999 -2.999999 -2.000000
-## [13,] -3.999998 -3.999998 -2.999999 -3.999998
-## [14,] -3.999998 -3.999998 -2.999999 -2.999999
-## [15,] -3.999998 -3.999998 -2.999999 -3.999998
-## [16,] -3.999998 -3.999998 -2.999999 -2.999999</code></pre>
+<pre><code>#&gt; [[1]]
+#&gt;            [,1]      [,2]      [,3]      [,4]
+#&gt;  [1,]  0.000000  0.000000  0.000000  0.000000
+#&gt;  [2,] -1.000000 -1.000000 -2.000000 -1.000000
+#&gt;  [3,] -2.000000 -2.000000 -2.000000 -2.000000
+#&gt;  [4,] -2.999999 -2.000000 -2.000000 -2.000000
+#&gt;  [5,] -2.000000 -2.000000 -1.000000 -1.000000
+#&gt;  [6,] -2.000000 -2.000000 -2.000000 -2.000000
+#&gt;  [7,] -2.999999 -2.999999 -2.000000 -2.000000
+#&gt;  [8,] -2.999999 -2.999999 -2.999999 -2.000000
+#&gt;  [9,] -2.999999 -2.999999 -2.000000 -2.000000
+#&gt; [10,] -2.999999 -2.999999 -2.999999 -2.000000
+#&gt; [11,] -2.999999 -2.999999 -2.999999 -2.999999
+#&gt; [12,] -2.999999 -2.999999 -2.999999 -2.999999
+#&gt; [13,] -3.999998 -3.999998 -2.999999 -2.999999
+#&gt; [14,] -3.999998 -2.999999 -2.999999 -2.999999
+#&gt; [15,] -2.999999 -2.999999 -2.999999 -2.999999
+#&gt; [16,] -3.999998 -3.999998 -3.999998 -2.999999</code></pre>
 
 
 
