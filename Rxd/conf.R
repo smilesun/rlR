@@ -12,16 +12,18 @@ RLConf = R6Class("Conf",
   )
 
 RLConf$static = list(
-
+inst.perScenario = 20L,
+time.step = 100L,
 replayBatchSize = 5L,
 GAMMA = 0.99,  # Degradation factor
 # BATCH_SIZE = 5,
 EPOCH = 1L,  # FOR DEBUG
 VAL_RATE = 0.1,
 EPSILON = 0.05,
+resultTbPath = "../output/Perf.RData",
 LOGGERNAME = 'surrogate.nn',
-LOGGERFILE = '../nn.log',
-LOGGERFILEROOT = '../rf.log',
+LOGGERFILENN = '../log/nn.log',
+LOGGERFILEROOT = '../log/rf.log',
 firstLayer = list(unit = 64, activation ="relu"),
 secondLayer = list(unit = 64, activation ="relu")
 )

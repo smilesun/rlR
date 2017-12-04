@@ -1,17 +1,11 @@
 logReset()
-log.root = getLogger("")
+# basicConfig()
+unlink(RLConf$static$LOGGERFILEROOT) #  delete the old log
+unlink(RLConf$static$LOGGERFILENN)  # delete the old log
+log.root = getLogger("root.logger")
+addHandler(writeToFile, file = RLConf$static$LOGGERFILEROOT, logger = "root.logger") # default logger is the root handler
+#
 log.nn = getLogger(RLConf$static$LOGGERNAME)
-unlink(RLConf$static$LOGGERFILEROOT)
-unlink(RLConf$static$LOGGERFILE)
-addHandler(writeToFile, file = RLConf$static$LOGGERFILEROOT, level = 'DEBUG', logger = "") # default logger is the root handler
-addHandler(writeToFile, file = RLConf$static$LOGGERFILE, level = 'DEBUG', logger = RLConf$static$LOGGERNAME)
-# log.nn$info("surrogate.nn logger initialized")
-# with(getLogger(), names(handlers))
-# ls(getLogger())
-#' getLogger()[['level']]
-# getLogger()[['handlers']]
-# loginfo('does it work?')
-# logwarn('my %s is %d', 'name', 5)
-# logdebug('I am silent child') # anything that has a lower priority than the handler will not be logged
-# getHandler('basic.stdout')[['level']]
-# setLevel(0, getHandler('basic.stdout'))
+removeHandler("writeToConsole", logger = RLConf$static$LOGGERNAME)
+removeHandler("basic.stdout", logger = RLConf$static$LOGGERNAME)
+addHandler(writeToFile, file = RLConf$static$LOGGERFILENN, logger = RLConf$static$LOGGERNAME)
