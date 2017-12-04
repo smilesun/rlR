@@ -1,9 +1,7 @@
 #' ---
 #' title: "Reinforcement Learning API"
 #' author: Markus Dumke
-#' output:
-#'   html_document:
-#'     keep_md: TRUE
+#' output: github_document
 #' ---
 
 #+ setup, include=FALSE
