@@ -1,7 +1,7 @@
-# @depend rf.R
 AgentDQN = R6Class("AgentDQN",
-  inherit = Agent,
+  inherit = AgentArmed,
   public = list(
+    random.action = NULL,  # store temporary variable for  epsilon policy
     initialize = function(actionCnt, stateCnt, fun, memname = "latest") {
        self$epsilon = RLConf$static$EPSILON
        self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = fun)
@@ -34,20 +34,36 @@ AgentDQN = R6Class("AgentDQN",
         return(mt)
     },
 
-    act = function(state) {
-      assert(class(state) == "array")
+    epsilonPolicy = function() {
+      if(runif(1L) < self$epsilon) {
+        self$random.action = self$randomAct
+        log.nn$info("random chosen %d", self$random.action)
+        return(TRUE)
+      }
+      return(FALSE)
+    },
+
+    greedyPolicy = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
       log.nn$info("state: %s", paste(state, collapse = ' '))
       vec.q = self$brain$pred(state)
       log.nn$info("prediction: %s", paste(vec.q, collapse = ' '))
       action = which.max(vec.q) - 1L  # always use OpenAI gym convention
       log.nn$info("chosen %d", action)
-      if(runif(1L) < self$epsilon) {
-        a2 = self$randomAct
-        log.nn$info("random chosen %d", a2)
-        return(a2)
+      return(action)
+    },
+
+    policy.epsilonGreedy = function(state) {
+      action = self$greedyPolicy(state)
+      if(self$epsilonPolicy()) {
+        action = self$random.action
       }
       return(action)
+    },
+
+    act = function(state) {
+      assert(class(state) == "array")
+      self$policy.epsilonGreedy(state)
     }
     ), # public
   private = list(),

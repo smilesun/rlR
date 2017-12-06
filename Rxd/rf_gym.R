@@ -1,7 +1,3 @@
-# @depend "rf.R", "rf_pg_brain.R", "rf_dqn_agent.R"
-# @import "checkmate"
-
-
 helper_gym_genEnv = function(name ="CartPole-v0") {
   gym = import("gym")
   genv = gym$make(name)
@@ -32,9 +28,6 @@ test_gym_dqn = function(maxiter = 50L) {
 }
 
 test_gym_dqn2 = function(maxiter = 50L) {
-  # Conf = basicConf()
-  # conf$update(paramspace, param.name, param.value)
-  # conf$update(list())
   probe = helper_gym_genEnv("CartPole-v0")
   rl.agent = AgentDQN$new(actionCnt = probe$actCnt, stateCnt = probe$stateCnt, fun = makeBrain("mountaincar"))
   interact = GymInteraction$new(rl.env = probe$env, rl.agent = rl.agent, maxiter = maxiter)

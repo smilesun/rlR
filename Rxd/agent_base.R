@@ -1,19 +1,13 @@
-Agent = R6Class("Agent",
+AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
-    epsilon = NULL,  # FIXME: change this later to allow online configuration
+    epsilon = NULL,
     brain = NULL,  # a table or a function approximator to represent the value function
     mem = NULL,  # replay memory
     actCnt = NULL,
     initialize = function(brain, mem, actCnt) {  # mem is an ReplayMem object
-      self$epsilon = EPSILON
       self$brain = brain
       self$mem = mem
       self$actCnt = actCnt
-    },
-
-    # compute the advantage function
-    computeAccumulatedReward = function() {
-
     },
 
     # transform observation to  the replay memory
@@ -21,7 +15,6 @@ Agent = R6Class("Agent",
       # state, action, accumulated reward
       self$mem$add(list(state.old = state.old, action = action, reward = reward, state.new = state.new))
     },
-
 
     extractOldState = function(x) {
       return(x[[1L]])
