@@ -8,10 +8,11 @@ InteractionObserver = R6Class("InteractionObserver",
     idx.episode = 0, 
     idx.step = 0,
     continue.flag = NULL,
-    episode.flag = NULL,
+    episode.over.flag = NULL,
     vec.epi = NULL,
     initialize = function(rl.env, rl.agent) {
       self$continue.flag = TRUE
+      self$episode.over.flag = FALSE
       self$perf = Performance$new()
       self$rl.agent = rl.agent
       self$rl.env = rl.env
@@ -19,19 +20,33 @@ InteractionObserver = R6Class("InteractionObserver",
       self$list.observers = list(
         "beforeAct" = list(
             hh = function() {
+              self$rl.env$env$render() 
               log.nn$info("in episode %d, step %d", self$idx.episode, self$idx.step)
-              self$rl.env$env$render()
               self$s.old = self$s_r_done_info[[1L]]}
         ),
+
         "afterStep" = list(
-            function() {
+            hh = function() {
               self$rl.agent$observe(self$s.old, self$action, self$s_r_done_info[[2L]], self$s_r_done_info[[1L]])
-              self$vec.epi[self$idx.step] = s_r_done_info[[2L]]
+              self$vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
               self$idx.step = self$idx.step + 1L
-              self$rl.agent$replay(self$replayBatchSize)
+              self$rl.agent$replay(RLConf$static$agent$replayBatchSize)
+              self$forloop.observe()
             })
         )
     },
+
+    forloop.observe = function() {
+        if(self$s_r_done_info[[3L]]) {
+          self$episode.over.flag = TRUE
+          self$idx.episode = self$idx.episode + 1L
+          self$rl.env$reset()
+          log.root$info("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step)
+          self$idx.step = 0L
+          self$episode.over.flag = FALSE
+          if(self$idx.episode > RLConf$static$interact$maxiter) {
+            self$continue.flag = FALSE }
+    }},
 
     notify = function(name) {
       if(name %nin% names(self$list.observers)) stop("not defined observer")

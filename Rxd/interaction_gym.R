@@ -45,3 +45,4 @@ GymInteraction = R6Class("GymInteraction",
   active = list()
   )
 
+
