@@ -13,7 +13,7 @@ SurroDQN = R6Class("SurroDQN",
     },
 
 
-    train = function(X_train, Y_train, epochs = RLConf$static$EPOCH) {
+    train = function(X_train, Y_train, epochs = RLConf$static$nn$EPOCH) {
       fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
     },
 

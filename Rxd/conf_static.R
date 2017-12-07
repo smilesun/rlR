@@ -1,14 +1,14 @@
-RLConf$static = list(
-inst.perScenario = 20L,
-time.step = 100L,
+RLConf$static = list()
+
+RLConf$static$agent = list(
 replayBatchSize = 5L,
 GAMMA = 0.99,  # Degradation factor
-EPOCH = 1L,  # FOR DEBUG
-VAL_RATE = 0.1,
 EPSILON = 0.05
 )
 
-RLConf$static$nn$archname = "mountaincar-relu-noreg"
+RLConf$static$nn = list (
+  EPOCH = 1L,  # FOR DEBUG
+  archname = "mountaincar-linear-noreg")
 
 # The following fields do not affect performance so is hard coded
 RLConf$static[["performance"]] = list(
@@ -20,7 +20,3 @@ LOGGERFILENN = '../log/nn.log',
 LOGGERFILEROOT = '../log/rf.log'
 )
 
-RLConf$test = function() {
-  conf = RLConf$new()
-  conf$update("surrogate", list("firstLayer" = firstLayer, "secondLayer" = secondLayer))
-}

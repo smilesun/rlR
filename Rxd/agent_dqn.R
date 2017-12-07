@@ -6,7 +6,7 @@ AgentDQN = R6Class("AgentDQN",
     policy = NULL, # a function to return action
     initialize = function(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy") {
        self$vec.arm.q = vector(mode = "numeric", length = actionCnt) 
-       self$epsilon = RLConf$static$EPSILON
+       self$epsilon = RLConf$static$agent$EPSILON
        self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = surro_fun)
        self$mem = ReplayMem$factory(memname)()
        self$actCnt = actionCnt
@@ -32,7 +32,7 @@ AgentDQN = R6Class("AgentDQN",
         vec.next.Q = self$brain$pred(next.state)
         a_1 = which.max(vec.next.Q)  # action index start from 1L
         r = self$extractReward(ins)
-        target = r + RLConf$static$GAMMA * max(vec.next.Q)
+        target = r + RLConf$static$agent$GAMMA * max(vec.next.Q)
         mt = p.old
         mt[a_1] = target  # the not active action will have exact label
         return(mt)
@@ -42,7 +42,7 @@ AgentDQN = R6Class("AgentDQN",
       state = array_reshape(state, c(1L, dim(state)))
       log.nn$info("state: %s", paste(state, collapse = ' '))
       self$vec.arm.q = self$brain$pred(state)
-      log.nn$info("prediction: %s", paste(vec.q, collapse = ' '))
+      log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
     },
 
     sampleRandomAct = function(state) {
@@ -51,6 +51,7 @@ AgentDQN = R6Class("AgentDQN",
 
     act = function(state) {
       assert(class(state) == "array")
+      self$evaluateArm(state)
       self$policy(state)
     }
     ), # public
