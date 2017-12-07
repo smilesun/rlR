@@ -1,8 +1,7 @@
 GymInteraction = R6Class("GymInteraction",
   inherit = Interaction,
   public = list(
-    replayBatchSize = 5L,
-
+    replayBatchSize = RLConf$static$agent$replayBatchSize,
     initialize = function(rl.env, rl.agent, maxiter) {
       self$perf = Performance$new()
       self$rl.agent = rl.agent
@@ -45,7 +44,4 @@ GymInteraction = R6Class("GymInteraction",
   private = list(),
   active = list()
   )
-
-
-
 

@@ -17,15 +17,23 @@ test_gym_pg = function(maxiter = 50L) {
 }
 
 makeGymExperiment = function(conf = RLConf) {
-  probe = helper_gym_genEnv(conf$static$gym$scenarioname)
-  rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = NNArsenal$makeBrain(RLConf$static$nn$archname))
-  interact = GymInteraction$new(rl.env = probe$env, rl.agent = rl.agent, maxiter = conf$static$interact$maxiter)
-  return(interact)
-}
+    probe = helper_gym_genEnv(conf$static$gym$scenarioname)
+    rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = NNArsenal$makeBrain(RLConf$static$nn$archname))
+    interact = GymInteraction$new(rl.env = probe$env, rl.agent = rl.agent, maxiter = conf$static$interact$maxiter)
+    return(interact)
+  }
 
-test_gym_dqn = function() {
-  RLConf$update("gym", "scenarioname", "MountainCar-v0")
-  interact = makeGymExperiment()
-  interact$run()
-}
+  makeGymExperiment2 = function(conf = RLConf) {
+    probe = helper_gym_genEnv(conf$static$gym$scenarioname)
+    rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = NNArsenal$makeBrain(RLConf$static$nn$archname))
+    interact = InteractionObserver$new(rl.env = probe$env, rl.agent = rl.agent)
+    interact$run()
+  }
+
+  test_gym_dqn = function() {
+    RLConf$update("gym", "scenarioname", "MountainCar-v0")
+    RLConf$update("agent", "EPSILON", 0.4)
+    interact = makeGymExperiment()
+    interact$run()
+  }
 
