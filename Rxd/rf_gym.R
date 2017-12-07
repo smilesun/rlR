@@ -21,7 +21,7 @@ test_gym_pg = function(maxiter = 50L) {
 
 test_gym_dqn = function(maxiter = 50L) {
   probe = helper_gym_genEnv("MountainCar-v0")
-  rl.agent = AgentDQN$new(actionCnt = probe$actCnt, stateCnt = probe$stateCnt, fun = makeBrain("mountaincar"))
+  rl.agent = AgentDQN$new(actionCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = NNArsenal$makeBrain(RLConf$static$nn$archname))
   interact = GymInteraction$new(rl.env = probe$env, rl.agent = rl.agent, maxiter = maxiter)
   interact$run()
   interact$perf$toString()

@@ -5,8 +5,10 @@ replayBatchSize = 5L,
 GAMMA = 0.99,  # Degradation factor
 EPOCH = 1L,  # FOR DEBUG
 VAL_RATE = 0.1,
-EPSILON = 0.05,
+EPSILON = 0.05
 )
+
+RLConf$static$nn$archname = "mountaincar-relu-noreg"
 
 # The following fields do not affect performance so is hard coded
 RLConf$static[["performance"]] = list(

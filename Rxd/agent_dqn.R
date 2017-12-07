@@ -1,12 +1,16 @@
 AgentDQN = R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
-    random.action = NULL,  # store temporary variable for  epsilon policy
-    initialize = function(actionCnt, stateCnt, fun, memname = "latest") {
+    vec.arm.q = NULL,      # store Q value for each arm
+    random.action = NULL,  # store random.action
+    policy = NULL, # a function to return action
+    initialize = function(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy") {
+       self$vec.arm.q = vector(mode = "numeric", length = actionCnt) 
        self$epsilon = RLConf$static$EPSILON
-       self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = fun)
+       self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = surro_fun)
        self$mem = ReplayMem$factory(memname)()
        self$actCnt = actionCnt
+       self$policy = PolicyFactory$make(policy_fun, self)
     },
 
     replay = function(batchsize) {
@@ -34,36 +38,20 @@ AgentDQN = R6Class("AgentDQN",
         return(mt)
     },
 
-    epsilonPolicy = function() {
-      if(runif(1L) < self$epsilon) {
-        self$random.action = self$randomAct
-        log.nn$info("random chosen %d", self$random.action)
-        return(TRUE)
-      }
-      return(FALSE)
-    },
-
-    greedyPolicy = function(state) {
+    evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
       log.nn$info("state: %s", paste(state, collapse = ' '))
-      vec.q = self$brain$pred(state)
+      self$vec.arm.q = self$brain$pred(state)
       log.nn$info("prediction: %s", paste(vec.q, collapse = ' '))
-      action = which.max(vec.q) - 1L  # always use OpenAI gym convention
-      log.nn$info("chosen %d", action)
-      return(action)
     },
 
-    policy.epsilonGreedy = function(state) {
-      action = self$greedyPolicy(state)
-      if(self$epsilonPolicy()) {
-        action = self$random.action
-      }
-      return(action)
+    sampleRandomAct = function(state) {
+        self$random.action = self$randomAct
     },
 
     act = function(state) {
       assert(class(state) == "array")
-      self$policy.epsilonGreedy(state)
+      self$policy(state)
     }
     ), # public
   private = list(),
