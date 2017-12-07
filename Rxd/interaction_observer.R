@@ -14,17 +14,10 @@ InteractionObserver = R6Class("InteractionObserver",
     },
 
     notify = function(name) {
-      list.observerst = list[[name]]
-      for(name in names(self$list.observers)) {
-         do.call(name)
-
+      obslist = list[[name]]
+      for(name in names(obslist)) {
+         do.call(obs[[name]])
       }},
-    #  self$rl.agent$observe(s.old, action, s_r_done_info[[2L]], s_r_done_info[[1L]])
-    #  self$perf$list.reward.epi[[self$perf$epi.idx]] = vec.epi
-    #  self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = idx.step -1L
-    #  self$perf$idx.step = self$perf$idx.step + 1L
-    #  self$rl.agent$replay(self$replayBatchSize)  # update model after each episode is done, stupid ?
-    #},
 
     run = function() {
       self$s_r_done_info = self$rl.env$reset()

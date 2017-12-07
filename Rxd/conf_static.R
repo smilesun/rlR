@@ -1,9 +1,18 @@
 RLConf$static = list()
 
 RLConf$static$agent = list(
+agentname = "DQN",
 replayBatchSize = 5L,
 GAMMA = 0.99,  # Degradation factor
 EPSILON = 0.05
+)
+
+RLConf$static$gym = list(
+  scenarioname = "MountainCar-v0"
+)
+
+RLConf$static$interact = list(
+  maxiter = 50L
 )
 
 RLConf$static$nn = list (

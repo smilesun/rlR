@@ -1,21 +1,10 @@
+AgentFactory = R6Class("AgentFactory")
+AgentFactory$static = list(
+  "DQN" = function(actCnt, stateCnt, surro_fun) AgentDQN$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun)
 
-AgentFactory = R6Class("AgentFactory",
-  public = list(
-    )
   )
-AgentFactory$genAgent = function(brain, mem, actCnt) {
-      f1 = function(...) {
-        return(AgentDQN$new(brain = brain, mem = mem, actCnt = actCnt))
-      }
-      f2 = function(...) {
-        return(AgentPG$new(brain = brain, mem = mem, actCnt = actCnt))
-      }
-      if("SurroPG" %in% class(brain)) {
-        AgentPG$new(brain, mem, actCnt)
-      }
-      else {
-        AgentDQN$new(brain, mem, actCnt)
-      }
-    }
-
+AgentFactory$genAgent = function(name) {
+  if(name %nin% names(AgentFactory$static)) stop("no such agents")
+  return(AgentFactory$static[[name]])
+}
 

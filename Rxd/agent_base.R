@@ -33,6 +33,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     },
 
     #' model update only works
+    
     replay = function(batchsize) {
         list.res = self$mem$ins.sample.all(batchsize)
         list.states = lapply(list.res, self$extractOldState)

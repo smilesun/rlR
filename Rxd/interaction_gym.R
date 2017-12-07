@@ -37,6 +37,7 @@ GymInteraction = R6Class("GymInteraction",
         cat(sprintf("Episode: %i, steps:%i \n", i, idx.step))
       }  # for
     }, finally = {
+      self$perf$toString()
       self$rl.env$env$render(close = TRUE)
     }) # try catch
     } # function
