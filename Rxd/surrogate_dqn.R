@@ -5,7 +5,7 @@ SurroDQN = R6Class("SurroDQN",
     stateCnt = NULL,
     model = NULL,
     createModel = NULL,
-    initialize = function(actionCnt, stateCnt, fun = createModel_mountainCar) {
+    initialize = function(actionCnt, stateCnt, fun = NNArsenal$createModel_mountainCar) {
       self$actionCnt = actionCnt
       self$stateCnt = stateCnt
       self$createModel = fun

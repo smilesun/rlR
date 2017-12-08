@@ -1,12 +1,9 @@
-# @depend rf.R
-# policy gradient agent
 AgentPG = R6Class("AgentPG",
-  inherit = Agent,
+  inherit = AgentArmed,
   public = list(
     initialize = function(actionCnt, stateCnt) {  
-      self$epsilon = EPSILON
-      self$brain = SurroPG$new(actionCnt = actionCnt, stateCnt = stateCnt)
-      self$mem = ReplayMem$new()
+      self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4PG)
+      self$mem = ReplayMem$factory("latest")()
       self$actCnt = actionCnt
     },
 
@@ -34,7 +31,7 @@ AgentPG = R6Class("AgentPG",
     },
 
     replay = function(batchsize) {
-        list.res = self$mem$ins.sample.all(batchsize)
+        list.res = self$mem$sample.fun(batchsize)
         list.states = lapply(list.res, self$extractOldState)
         list.rewards = lapply(list.res, self$extractReward)
         list.targets = lapply(list.res, self$extractTarget, advantage = Reduce(sum, list.rewards))

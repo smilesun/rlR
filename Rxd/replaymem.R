@@ -3,7 +3,6 @@ ReplayMem = R6Class("ReplayMem",
     samples = NULL,
     dt = NULL,
     len = 0,
-    sample.fun = function(){},
     list.sample.fun = list(),
     initialize = function(name) {
       self$samples = list()
@@ -58,7 +57,7 @@ ReplayMemUniform = R6Class("ReplayMem",
   )
 
 
-ReplayMemLatest = R6Class("ReplayMem",
+ReplayMemLatest = R6Class("ReplayMemLatest",
   inherit = ReplayMem,
   public = list(
     initialize = function(name ="uniform-all") {
