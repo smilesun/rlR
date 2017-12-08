@@ -2,7 +2,7 @@ PolicyFactory = R6Class("PolicyFactory")
 PolicyFactory$epsilonPolicy = function(state = NULL, host) {
       if(runif(1L) < host$epsilon) {
         host$sampleRandomAct()
-        log.nn$info("random chosen %d", host$random.action)
+        log.nn$info("random chosen %d \n\n", host$random.action)
         return(TRUE)
       }
       return(FALSE)
@@ -10,7 +10,7 @@ PolicyFactory$epsilonPolicy = function(state = NULL, host) {
 
 PolicyFactory$greedyPolicy = function(state, host) {
       action = which.max(host$vec.arm.q) - 1L  # always use OpenAI gym convention
-      log.nn$info("chosen %d", action)
+      log.nn$info("chosen %d \n\n", action)
       return(action)
     }
 

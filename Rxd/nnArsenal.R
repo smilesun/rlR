@@ -10,6 +10,18 @@ NNArsenal$createModel_mountainCar = function(input_shape, output_shape) {
   return(model)
 }
 
+NNArsenal$createModel_mountainCar_regu = function(input_shape, output_shape) {
+  model = keras_model_sequential()
+  # "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim), dim in keras is row major
+  model %>%
+    layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape), kernel_regularizer = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1)) %>%
+    layer_dense(units = output_shape, activation = 'linear', kernel_regularizer
+      = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1))
+  model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
+  return(model)
+}
+
+
 NNArsenal$makeNN4PG = function(input_shape, output_shape) {
         model = keras_model_sequential()
         # "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim)
@@ -47,6 +59,7 @@ NNArsenal$createModel2 = function(input_shape, output_shape, firstLayer = list(u
 
 NNArsenal$static = list(
   "mountaincar-linear-noreg" = NNArsenal$createModel_mountainCar, 
+  "mountaincar-linear-reg" = NNArsenal$createModel_mountainCar_regu, 
   "mountaincar-relu-noreg" =  NNArsenal$createModel_mountainCar_relu)
 
 NNArsenal$makeBrain = function(name) {
