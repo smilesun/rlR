@@ -26,7 +26,7 @@ AgentPG = R6Class("AgentPG",
         temp = rep(0L,self$actCnt)
         temp[act + 1L] =  1L
         label = array(temp, dim = c(1L,self$actCnt))
-        mt = label * advantage
+        mt = label * advantage * (-1) # 'loss' maximization
         return(mt)
     },
 
