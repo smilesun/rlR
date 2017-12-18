@@ -32,9 +32,12 @@ makeGymExperiment = function(conf = RLConf) {
   }
 
   test_gym_dqn = function() {
+    RLConf$update("gym", "agentname", "DQL")
     RLConf$update("gym", "scenarioname", "MountainCar-v0")
-    RLConf$update("agent", "EPSILON", 0.4)
-    RLConf$update("interact", "archname", "mountaincar-linear-reg")
+    RLConf$update("interact", "maxiter", 500L)
+    RLConf$update("agent", "EPSILON", 0.1)
+    RLConf$update("nn", "archname", "mountaincar-linear-reg")
+    RLConf$show()
     interact = makeGymExperiment()
     interact$run()
   }

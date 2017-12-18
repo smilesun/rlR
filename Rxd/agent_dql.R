@@ -3,8 +3,8 @@ AgentDQL = R6Class("AgentDQL",
   inherit = AgentDQN,
   public = list(
     brain2 = NULL,
-    brain_u = NULL,
-    brain_h = NULL,
+    brain_u = NULL,  # u: to be updated
+    brain_h = NULL,  # h: to help
     initialize = function(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy") {
       super$initialize(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy")
       self$brain2 = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = surro_fun)
@@ -28,20 +28,21 @@ AgentDQL = R6Class("AgentDQL",
           x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
           y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
           # y = array_reshape(y, dim = c(1L, dim(y)))
-          self$brain$train(x, y)  # update the policy model
+          self$brain_u$train(x, y)  # update the policy model
       },
 
       extractTarget = function(ins) {
           old.state = self$extractOldState(ins)
           old.state = array_reshape(old.state, dim = c(1L, dim(old.state)))
-          p.old = self$brain_u$pred(old.state)
+          yhat = self$brain_u$pred(old.state)
           next.state = self$extractNextState(ins)
           next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
-          vec.next.Q = self$brain_h$pred(next.state)
-          a_1 = which.max(vec.next.Q)  # action index start from 1L
+          vec.next.Q.u = self$brain_u$pred(next.state)
+          vec.next.Q.h = self$brain_h$pred(next.state)
+          a_1 = which.max(vec.next.Q.u)  # action index start from 1L
           r = self$extractReward(ins)
-          target = r + RLConf$static$agent$GAMMA * max(vec.next.Q)
-          mt = p.old
+          target = r + RLConf$static$agent$GAMMA * vec.next.Q.h[a1]
+          mt = yhat
           mt[a_1] = target  # the not active action will have exact label
         return(mt)
     },

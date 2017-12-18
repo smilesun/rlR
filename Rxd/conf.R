@@ -10,14 +10,16 @@ ps = function(temp) {
   for(name in names(temp))
   {
     # cat(sprintf("%s:%s\n", name, toString(temp[[name]])))
-    cat(sprintf("%s:\n%s\n", name, print(temp[[name]])))
+    val = sprintf("%s", temp[[name]])
+    cat(sprintf("namespace: %s\n%s\n", name, val))
+
   }
 }
 
 
 RLConf$show = function() {
   temp = RLConf$static
-  ps(temp)
+  print(temp)
 }
 
 RLConf$update = function(str.namespace, str.para, val.value) {
