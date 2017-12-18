@@ -6,7 +6,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
     initialize = function(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy") {
       super$initialize(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy")
       self$brain_actor = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4PG)
-      self$brain_critic = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4SV)
+      self$brain_critic = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4SV) # single output
       },
 
      replay = function(batchsize) {

@@ -24,7 +24,7 @@ makeGymExperiment = function(conf = RLConf) {
     return(interact)
   }
 
-  makeGymExperiment2 = function(conf = RLConf) {
+  makeGymExperimentObserver = function(conf = RLConf) {
     probe = gymEnvFactory(conf$static$gym$scenarioname)
     rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = NNArsenal$makeBrain(RLConf$static$nn$archname))
     interact = InteractionObserver$new(rl.env = probe$env, rl.agent = rl.agent)
