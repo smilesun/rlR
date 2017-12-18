@@ -4,10 +4,12 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     brain = NULL,  # a table or a function approximator to represent the value function
     mem = NULL,  # replay memory
     actCnt = NULL,
-    initialize = function(brain, mem, actCnt) {  # mem is an ReplayMem object
+    decorate = function(x){x},  # transform the  action space since some Gym environment has non-continous feasible actions
+    initialize = function(brain, mem, actCnt, decorator = function(x){x}) {  # mem is an ReplayMem object
       self$brain = brain
       self$mem = mem
       self$actCnt = actCnt
+      self$decorate = decorator  # some Gym scenario have noncontinous actions
     },
 
     # transform observation to  the replay memory

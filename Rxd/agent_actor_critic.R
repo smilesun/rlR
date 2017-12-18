@@ -35,15 +35,16 @@ AgentActorCritic = R6Class("AgentActorCritic",
           act = self$extractAct(ins)
           old.state = self$extractOldState(ins)
           old.state = array_reshape(old.state, dim = c(1L, dim(old.state)))
-          old.v = self$brain_critic$pred(old.state)
+          critic.old.v = self$brain_critic$pred(old.state)
           next.state = self$extractNextState(ins)
           next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
-          next.V = self$brain_critic$pred(next.state)
+          critic.next.v = self$brain_critic$pred(next.state)
           r = self$extractReward(ins)
-          advantage = r + RLConf$static$agent$GAMMA * next.V - old.V
-          temp = rep(0L,self$actCnt)
-          temp[act + 1L] = 1L # the not active action will have exact label
-          target = advantage * array(target, dim = c(1L,self$actCnt))
+          advantage = r + RLConf$static$agent$GAMMA * critic.next.v - critic.old.v
+          vec.act = rep(0L,self$actCnt)
+          vec.act[act + 1L] = 1L # the not active action will have exact label
+          # target = advantage * array(target, dim = c(1L,self$actCnt)) ? why this ever work with out target defined before?
+          target = advantage * array(vec.act, dim = c(1L,self$actCnt))
           return(target)
     },
 
@@ -61,7 +62,9 @@ AgentActorCritic = R6Class("AgentActorCritic",
     act = function(state) {
       assert(class(state) == "array")
       self$evaluateArm(state)
-      self$policy(state)
+      action = self$policy(state)
+      return(action)
+      # return(self.decorate(action))
     }
     ), # public
   private = list(),

@@ -6,7 +6,8 @@ gymEnvFactory = function(name ="CartPole-v0") {
   act_cnt = genv$action_space$n
   state_cnt = genv$observation_space$shape[[1L]]
   env = EnvGym$new(genv)
-  return(list(env = env, actCnt = act_cnt, stateCnt = state_cnt))
+  mmap = list("MountainCar-v0"=c(0, 2)) # omit the 1 action which is doing nothing, mapping 1 to 2
+  return(list(env = env, actCnt = act_cnt, stateCnt = state_cnt, decorator = function(x){mmap[[name]][x]}))
 }
 
 
@@ -32,10 +33,10 @@ makeGymExperiment = function(conf = RLConf) {
   }
 
   test_gym_dqn = function() {
-    RLConf$update("gym", "agentname", "DQL")
+    RLConf$update("gym", "agentname", "A3C")
     RLConf$update("gym", "scenarioname", "MountainCar-v0")
     RLConf$update("interact", "maxiter", 500L)
-    RLConf$update("agent", "EPSILON", 0.1)
+    RLConf$update("agent", "EPSILON", 0.01)
     RLConf$update("nn", "archname", "mountaincar-linear-reg")
     RLConf$show()
     interact = makeGymExperiment()

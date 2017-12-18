@@ -6,10 +6,6 @@ EnvGym = R6Class("EnvGym",
       self$env = env
     },
 
-    map = function(name) {
-      list("MountainCar":c(0, 2)) # omit the 1 action which is doing nothing, mapping 1 to 2
-    },
-
     step = function(action) {
       action = as.integer(action)
       s_r_d_info = self$env$step(action)
