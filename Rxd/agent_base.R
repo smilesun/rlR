@@ -13,21 +13,16 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     },
 
     # transform observation to  the replay memory
-    observe = function(state.old, action, reward, state.new, action.new = NULL) {
+    observe = function(state.old, action, reward, state.new, action.new = NULL, delta = NULL, context = NULL) {
       # state, action, accumulated reward
-      self$mem$add(list(state.old = state.old, action = action, reward = reward, state.new = state.new))
+      delta = self$calculateTDError(state.old = state.old, action = action, reward = reward, state.new = state.new)
+      ins = ReplayMem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta)
+      self$mem$add(ins)
     },
 
-    extractOldState = function(x) {
-      return(x[[1L]])
-    },
-
-    extractNextState = function(x) {
-      return(x[[4L]])
-    },
-
-    extractReward = function(x) {
-      return(x[[3L]])
+    calculateTDError = function(state.old, action, reward, state.new) {
+      NULL
+      # stop("not implemented")
     },
 
     extractTarget = function(ins) {
@@ -37,13 +32,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     #' model update only works
     
     replay = function(batchsize) {
-        list.res = self$mem$ins.sample.all(batchsize)
-        list.states = lapply(list.res, self$extractOldState)
-        list.targets = lapply(list.res, self$extractTarget)
-        x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
-        y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
-        # y = array_reshape(y, dim = c(1L, dim(y)))
-        self$brain$train(x, y)  # update the policy model
+        stop("not implemented")
     }
     ), # public
   private = list(),

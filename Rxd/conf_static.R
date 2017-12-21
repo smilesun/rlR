@@ -23,9 +23,12 @@ RLConf$static$nn = list (
 RLConf$static[["performance"]] = list(
 resultTbPath = "../output/Perf.RData"
 )
+
 RLConf$static[["logging"]] = list(
-LOGGERNAME = 'surrogate.nn',
-LOGGERFILENN = '../log/nn.log',
-LOGGERFILEROOT = '../log/rf.log'
+ROOTFOLDERNAME = "../log",
+LOGGERNAMENN = 'nn.logger',
+LOGGERNAMERL = 'rl.logger',
+NNSufix = 'nn.log',
+RLSufix = 'rl.log'
 )
 

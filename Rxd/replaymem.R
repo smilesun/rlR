@@ -8,7 +8,6 @@ ReplayMem = R6Class("ReplayMem",
       self$samples = list()
       self$dt = data.table()
       self$len = 0
-      # self$list.sample.fun = list("uniform-all":self$ins.sample, "latest-fix":self$ins.sample.latest, "all": self$ins.sample.all)
     },
 
     add = function(ins) {
@@ -18,7 +17,7 @@ ReplayMem = R6Class("ReplayMem",
       self$dt = rbindlist(list(self$dt, list(unlist(ins))))
     },
 
-    ins.sample = function(k) {
+    ins.sample.earlierst = function(k) {
       k = min(k, self$len)
       list.res = lapply(sample(self$len)[1:k], function(x) self$samples[[x]])
       return(list.res)
@@ -39,6 +38,29 @@ ReplayMem = R6Class("ReplayMem",
   private = list(),
   active = list()
   )
+
+ReplayMem$factory = function(name) {
+  hash = list(
+    "uniform" = ReplayMemUniform, 
+    "latest" = ReplayMemLatest)
+  return(hash[[name]]$new)
+}
+
+ReplayMem$mkInst = function(state.old, action, reward, state.new, delta) { 
+  list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta) }
+
+ReplayMem$extractOldState = function(x) {
+      return(x[[1L]])
+    }
+
+ReplayMem$extractNextState = function(x) {
+      return(x[[4L]])
+    }
+
+ReplayMem$extractReward = function(x) {
+      return(x[[3L]])
+    }
+
 
 ReplayMemUniform = R6Class("ReplayMem",
   inherit = ReplayMem,
@@ -63,7 +85,7 @@ ReplayMemLatest = R6Class("ReplayMemLatest",
     initialize = function(name ="uniform-all") {
       super$initialize(name)
     },
-    sample.fun = function(k) {
+   sample.fun = function(k) {
       k = min(k, self$len)
       x = (self$len - k + 1L): self$len
       list.res = lapply(x, function(x) self$samples[[x]])
@@ -73,12 +95,4 @@ ReplayMemLatest = R6Class("ReplayMemLatest",
   private = list(),
   active = list()
   )
-
-
-ReplayMem$factory = function(name) {
-  hash = list("uniform" = ReplayMemUniform, "latest" = ReplayMemLatest)
-  return(hash[[name]]$new)
-
-}
-
 

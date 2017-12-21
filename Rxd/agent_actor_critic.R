@@ -11,7 +11,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
 
      replay = function(batchsize) {
           list.res = self$mem$sample.fun(batchsize)
-          list.states = lapply(list.res, self$extractOldState)
+          list.states = lapply(list.res, ReplayMem$extractOldState)
           list.targets.actor = lapply(list.res, self$extractActorTarget)
           list.targets.critic = lapply(list.res, self$extractCriticTarget)
           x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
@@ -23,23 +23,23 @@ AgentActorCritic = R6Class("AgentActorCritic",
       },
 
       extractCriticTarget = function(ins) {
-          next.state = self$extractNextState(ins)
+          next.state = ReplayMem$extractNextState(ins)
           next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
           next.V = self$brain_critic$pred(next.state)
-          r = self$extractReward(ins)
+          r = ReplayMem$extractReward(ins)
           y = r + RLConf$static$agent$GAMMA * next.V
           return(y)
       },
 
       extractActorTarget = function(ins) {
           act = self$extractAct(ins)
-          old.state = self$extractOldState(ins)
+          old.state = ReplayMem$extractOldState(ins)
           old.state = array_reshape(old.state, dim = c(1L, dim(old.state)))
           critic.old.v = self$brain_critic$pred(old.state)
-          next.state = self$extractNextState(ins)
+          next.state = ReplayMem$extractNextState(ins)
           next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
           critic.next.v = self$brain_critic$pred(next.state)
-          r = self$extractReward(ins)
+          r = ReplayMem$extractReward(ins)
           advantage = r + RLConf$static$agent$GAMMA * critic.next.v - critic.old.v
           vec.act = rep(0L,self$actCnt)
           vec.act[act + 1L] = 1L # the not active action will have exact label
@@ -50,9 +50,9 @@ AgentActorCritic = R6Class("AgentActorCritic",
 
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
-      log.nn$info("state: %s", paste(state, collapse = ' '))
+      glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
       self$vec.arm.q = self$brain_actor$pred(state)
-      log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
+      glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
     },
 
     sampleRandomAct = function(state) {

@@ -32,8 +32,8 @@ AgentPG = R6Class("AgentPG",
 
     replay = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
-        list.states = lapply(list.res, self$extractOldState)
-        list.rewards = lapply(list.res, self$extractReward)
+        list.states = lapply(list.res, ReplayMem$extractOldState)
+        list.rewards = lapply(list.res, ReplayMem$extractReward)
         list.targets = lapply(list.res, self$extractTarget, advantage = Reduce(sum, list.rewards))
         x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
         y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))

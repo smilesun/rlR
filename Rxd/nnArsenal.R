@@ -1,3 +1,33 @@
+# keras convention
+# input_shape: Dimensionality of the input (integer) not including the
+#           samples axis. This argument is required when using this layer
+#           as the first layer in a model.
+# 
+# batch_input_shape: Shapes, including the batch size. For instance,
+#           ‘batch_input_shape=c(10, 32)’ indicates that the expected
+#           input will be batches of 10 32-dimensional vectors.
+#           ‘batch_input_shape=list(NULL, 32)’ indicates batches of an
+#           arbitrary number of 32-dimensional vectors.
+# Input and Output Shapes:
+# 
+#      Input shape: nD tensor with shape: ‘(batch_size, ..., input_dim)’.
+#      The most common situation would be a 2D input with shape
+#      ‘(batch_size, input_dim)’.
+# 
+#      Output shape: nD tensor with shape: ‘(batch_size, ..., units)’.
+#      For instance, for a 2D input with shape ‘(batch_size, input_dim)’,
+#      the output would have shape ‘(batch_size, unit)’.
+# assert(class(state) == "array")
+# reshape is not changing the shape, but only changes the filling scheme of the shape
+# state = array_reshape(state, c(1L, dim(state))) # fill first the row dimension while in R normally column is filled first
+# state = array_reshape(state, c(1L, length(state))) # fill first the row dimension while in R normally column is filled first
+# temp = array(1:8, dim = c(2,2,2))
+# length(temp) = 8
+# Rank: the number of dimensions needed to represent a tensor
+# Shape:  c(1,2,3) for rank 3
+
+ 
+
 NNArsenal = R6Class("NNArsenal")
 
 NNArsenal$createModel_mountainCar = function(input_shape, output_shape) {

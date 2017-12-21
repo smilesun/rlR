@@ -21,29 +21,33 @@ InteractionObserver = R6Class("InteractionObserver",
         "beforeAct" = list(
             hh = function() {
               self$rl.env$env$render() 
-              log.nn$info("in episode %d, step %d", self$idx.episode, self$idx.step)
+              glogger$log.nn$info("in episode %d, step %d", self$idx.episode, self$idx.step)
               self$s.old = self$s_r_done_info[[1L]]}
         ),
 
         "afterStep" = list(
             hh = function() {
+              glogger$log.nn$info("reward %f", self$s_r_done_info[[2L]])
               self$rl.agent$observe(self$s.old, self$action, self$s_r_done_info[[2L]], self$s_r_done_info[[1L]])
               self$vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
               self$idx.step = self$idx.step + 1L
               self$rl.agent$replay(RLConf$static$agent$replayBatchSize)
-              self$forloop.observe()
+              self$checkEpisodeOver()
             })
         )
     },
 
-    forloop.observe = function() {
+    checkEpisodeOver = function() {
         if(self$s_r_done_info[[3L]]) {
           self$episode.over.flag = TRUE
           self$idx.episode = self$idx.episode + 1L
           self$rl.env$reset()
-          log.root$info("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step)
+          glogger$log.root$info("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step)
           self$idx.step = 0L
           self$episode.over.flag = FALSE
+          self$perf$list.reward.epi[[self$perf$epi.idx]] = self$vec.epi   # the reward vector
+          self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step -1L  # the number of steps
+          self$perf$epi.idx = self$perf$epi.idx + 1L
           if(self$idx.episode > RLConf$static$interact$maxiter) {
             self$continue.flag = FALSE }
     }},
@@ -65,7 +69,9 @@ InteractionObserver = R6Class("InteractionObserver",
           self$s_r_done_info = self$rl.env$step(as.integer(self$action))
           self$notify("afterStep")
         } # while 
+        return(self$perf)
     }, finally = {
+      self$perf$toString()
       self$rl.env$env$render(close = TRUE)
     }) # try catch
     } # function

@@ -15,7 +15,7 @@ AgentDQN = R6Class("AgentDQN",
 
     replay = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
-        list.states = lapply(list.res, self$extractOldState)
+        list.states = lapply(list.res, ReplayMem$extractOldState)
         list.targets = lapply(list.res, self$extractTarget)
         x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
         y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
@@ -24,14 +24,14 @@ AgentDQN = R6Class("AgentDQN",
     },
 
     extractTarget = function(ins) {
-        old.state = self$extractOldState(ins)
+        old.state = ReplayMem$extractOldState(ins)
         old.state = array_reshape(old.state, dim = c(1L, dim(old.state)))
         p.old = self$brain$pred(old.state)
-        next.state = self$extractNextState(ins)
+        next.state = ReplayMem$extractNextState(ins)
         next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
         vec.next.Q = self$brain$pred(next.state)
         a_1 = which.max(vec.next.Q)  # action index start from 1L
-        r = self$extractReward(ins)
+        r = ReplayMem$extractReward(ins)
         target = r + RLConf$static$agent$GAMMA * max(vec.next.Q)
         mt = p.old
         mt[a_1] = target  # the not active action will have exact label
@@ -40,9 +40,9 @@ AgentDQN = R6Class("AgentDQN",
 
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
-      log.nn$info("state: %s", paste(state, collapse = ' '))
+      glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
       self$vec.arm.q = self$brain$pred(state)
-      log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
+      glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
     },
 
     sampleRandomAct = function(state) {
