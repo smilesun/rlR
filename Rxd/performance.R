@@ -1,7 +1,8 @@
 Performance = R6Class("Performance",
   public = list(
-    list.reward.epi = NULL,
-    list.rewardPerEpisode = NULL,
+    list.reward.epi = NULL,  # take reward vector of each episode
+    list.rewardPerEpisode = NULL,  # sum up reward of each episode
+    rewardPerStep = NULL,
     list.discountedRPerEpisode = NULL,
     list.stepsPerEpisode = NULL,
     epi.idx = NULL,
@@ -15,11 +16,9 @@ Performance = R6Class("Performance",
     },
 
     toString = function() {
-      print(self$list.reward.epi)
-      #print(self$epi.idx)
-      #print(self$list.rewardPerEpisode)
-      #print(self$list.discountedRPerEpisode)
-      print("steps per episode")
+      self$list.rewardPerEpisode = reward.perEpisode = lapply(self$list.reward.epi, function(x) sum(x))
+      self$rewardPerStep = unlist(self$list.rewardPerEpisode)/unlist(self$list.stepsPerEpisode)
+      print("steps per episode:")
       print(self$list.stepsPerEpisode)
     },
 

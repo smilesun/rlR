@@ -34,6 +34,7 @@ GymInteraction = R6Class("GymInteraction",
         self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = idx.step -1L  # the number of steps
         # self$rl.agent$replay(idx.step -1L)  # update model after each episode is done, stupid ?
         cat(sprintf("Episode: %i, steps:%i \n", i, idx.step))
+        return(self$perf)
       }  # for
     }, finally = {
       self$perf$toString()

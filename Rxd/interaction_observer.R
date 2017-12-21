@@ -39,15 +39,16 @@ InteractionObserver = R6Class("InteractionObserver",
 
     checkEpisodeOver = function() {
         if(self$s_r_done_info[[3L]]) {
+          self$perf$epi.idx = self$perf$epi.idx + 1L
           self$episode.over.flag = TRUE
           self$idx.episode = self$idx.episode + 1L
           self$rl.env$reset()
+          self$perf$list.reward.epi[[self$perf$epi.idx]] = vector(mode = "list")
+          self$perf$list.reward.epi[[self$perf$epi.idx]] = self$vec.epi[1L:self$idx.step]   # the reward vector
           glogger$log.root$info("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step)
           self$idx.step = 0L
           self$episode.over.flag = FALSE
-          self$perf$list.reward.epi[[self$perf$epi.idx]] = self$vec.epi   # the reward vector
           self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step -1L  # the number of steps
-          self$perf$epi.idx = self$perf$epi.idx + 1L
           if(self$idx.episode > RLConf$static$interact$maxiter) {
             self$continue.flag = FALSE }
     }},
