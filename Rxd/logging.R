@@ -12,9 +12,9 @@ RLLog = R6Class("RLLog",
       str.time = toString(Sys.time())
       str.time = gsub(" ","_",str.time)
       str.date = toString(Sys.Date())
-      filePrefix = file.path(conf.logging$ROOTFOLDERNAME, str.date, hash.conf, str.time)
-      dir.create(filePrefix)
-
+      filePrefix = file.path(getwd(), conf.logging$ROOTFOLDERNAME, str.date, hash.conf, str.time)
+      cat(sprintf("logging file path %s", filePrefix))
+      dir.create(filePrefix, recursive = TRUE) # rl.log and nn.log are under this directory
       addHandler(writeToFile, file = file.path(filePrefix, conf.logging$RLSufix), logger = conf.logging$LOGGERNAMERL) # default logger is the root handler
       removeHandler("writeToConsole", logger = conf.logging$LOGGERNAMENN)
       removeHandler("basic.stdout", logger = conf.logging$LOGGERNAMENN)
