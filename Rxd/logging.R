@@ -3,6 +3,10 @@ RLLog = R6Class("RLLog",
   public = list(
     log.root = NULL,
     log.nn = NULL,
+    cmdPattern.Dict =  list("root"="log.root"),
+    log = function(type, msg) {
+      self$log.root
+    },
     initialize = function() {
       conf.logging = RLConf$fetchConf("logging") 
       self$log.root = getLogger(conf.logging$LOGGERNAMERL)
