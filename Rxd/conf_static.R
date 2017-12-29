@@ -4,7 +4,8 @@ RLConf$static$agent = list(
 agentname = "DQN",
 replayBatchSize = 5L,
 GAMMA = 0.99,  # Degradation factor
-EPSILON = 0.05
+EPSILON = 0.9,
+decay = exp(-1/10) # half time is 10 time step
 )
 
 RLConf$static$gym = list(
