@@ -23,9 +23,6 @@ RLLog = R6Class("RLLog",
       removeHandler("writeToConsole", logger = conf.logging$LOGGERNAMENN)
       removeHandler("basic.stdout", logger = conf.logging$LOGGERNAMENN)
       addHandler(writeToFile, file = file.path(filePrefix,conf.logging$NNSufix), logger = conf.logging$LOGGERNAMENN)
-    },
-    logConf = function() {
-      str.conf = toString(RLConf$static)
       self$log.root$info(str.conf)
     }
     )
