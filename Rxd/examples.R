@@ -39,6 +39,7 @@ makeGymExperiment = function(conf = RLConf) {
     RLConf$update("interact", "maxiter", 2L)
     RLConf$update("agent", "EPSILON", 0.01)
     RLConf$update("nn", "archname", "mountaincar-linear-reg")
+    glogger = RLLog$new()
     interact = makeGymExperiment()
     #interact = makeGymExperimentObserver()
     perf = interact$run()

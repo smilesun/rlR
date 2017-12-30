@@ -7,7 +7,7 @@ RLLog = R6Class("RLLog",
     log = function(type, msg) {
       self$log.root
     },
-    initialize = function() {
+    initialize = function(RLConf = RLConf) {
       conf.logging = RLConf$fetchConf("logging") 
       self$log.root = getLogger(conf.logging$LOGGERNAMERL)
       self$log.nn = getLogger(conf.logging$LOGGERNAMENN)
@@ -23,6 +23,9 @@ RLLog = R6Class("RLLog",
       removeHandler("writeToConsole", logger = conf.logging$LOGGERNAMENN)
       removeHandler("basic.stdout", logger = conf.logging$LOGGERNAMENN)
       addHandler(writeToFile, file = file.path(filePrefix,conf.logging$NNSufix), logger = conf.logging$LOGGERNAMENN)
+    },
+    logConf = function() {
+      str.conf = toString(RLConf$static)
       self$log.root$info(str.conf)
     }
     )

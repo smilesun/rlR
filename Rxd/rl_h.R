@@ -29,6 +29,5 @@ source("surrogate_base.R")
 source("surrogate_dqn.R")
 source("surrogate_mlr.R")
 source("examples.R")
-RLConf$show()
 set.seed(1L)
-glogger = RLLog$new()
+
