@@ -1,32 +1,37 @@
+# define default hyper-parameters
 RLConf$static = list()
 
-RLConf$static$agent = list(
+
+
+RLConf$static[["agent"]] = list(
 agentname = "DQN",
 replayBatchSize = 5L,
 GAMMA = 0.99,  # Degradation factor
-EPSILON = 0.9,
-decay = exp(-1/10) # half time is 10 time step
+EPSILON = 1.0,
+decay = exp(-1/100) # half time is 100 time step
 )
 
-RLConf$static$gym = list(
+RLConf$static[["gym"]] = list(
   scenarioname = "MountainCar-v0"
 )
 
-RLConf$static$interact = list(
-  maxiter = 50L
+RLConf$static[["interact"]] = list(
+  maxiter = 50L,
+  save.flag = TRUE
 )
 
-RLConf$static$nn = list (
-  EPOCH = 1L,  # FOR DEBUG
-  archname = "mountaincar-linear-noreg")
+RLConf$static[["nn"]] = list (
+  EPOCH = 1L,  
+  archname = "mountaincar-linear-noreg"
+)
 
-# The following fields do not affect performance so is hard coded
+# The following fields do not affect performance
 RLConf$static[["performance"]] = list(
-resultTbPath = "../output/Perf.RData"
+resultTbPath = "Perf.RData"  #  will be put under ROOTFOLDERNAME
 )
 
 RLConf$static[["logging"]] = list(
-ROOTFOLDERNAME = "../log",
+ROOTFOLDERNAME = "../logout",
 LOGGERNAMENN = 'nn.logger',
 LOGGERNAMERL = 'rl.logger',
 NNSufix = 'nn.log',
