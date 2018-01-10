@@ -3,7 +3,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
   public = list(
     brain_actor = NULL,  # cross entropy loss
     brain_critic = NULL, # mse loss
-    initialize = function(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy") {
+    initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun) {
       super$initialize(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy")
       self$brain_actor = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4PG)
       self$brain_critic = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4SV) # single output

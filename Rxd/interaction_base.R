@@ -5,6 +5,7 @@ Interaction = R6Class("Interaction",
     rl.env = NULL,
     perf = NULL,
     maxiter = NULL,
+    glogger = NULL,
     run = function() {
       stop("not implemented")
     }

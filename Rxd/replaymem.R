@@ -10,11 +10,13 @@ ReplayMem = R6Class("ReplayMem",
       self$len = 0
     },
 
-    add = function(ins) {
+    add = function(ins) {  # ins = ReplayMem$mkInst(...)
       len = length(self$samples)
       self$samples[[len + 1]] = ins
       self$len = self$len + 1
-      self$dt = rbindlist(list(self$dt, list(unlist(ins))))
+      mcolnames = names(unlist(ins))
+      mdt = data.table(t(unlist(ins)))
+      self$dt = rbindlist(list(self$dt, mdt))
     },
 
     ins.sample.earlierst = function(k) {
@@ -47,6 +49,7 @@ ReplayMem$factory = function(name) {
 }
 
 ReplayMem$mkInst = function(state.old, action, reward, state.new, delta) { 
+  if(is.null(delta)) delta = NA
   list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta) }
 
 ReplayMem$extractOldState = function(x) {

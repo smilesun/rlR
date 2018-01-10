@@ -4,7 +4,8 @@ AgentDQN = R6Class("AgentDQN",
     vec.arm.q = NULL,      # store Q value for each arm
     random.action = NULL,  # store random.action
     policy = NULL, # a function to return action
-    initialize = function(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy") {
+    initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun, glogger) {
+       self$glogger = glogger
        self$vec.arm.q = vector(mode = "numeric", length = actionCnt) 
        self$epsilon = RLConf$static$agent$EPSILON
        self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = surro_fun)
@@ -27,6 +28,7 @@ AgentDQN = R6Class("AgentDQN",
         old.state = ReplayMem$extractOldState(ins)
         old.state = array_reshape(old.state, dim = c(1L, dim(old.state)))
         p.old = self$brain$pred(old.state)
+        self$yhat = p.old  # for calculating the  TD error
         next.state = ReplayMem$extractNextState(ins)
         next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
         vec.next.Q = self$brain$pred(next.state)
@@ -40,9 +42,9 @@ AgentDQN = R6Class("AgentDQN",
 
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
-      glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
+      self$glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
       self$vec.arm.q = self$brain$pred(state)
-      glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
+      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
     },
 
     sampleRandomAct = function(state) {

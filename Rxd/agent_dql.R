@@ -56,9 +56,9 @@ AgentDQL = R6Class("AgentDQL",
 
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
-      glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
+      self$glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
       self$vec.arm.q = self$brain_h$pred(state)
-      glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
+      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
     },
 
     sampleRandomAct = function(state) {
