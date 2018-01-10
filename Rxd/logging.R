@@ -14,6 +14,7 @@ RLLog = R6Class("RLLog",
       str.date = toString(Sys.Date())
       filePrefix = file.path(getwd(), conf.logging$ROOTFOLDERNAME, str.date, hash.conf, str.time)
       cat(sprintf("logout file path %s", filePrefix))
+      RLConf$static$persistence$filePrefix = filePrefix
       RLConf$static$performance$resultTbPath =  file.path(filePrefix, RLConf$static$performance$resultTbPath)  # RData file persistence place
       dir.create(filePrefix, recursive = TRUE) # rl.log and nn.log are under this directory
       addHandler(writeToFile, file = file.path(filePrefix, conf.logging$RLSufix), logger = conf.logging$LOGGERNAMERL)
