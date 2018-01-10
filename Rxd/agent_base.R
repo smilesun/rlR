@@ -25,7 +25,8 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     },
 
     calculateTDError = function(ins) {
-      vec.mt = self$extractTarget(ins)  # vector of target, self$yhat is calculated inside
+      #if(!RLConf$static$agent$calTD) return(NA)
+      vec.mt = self$extractTarget(ins)  # vector of target, self$yhat is calculated inside. Usually extractTarget is applied to a batch of x space instances and return the Bellman equation target, here it only extract one x space instance
       mean((vec.mt - self$yhat)^2)
       # stop("not implemented")
     },

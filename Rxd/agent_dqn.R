@@ -3,7 +3,7 @@ AgentDQN = R6Class("AgentDQN",
   public = list(
     vec.arm.q = NULL,      # store Q value for each arm
     random.action = NULL,  # store random.action
-    policy = NULL, # a function to return action
+    policy = NULL, # a function to return action, generated from a function factory 
     initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun, glogger) {
        self$glogger = glogger
        self$vec.arm.q = vector(mode = "numeric", length = actionCnt) 
@@ -17,11 +17,15 @@ AgentDQN = R6Class("AgentDQN",
     replay = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
         list.states = lapply(list.res, ReplayMem$extractOldState)
-        list.targets = lapply(list.res, self$extractTarget)
+        list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience
         x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
         y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
         # y = array_reshape(y, dim = c(1L, dim(y)))
         self$brain$train(x, y)  # update the policy model
+        yhat = self$brain$pred(x)
+        updatedTDError = rowSums((yhat - y)^2)
+        self$mem$dt[self$mem$replayed.idx, "delta"] = updatedTDError
+        self$mem$updatePriority()
     },
 
     extractTarget = function(ins) {
@@ -53,8 +57,8 @@ AgentDQN = R6Class("AgentDQN",
 
     act = function(state) {
       assert(class(state) == "array")
-      self$evaluateArm(state)
-      self$policy(state)
+      self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
+      self$policy(state)  # returning the chosen action
     }
     ), # public
   private = list(),

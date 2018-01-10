@@ -9,7 +9,10 @@ replayBatchSize = 64L,   # for uniform sampling
 GAMMA = 0.99,  # Degradation factor
 EPSILON = 1.0,
 decay = exp(-1/10), # half time is 10 time step to 0.3678, after 30 steps, it is 0.049787
-memname = "uniform"
+memname = "priorityAbs",
+policy = "policy.predProb",
+calTD = FALSE,
+memLaplaceSmoother = 0.001
 )
 
 RLConf$static[["gym"]] = list(

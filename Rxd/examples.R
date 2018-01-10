@@ -21,7 +21,7 @@ test_gym_pg = function(maxiter = 50L) {
 
 makeGymExperiment = function(conf = RLConf, glogger) {
     probe = gymEnvFactory(conf$static$gym$scenarioname)
-    rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = NNArsenal$makeBrain(RLConf$static$nn$archname), memname = RLConf$static$agent$memname, policy_fun = "epsilonGreedy", glogger = glogger)
+    rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = NNArsenal$makeBrain(RLConf$static$nn$archname), memname = RLConf$static$agent$memname, policy_fun = conf$static$agent$policy, glogger = glogger)
     interact = GymInteraction$new(rl.env = probe$env, rl.agent = rl.agent, maxiter = conf$static$interact$maxiter, glogger = glogger)
     return(interact)
   }
@@ -38,27 +38,31 @@ makeGymExperiment = function(conf = RLConf, glogger) {
     RLConf$update("gym", "scenarioname", "MountainCar-v0")
     RLConf$update("interact", "maxiter", 50L)
     RLConf$update("agent", "EPSILON", 0.01)
-    RLConf$update("agent", "memname", "latest")
+    RLConf$update("agent", "memname", "priorityAbs")
+    RLConf$update("agent", "policy", "policy.predProbRank")
     RLConf$update("nn", "archname", "mountaincar-linear-reg")
     glogger = RLLog$new(RLConf)
     interact = makeGymExperiment(glogger = glogger)
     #interact = makeGymExperimentObserver()
     perf = interact$run()
-    save(perf, file = "perf.RData")
+    browser()
+    # save(perf, file = "perf.RData")
   }
 
-  test_gym_dqn_work = function() {
+  test_mountaincar_dqn_work = function() {  # always make this test case work every time you  change the code 
     # RLConf$update("agent", "agentname", "A3C")
     RLConf$update("gym", "scenarioname", "MountainCar-v0")
     RLConf$update("interact", "maxiter", 50L)
     RLConf$update("agent", "EPSILON", 0.01)
     RLConf$update("agent", "replayBatchSize", 5L)
     RLConf$update("agent", "memname", "latest")
+    RLConf$update("agent", "policy", "epsilonGreedy")
     RLConf$update("nn", "archname", "mountaincar-linear-noreg")
     glogger = RLLog$new(RLConf)
     interact = makeGymExperiment(glogger = glogger)
     #interact = makeGymExperimentObserver()
     perf = interact$run()
-    save(perf, file = "perf.RData")
+    browser()
+    # save(perf, file = "perf.RData")
   }
 

@@ -20,11 +20,18 @@ PolicyFactory$policy.epsilonGreedy = function(state, host) {
       return(action)
     }
 
+PolicyFactory$policy.predProbRank = function(state, host) {
+      action = PolicyFactory$greedyPolicy(state, host)
+      prob = order(host$vec.arm.q)
+      sample.int(host$actCnt, prob = prob)[1L] -  1L
+      return(action)
+    }
 
 PolicyFactory$static = list(
   "epsilon" = PolicyFactory$epsilonPolicy,
   "greedy" =  PolicyFactory$greedyPolicy,
-  "epsilonGreedy" = PolicyFactory$policy.epsilonGreedy
+  "epsilonGreedy" = PolicyFactory$policy.epsilonGreedy,
+  "policy.predProbRank" = PolicyFactory$policy.predProb
 )
 
 PolicyFactory$make = function(name, host) {
