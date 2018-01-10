@@ -8,7 +8,7 @@ agentname = "DQN",
 replayBatchSize = 5L,
 GAMMA = 0.99,  # Degradation factor
 EPSILON = 1.0,
-decay = exp(-1/100) # half time is 100 time step
+decay = exp(-1/10) # half time is 10 time step to 0.3678, after 30 steps, it is 0.049787
 )
 
 RLConf$static[["gym"]] = list(
