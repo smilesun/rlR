@@ -55,7 +55,8 @@ ReplayMem$factory = function(name) {
     "uniform" = ReplayMemUniform, 
     "latest" = ReplayMemLatest,
     "priorityAbs" = ReplayMemPrioritizedAbs,
-    "priorityRank" = ReplayMemPrioritizedRank
+    "priorityRank" = ReplayMemPrioritizedRank,
+    "latestprob" =  ReplayMemLatestProb
     )
   return(hash[[name]]$new)
 }
@@ -112,6 +113,22 @@ ReplayMemLatest = R6Class("ReplayMemLatest",
   active = list()
   )
 
+ReplayMemLatestProb = R6Class("ReplayMemLatestProb",
+  inherit = ReplayMem,
+  public = list(
+    initialize = function(name ="uniform-all") {
+      super$initialize(name)
+    },
+   sample.fun = function(k) {
+      k = min(k, self$len)
+      self$replayed.idx = sample(self$len, prob = 1:self$len, size = k)
+      list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
+      return(list.res)
+    }
+    ),
+  private = list(),
+  active = list()
+  )
 
 ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
   inherit = ReplayMem,
