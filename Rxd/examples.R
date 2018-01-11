@@ -39,7 +39,7 @@ makeGymExperiment = function(conf = RLConf, glogger) {
     RLConf$update("interact", "maxiter", 50L)
     RLConf$update("agent", "EPSILON", 0.01)
     RLConf$update("agent", "replayBatchSize", 5L)
-    RLConf$update("agent", "memname", "priorityAbs")
+    RLConf$update("agent", "memname", "latestprob")
     RLConf$update("agent", "policy", "softmax")
     RLConf$update("nn", "archname", "mountaincar-linear-reg")
     glogger = RLLog$new(RLConf)

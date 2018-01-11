@@ -1,5 +1,12 @@
 RLConf = R6Class("Conf",
   public = list(
+    static = NULL,
+    initialize = function() {
+      self$takeStatic()
+    },
+    takeStatic = function() {
+      self$static = data.table::copy(RLConf$static)
+    },
   dict = list()
   ),
   private = list(),
@@ -42,5 +49,4 @@ RLConf$fetchConf = function(namespace) {
   if(is.null(RLConf$static[[namespace]])) stop("configuration namespace empty!")
   return(RLConf$static[[namespace]])
 }
-
 
