@@ -17,7 +17,7 @@ test_gym_dqn = function() {
   RLConf$update("agent", "EPSILON", 0.01)
   RLConf$update("agent", "replayBatchSize", 5L)
   RLConf$update("agent", "memname", "latestprob")
-  RLConf$update("agent", "policy", "softmax")
+  RLConf$update("agent", "policy", "probEpsilon")
   RLConf$update("nn", "archname", "mountaincar-linear-noreg")
 
   conf = RLConf$new()
