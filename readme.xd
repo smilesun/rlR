@@ -1,7 +1,10 @@
+```
 setwd("Rxd")
 source("rl_h.R")
 run examples in test_mountaincar_dqn_work()
+```
 
 # Reasons sometimes it exceed 200 steps in the mountain car problem: the neural network prediction for the do nothing action exceed the right action and the do nothing action is always taken. The episode before such an ill episode is normal with a decreasing TD error for each experience encounter. The ill behavior might be due to the way of replaying: one should not always update the last(latest) 5 experience encounter since this might at some point make the unwanted arm dominate **a little bit** the optimal arm in terms of neural network prediction. And this ** A little bit** will continously deteriorate the neural network prediction by letting the agent choose the wrong behavior although the difference between the wrong behavior and the optimal behavior only differs by **A little bit** .
 
 # when use prioritized replay, the bellman equation converges very quickly which means that the TD error drops very quickly but this is the reinforcement overfitting which means that the agent is not exploring at all. When TD error converges, the mountain car will always fail
+# It is better to change the epsilon according to the average TD errorto change the epsilo according to the average TD error to avoid overfitting and use epsilon to stimulate the exploration when the TD error converges
