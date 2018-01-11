@@ -17,7 +17,8 @@ memLaplaceSmoother = 0.001
 )
 
 RLConf$static[["gym"]] = list(
-  scenarioname = "MountainCar-v0"
+  scenarioname = "MountainCar-v0",
+  render = TRUE  ## disable this for benchmark
 )
 
 RLConf$static[["interact"]] = list(
@@ -26,7 +27,7 @@ RLConf$static[["interact"]] = list(
 )
 
 RLConf$static[["nn"]] = list (
-  EPOCH = 1L,  
+  EPOCH = 1L,   # how many epoch to apply for each training
   archname = "mountaincar-linear-noreg"
 )
 
