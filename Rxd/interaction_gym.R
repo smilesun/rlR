@@ -1,22 +1,23 @@
 GymInteraction = R6Class("GymInteraction",
   inherit = Interaction,
   public = list(
-    # replayBatchSize = RLConf$static$agent$replayBatchSize, never initialize
-    # replayBatchSize = NULL,  # never initialize a variable in R6 directly like in java since this leads to contant non-changable configuration
-    initialize = function(rl.env, rl.agent, maxiter, glogger) {
+    replayBatchSize = NULL,  
+    conf = NULL,
+    initialize = function(rl.env, rl.agent, maxiter, glogger, conf) {
       self$perf = Performance$new()
       self$rl.agent = rl.agent
       self$rl.env = rl.env
       self$maxiter = maxiter 
       self$glogger = glogger
-      # self$replayBatchSize = RLConf$static$agent$replayBatchSize  for R direct parameter initialization will stop later configuration since this might be executed earlier than the reconfiguration, so the reconfiguration could not change this class field anymore 
+      self$conf = conf
+      self$replayBatchSize = self$conf$static$agent$replayBatchSize        
       },
 
 
     run = function() {
       s_r_done_info = NULL
       tryCatch({
-      for(i in 1:self$maxiter) {
+      for(i in 1L:self$maxiter) {
         self$glogger$log.nn$info("episodeStart %d ", i)
         s_r_done_info = self$rl.env$reset()  # start from a complete new random initial state
         self$perf$epi.idx = self$perf$epi.idx + 1L
@@ -32,7 +33,7 @@ GymInteraction = R6Class("GymInteraction",
             self$rl.agent$observe(s.old, action, s_r_done_info[[2L]], s_r_done_info[[1L]])
             vec.epi[idx.step] = s_r_done_info[[2L]]
             idx.step = idx.step + 1L
-            self$rl.agent$replay(RLConf$static$agent$replayBatchSize) # FIXME: stochastic replay (not each step) 
+            self$rl.agent$replay(self$replayBatchSize) # FIXME: stochastic replay (not each step) 
             } 
         self$perf$list.reward.epi[[self$perf$epi.idx]] = vec.epi   # the reward vector
         self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = idx.step -1L  # the number of steps

@@ -4,12 +4,12 @@ AgentDQN = R6Class("AgentDQN",
     vec.arm.q = NULL,      # store Q value for each arm
     random.action = NULL,  # store random.action
     policy = NULL, # a function to return action, generated from a function factory 
-    initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun, glogger) {
+    initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
        self$glogger = glogger
        self$vec.arm.q = vector(mode = "numeric", length = actionCnt) 
-       self$epsilon = RLConf$static$agent$EPSILON
+       self$epsilon = conf$static$agent$fixedEpsilon
        self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = surro_fun)
-       self$mem = ReplayMem$factory(memname)()
+       self$mem = ReplayMem$factory(memname)(conf = conf)
        self$actCnt = actionCnt
        self$policy = PolicyFactory$make(policy_fun, self)
     },

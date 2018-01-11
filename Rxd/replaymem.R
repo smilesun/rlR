@@ -2,49 +2,33 @@ ReplayMem = R6Class("ReplayMem",
   public = list(
     samples = NULL,
     dt = NULL,
-    len = 0,
-    list.sample.fun = list(),
-    priority = NULL,
+    len = NULL,
     replayed.idx = NULL,
-    initialize = function(name) {
+    conf = NULL,
+    initialize = function(conf) {
       self$samples = list()
       self$dt = data.table()
-      self$len = 0
+      self$len = 0L
+      self$conf = conf
     },
 
-    add = function(ins) {  # ins = ReplayMem$mkInst(...)
+    # ins = ReplayMem$mkInst(...)
+    add = function(ins) {        
       len = length(self$samples)
-      self$samples[[len + 1]] = ins
-      self$len = self$len + 1
+      self$samples[[len + 1L]] = ins
+      self$len = self$len + 1L
       mcolnames = names(unlist(ins))
       mdt = data.table(t(unlist(ins)))
-      mdt[,c("priorityAbs", "priorityRank")] = c(NA,NA)
+      mdt[, c("priorityAbs", "priorityRank", "priorityDelta2")] = c(NA,NA,NA)
       self$dt = rbindlist(list(self$dt, mdt))
       self$updatePriority()
     },
 
     updatePriority = function() {
-      self$dt$priorityAbs = (self$dt[,delta] + RLConf$static$agent$memLaplaceSmoother)
-      self$dt$priorityRank = 1/order(self$dt$delta, decreasing = TRUE)
-    },
-
-    ins.sample.earlierst = function(k) {
-      k = min(k, self$len)
-      list.res = lapply(sample(self$len)[1:k], function(x) self$samples[[x]])
-      return(list.res)
-    },
-
-    ins.sample.latest = function(k) {
-      k = min(k, self$len)
-      x = (self$len - k + 1L): self$len
-      list.res = lapply(x, function(x) self$samples[[x]])
-      return(list.res)
-    },
-
-    ins.sample.all = function(k = self$len) {
-      self$ins.sample.latest(self$len)
+      self$dt$priorityAbs = (abs(self$dt[,delta]) + RLConf$static$agent$memLaplaceSmoother)
+      self$dt$priorityRank = order(self$dt$delta)
+      self$dt$priorityDelta2 = abs(self$dt[,deltaOfdelta])
     }
-
     ),
   private = list(),
   active = list()
@@ -81,12 +65,12 @@ ReplayMem$extractReward = function(x) {
 ReplayMemUniform = R6Class("ReplayMemUniform",
   inherit = ReplayMem,
   public = list(
-    initialize = function(name ="uniform-all") {
-      super$initialize(name)
+    initialize = function(conf) {
+      super$initialize(conf)
     },
     sample.fun = function(k) {
       k = min(k, self$len)
-      self$replayed.idx = sample(self$len)[1:k]
+      self$replayed.idx = sample(self$len)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
     }
@@ -99,8 +83,8 @@ ReplayMemUniform = R6Class("ReplayMemUniform",
 ReplayMemLatest = R6Class("ReplayMemLatest",
   inherit = ReplayMem,
   public = list(
-    initialize = function(name ="uniform-all") {
-      super$initialize(name)
+    initialize = function(conf) {
+      super$initialize(conf)
     },
    sample.fun = function(k) {
       k = min(k, self$len)
@@ -116,12 +100,12 @@ ReplayMemLatest = R6Class("ReplayMemLatest",
 ReplayMemLatestProb = R6Class("ReplayMemLatestProb",
   inherit = ReplayMem,
   public = list(
-    initialize = function(name ="uniform-all") {
-      super$initialize(name)
+    initialize = function(conf) {
+      super$initialize(conf)
     },
    sample.fun = function(k) {
       k = min(k, self$len)
-      self$replayed.idx = sample(self$len, prob = 1:self$len, size = k)
+      self$replayed.idx = sample(self$len, prob = 1L:self$len, size = k)
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
     }
@@ -133,12 +117,12 @@ ReplayMemLatestProb = R6Class("ReplayMemLatestProb",
 ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
   inherit = ReplayMem,
   public = list(
-    initialize = function(name ="priority") {
-      super$initialize(name)
+    initialize = function(conf) {
+      super$initialize(conf)
     },
     sample.fun = function(k) {
       k = min(k, self$len)
-      self$replayed.idx = sample.int(self$len, prob = self$dt$priorityAbs)[1:k]
+      self$replayed.idx = sample.int(self$len, prob = self$dt$priorityAbs)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
     }
@@ -150,12 +134,12 @@ ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
 ReplayMemPrioritizedRank = R6Class("ReplayMemPrioritizedRank",
   inherit = ReplayMem,
   public = list(
-    initialize = function(name ="priority") {
-      super$initialize(name)
+    initialize = function() {
+      super$initialize()
     },
     sample.fun = function(k) {
       k = min(k, self$len)
-      self$replayed.idx = sample.int(self$len, prob = self$dt$priorityRank)[1:k]
+      self$replayed.idx = sample.int(self$len, prob = self$dt$priorityRank)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
     }

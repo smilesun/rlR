@@ -9,4 +9,8 @@ Where to find Conf.R, Conf_static.R
 ### Pros
 
 
+### Pitfalls
+
+- never initialize a variable in R6 directly like in java since this leads to contant non-changable configuration, for R direct parameter initialization will stop later configuration since this might be executed earlier than the reconfiguration, so the reconfiguration could not change this class field anymore 
+
 

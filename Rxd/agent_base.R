@@ -19,16 +19,16 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       # state, action, accumulated reward
       ins = ReplayMem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = NULL)
       delta = self$calculateTDError(ins)
+      ins$deltaOfdelta = delta - ins$delta  # calculate the TD error difference 
+      ins$deltaOfdeltaPercentage = abs(ins$deltaOfdelta)/abs(ins$delta)  # calculate the TD error difference 
       ins$delta = delta
-      self$glogger$log.nn$info("experience tuple:sars_delta :%s", paste0(ins))
+      self$glogger$log.nn$info("experience tuple:sars_delta_delta2_delta2_percent :%s", paste0(ins))
       self$mem$add(ins)
     },
 
     calculateTDError = function(ins) {
-      #if(!RLConf$static$agent$calTD) return(NA)
       vec.mt = self$extractTarget(ins)  # vector of target, self$yhat is calculated inside. Usually extractTarget is applied to a batch of x space instances and return the Bellman equation target, here it only extract one x space instance
       mean((vec.mt - self$yhat)^2)
-      # stop("not implemented")
     },
 
     extractTarget = function(ins) {
@@ -44,7 +44,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   private = list(),
   active = list(
     randomAct = function() {
-      sample.int(self$actCnt)[1L] -1L
+      sample.int(self$actCnt)[1L] -1L  # OpenAI Gym  convention
     }
     )
   )
