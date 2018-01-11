@@ -21,17 +21,34 @@ PolicyFactory$policy.epsilonGreedy = function(state, host) {
     }
 
 PolicyFactory$policy.predProbRank = function(state, host) {
-      action = PolicyFactory$greedyPolicy(state, host)
       prob = order(host$vec.arm.q)
-      sample.int(host$actCnt, prob = prob)[1L] -  1L
+      action = sample.int(host$actCnt, prob = prob)[1L] -  1L
       return(action)
     }
 
+# softmax will magnify the difference 
+PolicyFactory$policy.predsoftmax = function(state, host) {
+      prob = exp(host$vec.arm.q)
+      prob = prob / sum(prob)
+      action = sample.int(host$actCnt, prob = prob)[1L] -  1L
+      return(action)
+    }
+
+# all suboptimal arm probability sum up to epsilon with probability epsilon/actCnt
+PolicyFactory$probEpsilon = function(state, host) {
+      prob = rep(RLConf$static$agent$fixedEpsilon, host$actCnt)/(host$actCnt)
+      optarm = which.max(host$vec.arm.q)
+      prob[optarm] = prob[optarm] + 1.0 - RLConf$static$agent$fixedEpsilon
+      action  = sample.int(host$actCnt, prob = prob)[1L] -  1L
+      return(action)
+}
+
 PolicyFactory$static = list(
-  "epsilon" = PolicyFactory$epsilonPolicy,
   "greedy" =  PolicyFactory$greedyPolicy,
   "epsilonGreedy" = PolicyFactory$policy.epsilonGreedy,
-  "policy.predProbRank" = PolicyFactory$policy.predProb
+  "policy.predProbRank" = PolicyFactory$policy.predProbRank,
+  "probEpsilon" = PolicyFactory$probEpsilon,
+  "softmax" = PolicyFactory$policy.predsoftmax
 )
 
 PolicyFactory$make = function(name, host) {
@@ -39,11 +56,3 @@ PolicyFactory$make = function(name, host) {
   function(state) PolicyFactory$static[[name]](state, host)
 }
 
-# A smarter epsilon policy sum[1/N*epsilon,...] = N* 1/N*epsilon = epsilon, i.e. all non optimal action take probability epsilon
-#      def policy_fn(sess, observation, epsilon):
-#         A = np.ones(nA, dtype=float) * epsilon / nA
-#         q_values = estimator.predict(sess, np.expand_dims(observation, 0))[0]
-#         best_action = np.argmax(q_values)
-#         A[best_action] += (1.0 - epsilon)
-#         return A
-# 

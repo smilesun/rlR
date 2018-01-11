@@ -8,6 +8,7 @@ agentname = "DQN",
 replayBatchSize = 64L,   # for uniform sampling
 GAMMA = 0.99,  # Degradation factor
 EPSILON = 1.0,
+fixedEpsilon = 0.01,
 decay = exp(-1/10), # half time is 10 time step to 0.3678, after 30 steps, it is 0.049787
 memname = "priorityAbs",
 policy = "policy.predProbRank",
