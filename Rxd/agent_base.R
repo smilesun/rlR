@@ -19,10 +19,10 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       # state, action, accumulated reward
       ins = ReplayMem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = NULL)
       delta = self$calculateTDError(ins)
-      ins$deltaOfdelta = delta - ins$delta  # calculate the TD error difference 
-      ins$deltaOfdeltaPercentage = abs(ins$deltaOfdelta)/abs(ins$delta)  # calculate the TD error difference 
       ins$delta = delta
-      self$glogger$log.nn$info("experience tuple:sars_delta_delta2_delta2_percent :%s", paste0(ins))
+      ins$deltaOfdelta = NA  #FIXME:  is there a better number ? 
+      ins$deltaOfdeltaPercentage = NA  # FIXME: is there a better number?
+      self$glogger$log.nn$info("agentbase: observing new experience tuple:sars_delta_delta2_delta2_percent :%s", paste0(ins))
       self$mem$add(ins)
     },
 

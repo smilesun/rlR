@@ -14,6 +14,9 @@ AgentDQN = R6Class("AgentDQN",
        self$policy = PolicyFactory$make(policy_fun, self)
     },
 
+    updateDT = function() {
+    },
+
     replay = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
         list.states = lapply(list.res, ReplayMem$extractOldState)
@@ -22,10 +25,16 @@ AgentDQN = R6Class("AgentDQN",
         y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
         # y = array_reshape(y, dim = c(1L, dim(y)))
         self$brain$train(x, y)  # update the policy model
+        ##
         yhat = self$brain$pred(x)
         updatedTDError = rowSums((yhat - y)^2)
+        old.delta = self$mem$dt[self$mem$replayed.idx, "delta"] 
         self$mem$dt[self$mem$replayed.idx, "delta"] = updatedTDError
+        #
+        self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
+        self$mem$dt[self$mem$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
         self$mem$updatePriority()
+        self$mem$dt
     },
 
     extractTarget = function(ins) {

@@ -24,6 +24,7 @@ ReplayMem = R6Class("ReplayMem",
       self$updatePriority()
     },
 
+    
     updatePriority = function() {
       self$dt$priorityAbs = (abs(self$dt[,delta]) + RLConf$static$agent$memLaplaceSmoother)
       self$dt$priorityRank = order(self$dt$delta)
@@ -45,7 +46,7 @@ ReplayMem$factory = function(name) {
   return(hash[[name]]$new)
 }
 
-ReplayMem$mkInst = function(state.old, action, reward, state.new, delta) { 
+ReplayMem$mkInst = function(state.old, action, reward, state.new, delta = NULL) { 
   if(is.null(delta)) delta = NA
   list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta) }
 
