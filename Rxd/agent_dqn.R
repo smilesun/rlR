@@ -19,6 +19,7 @@ AgentDQN = R6Class("AgentDQN",
 
     replay = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
+        self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
         list.states = lapply(list.res, ReplayMem$extractOldState)
         list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience
         x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
@@ -34,7 +35,8 @@ AgentDQN = R6Class("AgentDQN",
         self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
         self$mem$dt[self$mem$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
         self$mem$updatePriority()
-        self$mem$dt
+        browser()
+        # self$glogger$log.nn$info("replayed :\n %s", kable(self$mem$dt[self$mem$replayed.idx,]))
     },
 
     extractTarget = function(ins) {

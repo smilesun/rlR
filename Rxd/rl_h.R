@@ -9,6 +9,7 @@ library(BBmisc)
 library(openssl)
 library(ggplot2)
 library(reshape2)
+library(formattable)
 
 source("conf.R")
 source("nnArsenal.R")
