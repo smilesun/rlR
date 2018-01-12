@@ -7,7 +7,10 @@ RLConf = R6Class("Conf",
     takeStatic = function() {
       self$static = data.table::copy(RLConf$static)
     },
-  dict = list()
+    updatePara = function(str.namespace, str.para, val.value) {
+      self$static[[str.namespace]][[str.para]] = val.value 
+    },
+    dict = list()
   ),
   private = list(),
   active = list()
