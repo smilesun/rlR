@@ -13,7 +13,11 @@ lapply(gbtconf$prePackage, require, character.only = TRUE)
 lapply(gbtconf$preSource, source)  
 lapply(gbtconf$preSource.org, source)  
 
+# Cartesian product
+des = expand.grid(lrn.cl = c("1", "2"), ft.extract.method = c("A", "B"), stringsAsFactors = FALSE)
+gbtconf$PROB_LIST$rl_prob$design = des
 
+pdes = list()
 for(prob in gbtconf$PROB_RUN) {
   addProblem(name = prob, data = gbtconf$PROB_LIST[[prob]]$prob.data, fun = get(gbtconf$PROB_LIST[[prob]]$fun), seed = gbtconf$SEED_ADDPROBLEM)
 }
@@ -29,5 +33,4 @@ for(algo in gbtconf$ALGO_RUN) {
   addAlgorithm(name = algo, fun = gbtconf$ALGO_LIST[[algo]]$fun)
   ades[[algo]] = gbtconf$ALGO_LIST[[algo]]$design
 }
-
-addExperiments(algo.design = ades, repls = gbtconf$REPLS)
+addExperiments(prob.designs = pdes, algo.design = ades, repls = gbtconf$REPLS)
