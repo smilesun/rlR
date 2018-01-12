@@ -5,15 +5,15 @@ RLConf$static = list()
 
 RLConf$static[["agent"]] = list(
 agentname = "DQN",
-replayBatchSize = 64L,   # for uniform sampling
+replayBatchSize = 5L,   # for uniform sampling
 GAMMA = 0.99,  # Degradation factor
 EPSILON = 1.0,
-fixedEpsilon = 0.01,
-decay = exp(-1/10), # half time is 10 time step to 0.3678, after 30 steps, it is 0.049787
+fixedEpsilon = 0.01,  # one time configuration, without being varied
+decay = exp(-1.0/10), # half time is 10 time step to 0.3678, after 30 steps, it is 0.049787
 memname = "priorityAbs",
 policy = "policy.predProbRank",
 calTD = FALSE,
-memLaplaceSmoother = 0.001
+memLaplaceSmoother = 0.001  # avoid divide by zero error
 )
 
 RLConf$static[["gym"]] = list(
@@ -22,7 +22,7 @@ RLConf$static[["gym"]] = list(
 )
 
 RLConf$static[["interact"]] = list(
-  maxiter = 50L,
+  maxiter = 1000L,
   save.flag = TRUE
 )
 

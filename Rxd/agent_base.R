@@ -6,6 +6,8 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     actCnt = NULL,
     glogger = NULL,
     yhat = NULL, 
+    conf = NULL,
+    ins2String = function(x){},   # function
     decorate = function(x){x},  # transform the  action space since some Gym environment has non-continous feasible actions
     initialize = function(brain, mem, actCnt, decorator = function(x){x}) {  # mem is an ReplayMem object
       self$brain = brain
@@ -22,7 +24,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       ins$delta = delta
       ins$deltaOfdelta = NA  #FIXME:  is there a better number ? 
       ins$deltaOfdeltaPercentage = NA  # FIXME: is there a better number?
-      self$glogger$log.nn$info("agentbase: observing new experience tuple:sars_delta_delta2_delta2_percent :%s", paste0(ins))
+      self$glogger$log.nn$info("agentbase: observing new experience tuple:sars_delta_delta2_delta2_percent :%s", self$ins2String(ins))
       self$mem$add(ins)
     },
 

@@ -5,6 +5,7 @@ AgentDQN = R6Class("AgentDQN",
     random.action = NULL,  # store random.action
     policy = NULL, # a function to return action, generated from a function factory 
     initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
+       self$conf = conf
        self$glogger = glogger
        self$vec.arm.q = vector(mode = "numeric", length = actionCnt) 
        self$epsilon = conf$static$agent$fixedEpsilon
@@ -14,7 +15,18 @@ AgentDQN = R6Class("AgentDQN",
        self$policy = PolicyFactory$make(policy_fun, self)
     },
 
-    updateDT = function() {
+    updateDT = function(x,y) {
+        yhat = self$brain$pred(x)
+        updatedTDError = rowSums((yhat - y)^2)
+        old.delta = self$mem$dt[self$mem$replayed.idx, "delta"] 
+        self$mem$dt[self$mem$replayed.idx, "delta"] = updatedTDError
+        #
+        self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
+        self$mem$dt[self$mem$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
+        self$mem$updatePriority()
+        filename = file.path(self$conf$static$performance$filePrefix,"dt.csv")
+        #write.table(self$mem$dt[self$mem$replayed.idx, ], file = filename)
+        write.csv(self$mem$dt[self$mem$replayed.idx, ], file = filename)
     },
 
     replay = function(batchsize) {
@@ -26,17 +38,7 @@ AgentDQN = R6Class("AgentDQN",
         y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
         # y = array_reshape(y, dim = c(1L, dim(y)))
         self$brain$train(x, y)  # update the policy model
-        ##
-        yhat = self$brain$pred(x)
-        updatedTDError = rowSums((yhat - y)^2)
-        old.delta = self$mem$dt[self$mem$replayed.idx, "delta"] 
-        self$mem$dt[self$mem$replayed.idx, "delta"] = updatedTDError
-        #
-        self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
-        self$mem$dt[self$mem$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
-        self$mem$updatePriority()
-        browser()
-        # self$glogger$log.nn$info("replayed :\n %s", kable(self$mem$dt[self$mem$replayed.idx,]))
+        self$updateDT(x, y)
     },
 
     extractTarget = function(ins) {

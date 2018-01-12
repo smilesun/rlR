@@ -19,7 +19,8 @@ ReplayMem = R6Class("ReplayMem",
       self$len = self$len + 1L
       mcolnames = names(unlist(ins))
       mdt = data.table(t(unlist(ins)))
-      mdt[, c("priorityAbs", "priorityRank", "priorityDelta2")] = c(NA,NA,NA)
+      mdt[, c("priorityAbs", "priorityRank", "priorityDelta2") := c(NA,NA,NA)]
+      # mdt[, c("priorityAbs", "priorityRank", "priorityDelta2")] = c(NA,NA,NA)
       self$dt = rbindlist(list(self$dt, mdt))
       self$updatePriority()
     },
@@ -35,17 +36,9 @@ ReplayMem = R6Class("ReplayMem",
   active = list()
   )
 
-ReplayMem$factory = function(name) {
-  hash = list(
-    "uniform" = ReplayMemUniform, 
-    "latest" = ReplayMemLatest,
-    "priorityAbs" = ReplayMemPrioritizedAbs,
-    "priorityRank" = ReplayMemPrioritizedRank,
-    "latestprob" =  ReplayMemLatestProb
-    )
-  return(hash[[name]]$new)
-}
+ReplayMem$inst2string = function() {
 
+}
 ReplayMem$mkInst = function(state.old, action, reward, state.new, delta = NULL) { 
   if(is.null(delta)) delta = NA
   list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta) }
@@ -61,6 +54,7 @@ ReplayMem$extractNextState = function(x) {
 ReplayMem$extractReward = function(x) {
       return(x[[3L]])
     }
+
 
 
 ReplayMemUniform = R6Class("ReplayMemUniform",
@@ -149,3 +143,14 @@ ReplayMemPrioritizedRank = R6Class("ReplayMemPrioritizedRank",
   active = list()
   )
 
+
+ReplayMem$factory = function(name) {
+  hash = list(
+    "uniform" = ReplayMemUniform, 
+    "latest" = ReplayMemLatest,
+    "priorityAbs" = ReplayMemPrioritizedAbs,
+    "priorityRank" = ReplayMemPrioritizedRank,
+    "latestprob" =  ReplayMemLatestProb
+    )
+  return(hash[[name]]$new)
+}
