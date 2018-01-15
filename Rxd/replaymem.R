@@ -129,8 +129,8 @@ ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
 ReplayMemPrioritizedRank = R6Class("ReplayMemPrioritizedRank",
   inherit = ReplayMem,
   public = list(
-    initialize = function() {
-      super$initialize()
+    initialize = function(conf) {
+      super$initialize(conf)
     },
     sample.fun = function(k) {
       k = min(k, self$len)
