@@ -25,7 +25,8 @@ RLLog = R6Class("RLLog",
       addHandler(writeToFile, file = file.path(filePrefix,conf.logging$NNSufix), logger = conf.logging$LOGGERNAMENN)
       self$log.root$info(str.conf)
       self$log.root$info(filePrefix)  # take down the directory name
-      self$log.root$info(conf$static$performance$info)
+      info = paste0("\n", conf$static[["performance"]]$info.before, conf$static$performance$filePrefix, conf$static[["performance"]]$info.after)
+      self$log.root$info(info)
     }
     )
 )
