@@ -3,7 +3,8 @@ AgentDQN = R6Class("AgentDQN",
   public = list(
     vec.arm.q = NULL,      # store Q value for each arm
     random.action = NULL,  # store random.action
-    policy = NULL, # a function to return action, generated from a function factory 
+    policy = NULL,  # a function to return action, generated from a function factory 
+    memIns2StringDecorator = function(x) {x},  # replay instance to string, will be customized in child class
     initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
        self$conf = conf
        self$glogger = glogger
@@ -24,19 +25,22 @@ AgentDQN = R6Class("AgentDQN",
         self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
         self$mem$dt[self$mem$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
         self$mem$updatePriority()
-        filename = file.path(self$conf$static$performance$filePrefix,"dt.csv")
-        #write.table(self$mem$dt[self$mem$replayed.idx, ], file = filename)
-        write.csv(self$mem$dt[self$mem$replayed.idx, ], file = filename)
+        filename.replay = file.path(self$conf$static$performance$filePrefix,"replay.dt.csv")
+        filename.experience = file.path(self$conf$static$performance$filePrefix,"experience.dt.csv")
+        write.csv(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)
+        write.csv(self$mem$dt, file = filename.experience, append = FALSE)
     },
 
     replay = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
+        for(i in self$mem$replayed.idx) {
+          self$glogger$log.nn$info("%s", self$memIns2StringDecorator(self$mem$samples[[i]]))
+        }
         list.states = lapply(list.res, ReplayMem$extractOldState)
         list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience
         x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
         y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
-        # y = array_reshape(y, dim = c(1L, dim(y)))
         self$brain$train(x, y)  # update the policy model
         self$updateDT(x, y)
     },

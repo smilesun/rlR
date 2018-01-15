@@ -7,9 +7,9 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     glogger = NULL,
     yhat = NULL, 
     conf = NULL,
-    ins2String = function(x){},   # function
+    ins2String = function(x){},   # function must be defined in this way
     decorate = function(x){x},  # transform the  action space since some Gym environment has non-continous feasible actions
-    initialize = function(brain, mem, actCnt, decorator = function(x){x}) {  # mem is an ReplayMem object
+    initialize = function(brain, mem, actCnt, decorator = function(x){x}) {
       self$brain = brain
       self$mem = mem
       self$actCnt = actCnt
@@ -18,12 +18,12 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     # transform observation to  the replay memory
     observe = function(state.old, action, reward, state.new, action.new = NULL, delta = NULL, context = NULL) {
-      # state, action, accumulated reward
       ins = ReplayMem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = NULL)
       delta = self$calculateTDError(ins)
       ins$delta = delta
-      ins$deltaOfdelta = NA  #FIXME:  is there a better number ? 
-      ins$deltaOfdeltaPercentage = NA  # FIXME: is there a better number?
+      ins$deltaOfdelta = NA
+      ins$deltaOfdeltaPercentage = NA
+      ins$context = context  # for extension
       self$glogger$log.nn$info("agentbase: observing new experience tuple:sars_delta_delta2_delta2_percent :%s", self$ins2String(ins))
       self$mem$add(ins)
     },
