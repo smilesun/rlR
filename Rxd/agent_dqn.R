@@ -27,7 +27,7 @@ AgentDQN = R6Class("AgentDQN",
         self$mem$updatePriority()
         filename.replay = file.path(self$conf$static$performance$filePrefix,"replay.dt.csv")
         filename.experience = file.path(self$conf$static$performance$filePrefix,"experience.dt.csv")
-        write.csv(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)
+        write.csv(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)  # In write.csv(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay,  ... :attempt to set 'append' ignored
         write.csv(self$mem$dt, file = filename.experience, append = FALSE)
     },
 

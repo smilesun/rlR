@@ -19,7 +19,8 @@ ReplayMem = R6Class("ReplayMem",
       self$len = self$len + 1L
       mcolnames = names(unlist(ins))
       mdt = data.table(t(unlist(ins)))
-      mdt[, c("priorityAbs", "priorityRank", "priorityDelta2") := c(NA,NA,NA)]
+      mdt[, c("priorityAbs", "priorityRank", "priorityDelta2") := c(NA, NA, NA)]  # warning
+      # In `[.data.table`(mdt, , `:=`(c("priorityAbs", "priorityRank",  ... : Supplied 3 items to be assigned to 1 items of column 'priorityAbs' (2 unused)
       # mdt[, c("priorityAbs", "priorityRank", "priorityDelta2")] = c(NA,NA,NA)
       self$dt = rbindlist(list(self$dt, mdt))
       self$updatePriority()
@@ -117,7 +118,7 @@ ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
     },
     sample.fun = function(k) {
       k = min(k, self$len)
-      self$replayed.idx = sample.int(self$len, prob = self$dt$priorityAbs)[1L:k]
+      self$replayed.idx = sample.int(self$len, prob = self$dt$priorityAbs)[1L:k]   # FIXME: programe stoppped execution once self$dt$priorityAbs has NA
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
     }
