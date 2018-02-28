@@ -13,8 +13,6 @@ makeDefaultConfig = function() {
   return(conf)
 }
 
-
-
 test_gym_pg = function(maxiter = 50L) {
   probe = gymEnvFactory("MountainCar-v0")
   rl.agent = AgentPG$new(actionCnt = probe$actCnt, stateCnt = probe$stateCnt)
@@ -22,14 +20,9 @@ test_gym_pg = function(maxiter = 50L) {
   interact$run()
 }
 
-
-test_gym_dqn = function() {
-  interact = makeGymExperiment(conf = makeDefaultConfig())
-  perf = interact$run()
-}
-
 # ensure this test case work every time code  is changed
 regressiontest_mountaincar_dqn_work = function() {  
-  interact = makeGymExperiment(conf = makeDefaultConfig(), observer = FALSE)
+  interact = makeGymExperiment(conf = makeDefaultConfig())
   perf = interact$run()
 } 
+

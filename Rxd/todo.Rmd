@@ -5,3 +5,4 @@
 - implement entropy as a criteria for exploration?
 - analyze which instance has been selected throughout the replay and propose balanced replay strategy or important sampling.
 - implement video games in python to R shiny
+- record experience into video
