@@ -1,6 +1,19 @@
 #' @examples
 #' not run
 #' source("rl_h.R")
+makeDefaultConfig = function() {
+  RLConf$update("gym", "scenarioname", "MountainCar-v0")
+  RLConf$update("interact", "maxiter", 50L)
+  RLConf$update("agent", "EPSILON", 0.01)
+  RLConf$update("agent", "replayBatchSize", 5L)
+  RLConf$update("agent", "memname", "latest")
+  RLConf$update("agent", "policy", "epsilonGreedy")
+  RLConf$update("nn", "archname", "mountaincar-linear-noreg")
+  conf = RLConf$new()
+  return(conf)
+}
+
+
 
 test_gym_pg = function(maxiter = 50L) {
   probe = gymEnvFactory("MountainCar-v0")
@@ -11,33 +24,12 @@ test_gym_pg = function(maxiter = 50L) {
 
 
 test_gym_dqn = function() {
-# RLConf$update("agent", "agentname", "A3C")
-  RLConf$update("gym", "scenarioname", "MountainCar-v0")
-  RLConf$update("interact", "maxiter", 50L)
-  RLConf$update("agent", "EPSILON", 0.01)
-  RLConf$update("agent", "replayBatchSize", 5L)
-  RLConf$update("agent", "memname", "latestprob")
-  RLConf$update("agent", "policy", "probEpsilon")
-  RLConf$update("nn", "archname", "mountaincar-linear-noreg")
-
-  conf = RLConf$new()
-  interact = makeGymExperiment(conf = conf)
-  #interact = makeGymExperimentObserver()
+  interact = makeGymExperiment(conf = makeDefaultConfig())
   perf = interact$run()
-  browser()
 }
 
-# always make this test case work every time you  change the code 
+# ensure this test case work every time code  is changed
 regressiontest_mountaincar_dqn_work = function() {  
-  RLConf$update("gym", "scenarioname", "MountainCar-v0")
-  RLConf$update("interact", "maxiter", 50L)
-  RLConf$update("agent", "EPSILON", 0.01)
-  RLConf$update("agent", "replayBatchSize", 5L)
-  RLConf$update("agent", "memname", "latest")
-  RLConf$update("agent", "policy", "epsilonGreedy")
-  RLConf$update("nn", "archname", "mountaincar-linear-noreg")
-  conf = RLConf$new()
-  interact = makeGymExperiment(conf = conf)
+  interact = makeGymExperiment(conf = makeDefaultConfig(), observer = FALSE)
   perf = interact$run()
-  browser()
 } 

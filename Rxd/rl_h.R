@@ -1,3 +1,4 @@
+# this file is temporary before a package is made
 library(checkmate)
 library(aslib)
 library(data.table)
@@ -18,7 +19,7 @@ source("environment_base.R")
 source("environment_gym.R")
 source("interaction_base.R")
 source("interaction_observer.R")
-source("interaction_gym.R")
+source("obsolete_interaction_gym.R")
 source("logging.R")
 source("replaymem.R")
 source("stl.R")

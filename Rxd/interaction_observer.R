@@ -10,14 +10,17 @@ InteractionObserver = R6Class("InteractionObserver",
     continue.flag = NULL,
     episode.over.flag = NULL,
     vec.epi = NULL,
-    initialize = function(rl.env, rl.agent) {
+    conf = NULL,
+    initialize = function(rl.env, rl.agent, conf, glogger) {
+      self$conf = conf
+      self$glogger = glogger
       self$continue.flag = TRUE
       self$episode.over.flag = FALSE
       self$perf = Performance$new()
       self$rl.agent = rl.agent
       self$rl.env = rl.env
       self$vec.epi = vector(mode = "numeric", length = 200L)  # gym episode stops at 200
-      self$list.observers = list(
+      self$list.observers = list(  # first set default initialization and could be changed later
         "beforeAct" = list(
             hh = function() {
               self$rl.env$env$render() 
@@ -31,7 +34,7 @@ InteractionObserver = R6Class("InteractionObserver",
               self$rl.agent$observe(self$s.old, self$action, self$s_r_done_info[[2L]], self$s_r_done_info[[1L]])
               self$vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
               self$idx.step = self$idx.step + 1L
-              self$rl.agent$replay(RLConf$static$agent$replayBatchSize)
+              self$rl.agent$replay(self$conf$static$agent$replayBatchSize)
               self$checkEpisodeOver()
             })
         )
@@ -46,10 +49,11 @@ InteractionObserver = R6Class("InteractionObserver",
           self$perf$list.reward.epi[[self$perf$epi.idx]] = vector(mode = "list")
           self$perf$list.reward.epi[[self$perf$epi.idx]] = self$vec.epi[1L:self$idx.step]   # the reward vector
           self$glogger$log.root$info("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step)
+          cat(sprintf("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step))  # same message to console
           self$idx.step = 0L
           self$episode.over.flag = FALSE
           self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step -1L  # the number of steps
-          if(self$idx.episode > RLConf$static$interact$maxiter) {
+          if(self$idx.episode > self$conf$static$interact$maxiter) {
             self$continue.flag = FALSE }
     }},
 
@@ -61,7 +65,7 @@ InteractionObserver = R6Class("InteractionObserver",
       }},
 
     run = function() {
-      # self$notify("beforeRun")
+      # self$notify("beforeRun")  #FIXME: maybe initialization in the future
       self$s_r_done_info = self$rl.env$reset()
       tryCatch({
         while(self$continue.flag) {

@@ -1,0 +1,7 @@
+- Shiny app for visualizing Atari Games
+- Compare the performance of post-learning and online learning
+- instance selection in replay instead of variable selection?
+- implementing different backends
+- implement entropy as a criteria for exploration?
+- analyze which instance has been selected throughout the replay and propose balanced replay strategy or important sampling.
+- implement video games in python to R shiny

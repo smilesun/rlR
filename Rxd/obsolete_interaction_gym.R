@@ -1,3 +1,4 @@
+# Obsolete, please use InteractionObserver instead
 GymInteraction = R6Class("GymInteraction",
   inherit = Interaction,
   public = list(

@@ -11,18 +11,15 @@ gymEnvFactory = function(name ="CartPole-v0") {
 }
 
 
-makeGymExperiment = function(conf) {
+makeGymExperiment = function(conf, observer = TRUE) {
   glogger = RLLog$new(conf)
   probe = gymEnvFactory(conf$static$gym$scenarioname)
-  rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = NNArsenal$makeBrain(RLConf$static$nn$archname), memname = RLConf$static$agent$memname, policy_fun = conf$static$agent$policy, glogger = glogger, conf = conf)
+  rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = NNArsenal$makeBrain(conf$static$nn$archname), memname = conf$static$agent$memname, policy_fun = conf$static$agent$policy, glogger = glogger, conf = conf)
+  if(observer) {
+  interact = InteractionObserver$new(rl.env = probe$env, rl.agent = rl.agent, glogger = glogger, conf = conf) }
+  else {
   interact = GymInteraction$new(rl.env = probe$env, rl.agent = rl.agent, maxiter = conf$static$interact$maxiter, glogger = glogger, conf = conf)
-  return(interact)
   }
-
-makeGymExperimentObserver = function(conf = RLConf) {
-    probe = gymEnvFactory(conf$static$gym$scenarioname)
-    rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = NNArsenal$makeBrain(RLConf$static$nn$archname))
-    interact = InteractionObserver$new(rl.env = probe$env, rl.agent = rl.agent)
-    return(interact)
+  return(interact)
   }
 
