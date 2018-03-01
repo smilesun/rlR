@@ -1,4 +1,5 @@
 - Shiny app for visualizing Atari Games
+- Shiny app for visualization of state value space and action value space
 - Compare the performance of post-learning and online learning
 - instance selection in replay instead of variable selection?
 - implementing different backends
