@@ -27,6 +27,8 @@ RLLog = R6Class("RLLog",
       self$log.root$info(filePrefix)  # take down the directory name
       info = paste0("\n", conf$static[["performance"]]$info.before, conf$static$performance$filePrefix, conf$static[["performance"]]$info.after)
       self$log.root$info(info)
+    },
+    toConsole = function(...) {
     }
     )
 )

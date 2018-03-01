@@ -20,9 +20,9 @@ Performance = R6Class("Performance",
     toString = function() {
       self$list.rewardPerEpisode = reward.perEpisode = lapply(self$list.reward.epi, function(x) sum(x))
       self$rewardPerStep = unlist(self$list.rewardPerEpisode)/unlist(self$list.stepsPerEpisode)
-      print("steps per episode:")
-      print(self$list.stepsPerEpisode)
-      print(self$rewardPerStep)
+      self$glogger$toConsole("steps per episode: \n", self$list.stepsPerEpisode)
+      self$glogger$toConsole("reward per step per episode: \n", self$rewardPerStep)
+      self$glogger$toConsole("total reward per episode: \n", self$rewardPerEpisode)
     },
 
     observe = function() {

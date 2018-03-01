@@ -1,3 +1,8 @@
+```{r}
+library(roxygen2)
+roxygenize()
+```
+
 ```
 setwd("Rxd")
 source("rl_h.R")
