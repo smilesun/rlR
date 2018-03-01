@@ -16,7 +16,7 @@ InteractionObserver = R6Class("InteractionObserver",
       self$glogger = glogger
       self$continue.flag = TRUE
       self$episode.over.flag = FALSE
-      self$perf = Performance$new()
+      self$perf = Performance$new(glogger)
       self$rl.agent = rl.agent
       self$rl.env = rl.env
       self$vec.epi = vector(mode = "numeric", length = 200L)  # gym episode stops at 200
@@ -76,7 +76,7 @@ InteractionObserver = R6Class("InteractionObserver",
         } # while 
         return(self$perf)
     }, finally = {
-      self$perf$toString()
+      self$perf$toString()   # print out performance
       self$rl.env$env$render(close = TRUE)
     }) # try catch
     } # function

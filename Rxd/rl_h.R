@@ -1,6 +1,5 @@
 # this file is temporary before a package is made
 library(checkmate)
-library(aslib)
 library(data.table)
 library(R6) 
 library(reticulate)
@@ -11,6 +10,10 @@ library(openssl)
 library(ggplot2)
 library(reshape2)
 library(formattable)
+list.libs.imports = c("checkmate", "data.table", "R6", "reticulate", "keras", "logging", "BBmisc", "openssl", "ggplot2", "reshape2", "formattable")
+list.libs.suggest = c("checkmate", "data.table", "BBmisc", "openssl", "ggplot2", "reshape2", "formattable")
+lapply(list.libs.imports, function(x) devtools::use_package(x))
+lapply(list.libs.imports, function(x) devtools::use_package(x, "Suggest"))
 
 source("conf.R")
 source("nnArsenal.R")

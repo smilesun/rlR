@@ -19,18 +19,17 @@ ReplayMem = R6Class("ReplayMem",
       self$len = self$len + 1L
       mcolnames = names(unlist(ins))
       mdt = data.table(t(unlist(ins)))
-      mdt[, c("priorityAbs", "priorityRank", "priorityDelta2") := c(NA, NA, NA)]  # warning
-      # In `[.data.table`(mdt, , `:=`(c("priorityAbs", "priorityRank",  ... : Supplied 3 items to be assigned to 1 items of column 'priorityAbs' (2 unused)
-      # mdt[, c("priorityAbs", "priorityRank", "priorityDelta2")] = c(NA,NA,NA)
+      dt.temp = data.table("priorityAbs" = NA, "priorityRank" = NA, "priorityDelta2" = NA)  # FIXME: is there a way to predefine this somewhere else instead of hard coded here?
+      mdt = cbind(mdt,dt.temp)
       self$dt = rbindlist(list(self$dt, mdt))
       self$updatePriority()
     },
 
     
     updatePriority = function() {
-      self$dt$priorityAbs = (abs(self$dt[,delta]) + RLConf$static$agent$memLaplaceSmoother)
-      self$dt$priorityRank = order(self$dt$delta)
-      self$dt$priorityDelta2 = abs(self$dt[,deltaOfdelta])
+      self$dt[, "priorityAbs"] = (abs(self$dt[,"delta"]) + self$conf$static$agent$memLaplaceSmoother)
+      self$dt[, "priorityRank"] = order(self$dt[,"delta"])
+      self$dt[, "priorityDelta2"] = abs(self$dt[,"deltaOfdelta"])
     }
     ),
   private = list(),

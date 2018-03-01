@@ -6,8 +6,10 @@ Performance = R6Class("Performance",
     list.discountedRPerEpisode = NULL,
     list.stepsPerEpisode = NULL,
     epi.idx = NULL,
+    glogger = NULL,
 
-    initialize = function() {
+    initialize = function(glogger) {
+      self$glogger = glogger
       self$list.reward.epi = list()
       self$epi.idx = 0L
       self$list.rewardPerEpisode = list()
@@ -20,6 +22,7 @@ Performance = R6Class("Performance",
       self$rewardPerStep = unlist(self$list.rewardPerEpisode)/unlist(self$list.stepsPerEpisode)
       print("steps per episode:")
       print(self$list.stepsPerEpisode)
+      print(self$rewardPerStep)
     },
 
     observe = function() {
