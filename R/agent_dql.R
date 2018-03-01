@@ -1,4 +1,11 @@
+#' @title 
+#' 
+#' @description
 #' Q_u(S, a; \theta_1) = r + Q_u(S', argmax_a' Q_h(S',a'), \theta_1) + delta
+#' @return returndes
+#' @export 
+#' @examples 
+#' x=c(1,2,3) 
 AgentDQL = R6Class("AgentDQL",
   inherit = AgentDQN,
   public = list(

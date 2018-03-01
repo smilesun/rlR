@@ -1,3 +1,11 @@
+#' @title 
+#' 
+#' @description
+#' 
+#' @return returndes
+#' @export 
+#' @examples 
+#' x=c(1,2,3) 
 AgentPG = R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(

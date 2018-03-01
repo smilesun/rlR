@@ -1,3 +1,11 @@
+#' @title 
+#' 
+#' @description
+#' 
+#' @return returndes
+#' @export 
+#' @examples 
+#' x=c(1,2,3) 
 RLConf = R6Class("Conf",
   public = list(
     static = NULL,

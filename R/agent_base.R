@@ -1,3 +1,11 @@
+#' @title 
+#' 
+#' @description
+#' 
+#' @return returndes
+#' @export 
+#' @examples 
+#' x=c(1,2,3) 
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     epsilon = NULL,
