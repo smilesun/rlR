@@ -1,9 +1,16 @@
-- Shiny app for visualizing Atari Games
+# Theoretical part
+- how to evaluate the exploration? Entropy based method
+- Implement entropy as a criteria for exploration
+- instance selection in replay instead of variable selection? analyze which instance has been selected throughout the replay and propose balanced replay strategy or important sampling.
+
+# Practical part
+- consistent database for storing experience
 - Shiny app for visualization of state value space and action value space
-- Compare the performance of post-learning and online learning
-- instance selection in replay instead of variable selection?
-- implementing different backends
-- implement entropy as a criteria for exploration?
-- analyze which instance has been selected throughout the replay and propose balanced replay strategy or important sampling.
-- implement video games in python to R shiny
+- Compare the performance of post-learning(mlr) and online learning
+- Shiny app for visualizing Atari Games(python/R integration)
 - record experience into video
+- implementing different backends (GPU)
+- the store persitence and reapplication of the brain
+
+# Hard topic
+- tensor polydidadic decomposition to $Q(s,a,t)$
