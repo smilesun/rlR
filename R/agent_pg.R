@@ -9,11 +9,13 @@
 AgentPG = R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
-    initialize = function(actionCnt, stateCnt) {  
-      self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4PG)
-      self$mem = ReplayMem$factory("latest")()
+    initialize = function(actionCnt, stateCnt, memname, policy_fun, glogger, conf) {
+      self$stateCnt = stateCnt
       self$actCnt = actionCnt
-    },
+      self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4PG)
+      self$mem = ReplayMem$factory(memname)(conf = conf)
+      self$policy = PolicyFactory$make(policy_fun, self)
+},
 
     # sample according to the current policy network
     act = function(state) {
@@ -55,6 +57,3 @@ AgentPG = R6Class("AgentPG",
     )
   )
 
-AgentPG$test = function() {
-
-}

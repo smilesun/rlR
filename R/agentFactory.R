@@ -7,13 +7,29 @@
 #' @examples 
 #' x=c(1,2,3) 
 AgentFactory = R6Class("AgentFactory")
-AC3Builder = function(actCnt = NULL, stateCnt = NULL, surro_fun = NULL, memname = NULL, policy_fun = NULL, glogger = NULL, conf) {
+
+DQNBuilder = function(actCnt, stateCnt, glogger, conf) { 
+  glogger = RLLog$new(conf)
+  memname = conf$static$agent$memname
+  policy_fun = conf$static$agent$policy
+  surro_fun = NNArsenal$makeBrain(conf$static$nn$archname)
+  AgentDQN$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf)
+}
+
+PGBuilder = function(actCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
+  AgentPG$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf)
+}
+
+
+AC3Builder = function(actCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
   AgentActorCritic$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf)
 }
 
+DQLBuilder = function(actCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) AgentDQL$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf)
+
 AgentFactory$static = list(
-  "DQN" = function(actCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) AgentDQN$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf),
-  "DQL" = function(actCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) AgentDQL$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf),
+  "DQN" = DQNBuilder,
+  "DQL" = DQLBuilder,
   "A3C" = AC3Builder)
 
 AgentFactory$genAgent = function(name) {

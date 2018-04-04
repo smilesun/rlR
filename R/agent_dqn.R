@@ -1,6 +1,7 @@
 AgentDQN = R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
+    epsilon = NULL,
     vec.arm.q = NULL,      # store Q value for each arm
     random.action = NULL,  # store random.action
     policy = NULL,  # a function to return action, generated from a function factory 

@@ -34,13 +34,9 @@ gymEnvFactory = function(name ="CartPole-v0") {
 #' @examples 
 #' x=c(1,2,3) 
 makeGymExperiment = function(conf) {
-  glogger = RLLog$new(conf)
-  memname = conf$static$agent$memname
-  policy_fun = conf$static$agent$policy
-  surro_fun = NNArsenal$makeBrain(conf$static$nn$archname)
   probe = gymEnvFactory(conf$static$gym$scenarioname)
-  rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf)
-  interact = InteractionObserver$new(rl.env = probe$env, rl.agent = rl.agent, glogger = glogger, conf = conf) 
+  rl.agent = AgentFactory$genAgent(conf$static$agent$agentname)(actCnt = probe$actCnt, stateCnt = probe$stateCnt, conf = conf)
+  interact = InteractionObserver$new(rl.env = probe$env, rl.agent = rl.agent, glogger = rl.agent$glogger, conf = conf) 
   return(interact)
 }
 

@@ -11,8 +11,8 @@ AgentActorCritic = R6Class("AgentActorCritic",
   public = list(
     brain_actor = NULL,  # cross entropy loss
     brain_critic = NULL, # mse loss
-    initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun) {
-      super$initialize(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy")
+    initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
+      super$initialize(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy", glogger = glogger, conf = conf)
       self$brain_actor = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4PG)
       self$brain_critic = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4SV) # single output
       },
@@ -35,7 +35,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
           next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
           next.V = self$brain_critic$pred(next.state)
           r = ReplayMem$extractReward(ins)
-          y = r + RLConf$static$agent$GAMMA * next.V
+          y = r + self$conf$static$agent$GAMMA * next.V
           return(y)
       },
 
@@ -48,7 +48,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
           next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
           critic.next.v = self$brain_critic$pred(next.state)
           r = ReplayMem$extractReward(ins)
-          advantage = r + RLConf$static$agent$GAMMA * critic.next.v - critic.old.v
+          advantage = r + self$conf$static$agent$GAMMA * critic.next.v - critic.old.v
           vec.act = rep(0L,self$actCnt)
           vec.act[act + 1L] = 1L # the not active action will have exact label
           # target = advantage * array(target, dim = c(1L,self$actCnt)) ? why this ever work with out target defined before?

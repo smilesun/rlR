@@ -8,20 +8,29 @@
 #' x=c(1,2,3) 
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
-    epsilon = NULL,
-    brain = NULL,  # a table or a function approximator to represent the value function
-    mem = NULL,  # replay memory
+    # constructor init
     actCnt = NULL,
-    glogger = NULL,
-    yhat = NULL, 
     conf = NULL,
-    ins2String = function(x){},   # function must be defined in this way
-    decorate = function(x){x},  # transform the  action space since some Gym environment has non-continous feasible actions
-    initialize = function(brain, mem, actCnt, decorator = function(x){x}) {
-      self$brain = brain
-      self$mem = mem
-      self$actCnt = actCnt
-      self$decorate = decorator  # some Gym scenario have noncontinous actions
+    # built from conf
+    glogger = NULL,
+    mem = NULL,  # replay memory
+    policy = NULL,
+    # for init in other child class
+    brain = NULL,  # a table or a function approximator to represent the value function
+    yhat = NULL,  # bellman equation estimation
+    # member function
+    ins2String = function(x){x},   # function must be defined in this way
+    decorator = function(x){x},  # transform the  action space since some Gym environment has non-continous feasible actions
+    # constructor
+    initialize = function(actCnt, conf) {
+      self$actCnt = actionCnt
+      self$conf = conf
+      #
+      self$glogger = RLLog$new(conf)
+      memname = conf$static$agent$memname
+      self$mem = ReplayMem$factory(memname)(conf = conf)
+      policy_fun = conf$static$agent$policy
+      self$policy = PolicyFactory$make(policy_fun, self)
     },
 
     # transform observation to  the replay memory
