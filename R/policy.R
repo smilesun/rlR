@@ -1,3 +1,4 @@
+# host is the agent
 PolicyFactory = R6Class("PolicyFactory")
 PolicyFactory$epsilonPolicy = function(state = NULL, host) {
       if(runif(1L) < host$epsilon) {

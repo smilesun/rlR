@@ -1,20 +1,13 @@
 AgentDQN = R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
-    epsilon = NULL,
-    vec.arm.q = NULL,      # store Q value for each arm
+    epsilon = NULL,  # policy_fun currently do not have this parameter
     random.action = NULL,  # store random.action
-    policy = NULL,  # a function to return action, generated from a function factory 
-    memIns2StringDecorator = function(x) {x},  # replay instance to string, will be customized in child class
-    initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
-       self$conf = conf
-       self$glogger = glogger
-       self$vec.arm.q = vector(mode = "numeric", length = actionCnt) 
-       self$epsilon = conf$static$agent$fixedEpsilon
-       self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = surro_fun)
-       self$mem = ReplayMem$factory(memname)(conf = conf)
-       self$actCnt = actionCnt
-       self$policy = PolicyFactory$make(policy_fun, self)
+    initialize = function(actCnt, stateCnt, conf) {
+       super$initialize(actCnt, stateCnt, conf)
+       self$epsilon = self$conf$static$agent$fixedEpsilon
+       surro_fun = NNArsenal$makeBrain(self$conf$static$nn$archname)
+       self$brain = SurroDQN$new(actionCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun)
     },
 
     updateDT = function(x,y) {
@@ -37,7 +30,7 @@ AgentDQN = R6Class("AgentDQN",
         list.res = self$mem$sample.fun(batchsize)
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
         for(i in self$mem$replayed.idx) {
-          self$glogger$log.nn$info("%s", self$memIns2StringDecorator(self$mem$samples[[i]]))
+          self$glogger$log.nn$info("%s", self$mem$samples[[i]])
         }
         list.states = lapply(list.res, ReplayMem$extractOldState)
         list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience

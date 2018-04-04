@@ -1,11 +1,12 @@
 # several base class that do not have too many lines of code
 Surrogate= R6Class("Surrogate",
   public = list(
-      actionCnt = NULL,
+      actCnt = NULL,
       stateCnt = NULL,
+      createModel = NULL,
       model = NULL,
-    initialize = function(actionCnt, stateCnt) {
-      self$actionCnt = actionCnt
+    initialize = function(actionCnt, stateCnt, createModel) {
+      self$actCnt = actionCnt
       self$stateCnt = stateCnt
       self$model = self$createModel(input_shape = stateCnt, output_shape = actionCnt)  # proxy method
     },

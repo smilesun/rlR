@@ -10,7 +10,9 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
     actCnt = NULL,
+    stateCnt = NULL,
     conf = NULL,
+    vec.arm.q = NULL,      # store Q value for each arm
     # built from conf
     glogger = NULL,
     mem = NULL,  # replay memory
@@ -20,11 +22,13 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     yhat = NULL,  # bellman equation estimation
     # member function
     ins2String = function(x){x},   # function must be defined in this way
-    decorator = function(x){x},  # transform the  action space since some Gym environment has non-continous feasible actions
+    armremap = function(x){x},  # transform the  action space since some Gym environment has non-continous feasible actions
     # constructor
-    initialize = function(actCnt, conf) {
-      self$actCnt = actionCnt
+    initialize = function(actCnt, stateCnt, conf) {
+      self$actCnt = actCnt
+      self$stateCnt = stateCnt
       self$conf = conf
+      self$vec.arm.q = vector(mode = "numeric", length = self$actCnt) 
       #
       self$glogger = RLLog$new(conf)
       memname = conf$static$agent$memname

@@ -8,12 +8,8 @@
 #' x=c(1,2,3) 
 AgentFactory = R6Class("AgentFactory")
 
-DQNBuilder = function(actCnt, stateCnt, glogger, conf) { 
-  glogger = RLLog$new(conf)
-  memname = conf$static$agent$memname
-  policy_fun = conf$static$agent$policy
-  surro_fun = NNArsenal$makeBrain(conf$static$nn$archname)
-  AgentDQN$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf)
+DQNBuilder = function(actCnt, stateCnt, conf) { 
+  AgentDQN$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
 }
 
 PGBuilder = function(actCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
