@@ -1,9 +1,7 @@
 # define default hyper-parameters
-RLConf$static = list()
+RLConfDefault = list()
 
-
-
-RLConf$static[["agent"]] = list(
+RLConfDefault[["agent"]] = list(
 agentname = "DQN",
 replayBatchSize = 5L,   # for uniform sampling
 GAMMA = 0.99,  # Degradation factor
@@ -16,27 +14,27 @@ calTD = FALSE,
 memLaplaceSmoother = 0.001  # avoid divide by zero error
 )
 
-RLConf$static[["gym"]] = list(
+RLConfDefault[["gym"]] = list(
   scenarioname = "MountainCar-v0",
   render = TRUE  ## disable this for benchmark
 )
 
-RLConf$static[["interact"]] = list(
+RLConfDefault[["interact"]] = list(
   maxiter = 1000L,
   save.flag = TRUE
 )
 
-RLConf$static[["nn"]] = list (
+RLConfDefault[["nn"]] = list (
   EPOCH = 1L,   # how many epoch to apply for each training
   archname = "mountaincar-linear-noreg"
 )
 
 # The following fields do not affect performance
-RLConf$static[["performance"]] = list(
+RLConfDefault[["performance"]] = list(
 resultTbPath = "Perf.RData"  #  will be put under ROOTFOLDERNAME
 )
 
-RLConf$static[["logging"]] = list(
+RLConfDefault[["logging"]] = list(
 ROOTFOLDERNAME = "../logout",
 LOGGERNAMENN = 'nn.logger',
 LOGGERNAMERL = 'rl.logger',

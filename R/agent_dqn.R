@@ -56,7 +56,7 @@ AgentDQN = R6Class("AgentDQN",
         vec.next.Q = self$brain$pred(next.state)
         a_1 = which.max(vec.next.Q)  # action index start from 1L
         r = ReplayMem$extractReward(ins)
-        target = r + RLConf$static$agent$GAMMA * max(vec.next.Q)
+        target = r + self$conf$static$agent$GAMMA * max(vec.next.Q)
         mt = p.old
         mt[a_1] = target  # the not active action will have exact label
         return(mt)

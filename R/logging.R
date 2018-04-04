@@ -6,7 +6,7 @@ RLLog = R6Class("RLLog",
     conf = NULL, 
     # the configuration of logging does not impact the performance, so use global configuration
     initialize = function(conf) {   
-      conf.logging = RLConf$fetchConf("logging") 
+      conf.logging = conf$fetchConf("logging") 
       self$log.root = getLogger(conf.logging$LOGGERNAMERL)
       self$log.nn = getLogger(conf.logging$LOGGERNAMENN)
       str.conf = toString(conf$static)  # experiment specific configuration
