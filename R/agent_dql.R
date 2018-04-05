@@ -12,10 +12,11 @@ AgentDQL = R6Class("AgentDQL",
     brain2 = NULL,
     brain_u = NULL,  # u: to be updated
     brain_h = NULL,  # h: to help
-    initialize = function(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy") {
-      super$initialize(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy")
-      self$brain2 = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = surro_fun)
-      },
+    initialize = function(actCnt, stateCnt, conf) {
+      super$initialize(actCnt, stateCnt, conf)
+      surro_fun = NNArsenal$makeBrain(self$conf$static$nn$archname)
+      self$brain2 = SurroDQN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun)
+    },
 
       toss = function() {
         if(runif(1L) < 0.5) {
@@ -35,13 +36,21 @@ AgentDQL = R6Class("AgentDQL",
           x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
           y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
           self$brain_u$train(x, y)  # update the policy model
+          self$updateDT(x, y)
       },
 
-    calculateTDError = function(state.old, action, reward, state.new) {
-      v.old = self$brain_u$pred(state.old)
+    #calculateTDError = function(state.old, action, reward, state.new) {
+    calculateTDError = function(ins) {
+      state.old = ins$state.old
+      action = ins$action
+      reward = ins$reward
+      state.new = ins$state.new
+      state.old.tra = array_reshape(state.old, dim = c(1L, dim(state.old)))
+      v.old = self$brain_u$pred(state.old.tra)
       ins = ReplayMem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = NULL)
-      target = extractTarget(ins)
+      target = self$extractTarget(ins)
       delta =  target - v.old
+      delta = sqrt(mean((delta)^2))
       return(delta)
     },
 
@@ -55,7 +64,7 @@ AgentDQL = R6Class("AgentDQL",
           vec.next.Q.h = self$brain_h$pred(next.state)
           a_1 = which.max(vec.next.Q.u)  # action index start from 1L
           r = ReplayMem$extractReward(ins)
-          target = r + RLConf$static$agent$GAMMA * vec.next.Q.h[a1]
+          target = r + self$conf$static$agent$GAMMA * vec.next.Q.h[a_1]
           mt = yhat
           mt[a_1] = target  # the not active action will have exact label
         return(mt)

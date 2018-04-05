@@ -1,3 +1,6 @@
+# pitfall
+- note that when using  neural network, there is multiple output and the error is only compared on one bit of this output
+
 # Cart-pole
 - Observable space (4 scalars here indicating the angle of the pole, the position of the cart, the velocity of angular and translation)
 ```{python}

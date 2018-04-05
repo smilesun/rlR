@@ -1,29 +1,10 @@
 AgentDQN = R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
-    epsilon = NULL,  # policy_fun currently do not have this parameter
-    random.action = NULL,  # store random.action
     initialize = function(actCnt, stateCnt, conf) {
        super$initialize(actCnt, stateCnt, conf)
-       self$epsilon = self$conf$static$agent$fixedEpsilon
        surro_fun = NNArsenal$makeBrain(self$conf$static$nn$archname)
-       self$brain = SurroDQN$new(actionCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun)
-    },
-
-    updateDT = function(x,y) {
-        yhat = self$brain$pred(x)
-        updatedTDError = rowSums((yhat - y)^2)
-        old.delta = self$mem$dt[self$mem$replayed.idx, "delta"] 
-        self$mem$dt[self$mem$replayed.idx, "delta"] = updatedTDError
-        #
-        self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
-        self$mem$dt[self$mem$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
-        self$mem$updatePriority()
-        filename.replay = file.path(self$conf$static$performance$filePrefix,"replay.dt.csv")
-        filename.experience = file.path(self$conf$static$performance$filePrefix,"experience.dt.csv")
-        write.table(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)  # FIXME: In write.csv(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay,  ... :attempt to set 'append' ignored
-        # FIXME: use MonetDBLite or SQLDBLite instead
-        write.csv(self$mem$dt, file = filename.experience, append = FALSE)
+       self$brain = SurroDQN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun)
     },
 
     replay = function(batchsize) {

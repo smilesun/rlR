@@ -2,11 +2,11 @@
 SurroDQN = R6Class("SurroDQN",
   inherit = Surrogate,
   public = list(
-    initialize = function(actionCnt, stateCnt, fun) {
-      self$actCnt = actionCnt
+    initialize = function(actCnt, stateCnt, fun) {
+      self$actCnt = actCnt
       self$stateCnt = stateCnt
       self$createModel = fun
-      self$model = self$createModel(input_shape = stateCnt, output_shape = actionCnt)  # proxy method
+      self$model = self$createModel(input_shape = self$stateCnt, output_shape = self$actCnt)  # proxy method
     },
 
 

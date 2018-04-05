@@ -9,12 +9,10 @@
 AgentPG = R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
-    initialize = function(actionCnt, stateCnt, memname, policy_fun, glogger, conf) {
-      self$stateCnt = stateCnt
-      self$actCnt = actionCnt
-      self$brain = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4PG)
-      self$mem = ReplayMem$factory(memname)(conf = conf)
-      self$policy = PolicyFactory$make(policy_fun, self)
+    advantage = NULL,
+    initialize = function(actCnt, stateCnt, conf) {
+      super$initialize(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
+      self$brain = SurroDQN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4PG)
 },
 
     # sample according to the current policy network
@@ -30,21 +28,29 @@ AgentPG = R6Class("AgentPG",
       return(ins[[2L]])
     },
 
+    # FIXME: currently this is wrong! need a way to extract advantage
+    getAdvantage = function() {
+        #list.inst = self$mem$samples[(length(self$mem$samples)-5):length(self$mem$samples)]
+        #list.rewards = lapply(list.inst, ReplayMem$extractReward)
+        #advantage = Reduce(sum, list.rewards)
+        return(1)
+    },
+
     # extract target from one instance of replay memory, which is the one hot encoded action multiplied by the advantage of this episode
-    extractTarget = function(ins, advantage) {
+    extractTarget = function(ins) {
         act = self$extractAct(ins)
         temp = rep(0L,self$actCnt)
         temp[act + 1L] =  1L
         label = array(temp, dim = c(1L,self$actCnt))
-        mt = label * advantage * (-1) # 'loss' maximization
-        return(mt)
+        self$advantage = self$getAdvantage()
+        mt = label * self$advantage * (-1) # 'loss' maximization
+        return(mt)  # mt = my target
     },
 
     replay = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
         list.states = lapply(list.res, ReplayMem$extractOldState)
-        list.rewards = lapply(list.res, ReplayMem$extractReward)
-        list.targets = lapply(list.res, self$extractTarget, advantage = Reduce(sum, list.rewards))
+        list.targets = lapply(list.res, self$extractTarget)
         x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
         y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
         # y = array_reshape(y, dim = c(1L, dim(y)))

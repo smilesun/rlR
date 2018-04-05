@@ -13,6 +13,8 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     stateCnt = NULL,
     conf = NULL,
     vec.arm.q = NULL,      # store Q value for each arm
+    random.action = NULL,  # store random.action
+    epsilon = NULL,  # policy_fun currently do not have this parameter
     # built from conf
     glogger = NULL,
     mem = NULL,  # replay memory
@@ -29,6 +31,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$stateCnt = stateCnt
       self$conf = conf
       self$vec.arm.q = vector(mode = "numeric", length = self$actCnt) 
+      self$epsilon = self$conf$static$agent$fixedEpsilon
       #
       self$glogger = RLLog$new(conf)
       memname = conf$static$agent$memname
@@ -52,6 +55,22 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     calculateTDError = function(ins) {
       vec.mt = self$extractTarget(ins)  # vector of target, self$yhat is calculated inside. Usually extractTarget is applied to a batch of x space instances and return the Bellman equation target, here it only extract one x space instance
       mean((vec.mt - self$yhat)^2)
+    },
+
+    updateDT = function(x,y) {
+        yhat = self$brain$pred(x)
+        updatedTDError = rowSums((yhat - y)^2)
+        old.delta = self$mem$dt[self$mem$replayed.idx, "delta"] 
+        self$mem$dt[self$mem$replayed.idx, "delta"] = updatedTDError
+        #
+        self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
+        self$mem$dt[self$mem$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
+        self$mem$updatePriority()
+        filename.replay = file.path(self$conf$static$performance$filePrefix,"replay.dt.csv")
+        filename.experience = file.path(self$conf$static$performance$filePrefix,"experience.dt.csv")
+        # write.table(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)  # FIXME: In write.csv(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay,  ... :attempt to set 'append' ignored
+        # FIXME: use MonetDBLite or SQLDBLite instead
+        # write.csv(self$mem$dt, file = filename.experience, append = FALSE)
     },
 
     extractTarget = function(ins) {

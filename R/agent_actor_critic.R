@@ -11,10 +11,10 @@ AgentActorCritic = R6Class("AgentActorCritic",
   public = list(
     brain_actor = NULL,  # cross entropy loss
     brain_critic = NULL, # mse loss
-    initialize = function(actionCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
-      super$initialize(actionCnt, stateCnt, surro_fun, memname = "latest", policy_fun = "epsilonGreedy", glogger = glogger, conf = conf)
-      self$brain_actor = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4PG)
-      self$brain_critic = SurroDQN$new(actionCnt = actionCnt, stateCnt = stateCnt, fun = NNArsenal$makeNN4SV) # single output
+    initialize = function(actCnt, stateCnt, conf) {
+      super$initialize(actCnt, stateCnt, conf = conf)
+      self$brain_actor = SurroDQN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4PG)
+      self$brain_critic = SurroDQN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4SV) # single output
       },
 
      replay = function(batchsize) {
@@ -58,9 +58,9 @@ AgentActorCritic = R6Class("AgentActorCritic",
 
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
-      glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
+      self$glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
       self$vec.arm.q = self$brain_actor$pred(state)
-      glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
+      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
     },
 
     sampleRandomAct = function(state) {

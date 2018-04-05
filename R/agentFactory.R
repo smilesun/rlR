@@ -8,25 +8,28 @@
 #' x=c(1,2,3) 
 AgentFactory = R6Class("AgentFactory")
 
-DQNBuilder = function(actCnt, stateCnt, conf) { 
+DQNBuilder = function(actCnt, stateCnt, conf) {   # late evaluation
   AgentDQN$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
 }
 
-PGBuilder = function(actCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
-  AgentPG$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf)
+PGBuilder = function(actCnt, stateCnt, conf) {
+  AgentPG$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
 }
 
 
-AC3Builder = function(actCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) {
-  AgentActorCritic$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf)
+AC3Builder = function(actCnt, stateCnt, conf) {
+  AgentActorCritic$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
 }
 
-DQLBuilder = function(actCnt, stateCnt, surro_fun, memname, policy_fun, glogger, conf) AgentDQL$new(actionCnt = actCnt, stateCnt = stateCnt, surro_fun = surro_fun, memname = memname, policy_fun = policy_fun, glogger = glogger, conf = conf)
+DQLBuilder = function(actCnt, stateCnt, conf) {
+  AgentDQL$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
+}
 
 AgentFactory$static = list(
   "DQN" = DQNBuilder,
-  "DQL" = DQLBuilder,
-  "A3C" = AC3Builder)
+  "DQL" = DQLBuilder, # double Q learning
+  "SPG" = PGBuilder,  # simple policy-gradient
+  "A3C" = AC3Builder) # actor critic
 
 AgentFactory$genAgent = function(name) {
   if(name %nin% names(AgentFactory$static)) stop("no such agents")
