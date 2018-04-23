@@ -15,14 +15,11 @@ SurroDQN = R6Class("SurroDQN",
     },
 
     pred = function(X) {
-      #FIXME: test if pred works for both one instance and instance matrix
-      # manipulate the dimension of the X to fit into the correponding surrogate
       res = self$model %>% predict(X)  ## predict.keras.engine.training.Model
-      res
+      res  # prediction might be NA from Keras
     }
     ),
   private = list(),
   active = list()
   )
-
 

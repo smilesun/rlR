@@ -5,12 +5,15 @@ InteractionObserver = R6Class("InteractionObserver",
     action = NULL,
     s_r_done_info  = NULL,
     list.observers = NULL,
-    idx.episode = 0, 
+    idx.episode = 0,
     idx.step = 0,
     continue.flag = NULL,
     episode.over.flag = NULL,
     vec.epi = NULL,
     conf = NULL,
+    beforeActPipe = NULL,
+    afterStepPipe = NULL,
+    list.cmd = NULL,
     initialize = function(rl.env, rl.agent, conf, glogger) {
       self$conf = conf
       self$glogger = glogger
@@ -20,28 +23,42 @@ InteractionObserver = R6Class("InteractionObserver",
       self$rl.agent = rl.agent
       self$rl.env = rl.env
       self$vec.epi = vector(mode = "numeric", length = 200L)  # gym episode stops at 200
-      self$list.observers = list(  # first set default initialization and could be changed later
-        "beforeAct" = list(
-            hh = function() {
-              self$rl.env$env$render() 
-              self$glogger$log.nn$info("in episode %d, step %d", self$idx.episode, self$idx.step)
-              self$s.old = self$s_r_done_info[[1L]]}
-        ),
-
-        "afterStep" = list(
-            hh = function() {
-              self$glogger$log.nn$info("reward %f", self$s_r_done_info[[2L]])
-              self$rl.agent$observe(self$s.old, self$action, self$s_r_done_info[[2L]], self$s_r_done_info[[1L]])
-              self$vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
-              self$idx.step = self$idx.step + 1L
-              self$rl.agent$replay(self$conf$static$agent$replayBatchSize)
-              self$checkEpisodeOver()
-            })
+      self$beforeActPipe = self$conf[["static"]][["interact"]][["beforeActPipe"]]
+      self$afterStepPipe = self$conf[["static"]][["interact"]][["afterStepPipe"]]
+      self$list.cmd = list(
+        "render" = self$rl.env$env$render,
+        "epi-step-log" = function() {
+          self$glogger$log.nn$info("in episode %d, step %d", self$idx.episode, self$idx.step)
+          self$s.old = self$s_r_done_info[[1L]]
+        },
+        "after" = function() {
+          self$glogger$log.nn$info("reward %f", self$s_r_done_info[[2L]])
+          self$rl.agent$observe(self$s.old, self$action, self$s_r_done_info[[2L]], self$s_r_done_info[[1L]])
+          self$perf$list.rewardPerEpisode
+          self$vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
+          self$idx.step = self$idx.step + 1L
+          self$checkEpisodeOver()
+        },
+        "replay" = function() {
+          self$rl.agent$replay(self$conf$static$agent$replayBatchSize)
+        },
+        "replayPerEpisode" = function() {
+          if (self$s_r_done_info[[3L]]) {
+            total.reward = sum(self$perf$list.reward.epi[[self$perf$epi.idx]])
+            total.step = unlist(self$perf$list.stepsPerEpisode)[self$perf$epi.idx]
+            adg = total.reward / total.step
+            self$rl.agent$setAdvantage(adg)
+            self$rl.agent$replay(total.step)   # key difference here
+          }
+        })
+      self$list.observers = list(
+        "beforeAct" = self$list.cmd[self$beforeActPipe],
+        "afterStep" = self$list.cmd[self$afterStepPipe]
         )
     },
 
     checkEpisodeOver = function() {
-        if(self$s_r_done_info[[3L]]) {
+        if (self$s_r_done_info[[3L]]) {
           self$perf$epi.idx = self$perf$epi.idx + 1L
           self$episode.over.flag = TRUE
           self$idx.episode = self$idx.episode + 1L
@@ -50,30 +67,30 @@ InteractionObserver = R6Class("InteractionObserver",
           self$perf$list.reward.epi[[self$perf$epi.idx]] = self$vec.epi[1L:self$idx.step]   # the reward vector
           self$glogger$log.root$info("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step)
           cat(sprintf("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step))  # same message to console
+          self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step - 1L  # the number of steps
           self$idx.step = 0L
           self$episode.over.flag = FALSE
-          self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step -1L  # the number of steps
-          if(self$idx.episode > self$conf$static$interact$maxiter) {
-            self$continue.flag = FALSE }
+          if (self$idx.episode > self$conf$static$interact$maxiter) {
+            self$continue.flag = FALSE
+          }
     }},
 
     notify = function(name) {
-      if(name %nin% names(self$list.observers)) stop("not defined observer")
+      if (name %nin% names(self$list.observers)) stop("not defined observer")
       obslist = self$list.observers[[name]]
-      for(method in names(obslist)) {
+      for (method in names(obslist)) {
          do.call(obslist[[method]], args = list())
       }},
 
     run = function() {
-      # self$notify("beforeRun")  #FIXME: maybe initialization in the future
       self$s_r_done_info = self$rl.env$reset()
       tryCatch({
-        while(self$continue.flag) {
+        while (self$continue.flag) {
           self$notify("beforeAct")
           self$action = self$rl.agent$act(self$s.old)
           self$s_r_done_info = self$rl.env$step(as.integer(self$action))
           self$notify("afterStep")
-        } # while 
+        }
         return(self$perf)
     }, finally = {
       self$perf$toString()   # print out performance

@@ -1,44 +1,52 @@
 # define default hyper-parameters
-RLConfDefault = list()
-
-RLConfDefault[["agent"]] = list(
+Conf4DQN = list()
+Conf4DQN[["agent"]] = list(
 agentname = "DQN",
-replayBatchSize = 5L,   # for uniform sampling
-GAMMA = 0.99,  # Degradation factor
+replayBatchSize = 5L,
+GAMMA = 0.99,
 EPSILON = 1.0,
-fixedEpsilon = 0.01,  # one time configuration, without being varied
-decay = exp(-1.0/10), # half time is 10 time step to 0.3678, after 30 steps, it is 0.049787
+fixedEpsilon = 0.01,
+decay = exp(-1.0 / 10),
 memname = "priorityAbs",
 policy = "policy.predProbRank",
 calTD = FALSE,
 memLaplaceSmoother = 0.001  # avoid divide by zero error
 )
 
-RLConfDefault[["gym"]] = list(
+Conf4DQN[["gym"]] = list(
   scenarioname = "MountainCar-v0",
   render = TRUE  ## disable this for benchmark
 )
 
-RLConfDefault[["interact"]] = list(
+Conf4DQN[["interact"]] = list(
   maxiter = 1000L,
-  save.flag = TRUE
+  save.flag = TRUE,
+  beforeActPipe = c("render", "epi-step-log"),
+  afterStepPipe = c("after", "replay")
 )
 
-RLConfDefault[["nn"]] = list (
+Conf4DQN[["nn"]] = list(
   EPOCH = 1L,   # how many epoch to apply for each training
   archname = "mountaincar-linear-noreg"
 )
 
 # The following fields do not affect performance
-RLConfDefault[["performance"]] = list(
+Conf4DQN[["performance"]] = list(
 resultTbPath = "Perf.RData"  #  will be put under ROOTFOLDERNAME
 )
 
-RLConfDefault[["logging"]] = list(
-ROOTFOLDERNAME = "../logout",
-LOGGERNAMENN = 'nn.logger',
-LOGGERNAMERL = 'rl.logger',
-NNSufix = 'nn.log',
-RLSufix = 'rl.log'
+Conf4DQN[["logging"]] = list(
+ROOTFOLDERNAME = "logout",
+LOGGERNAMENN = "nn.logger",
+LOGGERNAMERL = "rl.logger",
+NNSufix = "nn.log",
+RLSufix = "rl.log"
 )
+
+
+
+
+# define default hyper-parameters
+RLConfDefault = list()
+RLConfDefault[["dqn"]] = Conf4DQN
 

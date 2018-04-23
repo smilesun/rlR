@@ -19,30 +19,28 @@ AgentPG = R6Class("AgentPG",
     act = function(state) {
       assert(class(state) == "array")
       state = array_reshape(state, c(1L, dim(state)))
-      vec.q = self$brain$pred(state)
-      sample(x = 0L:(self$actCnt-1L), size = 1L, replace = TRUE, prob = vec.q)
+      vec.q = self$brain$pred(state) #FIXME: NA output
+      act = sample(x = 0L:(self$actCnt - 1L), size = 1L, replace = TRUE, prob = vec.q)
+      self$glogger$log.nn$info("act index %d taken(0)", act)
+      return(act)
     },
-    
+
     # extract action from replay memory
     extractAct = function(ins) {
       return(ins[[2L]])
     },
 
-    # FIXME: currently this is wrong! need a way to extract advantage
-    getAdvantage = function() {
-        #list.inst = self$mem$samples[(length(self$mem$samples)-5):length(self$mem$samples)]
-        #list.rewards = lapply(list.inst, ReplayMem$extractReward)
-        #advantage = Reduce(sum, list.rewards)
-        return(1)
+    setAdvantage = function(adv) {
+      self$advantage = adv
     },
 
     # extract target from one instance of replay memory, which is the one hot encoded action multiplied by the advantage of this episode
     extractTarget = function(ins) {
         act = self$extractAct(ins)
-        temp = rep(0L,self$actCnt)
+        temp = rep(0L, self$actCnt)
         temp[act + 1L] =  1L
-        label = array(temp, dim = c(1L,self$actCnt))
-        self$advantage = self$getAdvantage()
+        label = array(temp, dim = c(1L, self$actCnt))
+        # self$advantage = self$getAdvantage()
         mt = label * self$advantage * (-1) # 'loss' maximization
         return(mt)  # mt = my target
     },

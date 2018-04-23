@@ -68,9 +68,9 @@ NNArsenal$makeNN4PG = function(input_shape, output_shape) {
         # "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim)
         # dim in keras is row major
         model %>%
-          layer_dense(units = 64, activation = 'relu', input_shape = c(input_shape)) %>%
+          layer_dense(units = 64, activation = 'relu', input_shape = c(input_shape), kernel_regularizer = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1)) %>%
           layer_dense(units = output_shape, activation = 'softmax')
-        model$compile(loss = 'categorical_crossentropy', optimizer = optimizer_rmsprop())
+        model$compile(loss = 'categorical_crossentropy', optimizer = optimizer_rmsprop(lr = 0.0025))
         # the only different is that for Policy gradient,the loss must to cross_entropy
         return(model)
 }

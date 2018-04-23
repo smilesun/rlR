@@ -1,11 +1,11 @@
-#' @title 
-#' 
+#' @title
+#'
 #' @description
-#' 
+#'
 #' @return returndes
-#' @export 
-#' @examples 
-#' x=c(1,2,3) 
+#' @export
+#' @examples
+#' x=c(1,2,3)
 AgentActorCritic = R6Class("AgentActorCritic",
   inherit = AgentPG,
   public = list(
@@ -49,18 +49,18 @@ AgentActorCritic = R6Class("AgentActorCritic",
           critic.next.v = self$brain_critic$pred(next.state)
           r = ReplayMem$extractReward(ins)
           advantage = r + self$conf$static$agent$GAMMA * critic.next.v - critic.old.v
-          vec.act = rep(0L,self$actCnt)
+          vec.act = rep(0L, self$actCnt)
           vec.act[act + 1L] = 1L # the not active action will have exact label
           # target = advantage * array(target, dim = c(1L,self$actCnt)) ? why this ever work with out target defined before?
-          target = advantage * array(vec.act, dim = c(1L,self$actCnt))
+          target = advantage * array(vec.act, dim = c(1L, self$actCnt))
           return(target)
     },
 
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
-      self$glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
+      self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
       self$vec.arm.q = self$brain_actor$pred(state)
-      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
+      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
     },
 
     sampleRandomAct = function(state) {
@@ -72,7 +72,6 @@ AgentActorCritic = R6Class("AgentActorCritic",
       self$evaluateArm(state)
       action = self$policy(state)
       return(action)
-      # return(self.decorate(action))
     }
     ), # public
   private = list(),

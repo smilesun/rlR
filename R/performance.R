@@ -18,11 +18,12 @@ Performance = R6Class("Performance",
     },
 
     toString = function() {
-      self$list.rewardPerEpisode = reward.perEpisode = lapply(self$list.reward.epi, function(x) sum(x))
-      self$rewardPerStep = unlist(self$list.rewardPerEpisode)/unlist(self$list.stepsPerEpisode)
-      self$glogger$toConsole("steps per episode: \n", self$list.stepsPerEpisode)
-      self$glogger$toConsole("reward per step per episode: \n", self$rewardPerStep)
-      self$glogger$toConsole("total reward per episode: \n", self$rewardPerEpisode)
+      s1 = sprintf("steps per episode:%s \n", toString(self$list.stepsPerEpisode))
+      self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))
+      s2 = sprintf("total reward per episode: %s \n", toString(self$list.rewardPerEpisode))
+      self$rewardPerStep = unlist(self$list.rewardPerEpisode) / unlist(self$list.stepsPerEpisode)
+      s3 = sprintf("reward per step per episode:%s \n", toString(self$rewardPerStep))
+      paste(s1, s2, s3)
     },
 
     observe = function() {
@@ -31,5 +32,4 @@ Performance = R6Class("Performance",
     ),
   private = list(),
   active = list())
-
 

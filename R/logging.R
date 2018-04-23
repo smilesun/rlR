@@ -14,7 +14,7 @@ RLLog = R6Class("RLLog",
       str.time = toString(Sys.time())
       str.time = gsub(" ","_",str.time)
       str.date = toString(Sys.Date())
-      filePrefix = file.path(getwd(), conf.logging$ROOTFOLDERNAME, str.date, hash.conf, str.time)
+      filePrefix = file.path(getwd(), conf.logging$ROOTFOLDERNAME, str.date, str.time, hash.conf)
       cat(sprintf("logout file path %s", filePrefix))
       conf$static$performance$filePrefix = filePrefix
       conf$static$performance$resultTbPath =  file.path(filePrefix, conf$static$performance$resultTbPath)  # RData file persistence place

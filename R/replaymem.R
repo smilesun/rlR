@@ -117,7 +117,11 @@ ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
     },
     sample.fun = function(k) {
       k = min(k, self$len)
+      if (any(is.na(self$dt$priorityAbs))) {
+        self$replayed.idx = sample.int(self$len)
+      } else {
       self$replayed.idx = sample.int(self$len, prob = self$dt$priorityAbs)[1L:k]   # FIXME: programe stoppped execution once self$dt$priorityAbs has NA
+      }
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
     }
