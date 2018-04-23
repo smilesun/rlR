@@ -25,7 +25,6 @@ AgentActorCritic = R6Class("AgentActorCritic",
           x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
           y_actor = array(unlist(list.targets.actor), dim = c(length(list.targets.actor), self$actCnt))
           y_critic = array(unlist(list.targets.critic), dim = c(length(list.targets.critic), self$actCnt))
-          # y = array_reshape(y, dim = c(1L, dim(y)))
           self$brain_actor$train(x, y_actor)  # update the policy model
           self$brain_critic$train(x, y_critic)  # update the policy model
       },

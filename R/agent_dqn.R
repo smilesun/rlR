@@ -10,7 +10,7 @@ AgentDQN = R6Class("AgentDQN",
     replay = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
-        for(i in self$mem$replayed.idx) {
+        for (i in self$mem$replayed.idx) {
           self$glogger$log.nn$info("%s", self$mem$samples[[i]])
         }
         list.states = lapply(list.res, ReplayMem$extractOldState)
@@ -39,9 +39,9 @@ AgentDQN = R6Class("AgentDQN",
 
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
-      self$glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
+      self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
       self$vec.arm.q = self$brain$pred(state)
-      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
+      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
     },
 
     sampleRandomAct = function(state) {

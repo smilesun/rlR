@@ -1,11 +1,11 @@
-#' @title 
-#' 
+#' @title
+#'
 #' @description
-#' 
+#'
 #' @return returndes
-#' @export 
-#' @examples 
-#' x=c(1,2,3) 
+#' @export
+#' @examples
+#' x=c(1,2,3)
 AgentPG = R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
@@ -19,7 +19,7 @@ AgentPG = R6Class("AgentPG",
     act = function(state) {
       assert(class(state) == "array")
       state = array_reshape(state, c(1L, dim(state)))
-      vec.q = self$brain$pred(state) #FIXME: NA output
+      vec.q = self$brain$pred(state)
       act = sample(x = 0L:(self$actCnt - 1L), size = 1L, replace = TRUE, prob = vec.q)
       self$glogger$log.nn$info("act index %d taken(0)", act)
       return(act)
@@ -40,7 +40,6 @@ AgentPG = R6Class("AgentPG",
         temp = rep(0L, self$actCnt)
         temp[act + 1L] =  1L
         label = array(temp, dim = c(1L, self$actCnt))
-        # self$advantage = self$getAdvantage()
         mt = label * self$advantage * (-1) # 'loss' maximization
         return(mt)  # mt = my target
     },
@@ -51,7 +50,6 @@ AgentPG = R6Class("AgentPG",
         list.targets = lapply(list.res, self$extractTarget)
         x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
         y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
-        # y = array_reshape(y, dim = c(1L, dim(y)))
         self$brain$train(x, y)  # update the policy model
     }
 
