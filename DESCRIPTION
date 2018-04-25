@@ -18,8 +18,8 @@ Imports:
     logging,
     BBmisc,
     openssl,
-    ggplot2,
     reshape2,
+    settings,
     formattable
 LazyData: true
 RoxygenNote: 6.0.1

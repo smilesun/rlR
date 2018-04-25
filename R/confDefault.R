@@ -1,52 +1,29 @@
 # define default hyper-parameters
-Conf4DQN = list()
-Conf4DQN[["agent"]] = list(
-agentname = "DQN",
-replayBatchSize = 5L,
-GAMMA = 0.99,
-EPSILON = 1.0,
-fixedEpsilon = 0.01,
-decay = exp(-1.0 / 10),
-memname = "priorityAbs",
-policy = "policy.predProbRank",
-calTD = FALSE,
-memLaplaceSmoother = 0.001  # avoid divide by zero error
+rlR.conf.default = list(
+agent.name = "DQN",
+agent.archname = "mountaincar",
+agent.gamma = 0.99,
+policy.epsilon = 0.01,
+policy.decay = exp(-1.0 / 10),
+policy.name = "epsilonGreedy",
+replay.memname = "latest",
+replay.batchsize = 5L,
+replay.mem.laplace.smoother = 0.001,
+replay.epoch = 1L,
+interact.scenarioname = "MountainCar-v0",
+interact.render = TRUE,
+interact.maxiter = 1000L,
+interact.beforeActPipe = c("render", "epi-step-log"),
+interact.afterStepPipe = c("after", "replay")
 )
 
-Conf4DQN[["gym"]] = list(
-  scenarioname = "MountainCar-v0",
-  render = TRUE  ## disable this for benchmark
-)
+rlR.conf.avail = names(rlR.conf.default)
 
-Conf4DQN[["interact"]] = list(
-  maxiter = 1000L,
-  save.flag = TRUE,
-  beforeActPipe = c("render", "epi-step-log"),
-  afterStepPipe = c("after", "replay")
-)
-
-Conf4DQN[["nn"]] = list(
-  EPOCH = 1L,   # how many epoch to apply for each training
-  archname = "mountaincar-linear-noreg"
-)
-
-# The following fields do not affect performance
-Conf4DQN[["performance"]] = list(
-resultTbPath = "Perf.RData"  #  will be put under ROOTFOLDERNAME
-)
-
-Conf4DQN[["logging"]] = list(
+rlR.conf4log = list(
+resultTbPath = "Perf.RData",  #  will be put under ROOTFOLDERNAME
 ROOTFOLDERNAME = "logout",
 LOGGERNAMENN = "nn.logger",
 LOGGERNAMERL = "rl.logger",
 NNSufix = "nn.log",
 RLSufix = "rl.log"
 )
-
-
-
-
-# define default hyper-parameters
-RLConfDefault = list()
-RLConfDefault[["dqn"]] = Conf4DQN
-

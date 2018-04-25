@@ -37,9 +37,9 @@ PolicyFactory$policy.predsoftmax = function(state, host) {
 
 # all suboptimal arm probability sum up to epsilon with probability epsilon/actCnt
 PolicyFactory$probEpsilon = function(state, host) {
-      prob = rep(RLConf$static$agent$fixedEpsilon, host$actCnt)/(host$actCnt)
+      prob = rep(host$conf$get("policy.epsilon"), host$actCnt)/(host$actCnt)
       optarm = which.max(host$vec.arm.q)
-      prob[optarm] = prob[optarm] + 1.0 - RLConf$static$agent$fixedEpsilon
+      prob[optarm] = prob[optarm] + 1.0 - host$conf$get("policy.epsilon")
       action  = sample.int(host$actCnt, prob = prob)[1L] -  1L
       return(action)
 }

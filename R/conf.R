@@ -11,11 +11,15 @@ RLConf = R6Class("Conf",
     static = NULL,
 
     initialize = function(name = "dqn") {
-      self$static = data.table::copy(RLConfDefault[[name]])  # deep copy
+      self$static = data.table::copy(rlR.conf.default)  # deep copy
     },
 
-    updatePara = function(str.namespace, str.para, val.value) {
-      self$static[[str.namespace]][[str.para]] = val.value
+    get = function(name) {
+      self$static[[name]]
+    },
+
+    updatePara = function(str.para, val.value) {
+      self$static[[str.para]] = val.value
     },
 
     show = function() {

@@ -34,7 +34,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
           next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
           next.V = self$brain_critic$pred(next.state)
           r = ReplayMem$extractReward(ins)
-          y = r + self$conf$static$agent$GAMMA * next.V
+          y = r + self$conf$get("agent.gamma") * next.V
           return(y)
       },
 
@@ -47,7 +47,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
           next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
           critic.next.v = self$brain_critic$pred(next.state)
           r = ReplayMem$extractReward(ins)
-          advantage = r + self$conf$static$agent$GAMMA * critic.next.v - critic.old.v
+          advantage = r + self$conf$get("agent.gamma") * critic.next.v - critic.old.v
           vec.act = rep(0L, self$actCnt)
           vec.act[act + 1L] = 1L # the not active action will have exact label
           # target = advantage * array(target, dim = c(1L,self$actCnt)) ? why this ever work with out target defined before?

@@ -6,7 +6,7 @@ RLLog = R6Class("RLLog",
     conf = NULL, 
     # the configuration of logging does not impact the performance, so use global configuration
     initialize = function(conf) {   
-      conf.logging = conf$fetchConf("logging") 
+      conf.logging = data.table::copy(rlR:::rlR.conf4log)
       self$log.root = getLogger(conf.logging$LOGGERNAMERL)
       self$log.nn = getLogger(conf.logging$LOGGERNAMENN)
       str.conf = toString(conf$static)  # experiment specific configuration
@@ -16,8 +16,8 @@ RLLog = R6Class("RLLog",
       str.date = toString(Sys.Date())
       filePrefix = file.path(getwd(), conf.logging$ROOTFOLDERNAME, str.date, str.time, hash.conf)
       cat(sprintf("logout file path %s", filePrefix))
-      conf$static$performance$filePrefix = filePrefix
-      conf$static$performance$resultTbPath =  file.path(filePrefix, conf$static$performance$resultTbPath)  # RData file persistence place
+      conf.logging$filePrefix = filePrefix
+      conf.logging$resultTbPath =  file.path(filePrefix, conf.logging$resultTbPath)  # RData file persistence place
       dir.create(filePrefix, recursive = TRUE)
       addHandler(writeToFile, file = file.path(filePrefix, conf.logging$RLSufix), logger = conf.logging$LOGGERNAMERL)
       removeHandler("writeToConsole", logger = conf.logging$LOGGERNAMENN)
@@ -25,7 +25,7 @@ RLLog = R6Class("RLLog",
       addHandler(writeToFile, file = file.path(filePrefix,conf.logging$NNSufix), logger = conf.logging$LOGGERNAMENN)
       self$log.root$info(str.conf)
       self$log.root$info(filePrefix)  # take down the directory name
-      info = paste0("\n", conf$static[["performance"]]$info.before, conf$static$performance$filePrefix, conf$static[["performance"]]$info.after)
+      info = paste0("\n", conf.logging$info.before, conf.logging$filePrefix, conf.logging$info.after)
       self$log.root$info(info)
     },
     toConsole = function(...) {

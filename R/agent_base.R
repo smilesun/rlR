@@ -19,6 +19,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     glogger = NULL,
     mem = NULL,  # replay memory
     policy = NULL,
+    gamma = NULL,
     # for init in other child class
     brain = NULL,  # a table or a function approximator to represent the value function
     yhat = NULL,  # bellman equation estimation
@@ -31,12 +32,13 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$stateCnt = stateCnt
       self$conf = conf
       self$vec.arm.q = vector(mode = "numeric", length = self$actCnt) 
-      self$epsilon = self$conf$static$agent$fixedEpsilon
+      self$epsilon = self$conf$get("policy.epsilon")
+      self$gamma = self$conf$get("agent.gamma")
       #
       self$glogger = RLLog$new(conf)
-      memname = conf$static$agent$memname
+      memname = conf$get("replay.memname")
       self$mem = ReplayMem$factory(memname)(conf = conf)
-      policy_fun = conf$static$agent$policy
+      policy_fun = conf$get("policy.name")
       self$policy = PolicyFactory$make(policy_fun, self)
     },
 
@@ -66,8 +68,8 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
         self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
         self$mem$dt[self$mem$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
         self$mem$updatePriority()
-        filename.replay = file.path(self$conf$static$performance$filePrefix,"replay.dt.csv")
-        filename.experience = file.path(self$conf$static$performance$filePrefix,"experience.dt.csv")
+        filename.replay = file.path(rlR.conf4log$filePrefix,"replay.dt.csv")
+        filename.experience = file.path(rlR.conf4log$filePrefix,"experience.dt.csv")
         # write.table(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)  # FIXME: In write.csv(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay,  ... :attempt to set 'append' ignored
         # FIXME: use MonetDBLite or SQLDBLite instead
         # write.csv(self$mem$dt, file = filename.experience, append = FALSE)
@@ -78,7 +80,10 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     },
 
     #' model update only works
-    
+    setAdvantage = function(adg) {
+
+    },
+
     replay = function(batchsize) {
         stop("not implemented")
     }

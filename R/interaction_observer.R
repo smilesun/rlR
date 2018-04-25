@@ -23,8 +23,8 @@ InteractionObserver = R6Class("InteractionObserver",
       self$rl.agent = rl.agent
       self$rl.env = rl.env
       self$vec.epi = vector(mode = "numeric", length = 200L)  # gym episode stops at 200
-      self$beforeActPipe = self$conf[["static"]][["interact"]][["beforeActPipe"]]
-      self$afterStepPipe = self$conf[["static"]][["interact"]][["afterStepPipe"]]
+      self$beforeActPipe = self$conf$get("interact.beforeActPipe")
+      self$afterStepPipe = self$conf$get("interact.afterStepPipe")
       self$list.cmd = list(
         "render" = self$rl.env$env$render,
         "epi-step-log" = function() {
@@ -40,7 +40,7 @@ InteractionObserver = R6Class("InteractionObserver",
           self$checkEpisodeOver()
         },
         "replay" = function() {
-          self$rl.agent$replay(self$conf$static$agent$replayBatchSize)
+          self$rl.agent$replay(self$conf$get("replay.batchsize"))
         },
         "replayPerEpisode" = function() {
           if (self$s_r_done_info[[3L]]) {
@@ -70,7 +70,7 @@ InteractionObserver = R6Class("InteractionObserver",
           self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step - 1L  # the number of steps
           self$idx.step = 0L
           self$episode.over.flag = FALSE
-          if (self$idx.episode > self$conf$static$interact$maxiter) {
+          if (self$idx.episode > self$conf$get("interact.maxiter")) {
             self$continue.flag = FALSE
           }
     }},

@@ -27,7 +27,7 @@ ReplayMem = R6Class("ReplayMem",
 
     
     updatePriority = function() {
-      self$dt[, "priorityAbs"] = (abs(self$dt[,"delta"]) + self$conf$static$agent$memLaplaceSmoother)
+      self$dt[, "priorityAbs"] = (abs(self$dt[,"delta"]) + self$conf$get("replay.mem.laplace.smoother"))
       self$dt[, "priorityRank"] = order(self$dt[,"delta"])
       self$dt[, "priorityDelta2"] = abs(self$dt[,"deltaOfdelta"])
     }

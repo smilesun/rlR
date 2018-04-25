@@ -3,7 +3,7 @@ AgentDQN = R6Class("AgentDQN",
   public = list(
     initialize = function(actCnt, stateCnt, conf) {
        super$initialize(actCnt, stateCnt, conf)
-       surro_fun = NNArsenal$makeBrain(self$conf$static$nn$archname)
+       surro_fun = NNArsenal$makeBrain(self$conf$get("agent.archname"))
        self$brain = SurroDQN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun)
     },
 
@@ -31,7 +31,7 @@ AgentDQN = R6Class("AgentDQN",
         vec.next.Q = self$brain$pred(next.state)
         a_1 = which.max(vec.next.Q)  # action index start from 1L
         r = ReplayMem$extractReward(ins)
-        target = r + self$conf$static$agent$GAMMA * max(vec.next.Q)
+        target = r + self$gamma * max(vec.next.Q)
         mt = p.old
         mt[a_1] = target  # the not active action will have exact label
         return(mt)

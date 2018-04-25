@@ -25,37 +25,53 @@
 # length(temp) = 8
 # Rank: the number of dimensions needed to represent a tensor
 # Shape:  c(1,2,3) for rank 3
+# "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim), dim in keras is row major
+  # model = keras_model_sequential()
+  # model %>%
+  #   layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape)) %>%
+  #   layer_dense(units = output_shape, activation = 'linear')
+  # model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
+  # return(model)
+  # model = keras_model_sequential()
+  # model %>%
+  #   layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape), kernel_regularizer = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1)) %>%
+  #   layer_dense(units = output_shape, activation = 'linear', kernel_regularizer
+  #     = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1))
+  # model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
+  # return(model)
 
- 
+
+makeKerasModel =  function(nhidden = 64, input_shape =2, output_shape =2, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.0025) {
+  expr = sprintf("model = keras_model_sequential();model %%>%%layer_dense(units = %d, activation = '%s', input_shape = c(%d)) %%>%%layer_dense(units = %d, activation = '%s');model$compile(loss = '%s', optimizer = optimizer_rmsprop(lr = %f)); model", nhidden, act1, input_shape, output_shape, act2, loss, lr)
+  eval(parse(text = expr))
+}
+
+makeKerasModel2 =  function(nhidden = 64, input_shape =2, output_shape =2, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.0025, kernel_regularizer = "regularizer_l2(l=0.01)", bias_regularizer = "regularizer_l2(l=0.1)") {
+  expr = sprintf("model = keras_model_sequential();model %%>%%layer_dense(units = %d, activation = '%s', input_shape = c(%d), kernel_regularizer = %s, bias_regularizer = %s) %%>%%layer_dense(units = %d, activation = '%s');model$compile(loss = '%s', optimizer = optimizer_rmsprop(lr = %f)); model", nhidden, act1, input_shape, kernel_regularizer, bias_regularizer, output_shape, act2, loss, lr)
+  eval(parse(text = expr))
+}
+
+
+
 
 NNArsenal = R6Class("NNArsenal")
 
-NNArsenal$createModel_mountainCar = function(input_shape, output_shape) {
-  model = keras_model_sequential()
-  # "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim), dim in keras is row major
-  model %>%
-    layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape)) %>%
-    layer_dense(units = output_shape, activation = 'linear')
-  model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
-  return(model)
+NNArsenal$mountaincar = function(input_shape, output_shape) {
+  makeKerasModel(input_shape = input_shape, output_shape = output_shape)
 }
 
-NNArsenal$createModel_mountainCar_regu = function(input_shape, output_shape) {
-  model = keras_model_sequential()
-  # "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim), dim in keras is row major
-  model %>%
-    layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape), kernel_regularizer = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1)) %>%
-    layer_dense(units = output_shape, activation = 'linear', kernel_regularizer
-      = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1))
-  model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
-  return(model)
+NNArsenal$mountainCar_regu = function(input_shape, output_shape) {
+  makeKerasModel2(input_shape = input_shape, output_shape = output_shape)
+}
+
+NNArsenal$cartpole = function(input_shape, output_shape) {
+  makeKerasModel(nhidden = 128, input_shape = input_shape, output_shape = output_shape)
 }
 
 NNArsenal$makeNN4SV = function(input_shape, output_shape = 1L) {
   model = keras_model_sequential()
-  # "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim), dim in keras is row major
   model %>%
-    layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape), kernel_regularizer = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1)) %>%
+    layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape), kernel_regularizer = regularizer_l2(l = 0.01)) %>%
     layer_dense(units = output_shape, activation = 'linear', kernel_regularizer
       = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1))
   model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
@@ -65,46 +81,17 @@ NNArsenal$makeNN4SV = function(input_shape, output_shape = 1L) {
 
 NNArsenal$makeNN4PG = function(input_shape, output_shape) {
         model = keras_model_sequential()
-        # "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim)
         # dim in keras is row major
         model %>%
-          layer_dense(units = 64, activation = 'relu', input_shape = c(input_shape), kernel_regularizer = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1)) %>%
+          layer_dense(units = 64, activation = 'relu', input_shape = c(input_shape), kernel_regularizer = regularizer_l2(l = 0.01)) %>%
           layer_dense(units = output_shape, activation = 'softmax')
         model$compile(loss = 'categorical_crossentropy', optimizer = optimizer_rmsprop(lr = 0.0025))
         # the only different is that for Policy gradient,the loss must to cross_entropy
         return(model)
 }
 
-
-
-
-NNArsenal$createModel_mountainCar_relu = function(input_shape, output_shape) {
-  model = keras_model_sequential()
-  # "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim), dim in keras is row major
-  model %>%
-    layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape)) %>%
-    layer_dense(units = output_shape, activation = 'relu')
-  model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
-  return(model)
-}
-
-NNArsenal$createModel2 = function(input_shape, output_shape, firstLayer = list(unit = 64, activation ="relu")) {
-  model = keras_model_sequential()
-  # "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim), dim in keras is row major
-  model %>% 
-    layer_dense(units = firstLayer$unit, activation = firstLayer$activation, input_shape = c(input_shape)) %>%
-    layer_dense(units = output_shape, activation = 'linear')
-  model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.001))
-  return(model)
-}
-
-NNArsenal$static = list(
-  "mountaincar-linear-noreg" = NNArsenal$createModel_mountainCar, 
-  "mountaincar-linear-reg" = NNArsenal$createModel_mountainCar_regu, 
-  "mountaincar-relu-noreg" =  NNArsenal$createModel_mountainCar_relu)
-
 NNArsenal$makeBrain = function(name) {
-  if(name %nin% names(NNArsenal$static)) stop("no such architecture yet")
-  return(NNArsenal$static[[name]])
+  if (name %nin% names(NNArsenal)) stop("no such architecture yet")
+  return(NNArsenal[[name]])
 }
 
