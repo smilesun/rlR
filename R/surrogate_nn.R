@@ -1,17 +1,16 @@
 # FIXME: epoch is always 1L now
-SurroDQN = R6Class("SurroDQN",
+SurroNN = R6Class("SurroNN",
   inherit = Surrogate,
   public = list(
-    initialize = function(actCnt, stateCnt, fun) {
+    initialize = function(actCnt, stateCnt, fun, ...) {
       self$actCnt = actCnt
       self$stateCnt = stateCnt
-      self$createModel = fun
-      self$model = self$createModel(input_shape = self$stateCnt, output_shape = self$actCnt)  # proxy method
+      self$createModel.fun = fun
+      self$model = self$createModel.fun(input_shape = self$stateCnt, output_shape = self$actCnt, ...)  # proxy method
     },
 
-
     train = function(X_train, Y_train, epochs = 1L) {
-      fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
+      keras::fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
     },
 
     pred = function(X) {

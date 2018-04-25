@@ -15,8 +15,9 @@ PolicyFactory$greedyPolicy = function(state, host) {
 
 PolicyFactory$policy.epsilonGreedy = function(state, host) {
       action = PolicyFactory$greedyPolicy(state, host)
-      if(PolicyFactory$epsilonPolicy(state, host)) {
+      if (PolicyFactory$epsilonPolicy(state, host)) {
         action = host$random.action
+        host$glogger$log.nn$info("random action: %d", action)
       }
       return(action)
     }
@@ -37,23 +38,15 @@ PolicyFactory$policy.predsoftmax = function(state, host) {
 
 # all suboptimal arm probability sum up to epsilon with probability epsilon/actCnt
 PolicyFactory$probEpsilon = function(state, host) {
-      prob = rep(host$conf$get("policy.epsilon"), host$actCnt)/(host$actCnt)
+      prob = rep(host$epsilon, host$actCnt) / (host$actCnt)
       optarm = which.max(host$vec.arm.q)
-      prob[optarm] = prob[optarm] + 1.0 - host$conf$get("policy.epsilon")
+      prob[optarm] = prob[optarm] + 1.0 - host$epsilon
       action  = sample.int(host$actCnt, prob = prob)[1L] -  1L
       return(action)
 }
 
-PolicyFactory$static = list(
-  "greedy" =  PolicyFactory$greedyPolicy,
-  "epsilonGreedy" = PolicyFactory$policy.epsilonGreedy,
-  "policy.predProbRank" = PolicyFactory$policy.predProbRank,
-  "probEpsilon" = PolicyFactory$probEpsilon,
-  "softmax" = PolicyFactory$policy.predsoftmax
-)
-
 PolicyFactory$make = function(name, host) {
-  if(name %nin% names(PolicyFactory$static)) stop("no such policy!")
-  function(state) PolicyFactory$static[[name]](state, host)
+  if (name %nin% names(PolicyFactory)) stop("no such policy!")
+  function(state) PolicyFactory[[name]](state, host)
 }
 

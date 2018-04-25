@@ -41,7 +41,12 @@
   # return(model)
 
 
-makeKerasModel =  function(nhidden = 64, input_shape =2, output_shape =2, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.0025) {
+makeKerasModel =  function(input_shape =2, output_shape =2, arch.list) {
+  nhidden = arch.list$nhidden
+  act1 = arch.list$act1
+  act2 = arch.list$act2
+  loss = arch.list$loss
+  lr = arch.list$lr
   expr = sprintf("model = keras_model_sequential();model %%>%%layer_dense(units = %d, activation = '%s', input_shape = c(%d)) %%>%%layer_dense(units = %d, activation = '%s');model$compile(loss = '%s', optimizer = optimizer_rmsprop(lr = %f)); model", nhidden, act1, input_shape, output_shape, act2, loss, lr)
   eval(parse(text = expr))
 }
@@ -51,21 +56,11 @@ makeKerasModel2 =  function(nhidden = 64, input_shape =2, output_shape =2, act1 
   eval(parse(text = expr))
 }
 
-
-
-
 NNArsenal = R6Class("NNArsenal")
 
-NNArsenal$mountaincar = function(input_shape, output_shape) {
-  makeKerasModel(input_shape = input_shape, output_shape = output_shape)
-}
-
-NNArsenal$mountainCar_regu = function(input_shape, output_shape) {
-  makeKerasModel2(input_shape = input_shape, output_shape = output_shape)
-}
-
-NNArsenal$cartpole = function(input_shape, output_shape) {
-  makeKerasModel(nhidden = 128, input_shape = input_shape, output_shape = output_shape)
+NNArsenal$dqn = function(input_shape, output_shape, ...) {
+  arch.list = list(...)[[1]]
+  makeKerasModel(input_shape = input_shape, output_shape = output_shape, arch.list)
 }
 
 NNArsenal$makeNN4SV = function(input_shape, output_shape = 1L) {
@@ -77,7 +72,6 @@ NNArsenal$makeNN4SV = function(input_shape, output_shape = 1L) {
   model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
   return(model)
 }
-
 
 NNArsenal$makeNN4PG = function(input_shape, output_shape) {
         model = keras_model_sequential()

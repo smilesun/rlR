@@ -12,7 +12,7 @@ AgentPG = R6Class("AgentPG",
     advantage = NULL,
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
-      self$brain = SurroDQN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4PG)
+      self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4PG)
 },
 
     # sample according to the current policy network

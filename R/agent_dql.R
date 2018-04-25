@@ -15,7 +15,7 @@ AgentDQL = R6Class("AgentDQL",
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt, stateCnt, conf)
       surro_fun = NNArsenal$makeBrain(self$conf$get("agent.archname"))
-      self$brain2 = SurroDQN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun)
+      self$brain2 = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun)
     },
 
       toss = function() {

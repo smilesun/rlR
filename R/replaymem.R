@@ -12,7 +12,6 @@ ReplayMem = R6Class("ReplayMem",
       self$conf = conf
     },
 
-    # ins = ReplayMem$mkInst(...)
     add = function(ins) {        
       len = length(self$samples)
       self$samples[[len + 1L]] = ins

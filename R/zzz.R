@@ -10,4 +10,4 @@
 #' @import reshape2
 #' @import formattable
 NULL
-
+set.seed(0)

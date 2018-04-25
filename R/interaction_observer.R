@@ -31,7 +31,7 @@ InteractionObserver = R6Class("InteractionObserver",
           self$glogger$log.nn$info("in episode %d, step %d", self$idx.episode, self$idx.step)
           self$s.old = self$s_r_done_info[[1L]]
         },
-        "after" = function() {
+        "after.step" = function() {
           self$glogger$log.nn$info("reward %f", self$s_r_done_info[[2L]])
           self$rl.agent$observe(self$s.old, self$action, self$s_r_done_info[[2L]], self$s_r_done_info[[1L]])
           self$perf$list.rewardPerEpisode
@@ -73,6 +73,9 @@ InteractionObserver = R6Class("InteractionObserver",
           if (self$idx.episode > self$conf$get("interact.maxiter")) {
             self$continue.flag = FALSE
           }
+          temp = self$rl.agent$epsilon * self$conf$get("policy.decay")
+          self$rl.agent$epsilon = temp
+          cat(sprintf("Epsilon%f \n", temp))  # same message to console
     }},
 
     notify = function(name) {

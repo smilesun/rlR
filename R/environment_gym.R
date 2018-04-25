@@ -2,19 +2,37 @@ EnvGym = R6Class("EnvGym",
   inherit = Environment,
   public = list(
     env = NULL,
-    initialize = function(env) {
-      self$env = env
+    state.cheat = NULL,
+    act.cheat = NULL,
+    act_cnt = NULL,
+    state_cnt = NULL,
+    initialize = function(genv, state.cheat = identity, act.cheat = identity, actcnt = NULL) {
+      self$env = genv
+      self$state.cheat = state.cheat
+      self$act.cheat = act.cheat
+      if (is.null(actcnt)) {
+        self$act_cnt = genv$action_space$n   # get the number of actions/control bits
+      } else {
+        self$act_cnt = actcnt
+      }
+      self$state_cnt = genv$observation_space$shape[[1L]]  # get the number of state variables
+      state = genv$reset()  # only state is returned!
+      state = self$state.cheat(state)
+      self$state_cnt = length(state)
     },
 
     step = function(action) {
+      action = self$act.cheat(action)
       action = as.integer(action)
       s_r_d_info = self$env$step(action)
       names(s_r_d_info) = c("state", "reward", "done", "info")
+      s_r_d_info[["state"]] = self$state.cheat(s_r_d_info[["state"]])
       s_r_d_info
     },
 
     reset = function() {
       s = self$env$reset()
+      s = self$state.cheat(s)
       r = NULL
       return(list(s, r, FALSE, ""))
     },

@@ -4,7 +4,7 @@ AgentDQN = R6Class("AgentDQN",
     initialize = function(actCnt, stateCnt, conf) {
        super$initialize(actCnt, stateCnt, conf)
        surro_fun = NNArsenal$makeBrain(self$conf$get("agent.archname"))
-       self$brain = SurroDQN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun)
+       self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun, conf$get("agent.nn.arch"))
     },
 
     replay = function(batchsize) {
@@ -15,8 +15,12 @@ AgentDQN = R6Class("AgentDQN",
         }
         list.states = lapply(list.res, ReplayMem$extractOldState)
         list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience
-        x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
-        y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
+        # x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage, bug point is it changes the orientation of the replay memory, but works for mountain car, with batchsize 5
+        # y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
+        x = as.array(t(as.data.table(list.states)))  # array put elements columnwise
+        y = rbindlist(lapply(list.targets, as.data.table))
+        y = as.data.frame(y)
+        y = as.matrix(y)
         self$brain$train(x, y)  # update the policy model
         self$updateDT(x, y)
     },
@@ -51,7 +55,9 @@ AgentDQN = R6Class("AgentDQN",
     act = function(state) {
       assert(class(state) == "array")
       self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
-      self$policy(state)  # returning the chosen action
+      act = self$policy(state)  # returning the chosen action
+      self$glogger$log.nn$info("action: %d", act)
+      return(act)
     }
     ), # public
   private = list(),
