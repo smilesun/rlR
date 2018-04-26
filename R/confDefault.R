@@ -3,7 +3,7 @@ rlR.conf.default = list(
 agent.name = "DQN",
 agent.archname = "dqn",
 agent.gamma = 0.99,
-agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.0025),
+agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.025),
 policy.epsilon = 0.01,
 policy.decay = 1, # exp(-1.0 / 10),
 policy.name = "policy.epsilonGreedy",

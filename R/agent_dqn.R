@@ -21,6 +21,7 @@ AgentDQN = R6Class("AgentDQN",
         y = rbindlist(lapply(list.targets, as.data.table))
         y = as.data.frame(y)
         y = as.matrix(y)
+        # debug: self$brain$pred(x)
         self$brain$train(x, y)  # update the policy model
         self$updateDT(x, y)
     },

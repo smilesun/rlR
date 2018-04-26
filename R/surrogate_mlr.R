@@ -1,13 +1,19 @@
 #  use mlr to train on the replay memory
-Surro.mlr= R6Class("Surro.mlr",
+Surro.mlr = R6Class("Surro.mlr",
   inherit = Brain,
   public = list(
-    train = function(X, tname) {
-      train = makeClassifTask(data = do.call(rbind, data[1:200]), target = tname)
-      test = do.call(rbind, data[201:1179])
-## evaluation to predict optimal step ###
-      lrn = makeLearner("classif.ranger")
-      self$model = train(lrn, train)
+    initialize = function(actCnt, stateCnt, fun, ...) {
+      self$actCnt = actCnt
+      self$stateCnt = stateCnt
+      self$createModel.fun = fun
+    },
+
+    train = function(X_train, Y_train) {
+      lrn = makeLearner("regr.ranger")
+      df = cbind(Y_train, X_train)
+      colnames(df)[1] = "rlr.target"
+      mlr::makeRegrTask(data = df, target = "rlr.target")
+      self$model = train(lrn, task)
     },
 
     pred = function(X) {
