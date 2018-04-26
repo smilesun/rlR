@@ -47,3 +47,16 @@ a3c_cart_pole = function(iter = 2L) {
   return(perf)
 }
 
+mlr_mountain_car = function(iter = 1L) {
+  conf = rlR::RLConf$new()
+  conf$show()
+  conf$updatePara("agent.name", "mlr")
+  conf$updatePara("replay.batchsize", 100)
+  conf$updatePara("interact.maxiter", iter)
+  conf$updatePara("interact.render", FALSE)
+  conf$updatePara("replay.memname", "latest")
+  interact = rlR::makeGymExperiment(name = "MountainCar-v0", conf = conf, act.cheat = function(x) {if(x == 1) {return(2)}; x}, actcnt = 2)
+  perf = interact$run()
+  return(perf)
+}
+

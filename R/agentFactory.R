@@ -25,14 +25,20 @@ DQLBuilder = function(actCnt, stateCnt, conf) {
   AgentDQL$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
 }
 
+mlrBuilder = function(actCnt, stateCnt, conf) {
+  Agentmlr$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
+}
+
+
 AgentFactory$static = list(
   "DQN" = DQNBuilder,
   "DQL" = DQLBuilder, # double Q learning
   "SPG" = PGBuilder,  # simple policy-gradient
-  "A3C" = AC3Builder) # actor critic
+  "A3C" = AC3Builder, # actor critic
+  "mlr" = mlrBuilder)
 
 AgentFactory$genAgent = function(name) {
-  if(name %nin% names(AgentFactory$static)) stop("no such agents")
+  if (name %nin% names(AgentFactory$static)) stop("no such agents")
   return(AgentFactory$static[[name]])
 }
 
