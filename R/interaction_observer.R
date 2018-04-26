@@ -14,6 +14,7 @@ InteractionObserver = R6Class("InteractionObserver",
     beforeActPipe = NULL,
     afterStepPipe = NULL,
     list.cmd = NULL,
+    replay.size = NULL,
     initialize = function(rl.env, rl.agent, conf, glogger) {
       self$conf = conf
       self$glogger = glogger
@@ -22,6 +23,7 @@ InteractionObserver = R6Class("InteractionObserver",
       self$perf = Performance$new(glogger)
       self$rl.agent = rl.agent
       self$rl.env = rl.env
+      self$replay.size = self$conf$get("replay.batchsize")
       self$vec.epi = vector(mode = "numeric", length = 200L)  # gym episode stops at 200
       self$beforeActPipe = self$conf$get("interact.beforeActPipe")
       self$afterStepPipe = self$conf$get("interact.afterStepPipe")
@@ -39,8 +41,21 @@ InteractionObserver = R6Class("InteractionObserver",
           self$idx.step = self$idx.step + 1L
           self$checkEpisodeOver()
         },
+
+        "replay.perEpisode.all" = function() {
+          n = length(self$rl.agent$mem$samples)
+          if (self$s_r_done_info[[3L]]) {
+            total.reward = sum(self$perf$list.reward.epi[[self$perf$epi.idx]])
+            total.step = unlist(self$perf$list.stepsPerEpisode)[self$perf$epi.idx]
+            adg = total.reward / total.step
+            self$rl.agent$setAdvantage(adg)
+            self$rl.agent$replay(n)   # key difference here
+          }
+
+        },
+
         "replay" = function() {
-          self$rl.agent$replay(self$conf$get("replay.batchsize"))
+          self$rl.agent$replay(self$replay.size)
         },
         "replayPerEpisode" = function() {
           if (self$s_r_done_info[[3L]]) {

@@ -54,7 +54,7 @@ mlr_mountain_car = function(iter = 1L) {
   conf$updatePara("interact.maxiter", iter)
   conf$updatePara("interact.render", FALSE)
   conf$updatePara("replay.memname", "latest")
-  conf$updatePara("interact.afterStepPipe", c("after.step", "replayPerEpisode"))
+  conf$updatePara("interact.afterStepPipe", c("after.step", "replay.perEpisode.all"))
   interact = rlR::makeGymExperiment(name = "MountainCar-v0", conf = conf, act.cheat = function(x) {if(x == 1) {return(2)}; x}, actcnt = 2)
   perf = interact$run()
   return(perf)
