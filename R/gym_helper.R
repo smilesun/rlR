@@ -27,7 +27,7 @@ dqn_atari = function(iter = 1L) {
   conf$updatePara("agent.nn.arch", list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"
 ))
   conf$updatePara("policy.name", "policy.epsilonGreedy")
-  interact = rlR::makeGymExperiment(name = "TimePilot-ram-v0", conf = conf)
+  interact = rlR::makeGymExperiment(name = "KungFuMaster-ram-v0", conf = conf)
   perf = interact$run()
   return(perf)
 }
@@ -72,6 +72,21 @@ a3c_cart_pole = function(iter = 2L) {
   perf = interact$run()
   return(perf)
 }
+
+a3c_atari = function(iter = 2L) {
+  conf = rlR::RLConf$new()
+  conf$updatePara("interact.scenarioname", "CartPole-v0")
+  conf$updatePara("interact.maxiter", iter)
+  conf$updatePara("agent.name", "A3C")
+  conf$updatePara("interact.beforeActPipe", c("render", "epi-step-log"))
+  conf$updatePara("interact.afterStepPipe", c("after.step", "replayPerEpisode"))
+  interact = rlR::makeGymExperiment(name ="KungFuMaster-ram-v0", conf = conf)
+  perf = interact$run()
+  return(perf)
+}
+
+
+
 
 mlr_mountain_car = function(iter = 1L) {
   conf = rlR::RLConf$new()
