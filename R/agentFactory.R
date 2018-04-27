@@ -22,7 +22,7 @@ AC3Builder = function(actCnt, stateCnt, conf) {
 }
 
 DQLBuilder = function(actCnt, stateCnt, conf) {
-  AgentDQL$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
+  AgentDDQN$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
 }
 
 mlrBuilder = function(actCnt, stateCnt, conf) {
@@ -32,7 +32,7 @@ mlrBuilder = function(actCnt, stateCnt, conf) {
 
 AgentFactory$static = list(
   "DQN" = DQNBuilder,
-  "DQL" = DQLBuilder, # double Q learning
+  "DDQN" = DQLBuilder, # double Q learning
   "SPG" = PGBuilder,  # simple policy-gradient
   "A3C" = AC3Builder, # actor critic
   "mlr" = mlrBuilder)

@@ -6,7 +6,7 @@
 #' @export 
 #' @examples 
 #' x=c(1,2,3) 
-AgentDQL = R6Class("AgentDQL",
+AgentDDQN = R6Class("AgentDDQN",
   inherit = AgentDQN,
   public = list(
     brain2 = NULL,
@@ -14,12 +14,11 @@ AgentDQL = R6Class("AgentDQL",
     brain_h = NULL,  # h: to help
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt, stateCnt, conf)
-      surro_fun = NNArsenal$makeBrain(self$conf$get("agent.archname"))
-      self$brain2 = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun)
+      self$brain2 = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, NNArsenal$dqn)
     },
 
       toss = function() {
-        if(runif(1L) < 0.5) {
+        if (runif(1L) < 0.5) {
           self$brain_u = self$brain
           self$brain_h = self$brain2
         } else {
@@ -30,11 +29,9 @@ AgentDQL = R6Class("AgentDQL",
       },
 
       replay = function(batchsize) {
-          list.res = self$mem$sample.fun(batchsize)
-          list.states = lapply(list.res, ReplayMem$extractOldState)
-          list.targets = lapply(list.res, self$extractTarget)
-          x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
-          y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
+          list.x.y = self$getXY(batchsize)
+          x = list.x.y$x
+          y = list.x.y$y
           self$brain_u$train(x, y)  # update the policy model
           self$updateDT(x, y)
       },

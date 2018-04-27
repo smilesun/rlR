@@ -6,7 +6,7 @@ AgentDQN = R6Class("AgentDQN",
        super$initialize(actCnt, stateCnt, conf)
        self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
     },
- 
+
     getXY = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
@@ -16,8 +16,6 @@ AgentDQN = R6Class("AgentDQN",
         list.states = lapply(list.res, ReplayMem$extractOldState)
         list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience
         self$list.acts = lapply(list.res, ReplayMem$extractAction)
-        # x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage, bug point is it changes the orientation of the replay memory, but works for mountain car, with batchsize 5
-        # y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
         x = as.array(t(as.data.table(list.states)))  # array put elements columnwise
         y = rbindlist(lapply(list.targets, as.data.table))
         y = as.data.frame(y)
@@ -27,7 +25,6 @@ AgentDQN = R6Class("AgentDQN",
 
     replay = function(batchsize) {
         list.x.y = self$getXY(batchsize)
-        # debug: self$brain$pred(x)
         x = list.x.y$x
         y = list.x.y$y
         self$brain$train(x, y)  # update the policy model
@@ -48,8 +45,7 @@ AgentDQN = R6Class("AgentDQN",
         r = ReplayMem$extractReward(ins)
         target = r + self$gamma * max(vec.next.Q)
         mt = p.old
-        #wrong:mt[a_1] = target  # the not active action will have exact label
-        mt[act2update +1L] = target  # the not active action will have exact label
+        mt[act2update + 1L] = target  # the not active action arm's Q will not be updated
         self$glogger$log.nn$info("target: %s", mt)
         return(mt)
     },

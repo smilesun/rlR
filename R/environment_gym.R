@@ -6,7 +6,7 @@ EnvGym = R6Class("EnvGym",
     act.cheat = NULL,
     act_cnt = NULL,
     state_cnt = NULL,
-    initialize = function(genv, state.cheat = identity, act.cheat = identity, actcnt = NULL) {
+    initialize = function(genv, state.cheat = identity, act.cheat = identity, actcnt = NULL, statecnt = NULL) {
       self$env = genv
       self$state.cheat = state.cheat
       self$act.cheat = act.cheat
@@ -15,9 +15,14 @@ EnvGym = R6Class("EnvGym",
       } else {
         self$act_cnt = actcnt
       }
-      self$state_cnt = genv$observation_space$shape[[1L]]  # get the number of state variables
+      if (is.null(statecnt)) {
+        self$state_cnt = genv$observation_space$shape[[1L]]  # get the number of state variables
+      } else {
+        self$state_cnt = statecnt
+      }
       state = genv$reset()  # only state is returned!
       state = self$state.cheat(state)
+
       self$state_cnt = length(state)
     },
 
@@ -47,5 +52,4 @@ EnvGym = R6Class("EnvGym",
   private = list(),
   active = list()
   )
-
 
