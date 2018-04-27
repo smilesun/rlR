@@ -2,7 +2,15 @@ dqn_mountain_car = function(iter = 1L) {
   conf = rlR::RLConf$new()
   conf$show()
   conf$updatePara("interact.maxiter", iter)
-  conf$updatePara("interact.render", FALSE)
+  conf$updatePara("policy.epsilon", 1)
+  conf$updatePara("policy.decay", exp(-0.01))
+  conf$updatePara("replay.batchsize", 50L)
+  conf$updatePara("interact.beforeActPipe", c("render","epi-step-log"))
+  conf$updatePara("agent.nn.arch", list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"
+))
+  conf$updatePara("policy.name", "policy.epsilonGreedy")
+
+
   interact = rlR::makeGymExperiment(name = "MountainCar-v0", conf = conf, act.cheat = function(x) {if(x == 1) {return(2)}; x}, actcnt = 2)
   perf = interact$run()
   return(perf)
@@ -11,14 +19,14 @@ dqn_mountain_car = function(iter = 1L) {
 dqn_cart_pole = function(iter = 1L) {
   conf = rlR::RLConf$new()
   conf$updatePara("interact.maxiter", iter)
-  conf$updatePara("policy.epsilon", 0.2)
-  conf$updatePara("policy.decay", exp(-0.5))
+  conf$updatePara("policy.epsilon", 1)
+  conf$updatePara("policy.decay", exp(-0.01))
+  conf$updatePara("replay.batchsize", 50L)
   conf$updatePara("interact.beforeActPipe", c("render","epi-step-log"))
-  conf$updatePara("agent.nn.arch", list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.0025,kernel_regularizer = "regularizer_l2(l=0.001)", bias_regularizer = "regularizer_l2(l=0.1)"
+  conf$updatePara("agent.nn.arch", list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"
 ))
   conf$updatePara("policy.name", "policy.epsilonGreedy")
-  conf$show()
-  #interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf, state.cheat = function(x) x[3:4])
+
   interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf)
   perf = interact$run()
   return(perf)

@@ -105,8 +105,8 @@ InteractionObserver = R6Class("InteractionObserver",
       tryCatch({
         while (self$continue.flag) {
           self$notify("beforeAct")
-          self$action = self$rl.agent$act(self$s.old)
-          self$s_r_done_info = self$rl.env$step(as.integer(self$action))
+          self$action = self$rl.agent$act(self$s.old)   # policy decides the convention
+          self$s_r_done_info = self$rl.env$step(action = as.integer(self$action))
           self$notify("afterStep")
         }
         return(self$perf)

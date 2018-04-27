@@ -37,7 +37,7 @@ AgentDQN = R6Class("AgentDQN",
     extractTarget = function(ins) {
         act2update =  ReplayMem$extractAction(ins)
         old.state = ReplayMem$extractOldState(ins)
-        old.state = array_reshape(old.state, dim = c(1L, dim(old.state)))
+        old.state = array_reshape(old.state, dim = c(1L, dim(old.state)))  # array could have scalar dim
         p.old = self$brain$pred(old.state)
         self$glogger$log.nn$info("old state q: %s", p.old)
         self$yhat = p.old  # for calculating the  TD error
