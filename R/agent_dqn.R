@@ -28,7 +28,7 @@ AgentDQN = R6Class("AgentDQN",
         x = list.x.y$x
         y = list.x.y$y
         self$brain$train(x, y)  # update the policy model
-        self$updateDT(x, y)
+        # self$updateDT(x, y)
     },
 
     extractTarget = function(ins) {

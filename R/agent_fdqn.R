@@ -20,7 +20,7 @@ AgentFDQN = R6Class("AgentFDQN",
           x = list.x.y$x
           y = list.x.y$y
           self$brain.u$train(x, y)  # update the policy model
-          self$updateDT(x, y)
+          # self$updateDT(x, y)
       },
 
       updateModel = function() {

@@ -23,8 +23,20 @@ ReplayMem = R6Class("ReplayMem",
       self$dt = rbindlist(list(self$dt, mdt))
       self$updatePriority()
     },
-
     
+    updateDT = function(yhat, y) {
+      updatedTDError = rowSums((yhat - y)^2)
+      old.delta = self$dt[self$mem$replayed.idx, "delta"] 
+      self$dt[self$replayed.idx, "delta"] = updatedTDError
+      self$dt[self$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
+      self$dt[self$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$dt[self$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
+      self$updatePriority()
+      filename.replay = file.path(rlR.conf4log$filePrefix,"replay.dt.csv")
+      filename.experience = file.path(rlR.conf4log$filePrefix,"experience.dt.csv")
+      # write.table(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)
+      # write.csv(self$mem$dt, file = filename.experience, append = FALSE)
+  },
+   
     updatePriority = function() {
       self$dt[, "priorityAbs"] = (abs(self$dt[,"delta"]) + self$conf$get("replay.mem.laplace.smoother"))
       self$dt[, "priorityRank"] = order(self$dt[,"delta"])
@@ -43,23 +55,21 @@ ReplayMem$mkInst = function(state.old, action, reward, state.new, delta = NULL) 
   list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta) }
 
 
-ReplayMem$extractAction = function(x) {
-      return(x[[2L]])
-    }
-
 ReplayMem$extractOldState = function(x) {
       return(x[[1L]])
     }
 
-ReplayMem$extractNextState = function(x) {
-      return(x[[4L]])
+ReplayMem$extractAction = function(x) {
+      return(x[[2L]])
     }
 
 ReplayMem$extractReward = function(x) {
       return(x[[3L]])
     }
 
-
+ReplayMem$extractNextState = function(x) {
+      return(x[[4L]])
+    }
 
 ReplayMemUniform = R6Class("ReplayMemUniform",
   inherit = ReplayMem,

@@ -57,31 +57,20 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     },
 
     calculateTDError = function(ins) {
-      vec.mt = self$extractTarget(ins)  # vector of target, self$yhat is calculated inside. Usually extractTarget is applied to a batch of x space instances and return the Bellman equation target, here it only extract one x space instance
-      mean((vec.mt - self$yhat)^2)
+      vec.mt = self$extractTarget(ins)  
+      err = vec.mt - self$yhat
+      mean(err ^ 2)
     },
 
     updateDT = function(x,y) {
-        yhat = self$brain$pred(x)
-        updatedTDError = rowSums((yhat - y)^2)
-        old.delta = self$mem$dt[self$mem$replayed.idx, "delta"] 
-        self$mem$dt[self$mem$replayed.idx, "delta"] = updatedTDError
-        #
-        self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
-        self$mem$dt[self$mem$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$mem$dt[self$mem$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
-        self$mem$updatePriority()
-        filename.replay = file.path(rlR.conf4log$filePrefix,"replay.dt.csv")
-        filename.experience = file.path(rlR.conf4log$filePrefix,"experience.dt.csv")
-        # write.table(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)  # FIXME: In write.csv(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay,  ... :attempt to set 'append' ignored
-        # FIXME: use MonetDBLite or SQLDBLite instead
-        # write.csv(self$mem$dt, file = filename.experience, append = FALSE)
+      yhat = self$brain$pred(x)
+      self$mem$updateDT(yhat, y)
     },
 
     extractTarget = function(ins) {
       stop("not implemented")
     },
 
-    #' model update only works
     setAdvantage = function(adg) {
       # by default do nothing
     },

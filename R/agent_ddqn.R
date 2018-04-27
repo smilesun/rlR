@@ -33,7 +33,7 @@ AgentDDQN = R6Class("AgentDDQN",
           x = list.x.y$x
           y = list.x.y$y
           self$brain_u$train(x, y)  # update the policy model
-          self$updateDT(x, y)
+          # self$updateDT(x, y)
       },
 
     #calculateTDError = function(state.old, action, reward, state.new) {
