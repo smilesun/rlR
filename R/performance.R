@@ -26,8 +26,28 @@ Performance = R6Class("Performance",
       paste(s1, s2, s3)
     },
 
-    observe = function() {
+    plot = function() {
+      library(ggplot2)
+      se = unlist(self$list.stepsPerEpisode)
+      df = data.frame(episode = seq_along(se),
+        steps = se)
+      ggplot(df, aes(episode, steps), col = "brown1") +
+        geom_point(alpha = 0.2) +
+        theme_bw() +
+        labs(
+          title = "Steps Per Episode",
+          x = "Episode",
+          y = "Steps per episode"
+          ) +
+        coord_cartesian(ylim = c(0, 200)) +
+        geom_smooth(se = FALSE, size = 1) +
+        geom_hline(yintercept = 15, size = 1, col = "black", lty = 2)
+    },
 
+    toScalar = function() {
+       n = length(self$list.rewardPerEpisode)
+       res = unlist(self$list.rewardPerEpisode)
+       res[n]
     }
     ),
   private = list(),
