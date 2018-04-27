@@ -47,11 +47,8 @@ makeKerasModel =  function(input_shape =2, output_shape =2, arch.list) {
   act2 = arch.list$act2
   loss = arch.list$loss
   lr = arch.list$lr
-  expr = sprintf("model = keras_model_sequential();model %%>%%layer_dense(units = %d, activation = '%s', input_shape = c(%d)) %%>%%layer_dense(units = %d, activation = '%s');model$compile(loss = '%s', optimizer = optimizer_rmsprop(lr = %f)); model", nhidden, act1, input_shape, output_shape, act2, loss, lr)
-  eval(parse(text = expr))
-}
-
-makeKerasModel2 =  function(nhidden = 64, input_shape =2, output_shape =2, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.0025, kernel_regularizer = "regularizer_l2(l=0.01)", bias_regularizer = "regularizer_l2(l=0.1)") {
+  kernel_regularizer = arch.list$kernel_regularizer
+  bias_regularizer = arch.list$bias_regularizer
   expr = sprintf("model = keras_model_sequential();model %%>%%layer_dense(units = %d, activation = '%s', input_shape = c(%d), kernel_regularizer = %s, bias_regularizer = %s) %%>%%layer_dense(units = %d, activation = '%s');model$compile(loss = '%s', optimizer = optimizer_rmsprop(lr = %f)); model", nhidden, act1, input_shape, kernel_regularizer, bias_regularizer, output_shape, act2, loss, lr)
   eval(parse(text = expr))
 }

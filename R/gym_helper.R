@@ -14,11 +14,12 @@ dqn_cart_pole = function(iter = 1L) {
   conf$updatePara("policy.epsilon", 0.2)
   conf$updatePara("policy.decay", exp(-0.2))
   conf$updatePara("interact.beforeActPipe", c("render","epi-step-log"))
-  conf$updatePara("interact.afterStepPipe", c("after.step", "replayPerEpisode"))
-  conf$updatePara("agent.nn.arch", list(nhidden = 8, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.25))
+  conf$updatePara("agent.nn.arch", list(nhidden = 8, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.25,kernel_regularizer = "regularizer_l2(l=0.001)", bias_regularizer = "regularizer_l2(l=0.1)"
+))
   conf$updatePara("policy.name", "policy.epsilonGreedy")
   conf$show()
-  interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf, state.cheat = function(x) x[3:4])
+  #interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf, state.cheat = function(x) x[3:4])
+  interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf)
   perf = interact$run()
   return(perf)
 }
