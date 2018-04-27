@@ -9,13 +9,21 @@
 RLConf = R6Class("Conf",
   public = list(
     static = NULL,
-
-    initialize = function(name = "dqn") {
-      self$static = data.table::copy(rlR.conf.default)  # deep copy
+    initialize = function(...) {
+      if (length(list(...)) == 0L) {
+        self$static = data.table::copy(rlR.conf.default)  # deep copy
+      } else {
+        self$set(...)
+      }
     },
 
     get = function(name) {
       self$static[[name]]
+    },
+
+    set = function(...) {
+      par.list = list(...)
+      lapply(names(par.list), function(x) self$updatePara(x, par.list[[x]]))
     },
 
     updatePara = function(str.para, val.value) {
