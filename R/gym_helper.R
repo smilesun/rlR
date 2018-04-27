@@ -15,6 +15,39 @@ dqn_mountain_car = function(iter = 1L) {
   return(perf)
 }
 
+ddqn_mountain_car = function(iter = 1L) {
+  conf = rlR::RLConf$new()
+  conf$show()
+  conf$updatePara("agent.name", "DDQN")
+  conf$updatePara("interact.maxiter", iter)
+  conf$updatePara("replay.batchsize", 50L)
+  conf$updatePara("interact.beforeActPipe", c("render","epi-step-log"))
+  conf$updatePara("agent.nn.arch", list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"
+))
+  conf$updatePara("policy.name", "policy.epsilonGreedy")
+  #interact = rlR::makeGymExperiment(name = "MountainCar-v0", conf = conf, act.cheat = function(x) {if(x == 1) {return(2)}; x}, actcnt = 2)
+  interact = rlR::makeGymExperiment(name = "MountainCar-v0", conf = conf)
+  perf = interact$run()
+  return(perf)
+}
+
+fdqn_cartpole = function(iter = 1L) {
+  conf = rlR::RLConf$new()
+  conf$show()
+  conf$updatePara("agent.name", "AgentFDQN")
+  conf$updatePara("interact.maxiter", iter)
+  conf$updatePara("replay.batchsize", 50L)
+  conf$updatePara("interact.beforeActPipe", c("render","epi-step-log"))
+  conf$updatePara("agent.nn.arch", list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"
+))
+  conf$updatePara("policy.name", "policy.epsilonGreedy")
+  #interact = rlR::makeGymExperiment(name = "MountainCar-v0", conf = conf, act.cheat = function(x) {if(x == 1) {return(2)}; x}, actcnt = 2)
+  interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf)
+  perf = interact$run()
+  return(perf)
+}
+
+
 dqn_atari = function(iter = 1L) {
   names = c("Amidar-ram-v0", "WizardOfWor-ram-v0", "Asteroids-ram-v0", "KungFuMaster-ram-v0", "JourneyEscape-ram-v-ram-v0")
   conf = rlR::RLConf$new()

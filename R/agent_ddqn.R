@@ -14,7 +14,7 @@ AgentDDQN = R6Class("AgentDDQN",
     brain_h = NULL,  # h: to help
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt, stateCnt, conf)
-      self$brain2 = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, NNArsenal$dqn)
+      self$brain2 = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
     },
 
       toss = function() {

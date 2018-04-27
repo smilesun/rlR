@@ -57,6 +57,12 @@ InteractionObserver = R6Class("InteractionObserver",
         "replay" = function() {
           self$rl.agent$replay(self$replay.size)
         },
+        "replay.frozen" = function() {
+          self$rl.agent$replay(self$replay.size)
+          if (self$s_r_done_info[[3L]]) { 
+            self$rl.agent$updateModel()
+          }
+        },
         "replayPerEpisode" = function() {
           if (self$s_r_done_info[[3L]]) {
             total.reward = sum(self$perf$list.reward.epi[[self$perf$epi.idx]])

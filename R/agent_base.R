@@ -83,7 +83,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     #' model update only works
     setAdvantage = function(adg) {
-
+      # by default do nothing
     },
 
     replay = function(batchsize) {
@@ -93,9 +93,8 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   private = list(),
   active = list(
     randomAct = function() {
-      sample.int(self$actCnt)[1L] -1L  # OpenAI Gym  convention
+      sample.int(self$actCnt)[1L] - 1L  # OpenAI Gym  convention
     }
     )
   )
-
 

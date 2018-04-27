@@ -14,19 +14,19 @@ gymEnvFactory = function(name ="CartPole-v0", ...) {
 }
 
 
-#' @title 
-#' 
+#' @title
+#'
 #' @description
-#' 
+#'
 #' @param conf value
 #' @return returndes
-#' @export 
-#' @examples 
-#' x=c(1,2,3) 
+#' @export
+#' @examples
+#' x=c(1,2,3)
 makeGymExperiment = function(name ="CartPole-v0", conf,  ...) {
   probe = gymEnvFactory(name, ...)
-  rl.agent = AgentFactory$genAgent(conf$get("agent.name"))(actCnt = probe$actCnt, stateCnt = probe$stateCnt, conf = conf)
-  interact = InteractionObserver$new(rl.env = probe$env, rl.agent = rl.agent, glogger = rl.agent$glogger, conf = conf) 
+  rl.agent = AgentFactory$genAgent(conf$get("agent.name"), actCnt = probe$actCnt, stateCnt = probe$stateCnt, conf = conf)
+  interact = InteractionObserver$new(rl.env = probe$env, rl.agent = rl.agent, glogger = rl.agent$glogger, conf = conf)
   return(interact)
 }
 
