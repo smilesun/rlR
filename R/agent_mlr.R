@@ -12,8 +12,21 @@ Agentmlr = R6Class("Agentmlr",
         x = list.x.y$x
         y = list.x.y$y
         self$brain$train(x, y, act = self$list.acts)  # update the policy model
-        self$updateDT(x, y)
+    },
+
+    act = function(state) {
+      assert(class(state) == "array")
+      if(self$epi.idx < 3L) {
+        return(0L)
+      }
+      else {
+        self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
+        act = self$policy(state)  # returning the chosen action
+        self$glogger$log.nn$info("action: %d", act)
+        return(act)
     }
+    }
+
     ), # public
   private = list(),
   active = list(

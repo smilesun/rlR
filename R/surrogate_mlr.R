@@ -9,28 +9,31 @@ Surro.mlr = R6Class("Surro.mlr",
 
     train = function(X_train, Y_train, acts) {
       library(mlr)
-      if (nrow(X_train) < 50L) 
-        return(NULL)
       acts = unlist(acts) + 1L
       res = lapply(1:nrow(Y_train), function(i) Y_train[i, acts[i]])
       targets = unlist(res)
       lrn = mlr::makeLearner("regr.ranger")
-      df = as.data.frame(cbind(targets, X_train))
+      df = as.data.frame(cbind(targets, acts, X_train))
       colnames(df)[1] = c("rlr.target")
-      colnames(df)[2:(1+self$stateCnt)] = paste("v", as.character(1:self$stateCnt), sep = "")
+      colnames(df)[2] = c("rlr.act")
+      colnames(df)[3:(2 + self$stateCnt)] = paste("v", as.character(1:self$stateCnt), sep = "")
       task = mlr::makeRegrTask(data = df, target = "rlr.target")
       self$model = mlr::train(lrn, task)
     },
 
-    pred = function(X) {
-      n = nrow(X)
-      h = rnorm(n, mean = 0.5, sd = 0.1)
-      if (is.null(self$model)) return(matrix(c(h, 1-h), nrow = n))
+    insertAct = function(X,i) {
       df = as.data.frame(X)
       colnames(df) = paste("v", as.character(1:self$stateCnt), sep = "")
-      preds = predict(self$model, newdata =  df)
+      df["rlr.act"] = rep(i, nrow(df))
+      df
+    },
+
+    pred = function(X) {
+      n = nrow(X)
+      if (is.null(self$model)) return(matrix(rnorm(n*self$actCnt), nrow = n))
+      preds = lapply(1:self$actCnt, function(i) predict(self$model, newdata = self$insertAct(X,i)))
       preds = as.data.frame(preds)
-      df = cbind(preds, 1.0 - preds)
+      df = cbind(preds)
       data.matrix(df)
     }
     ),

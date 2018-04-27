@@ -43,7 +43,7 @@ InteractionObserver = R6Class("InteractionObserver",
         },
 
         "replay.perEpisode.all" = function() {
-          n = length(self$rl.agent$mem$samples)
+          n = length(self$rl.agent$mem$samples) 
           if (self$s_r_done_info[[3L]]) {
             total.reward = sum(self$perf$list.reward.epi[[self$perf$epi.idx]])
             total.step = unlist(self$perf$list.stepsPerEpisode)[self$perf$epi.idx]
@@ -77,6 +77,7 @@ InteractionObserver = R6Class("InteractionObserver",
           self$perf$epi.idx = self$perf$epi.idx + 1L
           self$episode.over.flag = TRUE
           self$idx.episode = self$idx.episode + 1L
+          self$rl.agent$epi.idx = self$idx.episode
           self$rl.env$reset()
           self$perf$list.reward.epi[[self$perf$epi.idx]] = vector(mode = "list")
           self$perf$list.reward.epi[[self$perf$epi.idx]] = self$vec.epi[1L:self$idx.step]   # the reward vector

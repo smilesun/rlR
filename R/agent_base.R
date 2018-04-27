@@ -9,6 +9,7 @@
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
+    epi.idx = NULL,
     actCnt = NULL,
     stateCnt = NULL,
     conf = NULL,
@@ -28,6 +29,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     armremap = function(x){x},  # transform the  action space since some Gym environment has non-continous feasible actions
     # constructor
     initialize = function(actCnt, stateCnt, conf) {
+      self$epi.idx = 1L
       self$actCnt = actCnt
       self$stateCnt = stateCnt
       self$conf = conf
