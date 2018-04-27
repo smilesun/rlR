@@ -12,9 +12,9 @@ dqn_cart_pole = function(iter = 1L) {
   conf = rlR::RLConf$new()
   conf$updatePara("interact.maxiter", iter)
   conf$updatePara("policy.epsilon", 0.2)
-  conf$updatePara("policy.decay", exp(-0.2))
+  conf$updatePara("policy.decay", exp(-0.5))
   conf$updatePara("interact.beforeActPipe", c("render","epi-step-log"))
-  conf$updatePara("agent.nn.arch", list(nhidden = 8, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.25,kernel_regularizer = "regularizer_l2(l=0.001)", bias_regularizer = "regularizer_l2(l=0.1)"
+  conf$updatePara("agent.nn.arch", list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.0025,kernel_regularizer = "regularizer_l2(l=0.001)", bias_regularizer = "regularizer_l2(l=0.1)"
 ))
   conf$updatePara("policy.name", "policy.epsilonGreedy")
   conf$show()

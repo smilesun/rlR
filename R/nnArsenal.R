@@ -17,15 +17,15 @@
 #      Output shape: nD tensor with shape: ‘(batch_size, ..., units)’.
 #      For instance, for a 2D input with shape ‘(batch_size, input_dim)’,
 #      the output would have shape ‘(batch_size, unit)’.
-# assert(class(state) == "array")
-# reshape is not changing the shape, but only changes the filling scheme of the shape
-# state = array_reshape(state, c(1L, dim(state))) # fill first the row dimension while in R normally column is filled first
-# state = array_reshape(state, c(1L, length(state))) # fill first the row dimension while in R normally column is filled first
-# temp = array(1:8, dim = c(2,2,2))
-# length(temp) = 8
-# Rank: the number of dimensions needed to represent a tensor
-# Shape:  c(1,2,3) for rank 3
-# "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim), dim in keras is row major
+
+  # reshape is not changing the shape, but only changes the filling scheme of the shape
+  # state = array_reshape(state, c(1L, dim(state))) # fill first the row dimension while in R normally column is filled first
+  # state = array_reshape(state, c(1L, length(state))) # fill first the row dimension while in R normally column is filled first
+  # temp = array(1:8, dim = c(2,2,2))
+  # length(temp) = 8
+  # Rank: the number of dimensions needed to represent a tensor
+  # Shape:  c(1,2,3) for rank 3
+  # "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim), dim in keras is row major
   # model = keras_model_sequential()
   # model %>%
   #   layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape)) %>%
@@ -39,7 +39,6 @@
   #     = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1))
   # model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
   # return(model)
-
 
 makeKerasModel =  function(input_shape =2, output_shape =2, arch.list) {
   nhidden = arch.list$nhidden

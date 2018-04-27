@@ -4,8 +4,7 @@ AgentDQN = R6Class("AgentDQN",
     list.acts = NULL,
     initialize = function(actCnt, stateCnt, conf) {
        super$initialize(actCnt, stateCnt, conf)
-       surro_fun = NNArsenal$makeBrain(self$conf$get("agent.archname"))
-       self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = surro_fun, conf$get("agent.nn.arch"))
+       self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
     },
  
     getXY = function(batchsize) {
