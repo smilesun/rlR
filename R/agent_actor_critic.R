@@ -26,12 +26,9 @@ AgentActorCritic = R6Class("AgentActorCritic",
           y_actor = rbindlist(lapply(list.targets.actor, as.data.table))
           y_actor = as.data.frame(y_actor)
           y_actor = as.matrix(y_actor)
-          #x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
-          #y_actor = array(unlist(list.targets.actor), dim = c(length(list.targets.actor), self$actCnt))
           y_critic = rbindlist(lapply(list.targets.critic, as.data.table))
           y_critic = as.data.frame(y_critic)
           y_critic = as.matrix(y_critic)
-          #y_critic = array(unlist(list.targets.critic), dim = c(length(list.targets.critic), self$actCnt))
           self$brain_actor$train(x, y_actor)  # update the policy model
           self$brain_critic$train(x, y_critic)  # update the policy model
       },
@@ -84,4 +81,3 @@ AgentActorCritic = R6Class("AgentActorCritic",
   active = list(
     )
   )
-
