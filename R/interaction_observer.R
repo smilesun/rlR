@@ -114,7 +114,7 @@ InteractionObserver = R6Class("InteractionObserver",
         while (self$continue.flag) {
           self$notify("beforeAct")
           self$action = self$rl.agent$act(self$s.old)   # policy decides the convention
-          self$glogger$log.root$info("action taken:%i \n", self$action)
+          self$glogger$log.nn$info("action taken:%i \n", self$action)
           self$s_r_done_info = self$rl.env$step(action = as.integer(self$action))
           self$notify("afterStep")
         }
@@ -122,10 +122,9 @@ InteractionObserver = R6Class("InteractionObserver",
     }, finally = {
       self$perf$toString()   # print out performance
       self$perf$persist(self$conf$conf.log.perf$resultTbPath)
-      #filename.replay = file.path(rlR.conf4log$filePrefix, "replay.dt.csv")
+      filename.replay = file.path(rlR.conf4log$filePrefix, "replay.dt.csv")
       filename.experience = file.path(self$conf$conf.log.perf$filePrefix, "experience.dt.csv")
-      self$glogger$log.root$info("a = BBmisc::load2(%s)", conf$conf.log.perf$resultTbPath)
-      # write.table(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)
+      self$glogger$log.root$info("a = BBmisc::load2(%s)", self$conf$conf.log.perf$resultTbPath)
       write.csv(self$rl.agent$mem$dt, file = filename.experience)
       self$glogger$log.root$info("\n b = read.csv('%s')", filename.experience)
       self$rl.env$env$render(close = TRUE)

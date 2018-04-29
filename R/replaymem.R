@@ -48,6 +48,8 @@ ReplayMem$inst2string = function() {
 
 }
 
+
+ReplayMem$ins2String = function(x) x
 ReplayMem$mkInst = function(state.old, action, reward, state.new, delta = NULL) {
   if (is.null(delta)) delta = NA
   list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta)

@@ -1,11 +1,11 @@
-#' @title 
-#' 
+#' @title
+#'
 #' @description
-#' 
+#'
 #' @return returndes
-#' @export 
-#' @examples 
-#' x=c(1,2,3) 
+#' @export
+#' @examples
+#' x=c(1,2,3)
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
@@ -26,8 +26,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     brain = NULL,  # a table or a function approximator to represent the value function
     yhat = NULL,  # bellman equation estimation
     # member function
-    ins2String = function(x){x},   # function must be defined in this way
-    armremap = function(x){x},  # transform the  action space since some Gym environment has non-continous feasible actions
     # constructor
     initialize = function(actCnt, stateCnt, conf) {
       self$random.cnt = 0L
@@ -35,10 +33,9 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$actCnt = actCnt
       self$stateCnt = stateCnt
       self$conf = conf
-      self$vec.arm.q = vector(mode = "numeric", length = self$actCnt) 
+      self$vec.arm.q = vector(mode = "numeric", length = self$actCnt)
       self$epsilon = self$conf$get("policy.epsilon")
       self$gamma = self$conf$get("agent.gamma")
-      #
       self$glogger = RLLog$new(conf)
       memname = conf$get("replay.memname")
       self$mem = ReplayMem$factory(memname)(conf = conf)
@@ -54,17 +51,17 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       ins$deltaOfdelta = NA
       ins$deltaOfdeltaPercentage = NA
       ins$context = context  # for extension
-      self$glogger$log.nn$info("agentbase: observing new experience tuple:sars_delta_delta2_delta2_percent :%s", self$ins2String(ins))
+      self$glogger$log.nn$info("agentbase: observing new experience tuple:sars_delta_delta2_delta2_percent :%s", ReplayMem$ins2String(ins))
       self$mem$add(ins)
     },
 
     calculateTDError = function(ins) {
-      vec.mt = self$extractTarget(ins)  
+      vec.mt = self$extractTarget(ins)
       err = vec.mt - self$yhat
       mean(err ^ 2)
     },
 
-    updateDT = function(x,y) {
+    updateDT = function(x, y) {
       yhat = self$brain$pred(x)
       self$mem$updateDT(yhat, y)
     },
@@ -81,16 +78,12 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
         stop("not implemented")
     },
 
-    list2df = function () {
-      
-    },
-
     getXY = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
-        for (i in self$mem$replayed.idx) {
-          self$glogger$log.nn$info("%s", self$mem$samples[[i]])
-        }
+        #for (i in self$mem$replayed.idx) {
+        #  self$glogger$log.nn$info("%s", self$mem$samples[[i]])
+        #}
         list.states = lapply(list.res, ReplayMem$extractOldState)
         list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience
         self$list.acts = lapply(list.res, ReplayMem$extractAction)
@@ -117,4 +110,3 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     }
     )
   )
-

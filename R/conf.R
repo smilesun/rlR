@@ -13,7 +13,7 @@ RLConf = R6Class("Conf",
     conf.log.perf = NULL,
     getPersist = function() {
       self$conf.log.perf = data.table::copy(rlR:::rlR.conf4log)
-      self$conf.log.perf$str.conf = str.conf = toString(conf$static)  # experiment specific configuration
+      self$conf.log.perf$str.conf = str.conf = toString(self$conf$static)  # experiment specific configuration
       hash.conf = md5(str.conf)
       str.time = toString(Sys.time())
       str.time = gsub(" ", "_", str.time)

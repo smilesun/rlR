@@ -20,7 +20,8 @@ AgentDQN = R6Class("AgentDQN",
         old.state = ReplayMem$extractOldState(ins)
         old.state = array_reshape(old.state, dim = c(1L, dim(old.state)))  # array could have scalar dim
         p.old = self$brain$pred(old.state)
-        self$glogger$log.nn$info("old state q: %s", p.old)
+        # self$glogger$log.nn$info("extract target:old state: %s", old.state)
+        # self$glogger$log.nn$info("extract target:old state Q: %s", p.old)
         self$yhat = p.old  # for calculating the  TD error
         next.state = ReplayMem$extractNextState(ins)
         next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
@@ -30,7 +31,7 @@ AgentDQN = R6Class("AgentDQN",
         target = r + self$gamma * max(vec.next.Q)
         mt = p.old
         mt[act2update + 1L] = target  # the not active action arm's Q will not be updated
-        self$glogger$log.nn$info("target: %s", mt)
+        # self$glogger$log.nn$info("extract target:target: %s", mt)
         return(mt)
     },
 
