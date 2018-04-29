@@ -25,18 +25,13 @@ AgentPG = R6Class("AgentPG",
       return(act)
     },
 
-    # extract action from replay memory
-    extractAct = function(ins) {
-      return(ins[[2L]])
-    },
-
     setAdvantage = function(adv) {
       self$advantage = adv
     },
 
     # extract target from one instance of replay memory, which is the one hot encoded action multiplied by the advantage of this episode
     extractTarget = function(ins) {
-        act = self$extractAct(ins)
+        act =  ReplayMem$extractAction(ins)
         temp = rep(0L, self$actCnt)
         temp[act + 1L] =  1L
         label = array(temp, dim = c(1L, self$actCnt))
@@ -45,14 +40,11 @@ AgentPG = R6Class("AgentPG",
     },
 
     replay = function(batchsize) {
-        list.res = self$mem$sample.fun(batchsize)
-        list.states = lapply(list.res, ReplayMem$extractOldState)
-        list.targets = lapply(list.res, self$extractTarget)
-        x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
-        y = array(unlist(list.targets), dim = c(length(list.targets), self$actCnt))
+        list.x.y = self$getXY(batchsize)
+        x = list.x.y$x
+        y = list.x.y$y
         self$brain$train(x, y)  # update the policy model
     }
-
     ), # public
   private = list(),
   active = list(

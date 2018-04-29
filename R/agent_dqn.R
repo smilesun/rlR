@@ -7,22 +7,6 @@ AgentDQN = R6Class("AgentDQN",
        self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
     },
 
-    getXY = function(batchsize) {
-        list.res = self$mem$sample.fun(batchsize)
-        self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
-        for (i in self$mem$replayed.idx) {
-          self$glogger$log.nn$info("%s", self$mem$samples[[i]])
-        }
-        list.states = lapply(list.res, ReplayMem$extractOldState)
-        list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience
-        self$list.acts = lapply(list.res, ReplayMem$extractAction)
-        x = as.array(t(as.data.table(list.states)))  # array put elements columnwise
-        y = rbindlist(lapply(list.targets, as.data.table))
-        y = as.data.frame(y)
-        y = as.matrix(y)
-        return(list(x = x, y = y))
-    },
-
     replay = function(batchsize) {
         list.x.y = self$getXY(batchsize)
         x = list.x.y$x
@@ -59,14 +43,6 @@ AgentDQN = R6Class("AgentDQN",
 
     sampleRandomAct = function(state) {
         self$random.action = self$randomAct
-    },
-
-    act = function(state) {
-      assert(class(state) == "array")
-      self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
-      act = self$policy(state)  # returning the chosen action
-      self$glogger$log.nn$info("action: %d", act)
-      return(act)
     }
     ), # public
   private = list(),

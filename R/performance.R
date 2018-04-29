@@ -17,6 +17,11 @@ Performance = R6Class("Performance",
       self$list.stepsPerEpisode = list()
     },
 
+    persist = function(path) {
+      perf = self$clone()
+      save(perf, file = path)
+    },
+
     toString = function() {
       s1 = sprintf("steps per episode:%s \n", toString(self$list.stepsPerEpisode))
       self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))

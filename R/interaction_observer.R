@@ -43,7 +43,7 @@ InteractionObserver = R6Class("InteractionObserver",
         },
 
         "replay.perEpisode.all" = function() {
-          n = length(self$rl.agent$mem$samples) 
+          n = length(self$rl.agent$mem$samples)
           if (self$s_r_done_info[[3L]]) {
             total.reward = sum(self$perf$list.reward.epi[[self$perf$epi.idx]])
             total.step = unlist(self$perf$list.stepsPerEpisode)[self$perf$epi.idx]
@@ -59,7 +59,7 @@ InteractionObserver = R6Class("InteractionObserver",
         },
         "replay.frozen" = function() {
           self$rl.agent$replay(self$replay.size)
-          if (self$s_r_done_info[[3L]]) { 
+          if (self$s_r_done_info[[3L]]) {
             self$rl.agent$updateModel()
           }
         },
@@ -88,15 +88,16 @@ InteractionObserver = R6Class("InteractionObserver",
           self$perf$list.reward.epi[[self$perf$epi.idx]] = vector(mode = "list")
           self$perf$list.reward.epi[[self$perf$epi.idx]] = self$vec.epi[1L:self$idx.step]   # the reward vector
           self$glogger$log.root$info("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step)
-          cat(sprintf("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step))  # same message to console
+          cat(sprintf("Episode: %i, steps:%i \n, rand steps:%i, ", self$idx.episode, self$idx.step, self$rl.agent$random.cnt))  # same message to console
           self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step - 1L  # the number of steps
+          self$rl.agent$random.cnt = 0L
           self$idx.step = 0L
           self$episode.over.flag = FALSE
           if (self$idx.episode > self$conf$get("interact.maxiter")) {
             self$continue.flag = FALSE
           }
           temp = self$rl.agent$epsilon * self$conf$get("policy.decay")
-          self$rl.agent$epsilon = temp
+          self$rl.agent$epsilon = max(temp, self$conf$get("policy.minEpsilon"))
           cat(sprintf("Epsilon%f \n", temp))  # same message to console
     }},
 
@@ -113,12 +114,20 @@ InteractionObserver = R6Class("InteractionObserver",
         while (self$continue.flag) {
           self$notify("beforeAct")
           self$action = self$rl.agent$act(self$s.old)   # policy decides the convention
+          self$glogger$log.root$info("action taken:%i \n", self$action)
           self$s_r_done_info = self$rl.env$step(action = as.integer(self$action))
           self$notify("afterStep")
         }
         return(self$perf)
     }, finally = {
       self$perf$toString()   # print out performance
+      self$perf$persist(self$conf$conf.log.perf$resultTbPath)
+      #filename.replay = file.path(rlR.conf4log$filePrefix, "replay.dt.csv")
+      filename.experience = file.path(self$conf$conf.log.perf$filePrefix, "experience.dt.csv")
+      self$glogger$log.root$info("a = BBmisc::load2(%s)", conf$conf.log.perf$resultTbPath)
+      # write.table(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)
+      write.csv(self$rl.agent$mem$dt, file = filename.experience)
+      self$glogger$log.root$info("\n b = read.csv('%s')", filename.experience)
       self$rl.env$env$render(close = TRUE)
     }) # try catch
     } # function
@@ -126,4 +135,3 @@ InteractionObserver = R6Class("InteractionObserver",
   private = list(),
   active = list()
   )
-

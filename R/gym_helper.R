@@ -19,7 +19,7 @@ ddqn_mountain_car = function(iter = 1L) {
   conf$set(interact.maxiter = iter,
            agent.name = "AgentDDQN",
            policy.epsilon = 1,
-           policy.decay = exp(-0.01),
+           policy.decay = exp(-0.1),
            policy.name = "policy.epsilonGreedy",
            replay.batchsize = 50L,
            interact.beforeActPipe = c("render", "epi-step-log"),
@@ -29,21 +29,39 @@ ddqn_mountain_car = function(iter = 1L) {
   return(perf)
 }
 
-fdqn_cartpole = function(iter = 1L) {
+fdqn_mountain = function(iter = 1L) {
   conf = rlR::RLConf$new()
   conf$show()
   conf$set(interact.maxiter = iter,
            agent.name = "AgentFDQN",
            policy.epsilon = 1,
-           policy.decay = exp(-0.01),
+           policy.decay = exp(-0.2),
+           policy.name = "policy.epsilonGreedy",
+           replay.memname = "latest",
+           replay.batchsize = 10L,
+           interact.beforeActPipe = c("render", "epi-step-log"),
+           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
+  interact = rlR::makeGymExperiment(name = "MountainCar-v0", conf = conf)
+  perf = interact$run()
+  return(perf)
+}
+
+fdqn_cart = function(iter = 1L) {
+  conf = rlR::RLConf$new()
+  conf$show()
+  conf$set(interact.maxiter = iter,
+           agent.name = "AgentFDQN",
+           policy.epsilon = 1,
+           policy.decay = exp(-0.1),
            policy.name = "policy.epsilonGreedy",
            replay.batchsize = 50L,
            interact.beforeActPipe = c("render", "epi-step-log"),
-           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
+           agent.nn.arch = list(nhidden = 64, act1 = "linear", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
   interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf)
   perf = interact$run()
   return(perf)
 }
+
 
 dqn_atari = function(iter = 1L) {
   names = c("Amidar-ram-v0", "WizardOfWor-ram-v0", "Asteroids-ram-v0", "KungFuMaster-ram-v0", "JourneyEscape-ram-v-ram-v0")
@@ -57,7 +75,8 @@ dqn_atari = function(iter = 1L) {
            interact.beforeActPipe = c("render", "epi-step-log"),
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
   conf$show()
-  interact = rlR::makeGymExperiment(name = "KungFuMaster-ram-v0", conf = conf)
+  #interact = rlR::makeGymExperiment(name = "KungFuMaster-ram-v0", conf = conf)
+  interact = rlR::makeGymExperiment(name = "Humanoid-v2", conf = conf)
   perf = interact$run()
   return(perf)
 }

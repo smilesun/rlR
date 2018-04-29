@@ -9,12 +9,28 @@
 RLConf = R6Class("Conf",
   public = list(
     static = NULL,
+    perf.path = NULL,
+    conf.log.perf = NULL,
+    getPersist = function() {
+      self$conf.log.perf = data.table::copy(rlR:::rlR.conf4log)
+      self$conf.log.perf$str.conf = str.conf = toString(conf$static)  # experiment specific configuration
+      hash.conf = md5(str.conf)
+      str.time = toString(Sys.time())
+      str.time = gsub(" ", "_", str.time)
+      str.date = toString(Sys.Date())
+      filePrefix = file.path(getwd(), self$conf.log.perf$ROOTFOLDERNAME, str.date, str.time, hash.conf)
+      cat(sprintf("logout file path %s", filePrefix))
+      self$conf.log.perf$filePrefix = filePrefix
+      self$conf.log.perf$resultTbPath =  file.path(filePrefix, rlR.conf4log$resultTbPath)  # RData file persistence place
+    },
+
     initialize = function(...) {
       if (length(list(...)) == 0L) {
         self$static = data.table::copy(rlR.conf.default)  # deep copy
       } else {
         self$set(...)
       }
+      self$getPersist()
     },
 
     get = function(name) {

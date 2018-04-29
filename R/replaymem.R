@@ -12,35 +12,32 @@ ReplayMem = R6Class("ReplayMem",
       self$conf = conf
     },
 
-    add = function(ins) {        
+    add = function(ins) {
       len = length(self$samples)
       self$samples[[len + 1L]] = ins
       self$len = self$len + 1L
       mcolnames = names(unlist(ins))
       mdt = data.table(t(unlist(ins)))
       dt.temp = data.table("priorityAbs" = NA, "priorityRank" = NA, "priorityDelta2" = NA)  # FIXME: is there a way to predefine this somewhere else instead of hard coded here?
-      mdt = cbind(mdt,dt.temp)
+      mdt = cbind(mdt, dt.temp)
       self$dt = rbindlist(list(self$dt, mdt))
       self$updatePriority()
     },
-    
+
     updateDT = function(yhat, y) {
-      updatedTDError = rowSums((yhat - y)^2)
-      old.delta = self$dt[self$mem$replayed.idx, "delta"] 
+      err = yhat - y
+      updatedTDError = rowSums(err ^ 2)
+      old.delta = self$dt[self$mem$replayed.idx, "delta"]
       self$dt[self$replayed.idx, "delta"] = updatedTDError
       self$dt[self$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
       self$dt[self$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$dt[self$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
       self$updatePriority()
-      filename.replay = file.path(rlR.conf4log$filePrefix,"replay.dt.csv")
-      filename.experience = file.path(rlR.conf4log$filePrefix,"experience.dt.csv")
-      # write.table(self$mem$dt[self$mem$replayed.idx, ], file = filename.replay, append = TRUE)
-      # write.csv(self$mem$dt, file = filename.experience, append = FALSE)
   },
-   
+
     updatePriority = function() {
-      self$dt[, "priorityAbs"] = (abs(self$dt[,"delta"]) + self$conf$get("replay.mem.laplace.smoother"))
-      self$dt[, "priorityRank"] = order(self$dt[,"delta"])
-      self$dt[, "priorityDelta2"] = abs(self$dt[,"deltaOfdelta"])
+      self$dt[, "priorityAbs"] = (abs(self$dt[, "delta"]) + self$conf$get("replay.mem.laplace.smoother"))
+      self$dt[, "priorityRank"] = order(self$dt[, "delta"])
+      self$dt[, "priorityDelta2"] = abs(self$dt[, "deltaOfdelta"])
     }
     ),
   private = list(),
@@ -50,9 +47,11 @@ ReplayMem = R6Class("ReplayMem",
 ReplayMem$inst2string = function() {
 
 }
-ReplayMem$mkInst = function(state.old, action, reward, state.new, delta = NULL) { 
-  if(is.null(delta)) delta = NA
-  list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta) }
+
+ReplayMem$mkInst = function(state.old, action, reward, state.new, delta = NULL) {
+  if (is.null(delta)) delta = NA
+  list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta)
+}
 
 
 ReplayMem$extractOldState = function(x) {
@@ -164,7 +163,7 @@ ReplayMemPrioritizedRank = R6Class("ReplayMemPrioritizedRank",
 
 ReplayMem$factory = function(name) {
   hash = list(
-    "uniform" = ReplayMemUniform, 
+    "uniform" = ReplayMemUniform,
     "latest" = ReplayMemLatest,
     "priorityAbs" = ReplayMemPrioritizedAbs,
     "priorityRank" = ReplayMemPrioritizedRank,

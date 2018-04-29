@@ -9,6 +9,7 @@
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
+    random.cnt = NULL,
     epi.idx = NULL,
     actCnt = NULL,
     stateCnt = NULL,
@@ -29,6 +30,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     armremap = function(x){x},  # transform the  action space since some Gym environment has non-continous feasible actions
     # constructor
     initialize = function(actCnt, stateCnt, conf) {
+      self$random.cnt = 0L
       self$epi.idx = 1L
       self$actCnt = actCnt
       self$stateCnt = stateCnt
@@ -77,7 +79,36 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     replay = function(batchsize) {
         stop("not implemented")
+    },
+
+    list2df = function () {
+      
+    },
+
+    getXY = function(batchsize) {
+        list.res = self$mem$sample.fun(batchsize)
+        self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
+        for (i in self$mem$replayed.idx) {
+          self$glogger$log.nn$info("%s", self$mem$samples[[i]])
+        }
+        list.states = lapply(list.res, ReplayMem$extractOldState)
+        list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience
+        self$list.acts = lapply(list.res, ReplayMem$extractAction)
+        x = as.array(t(as.data.table(list.states)))  # array put elements columnwise
+        y = rbindlist(lapply(list.targets, as.data.table))
+        y = as.data.frame(y)
+        y = as.matrix(y)
+        return(list(x = x, y = y))
+    },
+
+    act = function(state) {
+      assert(class(state) == "array")
+      self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
+      act = self$policy(state)  # returning the chosen action
+      self$glogger$log.nn$info("action: %d", act)
+      return(act)
     }
+
     ), # public
   private = list(),
   active = list(

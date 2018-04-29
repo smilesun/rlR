@@ -22,9 +22,16 @@ AgentActorCritic = R6Class("AgentActorCritic",
           list.states = lapply(list.res, ReplayMem$extractOldState)
           list.targets.actor = lapply(list.res, self$extractActorTarget)
           list.targets.critic = lapply(list.res, self$extractCriticTarget)
-          x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
-          y_actor = array(unlist(list.targets.actor), dim = c(length(list.targets.actor), self$actCnt))
-          y_critic = array(unlist(list.targets.critic), dim = c(length(list.targets.critic), self$actCnt))
+          x = as.array(t(as.data.table(list.states)))  # array put elements columnwise
+          y_actor = rbindlist(lapply(list.targets.actor, as.data.table))
+          y_actor = as.data.frame(y)
+          y_actor = as.matrix(y)
+          #x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
+          #y_actor = array(unlist(list.targets.actor), dim = c(length(list.targets.actor), self$actCnt))
+          y_critic = rbindlist(lapply(list.targets.critic, as.data.table))
+          y_critic = as.data.frame(y)
+          y_critic = as.matrix(y)
+          #y_critic = array(unlist(list.targets.critic), dim = c(length(list.targets.critic), self$actCnt))
           self$brain_actor$train(x, y_actor)  # update the policy model
           self$brain_critic$train(x, y_critic)  # update the policy model
       },

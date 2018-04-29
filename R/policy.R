@@ -1,7 +1,7 @@
 # host is the agent
 PolicyFactory = R6Class("PolicyFactory")
 PolicyFactory$epsilonPolicy = function(state = NULL, host) {
-      if(runif(1L) < host$epsilon) {
+      if (runif(1L) < host$epsilon) {
         host$sampleRandomAct()
         return(TRUE)
       }
@@ -17,6 +17,7 @@ PolicyFactory$policy.epsilonGreedy = function(state, host) {
       action = PolicyFactory$greedyPolicy(state, host)
       if (PolicyFactory$epsilonPolicy(state, host)) {
         action = host$random.action
+        host$random.cnt = host$random.cnt + 1L
         host$glogger$log.nn$info("random action: %d", action)
       }
       return(action)
@@ -28,7 +29,7 @@ PolicyFactory$policy.predProbRank = function(state, host) {
       return(action)
     }
 
-# softmax will magnify the difference 
+# softmax will magnify the difference
 PolicyFactory$policy.predsoftmax = function(state, host) {
       prob = exp(host$vec.arm.q)
       prob = prob / sum(prob)
