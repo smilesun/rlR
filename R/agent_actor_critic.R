@@ -24,13 +24,13 @@ AgentActorCritic = R6Class("AgentActorCritic",
           list.targets.critic = lapply(list.res, self$extractCriticTarget)
           x = as.array(t(as.data.table(list.states)))  # array put elements columnwise
           y_actor = rbindlist(lapply(list.targets.actor, as.data.table))
-          y_actor = as.data.frame(y)
-          y_actor = as.matrix(y)
+          y_actor = as.data.frame(y_actor)
+          y_actor = as.matrix(y_actor)
           #x = array(unlist(list.states), dim = c(length(list.states), dim(list.states[[1L]])))  # matrix will make row wise storage
           #y_actor = array(unlist(list.targets.actor), dim = c(length(list.targets.actor), self$actCnt))
           y_critic = rbindlist(lapply(list.targets.critic, as.data.table))
-          y_critic = as.data.frame(y)
-          y_critic = as.matrix(y)
+          y_critic = as.data.frame(y_critic)
+          y_critic = as.matrix(y_critic)
           #y_critic = array(unlist(list.targets.critic), dim = c(length(list.targets.critic), self$actCnt))
           self$brain_actor$train(x, y_actor)  # update the policy model
           self$brain_critic$train(x, y_critic)  # update the policy model
@@ -46,7 +46,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
       },
 
       extractActorTarget = function(ins) {
-          act = self$extractAct(ins)
+          act = ReplayMem$extractAction(ins)
           old.state = ReplayMem$extractOldState(ins)
           old.state = array_reshape(old.state, dim = c(1L, dim(old.state)))
           critic.old.v = self$brain_critic$pred(old.state)
