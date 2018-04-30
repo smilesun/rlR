@@ -17,7 +17,7 @@ ReplayMem = R6Class("ReplayMem",
     mkInst = function(state.old, action, reward, state.new, delta = NULL, context = NULL) {
       if (is.null(delta)) delta = NA
       ins = list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta)
-      delta = self$agent$calculateTDError(ins)
+      # delta = self$agent$calculateTDError(ins)
       ins$delta = delta
       ins$deltaOfdelta = NA
       ins$deltaOfdeltaPercentage = NA

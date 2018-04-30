@@ -27,6 +27,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     brain = NULL,  # a table or a function approximator to represent the value function
     yhat = NULL,  # bellman equation estimation
     epochs = NULL,
+    replay.size = NULL,
     # member function
     # constructor
     initialize = function(actCnt, stateCnt, conf) {
@@ -37,6 +38,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$conf = conf
       self$vec.arm.q = vector(mode = "numeric", length = self$actCnt)
       self$epsilon = self$conf$get("policy.epsilon")
+      self$replay.size = self$conf$get("replay.batchsize")
       self$gamma = self$conf$get("agent.gamma")
       self$glogger = RLLog$new(conf)
       self$epochs = conf$get("replay.epochs")
@@ -48,7 +50,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     # transform observation to  the replay memory
     observe = function(state.old, action, reward, state.new, action.new = NULL, delta = NULL, context = NULL) {
-      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = NULL, context)
+      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = NULL, context = context)
       self$glogger$log.nn$info("sars_delta:", ReplayMem$ins2String(ins))
       self$mem$add(ins)
     },
@@ -113,6 +115,14 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     sampleRandomAct = function(state) {
         self$random.action = self$randomAct
+    },
+
+    afterStep = function() {
+      # do nothing
+    },
+
+    afterEpisode = function() {
+      # do nothing
     }
     ), # public
   private = list(),

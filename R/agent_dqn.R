@@ -21,6 +21,19 @@ AgentDQN = R6Class("AgentDQN",
         mt = p.old
         mt[act2update + 1L] = target  # the not active action arm's Q will not be updated
         return(mt)
+    },
+
+    afterStep = function() {
+          self$replay(self$replay.size)
+    },
+
+    afterEpisode = function(interact) {
+        temp = self$epsilon * self$conf$get("policy.decay")
+        self$epsilon = max(temp, self$conf$get("policy.minEpsilon"))
+        cat(sprintf("Epsilon%f \n", temp))  # same message to console
+        self$glogger$log.nn$info("rand steps:%i \n", self$random.cnt)
+        cat(sprintf("rand steps:%i \n", self$random.cnt))  # same message to console
+        self$random.cnt = 0L
     }
     ), # public
   private = list(),

@@ -8,15 +8,23 @@ Agentmlr = R6Class("Agentmlr",
 
     replay = function(batchsize) {
         list.x.y = self$getXY(batchsize)
-        # debug: self$brain$pred(x)
         x = list.x.y$x
         y = list.x.y$y
         self$brain$train(x, y, act = self$list.acts)  # update the policy model
     },
 
+    afterEpisode = function(interact) {
+      n = length(self$rl.agent$mem$samples)
+      total.reward = sum(interact$perf$list.reward.epi[[interact$perf$epi.idx]])
+      total.step = unlist(interact$perf$list.stepsPerEpisode)[interact$perf$epi.idx]
+      adg = total.reward
+      self$rl.agent$setAdvantage(adg)
+      self$rl.agent$replay(n)   # key difference here
+    },
+
     act = function(state) {
       assert(class(state) == "array")
-      if(self$epi.idx < 3L) {
+      if (self$epi.idx < 3L) {
         return(0L)
       }
       else {

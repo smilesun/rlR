@@ -1,5 +1,6 @@
 # define default hyper-parameters
 rlR.conf.default = list(
+render = TRUE,
 agent.name = "DQN",
 agent.archname = "dqn",
 agent.gamma = 0.99,
@@ -12,9 +13,7 @@ replay.memname = "Uniform",
 replay.batchsize = 5L,  # otherwise keras too slow
 replay.mem.laplace.smoother = 0.001,
 replay.epochs = 1L,
-interact.maxiter = 500L,
-interact.beforeActPipe = c("render", "epi-step-log"),
-interact.afterStepPipe = c("after.step", "replay")
+interact.maxiter = 500L
 )
 
 rlR.conf.avail = names(rlR.conf.default)

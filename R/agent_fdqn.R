@@ -24,11 +24,18 @@ AgentFDQN = R6Class("AgentFDQN",
 
       updateModel = function() {
         self$brain = self$brain.u
-      }
+      },
 
+      afterStep = function() {
+        self$replay(self$replay.size)
+      },
+
+      afterEpisode = function(interact) {
+        super$afterEpisode(interact)
+        self$updateModel()
+      }
     ), # public
   private = list(),
   active = list(
     )
   )
-
