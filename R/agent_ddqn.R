@@ -33,23 +33,7 @@ AgentDDQN = R6Class("AgentDDQN",
           x = list.x.y$x
           y = list.x.y$y
           self$brain_u$train(x, y)  # update the policy model
-          # self$updateDT(x, y)
       },
-
-    #calculateTDError = function(state.old, action, reward, state.new) {
-    calculateTDError = function(ins) {
-      state.old = ins$state.old
-      action = ins$action
-      reward = ins$reward
-      state.new = ins$state.new
-      state.old.tra = array_reshape(state.old, dim = c(1L, dim(state.old)))
-      v.old = self$brain_u$pred(state.old.tra)
-      ins = ReplayMem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = NULL)
-      target = self$extractTarget(ins)
-      delta =  target - v.old
-      delta = sqrt(mean((delta)^2))
-      return(delta)
-    },
 
     extractTarget = function(ins) {
           old.state = ReplayMem$extractOldState(ins)
@@ -69,9 +53,9 @@ AgentDDQN = R6Class("AgentDDQN",
 
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
-      self$glogger$log.nn$info("state: %s", paste(state, collapse = ' '))
+      self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
       self$vec.arm.q = self$brain_h$pred(state)
-      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = ' '))
+      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
     },
 
     sampleRandomAct = function(state) {

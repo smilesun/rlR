@@ -1,4 +1,3 @@
-# FIXME: epoch is always 1L now
 SurroNN = R6Class("SurroNN",
   inherit = Surrogate,
   public = list(
@@ -9,9 +8,12 @@ SurroNN = R6Class("SurroNN",
       self$model = self$createModel.fun(input_shape = self$stateCnt, output_shape = self$actCnt, ...)  # proxy method
     },
 
+    getWeights = function() {
+      keras::get_weights(self$model)
+    },
+
     train = function(X_train, Y_train, epochs = 1L) {
       keras::fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
-      # keras::get_weights(self$model)
     },
 
     pred = function(X) {
@@ -22,4 +24,3 @@ SurroNN = R6Class("SurroNN",
   private = list(),
   active = list()
   )
-

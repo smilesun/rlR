@@ -9,6 +9,7 @@
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
+    list.acts = NULL,
     random.cnt = NULL,
     epi.idx = NULL,
     actCnt = NULL,
@@ -25,6 +26,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     # for init in other child class
     brain = NULL,  # a table or a function approximator to represent the value function
     yhat = NULL,  # bellman equation estimation
+    epochs = NULL,
     # member function
     # constructor
     initialize = function(actCnt, stateCnt, conf) {
@@ -37,21 +39,17 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$epsilon = self$conf$get("policy.epsilon")
       self$gamma = self$conf$get("agent.gamma")
       self$glogger = RLLog$new(conf)
+      self$epochs = conf$get("replay.epochs")
       memname = conf$get("replay.memname")
-      self$mem = ReplayMem$factory(memname)(conf = conf)
+      self$mem = ReplayMem$factory(memname)(agent = self, conf = conf)
       policy_fun = conf$get("policy.name")
       self$policy = PolicyFactory$make(policy_fun, self)
     },
 
     # transform observation to  the replay memory
     observe = function(state.old, action, reward, state.new, action.new = NULL, delta = NULL, context = NULL) {
-      ins = ReplayMem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = NULL)
-      delta = self$calculateTDError(ins)
-      ins$delta = delta
-      ins$deltaOfdelta = NA
-      ins$deltaOfdeltaPercentage = NA
-      ins$context = context  # for extension
-      self$glogger$log.nn$info("agentbase: observing new experience tuple:sars_delta_delta2_delta2_percent :%s", ReplayMem$ins2String(ins))
+      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = NULL, context)
+      self$glogger$log.nn$info("sars_delta:", ReplayMem$ins2String(ins))
       self$mem$add(ins)
     },
 
@@ -70,12 +68,23 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       stop("not implemented")
     },
 
-    setAdvantage = function(adg) {
-      # by default do nothing
+    setAdvantage = function(adv) {
+      self$advantage = adv
     },
 
     replay = function(batchsize) {
-        stop("not implemented")
+        list.x.y = self$getXY(batchsize)
+        x = list.x.y$x
+        y = list.x.y$y
+        self$brain$train(x, y, self$epochs)  # update the policy model
+        # self$updateDT(x, y)
+    },
+
+    evaluateArm = function(state) {
+      state = array_reshape(state, c(1L, dim(state)))
+      self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
+      self$vec.arm.q = self$brain$pred(state)
+      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
     },
 
     getXY = function(batchsize) {
@@ -100,8 +109,11 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       act = self$policy(state)  # returning the chosen action
       self$glogger$log.nn$info("action: %d", act)
       return(act)
-    }
+    },
 
+    sampleRandomAct = function(state) {
+        self$random.action = self$randomAct
+    }
     ), # public
   private = list(),
   active = list(

@@ -1,5 +1,4 @@
-# several base class that do not have too many lines of code
-Surrogate= R6Class("Surrogate",
+Surrogate = R6Class("Surrogate",
   public = list(
       actCnt = NULL,
       stateCnt = NULL,
@@ -11,7 +10,7 @@ Surrogate= R6Class("Surrogate",
       self$model = self$createModel.fun(input_shape = stateCnt, output_shape = actionCnt)  # proxy method
     },
 
-    train = function(X_train, Y_train, epochs = EPOCH){
+    train = function(X_train, Y_train, epochs) {
       stop("not implmented!")
 },
 
@@ -27,5 +26,3 @@ Surrogate= R6Class("Surrogate",
   private = list(),
   active = list()
   )
-
-

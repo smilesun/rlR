@@ -5,11 +5,24 @@ ReplayMem = R6Class("ReplayMem",
     len = NULL,
     replayed.idx = NULL,
     conf = NULL,
-    initialize = function(conf) {
+    agent = NULL,
+    initialize = function(agent, conf) {
       self$samples = list()
       self$dt = data.table()
       self$len = 0L
       self$conf = conf
+      self$agent = agent
+    },
+
+    mkInst = function(state.old, action, reward, state.new, delta = NULL, context = NULL) {
+      if (is.null(delta)) delta = NA
+      ins = list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta)
+      delta = self$agent$calculateTDError(ins)
+      ins$delta = delta
+      ins$deltaOfdelta = NA
+      ins$deltaOfdeltaPercentage = NA
+      ins$context = context  # for extension
+      ins
     },
 
     add = function(ins) {
@@ -44,17 +57,7 @@ ReplayMem = R6Class("ReplayMem",
   active = list()
   )
 
-ReplayMem$inst2string = function() {
-
-}
-
-
 ReplayMem$ins2String = function(x) x
-ReplayMem$mkInst = function(state.old, action, reward, state.new, delta = NULL) {
-  if (is.null(delta)) delta = NA
-  list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta)
-}
-
 
 ReplayMem$extractOldState = function(x) {
       return(x[[1L]])
@@ -75,9 +78,6 @@ ReplayMem$extractNextState = function(x) {
 ReplayMemUniform = R6Class("ReplayMemUniform",
   inherit = ReplayMem,
   public = list(
-    initialize = function(conf) {
-      super$initialize(conf)
-    },
     sample.fun = function(k) {
       k = min(k, self$len)
       self$replayed.idx = sample(self$len)[1L:k]
@@ -93,9 +93,6 @@ ReplayMemUniform = R6Class("ReplayMemUniform",
 ReplayMemLatest = R6Class("ReplayMemLatest",
   inherit = ReplayMem,
   public = list(
-    initialize = function(conf) {
-      super$initialize(conf)
-    },
    sample.fun = function(k) {
       k = min(k, self$len)
       self$replayed.idx = (self$len - k + 1L): self$len
@@ -110,9 +107,6 @@ ReplayMemLatest = R6Class("ReplayMemLatest",
 ReplayMemLatestProb = R6Class("ReplayMemLatestProb",
   inherit = ReplayMem,
   public = list(
-    initialize = function(conf) {
-      super$initialize(conf)
-    },
    sample.fun = function(k) {
       k = min(k, self$len)
       self$replayed.idx = sample(self$len, prob = 1L:self$len, size = k)
@@ -127,9 +121,6 @@ ReplayMemLatestProb = R6Class("ReplayMemLatestProb",
 ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
   inherit = ReplayMem,
   public = list(
-    initialize = function(conf) {
-      super$initialize(conf)
-    },
     sample.fun = function(k) {
       k = min(k, self$len)
       if (any(is.na(self$dt$priorityAbs))) {
@@ -148,9 +139,6 @@ ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
 ReplayMemPrioritizedRank = R6Class("ReplayMemPrioritizedRank",
   inherit = ReplayMem,
   public = list(
-    initialize = function(conf) {
-      super$initialize(conf)
-    },
     sample.fun = function(k) {
       k = min(k, self$len)
       self$replayed.idx = sample.int(self$len, prob = self$dt$priorityRank)[1L:k]
@@ -162,14 +150,9 @@ ReplayMemPrioritizedRank = R6Class("ReplayMemPrioritizedRank",
   active = list()
   )
 
-
 ReplayMem$factory = function(name) {
-  hash = list(
-    "uniform" = ReplayMemUniform,
-    "latest" = ReplayMemLatest,
-    "priorityAbs" = ReplayMemPrioritizedAbs,
-    "priorityRank" = ReplayMemPrioritizedRank,
-    "latestprob" =  ReplayMemLatestProb
-    )
-  return(hash[[name]]$new)
+  all = getNamespaceExports("rlR")
+  mem.idx = which(sapply(all, function(x) grepl("ReplayMem", x)))
+  assert(paste0("ReplayMem", name) %in% all[mem.idx])
+  return(eval(parse(text = sprintf("ReplayMem%s$new", name))))
 }

@@ -47,7 +47,7 @@ InteractionObserver = R6Class("InteractionObserver",
           if (self$s_r_done_info[[3L]]) {
             total.reward = sum(self$perf$list.reward.epi[[self$perf$epi.idx]])
             total.step = unlist(self$perf$list.stepsPerEpisode)[self$perf$epi.idx]
-            adg = total.reward / total.step
+            adg = total.reward
             self$rl.agent$setAdvantage(adg)
             self$rl.agent$replay(n)   # key difference here
           }
@@ -67,7 +67,7 @@ InteractionObserver = R6Class("InteractionObserver",
           if (self$s_r_done_info[[3L]]) {
             total.reward = sum(self$perf$list.reward.epi[[self$perf$epi.idx]])
             total.step = unlist(self$perf$list.stepsPerEpisode)[self$perf$epi.idx]
-            adg = total.reward / total.step
+            adg = total.reward
             self$rl.agent$setAdvantage(adg)
             self$rl.agent$replay(total.step)   # key difference here
           }
@@ -87,8 +87,8 @@ InteractionObserver = R6Class("InteractionObserver",
           self$rl.env$reset()
           self$perf$list.reward.epi[[self$perf$epi.idx]] = vector(mode = "list")
           self$perf$list.reward.epi[[self$perf$epi.idx]] = self$vec.epi[1L:self$idx.step]   # the reward vector
-          self$glogger$log.root$info("Episode: %i, steps:%i \n", self$idx.episode, self$idx.step)
-          cat(sprintf("Episode: %i, steps:%i \n, rand steps:%i, ", self$idx.episode, self$idx.step, self$rl.agent$random.cnt))  # same message to console
+          self$glogger$log.nn$info("Episode: %i, steps:%i, rand steps:%i \n", self$idx.episode, self$idx.step, self$rl.agent$random.cnt)
+          cat(sprintf("Episode: %i finished with steps:%i \n, rand steps:%i, ", self$idx.episode, self$idx.step, self$rl.agent$random.cnt))  # same message to console
           self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step - 1L  # the number of steps
           self$rl.agent$random.cnt = 0L
           self$idx.step = 0L
@@ -124,7 +124,7 @@ InteractionObserver = R6Class("InteractionObserver",
       self$perf$persist(self$conf$conf.log.perf$resultTbPath)
       filename.replay = file.path(rlR.conf4log$filePrefix, "replay.dt.csv")
       filename.experience = file.path(self$conf$conf.log.perf$filePrefix, "experience.dt.csv")
-      self$glogger$log.root$info("a = BBmisc::load2(%s)", self$conf$conf.log.perf$resultTbPath)
+      self$glogger$log.root$info("\n a = BBmisc::load2('%s')", self$conf$conf.log.perf$resultTbPath)
       write.csv(self$rl.agent$mem$dt, file = filename.experience)
       self$glogger$log.root$info("\n b = read.csv('%s')", filename.experience)
       self$rl.env$env$render(close = TRUE)

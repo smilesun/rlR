@@ -14,7 +14,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt, stateCnt, conf = conf)
       self$brain_actor = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4PG)
-      self$brain_critic = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4SV) # single output
+      self$brain_critic = SurroNN$new(actCnt = 1L, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4SV) # single output
       },
 
      replay = function(batchsize) {
@@ -52,6 +52,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
           critic.next.v = self$brain_critic$pred(next.state)
           r = ReplayMem$extractReward(ins)
           advantage = r + self$conf$get("agent.gamma") * critic.next.v - critic.old.v
+          advantage = (-1) * as.vector(advantage)
           vec.act = rep(0L, self$actCnt)
           vec.act[act + 1L] = 1L # the not active action will have exact label
           # target = advantage * array(target, dim = c(1L,self$actCnt)) ? why this ever work with out target defined before?
@@ -64,17 +65,6 @@ AgentActorCritic = R6Class("AgentActorCritic",
       self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
       self$vec.arm.q = self$brain_actor$pred(state)
       self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
-    },
-
-    sampleRandomAct = function(state) {
-        self$random.action = self$randomAct
-    },
-
-    act = function(state) {
-      assert(class(state) == "array")
-      self$evaluateArm(state)
-      action = self$policy(state)
-      return(action)
     }
     ), # public
   private = list(),

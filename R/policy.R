@@ -1,4 +1,13 @@
-# host is the agent
+#' @title
+#'
+#' @description
+#'
+#' @param state currently not used at all
+#' @param host value
+#' @return returndes
+#' @export
+#' @examples
+#' x=c(1,2,3)
 PolicyFactory = R6Class("PolicyFactory")
 PolicyFactory$epsilonPolicy = function(state = NULL, host) {
       if (runif(1L) < host$epsilon) {
@@ -17,7 +26,7 @@ PolicyFactory$policy.epsilonGreedy = function(state, host) {
       action = PolicyFactory$greedyPolicy(state, host)
       if (PolicyFactory$epsilonPolicy(state, host)) {
         action = host$random.action
-        host$random.cnt = host$random.cnt + 1L
+        host$random.cnt = host$random.cnt + 1L  # increment random count
         host$glogger$log.nn$info("random action: %d", action)
       }
       return(action)
@@ -50,4 +59,3 @@ PolicyFactory$make = function(name, host) {
   if (name %nin% names(PolicyFactory)) stop("no such policy!")
   function(state) PolicyFactory[[name]](state, host)
 }
-

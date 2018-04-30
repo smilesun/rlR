@@ -13,8 +13,8 @@ RLConf = R6Class("Conf",
     conf.log.perf = NULL,
     getPersist = function() {
       self$conf.log.perf = data.table::copy(rlR:::rlR.conf4log)
-      self$conf.log.perf$str.conf = str.conf = toString(self$conf$static)  # experiment specific configuration
-      hash.conf = md5(str.conf)
+      self$conf.log.perf$str.conf = toString(self$static)  # experiment specific configuration
+      hash.conf = md5(self$conf.log.perf$str.conf)
       str.time = toString(Sys.time())
       str.time = gsub(" ", "_", str.time)
       str.date = toString(Sys.Date())
@@ -25,11 +25,13 @@ RLConf = R6Class("Conf",
     },
 
     initialize = function(...) {
-      if (length(list(...)) == 0L) {
-        self$static = data.table::copy(rlR.conf.default)  # deep copy
-      } else {
-        self$set(...)
-      }
+      self$static = data.table::copy(rlR.conf.default)  # deep copy
+      par.list = list(...)
+      dns = setdiff(names(self$static), names(par.list))
+      list.default = setNames(lapply(dns, function(x) self$static[[x]]), dns)
+      cat("default parameters: \n")
+      lapply(dns, function(x) cat(sprintf("-%s: %s-\n", x, list.default[[x]])))
+      self$set(...)
       self$getPersist()
     },
 
