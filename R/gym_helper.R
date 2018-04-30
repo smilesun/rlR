@@ -103,7 +103,7 @@ pg_cart_pole = function(iter = 1L) {
            policy.name = "policy.predsoftmax",
            replay.memname = "Latest",
            replay.epochs = 50L,
-           agent.nn.arch = list(nhidden = 64, act1 = "sigmoid", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
+           agent.nn.arch = list(nhidden = 64, act1 = "sigmoid", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.001)"))
   interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf)
   perf = interact$run(iter)
   return(perf)
