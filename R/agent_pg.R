@@ -12,7 +12,7 @@ AgentPG = R6Class("AgentPG",
     advantage = NULL,
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
-      self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4PG)
+      self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
 },
 
     # extract target from one instance of replay memory, which is the one hot encoded action multiplied by the advantage of this episode

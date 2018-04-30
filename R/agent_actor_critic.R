@@ -13,8 +13,8 @@ AgentActorCritic = R6Class("AgentActorCritic",
     brain_critic = NULL, # mse loss
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt, stateCnt, conf = conf)
-      self$brain_actor = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4PG)
-      self$brain_critic = SurroNN$new(actCnt = 1L, stateCnt = self$stateCnt, fun = NNArsenal$makeNN4SV) # single output
+      self$brain_actor = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
+      self$brain_critic = SurroNN$new(actCnt = 1L, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch.critic"))
       },
 
      replay = function(batchsize) {
