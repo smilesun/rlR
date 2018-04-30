@@ -103,7 +103,7 @@ pg_cart_pole = function(iter = 1L) {
            policy.name = "policy.predsoftmax",
            replay.memname = "Latest",
            replay.epochs = 50L,
-           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
+           agent.nn.arch = list(nhidden = 64, act1 = "sigmoid", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
   interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf)
   perf = interact$run(iter)
   return(perf)
@@ -113,9 +113,9 @@ a3c_cart_pole = function(iter = 2L) {
   conf = rlR::RLConf$new(
            agent.name = "AgentActorCritic",
            policy.name = "policy.predsoftmax",
-           replay.memname = "Latest",
+           replay.memname = "Uniform",
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"),
-          agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)")
+          agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.001)")
            )
   interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf)
   perf = interact$run(iter)
@@ -126,11 +126,7 @@ a3c_atari = function(iter = 2L) {
   conf = rlR::RLConf$new()
   conf$set(
           agent.name = "AgentActorCritic",
-          policy.epsilon = 1,
-          policy.decay = exp(-0.01),
           policy.name = "policy.predsoftmax",
-          interact.beforeActPipe = c("render", "epi-step-log"),
-          interact.afterStepPipe = c("after.step", "replayPerEpisode"),
           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"),
           agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)")
           )

@@ -13,7 +13,8 @@ RLConf = R6Class("Conf",
     conf.log.perf = NULL,
     getPersist = function() {
       self$conf.log.perf = data.table::copy(rlR:::rlR.conf4log)
-      self$conf.log.perf$str.conf = toString(self$static)  # experiment specific configuration
+      list.str = lapply(names(self$static), function(x) sprintf("-%s: %s-\n", x, self$static[[x]]))
+      self$conf.log.perf$str.conf = paste0("\n", toString(list.str))
       hash.conf = md5(self$conf.log.perf$str.conf)
       str.time = toString(Sys.time())
       str.time = gsub(" ", "_", str.time)
@@ -85,4 +86,3 @@ RLConf = R6Class("Conf",
   private = list(),
   active = list()
   )
-

@@ -1,4 +1,4 @@
-#' @title
+#' @title Actor Critic Agent
 #'
 #' @description
 #'
@@ -52,12 +52,19 @@ AgentActorCritic = R6Class("AgentActorCritic",
           critic.next.v = self$brain_critic$pred(next.state)
           r = ReplayMem$extractReward(ins)
           advantage = r + self$conf$get("agent.gamma") * critic.next.v - critic.old.v
-          advantage = (-1) * as.vector(advantage)
+          advantage = (-1) * as.vector(advantage)  # convert (1,1) matrix to scalar
           vec.act = rep(0L, self$actCnt)
           vec.act[act + 1L] = 1L # the not active action will have exact label
-          # target = advantage * array(target, dim = c(1L,self$actCnt)) ? why this ever work with out target defined before?
           target = advantage * array(vec.act, dim = c(1L, self$actCnt))
           return(target)
+    },
+
+    afterStep = function() {
+        self$replay(self$replay.size)
+    },
+
+    afterEpisode = function(interact) {
+
     },
 
     evaluateArm = function(state) {
