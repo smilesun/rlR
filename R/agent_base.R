@@ -9,6 +9,7 @@
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
+    advantage = NULL,
     list.acts = NULL,
     random.cnt = NULL,
     epi.idx = NULL,
@@ -79,7 +80,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
         x = list.x.y$x
         y = list.x.y$y
         self$brain$train(x, y, self$epochs)  # update the policy model
-        # self$updateDT(x, y)
     },
 
     evaluateArm = function(state) {

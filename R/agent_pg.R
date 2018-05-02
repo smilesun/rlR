@@ -9,7 +9,6 @@
 AgentPG = R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
-    advantage = NULL,
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
       self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
@@ -21,15 +20,24 @@ AgentPG = R6Class("AgentPG",
         temp.act = rep(0L, self$actCnt)
         temp.act[act + 1L] =  1L
         label = array(temp.act, dim = c(1L, self$actCnt))
-        mt = label * self$advantage * (-1) # 'loss' maximization
-        return(mt)
+        return(label)
+    },
+
+    replay = function(batchsize) {
+        list.x.y = self$getXY(batchsize)
+        x = list.x.y$x
+        y = list.x.y$y
+        y = y * self$advantage * (+1)
+        self$brain$train(x, y, self$epochs)  # update the policy model
     },
 
     afterEpisode = function(interact) {
         episode.idx = interact$perf$epi.idx
         total.reward = sum(interact$perf$list.reward.epi[[episode.idx]])
         total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
-        adg = total.reward / total.step
+        adg = interact$perf$list.discount.reward.epi[[episode.idx]]
+        adg = adg - mean(adg)
+        adg = adg / sum(adg ^ 2)
         self$setAdvantage(adg)
         self$replay(total.step)   # key difference here
     }

@@ -1,9 +1,10 @@
 Performance = R6Class("Performance",
   public = list(
     list.reward.epi = NULL,  # take reward vector of each episode
+    list.discount.reward.epi = NULL,  # discounted reward per episode
     list.rewardPerEpisode = NULL,  # sum up reward of each episode
-    rewardPerStep = NULL,
     list.discountedRPerEpisode = NULL,
+    rewardPerStep = NULL,
     list.stepsPerEpisode = NULL,
     epi.idx = NULL,
     glogger = NULL,
@@ -11,10 +12,23 @@ Performance = R6Class("Performance",
     initialize = function(glogger) {
       self$glogger = glogger
       self$list.reward.epi = list()
+      self$list.discount.reward.epi = list()
       self$epi.idx = 0L
       self$list.rewardPerEpisode = list()
       self$list.discountedRPerEpisode = list()
       self$list.stepsPerEpisode = list()
+    },
+
+    computeDiscount = function(rewardvec) {
+      discounted_r = vector(mode = "double", length = length(rewardvec))
+      running_add = 0
+      i = length(rewardvec)
+      while (i > 0) {
+        running_add = running_add * 0.99 + rewardvec[i]
+        discounted_r[i] = running_add
+        i = i - 1L
+      }
+      discounted_r
     },
 
     persist = function(path) {
@@ -57,4 +71,3 @@ Performance = R6Class("Performance",
     ),
   private = list(),
   active = list())
-

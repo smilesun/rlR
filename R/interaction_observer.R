@@ -62,9 +62,10 @@ InteractionObserver = R6Class("InteractionObserver",
           self$rl.env$reset()
           self$perf$list.reward.epi[[self$perf$epi.idx]] = vector(mode = "list")
           self$perf$list.reward.epi[[self$perf$epi.idx]] = self$r.vec.epi[1L:self$idx.step]   # the reward vector
+          self$perf$list.discount.reward.epi[[self$perf$epi.idx]] = self$perf$computeDiscount(self$r.vec.epi[1L:self$idx.step])
           self$glogger$log.nn$info("Episode: %i, steps:%i\n", self$idx.episode, self$idx.step)
           cat(sprintf("Episode: %i finished with steps:%i \n", self$idx.episode, self$idx.step))  # same message to console
-          self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step - 1L  # the number of steps
+          self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step  # the number of steps
           self$idx.step = 0L
           self$episode.over.flag = FALSE
           if (self$idx.episode > self$maxiter) {
@@ -98,6 +99,7 @@ InteractionObserver = R6Class("InteractionObserver",
       filename.replay = file.path(rlR.conf4log$filePrefix, "replay.dt.csv")
       filename.experience = file.path(self$conf$conf.log.perf$filePrefix, "experience.dt.csv")
       self$glogger$log.root$info("\n a = BBmisc::load2('%s')", self$conf$conf.log.perf$resultTbPath)
+      cat(sprintf("\n a = BBmisc::load2('%s')", self$conf$conf.log.perf$resultTbPath))
       write.csv(self$rl.agent$mem$dt, file = filename.experience)
       self$glogger$log.root$info("\n b = read.csv('%s')", filename.experience)
       self$rl.env$env$render(close = TRUE)

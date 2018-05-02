@@ -40,7 +40,7 @@ PolicyFactory$policy.predProbRank = function(state, host) {
 
 # softmax will magnify the difference
 PolicyFactory$policy.predsoftmax = function(state, host) {
-      prob = exp(host$vec.arm.q)
+      prob = exp(+1 * host$vec.arm.q)
       prob = prob / sum(prob)
       action = sample.int(host$actCnt, prob = prob)[1L] -  1L
       return(action)
