@@ -1,6 +1,6 @@
-#' @title
+#' @title Policy Gradient
 #'
-#' @description
+#' @description Policy Gradient
 #'
 #' @return returndes
 #' @export
@@ -40,6 +40,7 @@ AgentPG = R6Class("AgentPG",
         adg = adg / sum(adg ^ 2)
         self$setAdvantage(adg)
         self$replay(total.step)   # key difference here
+        if (self$conf$get("policy.name") == "policy.epsilonGreedy") self$decayEpsilon()
     }
     ), # public
   private = list(),

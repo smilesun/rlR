@@ -1,6 +1,6 @@
 #' @title Actor Critic Agent
 #'
-#' @description
+#' @description Actor Critic Agent
 #'
 #' @return returndes
 #' @export
@@ -20,7 +20,9 @@ AgentActorCritic = R6Class("AgentActorCritic",
      replay = function(batchsize) {
           list.res = self$mem$sample.fun(batchsize)
           list.states = lapply(list.res, ReplayMem$extractOldState)
+          ded = cumprod(rep(0.99, batchsize))
           list.targets.actor = lapply(list.res, self$extractActorTarget)
+          list.targets.actor = lapply(1:batchsize, function(x) list.targets.actor[[x]] * ded[x])
           list.targets.critic = lapply(list.res, self$extractCriticTarget)
           x = as.array(t(as.data.table(list.states)))  # array put elements columnwise
           y_actor = rbindlist(lapply(list.targets.actor, as.data.table))
@@ -52,7 +54,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
           critic.next.v = self$brain_critic$pred(next.state)
           r = ReplayMem$extractReward(ins)
           advantage = r + self$conf$get("agent.gamma") * critic.next.v - critic.old.v
-          advantage = (-1) * as.vector(advantage)  # convert (1,1) matrix to scalar
+          advantage = (+1) * as.vector(advantage)  # convert (1,1) matrix to scalar
           vec.act = rep(0L, self$actCnt)
           vec.act[act + 1L] = 1L # the not active action will have exact label
           target = advantage * array(vec.act, dim = c(1L, self$actCnt))
@@ -60,11 +62,14 @@ AgentActorCritic = R6Class("AgentActorCritic",
     },
 
     afterStep = function() {
-        self$replay(self$replay.size)
+        # self$replay(self$replay.size)
     },
 
     afterEpisode = function(interact) {
-
+        episode.idx = interact$perf$epi.idx
+        total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
+        self$replay(total.step)
+        if (self$conf$get("policy.name") == "policy.epsilonGreedy") self$decayEpsilon()
     },
 
     evaluateArm = function(state) {

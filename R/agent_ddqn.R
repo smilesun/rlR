@@ -1,11 +1,11 @@
-#' @title 
-#' 
+#' @title Double Q learning
+#'
 #' @description
-#' Q_u(S, a; \theta_1) = r + Q_u(S', argmax_a' Q_h(S',a'), \theta_1) + delta
+#' %$Q_u(S, a; \theta_1) = r + Q_u(S', argmax_a' Q_h(S',a'), \theta_1) + delta$
 #' @return returndes
-#' @export 
-#' @examples 
-#' x=c(1,2,3) 
+#' @export
+#' @examples
+#' x=c(1,2,3)
 AgentDDQN = R6Class("AgentDDQN",
   inherit = AgentDQN,
   public = list(

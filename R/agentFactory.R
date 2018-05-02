@@ -1,6 +1,6 @@
 #' @title AgentFactory
 #' 
-#' @description
+#' @description AgentFactory
 #' 
 #' @return returndes
 #' @export 

@@ -1,6 +1,6 @@
-#' @title
+#' @title Frozen target Q learning
 #'
-#' @description
+#' @description Frozen target Q learning
 #'
 #' @return returndes
 #' @export

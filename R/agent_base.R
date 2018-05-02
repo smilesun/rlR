@@ -1,6 +1,6 @@
-#' @title
+#' @title Discrete Action
 #'
-#' @description
+#' @description Discrete Action
 #'
 #' @return returndes
 #' @export
@@ -119,6 +119,15 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     afterStep = function() {
       # do nothing
+    },
+
+    decayEpsilon = function() {
+      temp = self$epsilon * self$conf$get("policy.decay")
+      self$epsilon = max(temp, self$conf$get("policy.minEpsilon"))
+      cat(sprintf("Epsilon%f \n", temp))  # same message to console
+      self$glogger$log.nn$info("rand steps:%i \n", self$random.cnt)
+      cat(sprintf("rand steps:%i \n", self$random.cnt))  # same message to console
+      self$random.cnt = 0L
     },
 
     afterEpisode = function() {

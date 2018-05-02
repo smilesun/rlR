@@ -1,6 +1,6 @@
-#' @title
+#' @title Policy method
 #'
-#' @description
+#' @description Policy method
 #'
 #' @param state currently not used at all
 #' @param host value

@@ -100,7 +100,10 @@ dqn_cart_pole = function(iter = 1L) {
 pg_cart_pole = function(iter = 1L) {
   conf = rlR::RLConf$new(
            agent.name = "AgentPG",
-           policy.name = "policy.predsoftmax",
+           policy.name = "policy.epsilonGreedy",
+           policy.epsilon = 0.01,
+           policy.decay = exp(0),
+           policy.minEpsilon = 0.001,
            replay.memname = "Latest",
            replay.epochs = 1L,
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 5e-6, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
@@ -112,11 +115,11 @@ pg_cart_pole = function(iter = 1L) {
 a3c_cart_pole = function(iter = 2L) {
   conf = rlR::RLConf$new(
            agent.name = "AgentActorCritic",
-           policy.name = "policy.predsoftmax",
-           replay.memname = "Uniform",
-           replay.batchsize = 50L,
-           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"),
-          agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.001)")
+           policy.name = "policy.epsilonGreedy",
+           replay.memname = "Latest",
+           replay.batchsize = 5L,
+           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0.0)"),
+          agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)")
            )
   interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf)
   perf = interact$run(iter)

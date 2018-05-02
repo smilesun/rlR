@@ -20,7 +20,7 @@ rlR.conf.avail = names(rlR.conf.default)
 
 rlR.conf4log = list(
 resultTbPath = "Perf.RData",  #  will be put under ROOTFOLDERNAME
-ROOTFOLDERNAME = "logout",
+ROOTFOLDERNAME = "inst/logout",  # R only allows for inst directory to exist
 LOGGERNAMENN = "nn.logger",
 LOGGERNAMERL = "rl.logger",
 NNSufix = "nn.log",

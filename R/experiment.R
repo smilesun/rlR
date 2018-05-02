@@ -14,9 +14,9 @@ gymEnvFactory = function(name ="CartPole-v0", ...) {
 }
 
 
-#' @title
+#' @title Make Gym Open AI experiment
 #'
-#' @description
+#' @description Make Gym Open AI experiment
 #'
 #' @param conf value
 #' @return returndes
