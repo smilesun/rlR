@@ -2,13 +2,16 @@ dqn_mountain_car = function(iter = 1L) {
   conf = rlR::RLConf$new(
            agent.name = "AgentDQN",
            policy.epsilon = 1,
-           policy.decay = exp(-0.1),
+           policy.decay = exp(-0.001),
            policy.name = "policy.epsilonGreedy",
-           replay.batchsize = 25L,
+           replay.memname = "Uniform",
+           replay.batchsize = 60L,
            interact.beforeActPipe = c("render", "epi-step-log"),
-           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0)")
+           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0)")
            )
-  interact = rlR::makeGymExperiment(name = "MountainCar-v0", conf = conf)
+  interact = rlR::makeGymExperiment(name = "MountainCar-v0", conf = conf, actcnt = 2L, act.cheat = function(x) {
+  ifeleasier= 1L, 0L, 2L)  # we do not need the stay action, this is a way to cheat but it makes learning much easier.
+           })
   perf = interact$run(iter)
   return(perf)
 }

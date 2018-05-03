@@ -52,4 +52,3 @@ EnvGym = R6Class("EnvGym",
   private = list(),
   active = list()
   )
-
