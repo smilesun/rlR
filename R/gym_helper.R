@@ -10,7 +10,7 @@ dqn_mountain_car = function(iter = 1L) {
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0)")
            )
   interact = rlR::makeGymExperiment(name = "MountainCar-v0", conf = conf, actcnt = 2L, act.cheat = function(x) {
-  ifeleasier= 1L, 0L, 2L)  # we do not need the stay action, this is a way to cheat but it makes learning much easier.
+  ifelse(x == 1L, 0L, 2L)  # we do not need the stay action, this is a way to cheat but it makes learning much faster.
            })
   perf = interact$run(iter)
   return(perf)
