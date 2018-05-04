@@ -168,6 +168,9 @@ a3c_atari = function(iter = 2L) {
           agent.name = "AgentActorCritic",
           policy.name = "policy.epsilonGreedy",
           replay.memname = "Latest",
+          policy.epsilon = 1,
+          policy.decay = exp(-0.2),
+          policy.minEpsilon = 0.01,
           agent.nn.arch = list(nhidden = 64, act1 = "sigmoid", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"),
           agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)")
           )
@@ -175,6 +178,22 @@ a3c_atari = function(iter = 2L) {
   perf = interact$run(iter)
   return(perf)
 }
+
+a3c_atari0 = function(iter = 2L) {
+  conf = rlR::RLConf$new()
+  conf$set(
+          agent.name = "AgentActorCritic",
+          policy.name = "policy.epsilonGreedy",
+          replay.memname = "Latest",
+          agent.nn.arch = list(nhidden = 64, act1 = "sigmoid", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"),
+          agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)")
+          )
+  interact = rlR::makeGymExperiment(name = "KungFuMaster-ram-v0", conf = conf)
+  perf = interact$run(iter)
+  return(perf)
+}
+
+
 
 mlr_mountain_car = function(iter = 1L) {
   conf = rlR::RLConf$new()
