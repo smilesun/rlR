@@ -11,11 +11,18 @@ AgentActorCritic = R6Class("AgentActorCritic",
   public = list(
     brain_actor = NULL,  # cross entropy loss
     brain_critic = NULL, # mse loss
+    critic_yhat = NULL,
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt, stateCnt, conf = conf)
       self$brain_actor = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
       self$brain_critic = SurroNN$new(actCnt = 1L, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch.critic"))
       },
+
+    calculateTDError = function(ins) {
+      vec.mt = self$extractCriticTarget(ins)
+      err = vec.mt - self$critic_yhat
+      mean(err ^ 2)
+    },
 
      replay = function(batchsize) {
           list.res = self$mem$sample.fun(batchsize)
@@ -39,6 +46,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
           next.state = ReplayMem$extractNextState(ins)
           next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
           next.V = self$brain_critic$pred(next.state)
+          self$critic_yhat = next.V
           r = ReplayMem$extractReward(ins)
           y = r + self$conf$get("agent.gamma") * next.V
           return(y)
@@ -84,15 +92,15 @@ AgentActorCritic = R6Class("AgentActorCritic",
     )
   )
 
-a3c_cart_pole = function(iter = 200L) {
+a3c_cart_pole0 = function(iter = 200L) {
   conf = rlR::RLConf$new(
            agent.name = "AgentActorCritic",
            policy.name = "EpsilonGreedy",
            policy.epsilon = 1,
            policy.decay = exp(-0.05),
            replay.memname = "Latest",
-           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0.0)"),
-          agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)")
+           agent.nn.arch = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0.0)"),
+          agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)")
            )
   interact = rlR::makeGymExperiment(sname = "CartPole-v0", "AgentActorCritic", conf = conf)
   perf = interact$run(iter)
@@ -103,6 +111,23 @@ a3c_cart_pole1 = function(iter = 50L) {
   conf = rlR::RLConf$new(
            agent.name = "AgentActorCritic",
            policy.name = "EpsilonGreedy",
+           replay.memname = "LatestProb",
+           replay.batchsize = 5L,
+           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0.0)"),
+          agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)")
+           )
+  interact = rlR::makeGymExperiment(sname = "CartPole-v0", "AgentActorCritic", conf = conf)
+  perf = interact$run(iter)
+  return(perf)
+}
+
+a3c_cart_pole2 = function(iter = 50L) {
+  conf = rlR::RLConf$new(
+           agent.name = "AgentActorCritic",
+           policy.name = "EpsilonGreedy",
+           policy.epsilon = 1,
+           policy.decay = exp(-0.25),
+           policy.minEpsilon = 0,
            replay.memname = "LatestProb",
            replay.batchsize = 5L,
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0.0)"),

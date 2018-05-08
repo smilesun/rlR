@@ -37,6 +37,7 @@ ReplayMem = R6Class("ReplayMem",
       if (is.null(idx)) idx = 1L:self$len
       td.list = lapply(idx, function(i) self$agent$calculateTDError(self$samples[[i]]))
       updatedTDError = unlist(td.list)
+      cat(sprintf("mean TD error: %f\n", mean(updatedTDError)))
       old.delta = self$dt[idx, "delta"]
       self$dt[idx, "delta"] = updatedTDError
       self$updatePriority()
