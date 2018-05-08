@@ -40,10 +40,24 @@ AgentPG = R6Class("AgentPG",
         adg = adg / sum(adg ^ 2)
         self$setAdvantage(adg)
         self$replay(total.step)   # key difference here
-        if (self$conf$get("policy.name") == "policy.epsilonGreedy") self$decayEpsilon()
+
     }
     ), # public
   private = list(),
   active = list(
     )
   )
+
+pg = function(iter = 500L, name = "CartPole-v0") {
+  conf = rlR::RLConf$new(
+           policy.name = "EpsilonGreedy",
+           policy.epsilon = 0.01,
+           policy.decay = exp(0),
+           policy.minEpsilon = 0.001,
+           replay.memname = "Latest",
+           replay.epochs = 1L,
+           agent.nn.arch = list(nhidden = 64, act1 = "sigmoid", act2 = "softmax", loss = "categorical_crossentropy", lr = 5e-5, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
+  interact = rlR::makeGymExperiment(sname = name, aname = "AgentPG", conf = conf)
+  perf = interact$run(iter)
+  return(perf)
+}

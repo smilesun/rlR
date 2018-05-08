@@ -62,14 +62,14 @@ AgentActorCritic = R6Class("AgentActorCritic",
     },
 
     afterStep = function() {
-        # self$replay(self$replay.size)
     },
 
     afterEpisode = function(interact) {
         episode.idx = interact$perf$epi.idx
         total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
         self$replay(total.step)
-        if (self$conf$get("policy.name") == "policy.epsilonGreedy") self$decayEpsilon()
+        self$policy$afterEpisode()
+        self$mem$afterEpisode()
     },
 
     evaluateArm = function(state) {
@@ -83,3 +83,33 @@ AgentActorCritic = R6Class("AgentActorCritic",
   active = list(
     )
   )
+
+a3c_cart_pole = function(iter = 200L) {
+  conf = rlR::RLConf$new(
+           agent.name = "AgentActorCritic",
+           policy.name = "EpsilonGreedy",
+           policy.epsilon = 1,
+           policy.decay = exp(-0.05),
+           replay.memname = "Latest",
+           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0.0)"),
+          agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)")
+           )
+  interact = rlR::makeGymExperiment(sname = "CartPole-v0", "AgentActorCritic", conf = conf)
+  perf = interact$run(iter)
+  return(perf)
+}
+
+a3c_cart_pole1 = function(iter = 50L) {
+  conf = rlR::RLConf$new(
+           agent.name = "AgentActorCritic",
+           policy.name = "EpsilonGreedy",
+           replay.memname = "LatestProb",
+           replay.batchsize = 5L,
+           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0.0)"),
+          agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)")
+           )
+  interact = rlR::makeGymExperiment(sname = "CartPole-v0", "AgentActorCritic", conf = conf)
+  perf = interact$run(iter)
+  return(perf)
+}
+

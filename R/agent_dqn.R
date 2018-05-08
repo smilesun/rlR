@@ -28,15 +28,36 @@ AgentDQN = R6Class("AgentDQN",
     },
 
     afterEpisode = function(interact) {
-        temp = self$epsilon * self$conf$get("policy.decay")
-        self$epsilon = max(temp, self$conf$get("policy.minEpsilon"))
-        cat(sprintf("Epsilon%f \n", temp))  # same message to console
-        self$glogger$log.nn$info("rand steps:%i \n", self$random.cnt)
-        cat(sprintf("rand steps:%i \n", self$random.cnt))  # same message to console
-        self$random.cnt = 0L
+          self$policy$afterEpisode()
+          self$mem$afterEpisode()
     }
     ), # public
   private = list(),
   active = list(
     )
   )
+
+dqn_cart_pole = function(iter = 500L) {
+  conf = rlR::RLConf$new(
+           policy.epsilon = 1,
+           policy.decay = exp(-0.2),
+           policy.name = "EpsilonGreedy",
+           replay.batchsize = 50L,
+           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
+  interact = rlR::makeGymExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = conf)
+  perf = interact$run(iter)
+  return(perf)
+}
+
+dqn_cart_pole1 = function(iter = 500L) {
+  conf = rlR::RLConf$new(
+           policy.epsilon = 1,
+           policy.decay = exp(-0.2),
+           policy.name = "EpsilonGreedy",
+           replay.memname = "PrioritizedRank",
+           replay.batchsize = 50L,
+           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
+  interact = rlR::makeGymExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = conf)
+  perf = interact$run(iter)
+  return(perf)
+}

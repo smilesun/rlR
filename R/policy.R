@@ -9,6 +9,7 @@
 #' @examples
 #' x=c(1,2,3)
 PolicyFactory = R6Class("PolicyFactory")
+
 PolicyFactory$epsilonPolicy = function(state = NULL, host) {
       if (runif(1L) < host$epsilon) {
         host$sampleRandomAct()
@@ -32,6 +33,16 @@ PolicyFactory$policy.epsilonGreedy = function(state, host) {
       return(action)
     }
 
+# all suboptimal arm probability sum up to epsilon with probability epsilon/actCnt
+PolicyFactory$probEpsilon = function(state, host) {
+      prob = rep(host$epsilon, host$actCnt) / (host$actCnt)
+      optarm = which.max(host$vec.arm.q)
+      prob[optarm] = prob[optarm] + 1.0 - host$epsilon
+      action  = sample.int(host$actCnt, prob = prob)[1L] -  1L
+      return(action)
+}
+
+#
 PolicyFactory$policy.predProbRank = function(state, host) {
       prob = order(host$vec.arm.q)
       action = sample.int(host$actCnt, prob = prob)[1L] -  1L
@@ -46,16 +57,54 @@ PolicyFactory$policy.predsoftmax = function(state, host) {
       return(action)
     }
 
-# all suboptimal arm probability sum up to epsilon with probability epsilon/actCnt
-PolicyFactory$probEpsilon = function(state, host) {
-      prob = rep(host$epsilon, host$actCnt) / (host$actCnt)
-      optarm = which.max(host$vec.arm.q)
-      prob[optarm] = prob[optarm] + 1.0 - host$epsilon
-      action  = sample.int(host$actCnt, prob = prob)[1L] -  1L
-      return(action)
-}
-
-PolicyFactory$make = function(name, host) {
+PolicyFactory$make0 = function(name, host) {
   if (name %nin% names(PolicyFactory)) stop("no such policy!")
   function(state) PolicyFactory[[name]](state, host)
 }
+
+PolicyFactory$make = function(name, host) {
+  fn = paste0("Policy", name)
+  if (fn %nin% listClass("Policy")) stop("no such policy!")
+  return(eval(parse(text = sprintf("%s$new(host = host)", fn))))
+}
+
+#' @export
+Policy = R6Class("Policy",
+  public = list(
+    host = NULL,
+    initialize = function(host) {
+      self$host = host
+    },
+
+    afterEpisode = function() {
+    }
+  )
+  )
+
+#' @export
+PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
+  inherit = Policy,
+  public = list(
+    act = function(state) {
+      PolicyFactory$policy.epsilonGreedy(state, self$host)
+    },
+
+    afterEpisode = function() {
+      self$host$decayEpsilon()
+    }
+    )
+  )
+
+#' @export
+PolicyProbEpsilon = R6Class("PolicyProbEpsilon",
+  inherit = PolicyEpsilonGreedy,
+  public = list(
+    act = function(state) {
+      PolicyFactory$probEpsilon(state, self$host)
+    },
+
+    afterEpisode = function() {
+      self$host$decayEpsilon()
+    }
+    )
+  )

@@ -1,3 +1,4 @@
+#' @export
 ReplayMem = R6Class("ReplayMem",
   public = list(
     samples = NULL,
@@ -6,51 +7,52 @@ ReplayMem = R6Class("ReplayMem",
     replayed.idx = NULL,
     conf = NULL,
     agent = NULL,
+    dt.temp = NULL,
+    smooth = NULL,
     initialize = function(agent, conf) {
+      self$smooth = conf$get("replay.mem.laplace.smoother")
       self$samples = list()
       self$dt = data.table()
       self$len = 0L
       self$conf = conf
       self$agent = agent
+      self$dt.temp = data.table("delta" = NA, "priorityRank" = NA, "priorityAbs" = NA, "priorityDelta2" = NA, "deltaOfdelta" = NA, "deltaOfdeltaPercentage" = NA)
+      self$dt.temp = self$dt.temp[, lapply(.SD, as.numeric)]
     },
 
-    mkInst = function(state.old, action, reward, state.new, delta = NULL, context = NULL) {
-      if (is.null(delta)) delta = NA
-      ins = list(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = delta)
-      # delta = self$agent$calculateTDError(ins)
-      ins$delta = delta
-      ins$deltaOfdelta = NA
-      ins$deltaOfdeltaPercentage = NA
-      ins$context = context  # for extension
-      ins
+    mkInst = function(state.old, action, reward, state.new) {
+      list(state.old = state.old, action = action, reward = reward, state.new = state.new)
     },
 
     add = function(ins) {
       len = length(self$samples)
       self$samples[[len + 1L]] = ins
       self$len = self$len + 1L
-      mcolnames = names(unlist(ins))
       mdt = data.table(t(unlist(ins)))
-      dt.temp = data.table("priorityAbs" = NA, "priorityRank" = NA, "priorityDelta2" = NA)  # FIXME: is there a way to predefine this somewhere else instead of hard coded here?
-      mdt = cbind(mdt, dt.temp)
+      mdt = cbind(mdt, self$dt.temp)
       self$dt = rbindlist(list(self$dt, mdt))
+    },
+
+    updateDT = function(idx = NULL) {
+      if (is.null(idx)) idx = 1L:self$len
+      td.list = lapply(idx, function(i) self$agent$calculateTDError(self$samples[[i]]))
+      updatedTDError = unlist(td.list)
+      old.delta = self$dt[idx, "delta"]
+      self$dt[idx, "delta"] = updatedTDError
       self$updatePriority()
     },
 
-    updateDT = function(yhat, y) {
-      err = yhat - y
-      updatedTDError = rowSums(err ^ 2)
-      old.delta = self$dt[self$mem$replayed.idx, "delta"]
-      self$dt[self$replayed.idx, "delta"] = updatedTDError
-      self$dt[self$replayed.idx, "deltaOfdelta"] = updatedTDError - old.delta
-      self$dt[self$replayed.idx, "deltaOfdeltaPercentage"] = abs(self$dt[self$replayed.idx, "deltaOfdelta"]) / abs(old.delta)
-      self$updatePriority()
-  },
+    afterEpisode = function(interact) {
+      # do nothing
+    },
+
+    afterStep = function() {
+      # do nothing
+    },
 
     updatePriority = function() {
-      self$dt[, "priorityAbs"] = (abs(self$dt[, "delta"]) + self$conf$get("replay.mem.laplace.smoother"))
+      self$dt[, "priorityAbs"] =  abs(self$dt[, "delta"]) + self$smooth
       self$dt[, "priorityRank"] = order(self$dt[, "delta"])
-      self$dt[, "priorityDelta2"] = abs(self$dt[, "deltaOfdelta"])
     }
     ),
   private = list(),
@@ -75,6 +77,7 @@ ReplayMem$extractNextState = function(x) {
       return(x[[4L]])
     }
 
+#' @export
 ReplayMemUniform = R6Class("ReplayMemUniform",
   inherit = ReplayMem,
   public = list(
@@ -90,6 +93,7 @@ ReplayMemUniform = R6Class("ReplayMemUniform",
   )
 
 
+#' @export
 ReplayMemLatest = R6Class("ReplayMemLatest",
   inherit = ReplayMem,
   public = list(
@@ -104,6 +108,7 @@ ReplayMemLatest = R6Class("ReplayMemLatest",
   active = list()
   )
 
+#' @export
 ReplayMemLatestProb = R6Class("ReplayMemLatestProb",
   inherit = ReplayMem,
   public = list(
@@ -112,12 +117,17 @@ ReplayMemLatestProb = R6Class("ReplayMemLatestProb",
       self$replayed.idx = sample(self$len, prob = 1L:self$len, size = k)
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
+    },
+
+   afterEpisode = function() {
+      self$updateDT()
     }
     ),
   private = list(),
   active = list()
   )
 
+#' @export
 ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
   inherit = ReplayMem,
   public = list(
@@ -136,23 +146,34 @@ ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
   active = list()
   )
 
+#' @export
 ReplayMemPrioritizedRank = R6Class("ReplayMemPrioritizedRank",
   inherit = ReplayMem,
   public = list(
     sample.fun = function(k) {
       k = min(k, self$len)
-      self$replayed.idx = sample.int(self$len, prob = self$dt$priorityRank)[1L:k]
+      if (any(is.na(self$dt$priorityRank))) self$replayed.idx = sample.int(self$len)
+      else self$replayed.idx = sample.int(self$len, prob = self$dt$priorityRank)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
+    },
+
+    afterEpisode = function() {
+      self$updateDT()
+    },
+
+    afterStep = function() {
     }
     ),
   private = list(),
   active = list()
   )
 
-ReplayMem$factory = function(name) {
+ReplayMem$factory = function(name, agent, conf) {
   all = getNamespaceExports("rlR")
   mem.idx = which(sapply(all, function(x) grepl("ReplayMem", x)))
   assert(paste0("ReplayMem", name) %in% all[mem.idx])
-  return(eval(parse(text = sprintf("ReplayMem%s$new", name))))
+  tex = sprintf("ReplayMem%s$new(agent = agent, conf = conf)", name)
+  mem = eval(parse(text = tex))
+  return(mem)
 }

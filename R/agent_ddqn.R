@@ -66,7 +66,7 @@ AgentDDQN = R6Class("AgentDDQN",
       self$toss()
       assert(class(state) == "array")
       self$evaluateArm(state)
-      self$policy(state)
+      self$policy$act(state)
     }
     ), # public
   private = list(),

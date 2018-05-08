@@ -44,27 +44,22 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$glogger = RLLog$new(conf)
       self$epochs = conf$get("replay.epochs")
       memname = conf$get("replay.memname")
-      self$mem = ReplayMem$factory(memname)(agent = self, conf = conf)
+      self$mem = ReplayMem$factory(memname, agent = self, conf = conf)
       policy_fun = conf$get("policy.name")
       self$policy = PolicyFactory$make(policy_fun, self)
     },
 
     # transform observation to  the replay memory
-    observe = function(state.old, action, reward, state.new, episode = 1L, step = 1L, action.new = NULL, delta = NULL, context = NULL) {
-      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, delta = NULL, context = context)
+    observe = function(state.old, action, reward, state.new, episode = 1L, step = 1L, action.new = NULL) {
+      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new)
       self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
       self$mem$add(ins)
     },
 
     calculateTDError = function(ins) {
-      vec.mt = self$extractTarget(ins)
+      vec.mt = self$extractTarget(ins)  # self$yhat is calculated inside
       err = vec.mt - self$yhat
       mean(err ^ 2)
-    },
-
-    updateDT = function(x, y) {
-      yhat = self$brain$pred(x)
-      self$mem$updateDT(yhat, y)
     },
 
     extractTarget = function(ins) {
@@ -92,9 +87,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     getXY = function(batchsize) {
         list.res = self$mem$sample.fun(batchsize)
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
-        #for (i in self$mem$replayed.idx) {
-        #  self$glogger$log.nn$info("%s", self$mem$samples[[i]])
-        #}
         list.states = lapply(list.res, ReplayMem$extractOldState)
         list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience
         self$list.acts = lapply(list.res, ReplayMem$extractAction)
@@ -108,7 +100,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     act = function(state) {
       assert(class(state) == "array")
       self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
-      act = self$policy(state)  # returning the chosen action
+      act = self$policy$act(state)  # returning the chosen action
       self$glogger$log.nn$info("action: %d", act)
       return(act)
     },
@@ -131,7 +123,8 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     },
 
     afterEpisode = function() {
-      # do nothing
+      self$policy$afterEpisode()
+      self$mem$afterEpisode()
     }
     ), # public
   private = list(),

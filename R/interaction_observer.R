@@ -16,8 +16,12 @@ InteractionObserver = R6Class("InteractionObserver",
     list.cmd = NULL,
     replay.size = NULL,
     maxiter = NULL,
+    render = NULL,
     initialize = function(rl.env, rl.agent, conf, glogger) {
       self$conf = conf
+      self$render = self$conf$get("render")
+      temp = NULL
+      if (self$render) temp = "render"
       self$maxiter = conf$get("interact.maxiter")
       self$glogger = glogger
       self$continue.flag = TRUE
@@ -44,7 +48,7 @@ InteractionObserver = R6Class("InteractionObserver",
           self$rl.agent$afterStep()
         })
       self$list.observers = list(
-        "beforeAct" = self$list.cmd[c("before.act", ifelse(self$conf$get("render"), "render", NULL))],
+        "beforeAct" = self$list.cmd[c("before.act", temp)],
         "afterStep" = self$list.cmd["after.step"]
         )
     },
