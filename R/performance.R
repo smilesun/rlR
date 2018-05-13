@@ -36,6 +36,15 @@ Performance = R6Class("Performance",
       save(perf, file = path)
     },
 
+
+    getAccPerf = function(interval = 100L) {
+      self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))
+      epi.idx = length(self$list.rewardPerEpisode)
+      winstart = max(1L, epi.idx - interval)
+      vec = unlist(self$list.rewardPerEpisode)
+      mean(vec[winstart:epi.idx])
+    },
+
     toString = function() {
       s1 = sprintf("steps per episode:%s \n", toString(self$list.stepsPerEpisode))
       self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))

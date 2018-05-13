@@ -41,7 +41,7 @@ InteractionObserver = R6Class("InteractionObserver",
         },
         "after.step" = function() {
           self$glogger$log.nn$info("reward %f", self$s_r_done_info[[2L]])
-          self$rl.agent$observe(state.old = self$s.old, action = self$action, reward = self$s_r_done_info[[2L]], state.new = self$s_r_done_info[[1L]])
+          self$rl.agent$observe(state.old = self$s.old, action = self$action, reward = self$s_r_done_info[[2L]], state.new = self$s_r_done_info[[1L]], done = self$s_r_done_info[[3L]])
           self$r.vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
           self$idx.step = self$idx.step + 1L
           self$checkEpisodeOver()
@@ -70,6 +70,9 @@ InteractionObserver = R6Class("InteractionObserver",
           self$glogger$log.nn$info("Episode: %i, steps:%i\n", self$idx.episode, self$idx.step)
           cat(sprintf("Episode: %i finished with steps:%i \n", self$idx.episode, self$idx.step))  # same message to console
           self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step  # the number of steps
+
+          rew = self$perf$getAccPerf(100)
+          cat(sprintf("Last %d episodes average reward %f \n", 100, rew))  # same message to console
           self$idx.step = 0L
           self$episode.over.flag = FALSE
           if (self$idx.episode > self$maxiter) {
@@ -107,6 +110,7 @@ InteractionObserver = R6Class("InteractionObserver",
       write.csv(self$rl.agent$mem$dt, file = filename.experience)
       self$glogger$log.root$info("\n b = read.csv('%s')", filename.experience)
       self$rl.env$env$render(close = TRUE)
+      perf <<- self$perf
     }) # try catch
     } # function
     ), # public
