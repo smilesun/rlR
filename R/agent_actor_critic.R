@@ -94,13 +94,12 @@ AgentActorCritic = R6Class("AgentActorCritic",
 
 a3c_cart_pole0 = function(iter = 200L) {
   conf = rlR::RLConf$new(
-           agent.name = "AgentActorCritic",
            policy.name = "EpsilonGreedy",
            policy.epsilon = 1,
-           policy.decay = exp(-0.05),
+           policy.decay = exp(-0.001),
            replay.memname = "Latest",
-           agent.nn.arch = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0.0)"),
-          agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)")
+           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0)", bias_regularizer = "regularizer_l2(l=0.0)"),
+          agent.nn.arch.critic = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)")
            )
   interact = rlR::makeGymExperiment(sname = "CartPole-v0", "AgentActorCritic", conf = conf)
   perf = interact$run(iter)

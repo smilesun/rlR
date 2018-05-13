@@ -15,20 +15,33 @@ AgentPG = R6Class("AgentPG",
 },
 
     # extract target from one instance of replay memory, which is the one hot encoded action multiplied by the advantage of this episode
-    extractTarget = function(ins) {
+    extractTarget = function(i) {
+        ins = self$list.replay[[i]]
         act =  ReplayMem$extractAction(ins)
         temp.act = rep(0L, self$actCnt)
-        temp.act[act + 1L] =  1L
-        label = array(temp.act, dim = c(1L, self$actCnt))
+        temp.act[act] =  1L
+        label = temp.act
+        #label = array(temp.act, dim = c(1L, self$actCnt))
         return(label)
     },
 
+    getXY = function(batchsize) {
+        self$list.replay = self$mem$sample.fun(batchsize)
+        self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
+        list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
+        list.states.next = lapply(self$list.replay, ReplayMem$extractNextState)
+        self$p.old = self$getYhat(list.states.old)
+        self$p.next = self$getYhat(list.states.next)
+        list.targets = lapply(1:length(self$list.replay), self$extractTarget)
+        self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
+        self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
+        self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
+    },
+
     replay = function(batchsize) {
-        list.x.y = self$getXY(batchsize)
-        x = list.x.y$x
-        y = list.x.y$y
-        y = y * self$advantage * (+1)
-        self$brain$train(x, y, self$epochs)  # update the policy model
+        self$getXY(batchsize)
+        self$replay.y = self$replay.y * self$advantage * (+1)
+        self$brain$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
     },
 
     afterEpisode = function(interact) {
@@ -48,12 +61,12 @@ AgentPG = R6Class("AgentPG",
     )
   )
 
-pg = function(iter = 500L, name = "CartPole-v0") {
+pg = function(iter = 5000L, name = "CartPole-v0") {
   conf = rlR::RLConf$new(
+           policy.epsilon = 1,
+           policy.decay = exp(-0.001),
+           policy.minEpsilon = 0.01,
            policy.name = "EpsilonGreedy",
-           policy.epsilon = 0.01,
-           policy.decay = exp(0),
-           policy.minEpsilon = 0.001,
            replay.memname = "Latest",
            replay.epochs = 1L,
            agent.nn.arch = list(nhidden = 64, act1 = "sigmoid", act2 = "softmax", loss = "categorical_crossentropy", lr = 5e-5, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))

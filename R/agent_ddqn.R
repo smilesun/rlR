@@ -12,6 +12,8 @@ AgentDDQN = R6Class("AgentDDQN",
     brain2 = NULL,
     brain_u = NULL,  # u: to be updated
     brain_h = NULL,  # h: to help
+    model = NULL,  # temporary variable
+    p.next.h = NULL,
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt, stateCnt, conf)
       self$brain2 = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
@@ -28,26 +30,53 @@ AgentDDQN = R6Class("AgentDDQN",
 
       },
 
+      getYhat = function(list.states.old) {
+          nr = length(list.states.old)
+          p = length(list.states.old[[1]])
+          old.state = Reduce(rbind, list.states.old)
+          old.state = array(old.state, dim = c(nr, p))
+          p.old = self$model$pred(old.state)
+          return(p.old)
+        },
+
+      getXY = function(batchsize) {
+        self$list.replay = self$mem$sample.fun(batchsize)
+        self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
+        list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
+        list.states.next = lapply(self$list.replay, ReplayMem$extractNextState)
+        self$model = self$brain_u
+        self$p.old = self$getYhat(list.states.old)
+        self$p.next = self$getYhat(list.states.next)
+        self$model = self$brain_h
+        self$p.next.h = self$getYhat(list.states.next)
+        list.targets = lapply(1:length(self$list.replay), self$extractTarget)
+        self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
+        self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
+        self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
+    },
+
+
       replay = function(batchsize) {
-          list.x.y = self$getXY(batchsize)
-          x = list.x.y$x
-          y = list.x.y$y
-          self$brain_u$train(x, y)  # update the policy model
+          self$getXY(batchsize)
+          self$brain_u$train(self$replay.x, self$replay.y)
       },
 
-    extractTarget = function(ins) {
-          old.state = ReplayMem$extractOldState(ins)
-          old.state = array_reshape(old.state, dim = c(1L, dim(old.state)))
-          yhat = self$brain_u$pred(old.state)
-          next.state = ReplayMem$extractNextState(ins)
-          next.state = array_reshape(next.state, dim = c(1L, dim(next.state)))
-          vec.next.Q.u = self$brain_u$pred(next.state)
-          vec.next.Q.h = self$brain_h$pred(next.state)
-          a_1 = which.max(vec.next.Q.u)  # action index start from 1L
+    extractTarget = function(i) {
+          ins = self$list.replay[[i]]
+          act2update =  ReplayMem$extractAction(ins)
+          yhat = self$p.old[i, ]
+          vec.next.Q.u = self$p.next[i, ]
+          vec.next.Q.h = self$p.next.h[i, ]
+          a_1 = which.max(vec.next.Q.h)
           r = ReplayMem$extractReward(ins)
-          target = r + self$conf$get("agent.gamma") * vec.next.Q.h[a_1]
+          done = ReplayMem$extractDone(ins)
+          if (done) {
+            target = r
+          } else {
+            target = r + self$gamma * vec.next.Q.u[a_1]
+          }
           mt = yhat
-          mt[a_1] = target  # the not active action will have exact label
+          mt[act2update] = target
         return(mt)
     },
 
@@ -74,3 +103,14 @@ AgentDDQN = R6Class("AgentDDQN",
     )
   )
 
+ddqn_cart_pole = function(iter = 500L) {
+  conf = rlR::RLConf$new(
+           policy.epsilon = 1,
+           policy.decay = exp(-0.001),
+           policy.name = "EpsilonGreedy",
+           replay.batchsize = 64L,
+           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+  interact = rlR::makeGymExperiment(sname = "CartPole-v0", aname = "AgentDDQN", conf = conf)
+  perf = interact$run(iter)
+  return(perf)
+}

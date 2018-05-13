@@ -8,9 +8,7 @@ agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse",
 policy.epsilon = 0.01,
 policy.minEpsilon = 0.01,
 policy.decay = 1, # exp(-1.0 / 10),
-policy.name = "policy.epsilonGreedy",
 replay.memname = "Uniform",
-replay.batchsize = 5L,  # otherwise keras too slow
 replay.mem.laplace.smoother = 0.001,
 replay.epochs = 1L,
 interact.maxiter = 500L

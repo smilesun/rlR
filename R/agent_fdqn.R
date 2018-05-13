@@ -16,10 +16,8 @@ AgentFDQN = R6Class("AgentFDQN",
     },
 
       replay = function(batchsize) {
-          list.x.y = self$getXY(batchsize)
-          x = list.x.y$x
-          y = list.x.y$y
-          self$brain.u$train(x, y)  # update the policy model
+          self$getXY(batchsize)
+          self$brain.u$train(self$replay.x, self$replay.y)  # update the policy model
       },
 
       updateModel = function() {
@@ -42,13 +40,11 @@ AgentFDQN = R6Class("AgentFDQN",
 
 fdqn_cart = function(iter = 500L) {
   conf = rlR::RLConf$new(
-           agent.name = "AgentFDQN",
            policy.epsilon = 1,
-           policy.minEpsilon = 0,
-           policy.decay = exp(-0.05),
+           policy.minEpsilon = 0.01,
+           policy.decay = exp(-0.001),
            policy.name = "EpsilonGreedy",
-           replay.batchsize = 5L,
-           replay.memname = "PrioritizedAbs",
+           replay.batchsize = 64L,
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
   interact = rlR::makeGymExperiment(sname = "CartPole-v0", aname = "AgentFDQN", conf = conf)
   perf = interact$run(iter)
