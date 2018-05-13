@@ -13,6 +13,7 @@ SurroNN = R6Class("SurroNN",
     },
 
     train = function(X_train, Y_train, epochs = 1L) {
+      #keras::fit(object = self$model, x = X_train, y = Y_train, batch_size = 32, validation_split = 0.125, epochs = epochs, verbose = 0)
       keras::fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
     },
 

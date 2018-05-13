@@ -103,19 +103,19 @@ dqn_atari = function(iter = 1L) {
 }
 
 
-dqn_cart_pole = function(iter = 1L) {
-  conf = rlR::RLConf$new(
-           agent.name = "AgentDQN",
-           policy.epsilon = 1,
-           policy.decay = exp(-0.01),
-           policy.name = "policy.epsilonGreedy",
-           replay.batchsize = 50L,
-           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
-  interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf)
-  perf = interact$run(iter)
-  return(perf)
-}
-
+# dqn_cart_pole = function(iter = 1L) {
+#   conf = rlR::RLConf$new(
+#            agent.name = "AgentDQN",
+#            policy.epsilon = 1,
+#            policy.decay = exp(-0.01),
+#            policy.name = "policy.epsilonGreedy",
+#            replay.batchsize = 50L,
+#            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
+#   interact = rlR::makeGymExperiment(name = "CartPole-v0", conf = conf)
+#   perf = interact$run(iter)
+#   return(perf)
+# }
+# 
 pg = function(iter = 1L, name = "MountainCar-v0") {
   conf = rlR::RLConf$new(
            agent.name = "AgentPG",

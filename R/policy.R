@@ -19,7 +19,7 @@ PolicyFactory$epsilonPolicy = function(state = NULL, host) {
     }
 
 PolicyFactory$greedyPolicy = function(state, host) {
-      action = which.max(host$vec.arm.q) - 1L  # always use OpenAI gym convention
+      action = which.max(host$vec.arm.q)  # always use OpenAI gym convention
       return(action)
     }
 
@@ -38,14 +38,14 @@ PolicyFactory$probEpsilon = function(state, host) {
       prob = rep(host$epsilon, host$actCnt) / (host$actCnt)
       optarm = which.max(host$vec.arm.q)
       prob[optarm] = prob[optarm] + 1.0 - host$epsilon
-      action  = sample.int(host$actCnt, prob = prob)[1L] -  1L
+      action  = sample.int(host$actCnt, prob = prob)[1L]
       return(action)
 }
 
 #
 PolicyFactory$policy.predProbRank = function(state, host) {
       prob = order(host$vec.arm.q)
-      action = sample.int(host$actCnt, prob = prob)[1L] -  1L
+      action = sample.int(host$actCnt, prob = prob)[1L]
       return(action)
     }
 
@@ -53,7 +53,7 @@ PolicyFactory$policy.predProbRank = function(state, host) {
 PolicyFactory$policy.predsoftmax = function(state, host) {
       prob = exp(+1 * host$vec.arm.q)
       prob = prob / sum(prob)
-      action = sample.int(host$actCnt, prob = prob)[1L] -  1L
+      action = sample.int(host$actCnt, prob = prob)[1L]
       return(action)
     }
 
@@ -72,6 +72,8 @@ PolicyFactory$make = function(name, host) {
 Policy = R6Class("Policy",
   public = list(
     host = NULL,
+    minEpsilon = 0.01,
+    maxEpsilon = 1,
     initialize = function(host) {
       self$host = host
     },
@@ -87,6 +89,10 @@ PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
   public = list(
     act = function(state) {
       PolicyFactory$policy.epsilonGreedy(state, self$host)
+    },
+
+    afterStep = function() {
+      self$host$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(-0.001 * self$host$gstep.idx)
     },
 
     afterEpisode = function() {

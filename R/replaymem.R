@@ -20,8 +20,8 @@ ReplayMem = R6Class("ReplayMem",
       self$dt.temp = self$dt.temp[, lapply(.SD, as.numeric)]
     },
 
-    mkInst = function(state.old, action, reward, state.new) {
-      list(state.old = state.old, action = action, reward = reward, state.new = state.new)
+    mkInst = function(state.old, action, reward, state.new, done) {
+      list(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done)
     },
 
     add = function(ins) {
@@ -30,7 +30,7 @@ ReplayMem = R6Class("ReplayMem",
       self$len = self$len + 1L
       mdt = data.table(t(unlist(ins)))
       mdt = cbind(mdt, self$dt.temp)
-      self$dt = rbindlist(list(self$dt, mdt))
+      self$dt = rbindlist(list(self$dt, mdt), fill = TRUE)
     },
 
     updateDT = function(idx = NULL) {
@@ -63,20 +63,23 @@ ReplayMem = R6Class("ReplayMem",
 ReplayMem$ins2String = function(x) x
 
 ReplayMem$extractOldState = function(x) {
-      return(x[[1L]])
-    }
+  return(x[[1L]])
+}
 
 ReplayMem$extractAction = function(x) {
-      return(x[[2L]])
-    }
+  return(x[[2L]])
+}
 
 ReplayMem$extractReward = function(x) {
-      return(x[[3L]])
-    }
+  return(x[[3L]])
+}
 
 ReplayMem$extractNextState = function(x) {
-      return(x[[4L]])
-    }
+  return(x[[4L]])
+}
+ReplayMem$extractDone = function(x) {
+  return(x[[5L]])
+}
 
 #' @export
 ReplayMemUniform = R6Class("ReplayMemUniform",

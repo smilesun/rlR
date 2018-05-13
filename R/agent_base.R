@@ -9,10 +9,10 @@
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
+    epi.idx = NULL,
     advantage = NULL,
     list.acts = NULL,
     random.cnt = NULL,
-    epi.idx = NULL,
     actCnt = NULL,
     stateCnt = NULL,
     conf = NULL,
@@ -29,11 +29,17 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     yhat = NULL,  # bellman equation estimation
     epochs = NULL,
     replay.size = NULL,
+    p.old = NULL,
+    p.next = NULL,
+    list.replay = NULL,
+    replay.y = NULL,
+    replay.x = NULL,
+    gstep.idx = NULL,
     # member function
     # constructor
     initialize = function(actCnt, stateCnt, conf) {
-      self$random.cnt = 0L
       self$epi.idx = 1L
+      self$random.cnt = 0L
       self$actCnt = actCnt
       self$stateCnt = stateCnt
       self$conf = conf
@@ -47,13 +53,15 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$mem = ReplayMem$factory(memname, agent = self, conf = conf)
       policy_fun = conf$get("policy.name")
       self$policy = PolicyFactory$make(policy_fun, self)
+      self$gstep.idx = 1L
     },
 
     # transform observation to  the replay memory
-    observe = function(state.old, action, reward, state.new, episode = 1L, step = 1L, action.new = NULL) {
-      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new)
+    observe = function(state.old, action, reward, state.new, done,  episode = 1L, step = 1L, action.new = NULL) {
+      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done)
       self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
       self$mem$add(ins)
+      self$gstep.idx = self$gstep.idx + 1L
     },
 
     calculateTDError = function(ins) {
@@ -71,10 +79,8 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     },
 
     replay = function(batchsize) {
-        list.x.y = self$getXY(batchsize)
-        x = list.x.y$x
-        y = list.x.y$y
-        self$brain$train(x, y, self$epochs)  # update the policy model
+        self$getXY(batchsize)
+        self$brain$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
     },
 
     evaluateArm = function(state) {
@@ -84,24 +90,32 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
     },
 
+    getYhat = function(list.states.old) {
+      nr = length(list.states.old)
+      p = length(list.states.old[[1]])
+      old.state = Reduce(rbind, list.states.old)
+      old.state = array(old.state, dim = c(nr, p))
+      p.old = self$brain$pred(old.state)
+      return(p.old)
+    },
+
     getXY = function(batchsize) {
-        list.res = self$mem$sample.fun(batchsize)
+        self$list.replay = self$mem$sample.fun(batchsize)
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
-        list.states = lapply(list.res, ReplayMem$extractOldState)
-        list.targets = lapply(list.res, self$extractTarget)  # target will be different at each iteration for the same experience
-        self$list.acts = lapply(list.res, ReplayMem$extractAction)
-        x = as.array(t(as.data.table(list.states)))  # array put elements columnwise
-        y = rbindlist(lapply(list.targets, as.data.table))
-        y = as.data.frame(y)
-        y = as.matrix(y)
-        return(list(x = x, y = y))
+        list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
+        list.states.next = lapply(self$list.replay, ReplayMem$extractNextState)
+        self$p.old = self$getYhat(list.states.old)
+        self$p.next = self$getYhat(list.states.next)
+        list.targets = lapply(1:length(self$list.replay), self$extractTarget)
+        self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
+        self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
+        self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
     },
 
     act = function(state) {
       assert(class(state) == "array")
       self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
       act = self$policy$act(state)  # returning the chosen action
-      self$glogger$log.nn$info("action: %d", act)
       return(act)
     },
 
@@ -130,7 +144,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   private = list(),
   active = list(
     randomAct = function() {
-      sample.int(self$actCnt)[1L] - 1L  # OpenAI Gym  convention
+      sample.int(self$actCnt)[1L]
     }
     )
   )
