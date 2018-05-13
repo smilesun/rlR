@@ -73,9 +73,7 @@ Performance = R6Class("Performance",
     },
 
     toScalar = function() {
-       n = length(self$list.rewardPerEpisode)
-       res = unlist(self$list.rewardPerEpisode)
-       res[n]
+      getAccPerf(100L)
     }
     ),
   private = list(),

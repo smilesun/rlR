@@ -26,6 +26,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     gamma = NULL,
     # for init in other child class
     brain = NULL,  # a table or a function approximator to represent the value function
+    model = NULL,
     yhat = NULL,  # bellman equation estimation
     epochs = NULL,
     replay.size = NULL,
@@ -95,7 +96,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       p = length(list.states.old[[1]])
       old.state = Reduce(rbind, list.states.old)
       old.state = array(old.state, dim = c(nr, p))
-      p.old = self$brain$pred(old.state)
+      p.old = self$model$pred(old.state)
       return(p.old)
     },
 

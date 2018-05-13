@@ -12,11 +12,10 @@ AgentDDQN = R6Class("AgentDDQN",
     brain2 = NULL,
     brain_u = NULL,  # u: to be updated
     brain_h = NULL,  # h: to help
-    model = NULL,  # temporary variable
     p.next.h = NULL,
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt, stateCnt, conf)
-      self$brain2 = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
+      self$brain2 = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch"))
     },
 
       toss = function() {
@@ -30,15 +29,7 @@ AgentDDQN = R6Class("AgentDDQN",
 
       },
 
-      getYhat = function(list.states.old) {
-          nr = length(list.states.old)
-          p = length(list.states.old[[1]])
-          old.state = Reduce(rbind, list.states.old)
-          old.state = array(old.state, dim = c(nr, p))
-          p.old = self$model$pred(old.state)
-          return(p.old)
-        },
-
+    
       getXY = function(batchsize) {
         self$list.replay = self$mem$sample.fun(batchsize)
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)

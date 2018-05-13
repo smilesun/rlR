@@ -3,7 +3,8 @@ AgentDQN = R6Class("AgentDQN",
   public = list(
     initialize = function(actCnt, stateCnt, conf) {
        super$initialize(actCnt, stateCnt, conf)
-       self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, fun = NNArsenal$dqn, conf$get("agent.nn.arch"))
+       self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch"))
+       self$model = self$brain
     },
 
     extractTarget = function(i) {
@@ -40,7 +41,7 @@ AgentDQN = R6Class("AgentDQN",
     )
   )
 
-dqn_cart_pole = function(iter = 500L) {
+dqn_cart_pole = function(iter = 2000L) {
   conf = rlR::RLConf$new(
            policy.epsilon = 1,
            policy.decay = exp(-0.001),

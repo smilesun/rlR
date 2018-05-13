@@ -52,24 +52,21 @@ makeKerasModel =  function(input_shape =2, output_shape =2, arch.list) {
   lr = arch.list$lr
   kernel_regularizer = arch.list$kernel_regularizer
   bias_regularizer = arch.list$bias_regularizer
-  decay = 0   # default is 0
-  clipnorm = 1  # default is NULL
+  decay = arch.list$decay   # default is 0
+  if(is.null(decay)) decay = 0
+  clipnorm = arch.list$clipnorm  # default is NULL
+  if(is.null(clipnorm)) clipnorm = 1
   expr = sprintf("model = keras_model_sequential();model %%>%%layer_dense(units = %d, activation = '%s', input_shape = c(%d), kernel_regularizer = %s, bias_regularizer = %s) %%>%%layer_dense(units = %d, activation = '%s');model$compile(loss = '%s', optimizer = optimizer_rmsprop(lr = %f, decay = %f, clipnorm = %f)); model", nhidden, act1, input_shape, kernel_regularizer, bias_regularizer, output_shape, act2, loss, lr, decay, clipnorm)
   eval(parse(text = expr))
 }
 
-NNArsenal = R6Class("NNArsenal")
-
-NNArsenal$dqn = function(input_shape, output_shape, ...) {
-  arch.list = list(...)[[1]]
-  makeKerasModel(input_shape = input_shape, output_shape = output_shape, arch.list)
-}
-
-NNArsenal$makeBrain = function(name) {
-  if (name %nin% names(NNArsenal)) stop("no such architecture yet")
-  return(NNArsenal[[name]])
-}
-keras_helper = function(input.shape, output.shape, output.act, loss, lr, list.par.val) {
+keras_helper = function(input.shape, output.shape, list.arch) {
+  lr = list.arch[["lr"]]
+  output.act = list.arch[["output.act"]]
+  loss = list.arch[["loss"]]
+  decay = list.arch[["decay"]]
+  clipnorm = list.arch[["clipnorm"]]
+  list.par.val = list.arch[["list.par.val"]]
   hh = function(reg_type, val) {
     paste0(reg_type, "(l=", as.character(val), ")")
   }
@@ -83,8 +80,36 @@ keras_helper = function(input.shape, output.shape, output.act, loss, lr, list.pa
   ss = paste0(s0, ss)
   s1 = sprintf("%%>%%layer_dense(units = %d, activation = '%s');", output.shape, output.act)
   ss = paste0(ss, s1)
-  s2 = sprintf("model$compile(loss = '%s', optimizer = optimizer_rmsprop(lr = %f)); model", loss, lr)
+  s2 = sprintf("model$compile(loss = '%s', optimizer = optimizer_rmsprop(lr = %f, decay = %f, clipnorm = %f)); model", loss, lr, decay, clipnorm)
   ss = paste0(ss, s2)
   ss
 }
 
+addLayer = function(...) {
+  list(...)
+}
+makeHidden = function(...) {
+  list.arch = list(...)
+  return(list.arch)
+}
+
+makeArch = function(lr, output.act, loss, decay = 0, clipnorm = 1, list.par.val) {
+  return(list(lr = lr, output.act = output.act, loss = loss, decay = decay, clipnorm = clipnorm, list.par.val = list.par.val))
+}
+
+list.arch = makeArch(
+  lr = 0.025,
+  output.act = "linear",
+  loss = "mse",
+list.par.val = makeHidden(
+  addLayer(layer_dense.units = 64, activation_fun = "relu", reg_type = "regularizer_l2", kernel_regularizer = 0, bias_regularizer = 0.1),
+  addLayer(layer_dense.units = 32, activation_fun = "softmax", reg_type = "regularizer_l2", kernel_regularizer = 0, bias_regularizer = 0.1)
+  )
+)
+
+makeAnyModel = function(input =4, output = 1, list.arch) {
+  text = keras_helper(input, output, list.arch)
+  eval(parse(text = text))
+}
+
+makeAnyModel(list.arch = list.arch)

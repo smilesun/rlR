@@ -48,7 +48,6 @@ PolicyFactory$policy.predProbRank = function(state, host) {
       action = sample.int(host$actCnt, prob = prob)[1L]
       return(action)
     }
-
 # softmax will magnify the difference
 PolicyFactory$policy.predsoftmax = function(state, host) {
       prob = exp(+1 * host$vec.arm.q)
@@ -107,6 +106,25 @@ PolicyProbEpsilon = R6Class("PolicyProbEpsilon",
   public = list(
     act = function(state) {
       PolicyFactory$probEpsilon(state, self$host)
+    },
+
+    afterEpisode = function() {
+      self$host$decayEpsilon()
+    }
+    )
+  )
+
+PolicyPG = R6Class("PolicyProbEpsilon",
+  inherit = PolicyEpsilonGreedy,
+  public = list(
+    act = function(state) {
+      action = PolicyFactory$policy.predsoftmax(state, self$host)
+      if (PolicyFactory$epsilonPolicy(state, self$host)) {
+        action = self$host$random.action
+        self$host$random.cnt = self$host$random.cnt + 1L  # increment random count
+        self$host$glogger$log.nn$info("random action: %d", action)
+      }
+      action
     },
 
     afterEpisode = function() {
