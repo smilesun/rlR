@@ -25,4 +25,4 @@ gbtconf$PROB_RUN = c("rl_prob")
 gbtconf$PROB_LIST = list()
 gbtconf$PROB_LIST[["rl_prob"]] = list(fun = "rl_prob", prob.data = c("MountainCar-v0", "CartPole-v0", "Amidar-ram-v0", "WizardOfWor-ram-v0", "Asteroids-ram-v0", "KungFuMaster-ram-v0", "JourneyEscape-ram-v-ram-v0")
 )
-gbtconf$iteration = 1L
+gbtconf$iteration = 500L
