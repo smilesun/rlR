@@ -23,9 +23,12 @@ AgentPG = R6Class("AgentPG",
 
     getXY = function(batchsize) {
         self$list.replay = self$mem$sample.fun(batchsize)
+        len = length(self$list.replay)
+        ded = cumprod(rep(self$gamma, len))   # FIXME: this restain the agent to do uniform replay
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
         list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
         list.targets = lapply(self$list.replay, self$extractTarget)
+        list.targets = lapply(1:len, function(i) ded[i] * list.targets[[i]])
         self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
         self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
         self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
@@ -67,7 +70,7 @@ pg = function(iter = 5000L, name = "CartPole-v0") {
            policy.epsilon = 1,
            policy.decay = exp(-0.001),
            policy.minEpsilon = 0.01,
-           policy.name = "EpsilonGreedy",
+           policy.name = "ProbEpsilon",
            replay.memname = "Latest",
            replay.epochs = 1L,
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
