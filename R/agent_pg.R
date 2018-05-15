@@ -13,9 +13,7 @@ AgentPG = R6Class("AgentPG",
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
       self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch"))
-},
-
-    # extract target from one instance of replay memory, which is the one hot encoded action multiplied by the advantage of this episode
+}, # extract target from one instance of replay memory, which is the one hot encoded action multiplied by the advantage of this episode
     extractTarget = function(ins) {
         act =  ReplayMem$extractAction(ins)
         temp.act = rep(0L, self$actCnt)
@@ -44,8 +42,8 @@ AgentPG = R6Class("AgentPG",
         total.reward = sum(interact$perf$list.reward.epi[[episode.idx]])
         self$total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
         adg = interact$perf$list.discount.reward.epi[[episode.idx]]
-        #adg = adg - mean(adg)
-        #adg = adg / sum(adg ^ 2)
+        adg = adg - mean(adg)
+        adg = adg / sum(adg ^ 2)
         self$setAdvantage(adg)
     },
 

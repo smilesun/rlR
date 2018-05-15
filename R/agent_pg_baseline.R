@@ -6,7 +6,7 @@
 #' @export
 #' @examples
 #' x=c(1,2,3)
-AgentActorCritic = R6Class("AgentActorCritic",
+AgentPGBaseline = R6Class("AgentPGBaseline",
   inherit = AgentPG,
   public = list(
     brain_actor = NULL,  # cross entropy loss
@@ -16,6 +16,8 @@ AgentActorCritic = R6Class("AgentActorCritic",
     p.next.a = NULL,
     p.old.c = NULL,
     p.next.c = NULL,
+    delta = NULL,
+    list.rewards = NULL,
     initialize = function(actCnt, stateCnt, conf) {
       super$initialize(actCnt, stateCnt, conf = conf)
       self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch.actor"))
@@ -27,9 +29,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
         list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
         list.states.next = lapply(self$list.replay, ReplayMem$extractNextState)
-        self$model =  self$brain_actor
-        self$p.old.a = self$getYhat(list.states.old)
-        self$p.next.a = self$getYhat(list.states.next)
+        self$list.rewards = lapply(self$list.replay, ReplayMem$extractReward)
         self$model = self$brain_critic
         self$p.old.c = self$getYhat(list.states.old)
         self$p.next.c = self$getYhat(list.states.next)
@@ -39,42 +39,28 @@ AgentActorCritic = R6Class("AgentActorCritic",
 
      replay = function(batchsize) {
           self$getReplayYhat(batchsize)
-          ded = cumprod(rep(self$gamma, batchsize))
-          list.targets.actor = lapply(1:batchsize, function(i) as.vector(self$extractActorTarget(i)))
-          list.targets.actor = lapply(1:batchsize, function(i) list.targets.actor[[i]] * ded[i])
-          list.targets.critic = lapply(1:batchsize, function(i) as.vector(self$extractCriticTarget(i)))
+          len = length(self$list.replay)   # replay.list might be smaller than batchsize
+          self$delta = self$advantage - self$p.old.c
+          ded = cumprod(rep(self$gamma, len))
+          list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
+          list.targets.actor = lapply(1:len, function(i) list.targets.actor[[i]] * ded[i])
+          list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
           y_actor = t(simplify2array(list.targets.actor))
-          y_critic = array(unlist(list.targets.critic), dim = c(batchsize, 1L))
+          y_critic = array(unlist(list.targets.critic), dim = c(len, 1L))
           self$brain_actor$train(self$replay.x, y_actor)  # update the policy model
           self$brain_critic$train(self$replay.x, y_critic)  # update the policy model
       },
 
       extractCriticTarget = function(i) {
-          ins = self$list.replay[[i]]
-          r = ReplayMem$extractReward(ins)
-          done = ReplayMem$extractDone(ins)
-          if (done) {
-            y = r
-          } else {
-            self$critic_yhat = self$p.old.c[i, ]
-            y = r + self$gamma * self$p.next.c[i, ]
-          }
+          y = self$p.old.c[i, ] + self$delta[i]
           return(y)
       },
 
       extractActorTarget = function(i) {
           ins = self$list.replay[[i]]
           act = ReplayMem$extractAction(ins)
-          critic.old.v = self$p.old.c[i, ]
-          r = ReplayMem$extractReward(ins)
-          done = ReplayMem$extractDone(ins)
-          if (done) {
-            advantage = r - critic.old.v   # always occur at the last step
-          } else {
-            critic.next.v = self$p.next.c[i, ]
-            advantage = (r + self$gamma * critic.next.v) - critic.old.v  # Bellman Error as advantage
-          }
-          advantage = (+1) * as.vector(advantage)  # convert (1,1) matrix to scalar
+          advantage = (+1) * as.vector(self$delta[i])
+          #FIXME: interestingly, multiply advantage by -1 also works
           vec.act = rep(0L, self$actCnt)
           vec.act[act] = 1L
           target = advantage * array(vec.act, dim = c(1L, self$actCnt))
@@ -86,9 +72,8 @@ AgentActorCritic = R6Class("AgentActorCritic",
     },
 
     afterEpisode = function(interact) {
-        episode.idx = interact$perf$epi.idx
-        total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
-        self$replay(total.step)
+        self$getAdv(interact)
+        self$replay(self$total.step)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
     },
@@ -105,17 +90,17 @@ AgentActorCritic = R6Class("AgentActorCritic",
     )
   )
 
-a3c_cart_pole = function(iter = 2000L) {
+pg_baseline_cart_pole = function(iter = 2000L) {
   conf = rlR::RLConf$new(
-           policy.name = "EpsilonGreedy",
+           policy.name = "ProbEpsilon",
            policy.epsilon = 1,
            policy.minEpsilon = 0.01,
            policy.decay = exp(-0.001),
            replay.memname = "Latest",
-           agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 0.0001, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.0001)", decay = 0.9, clipnorm = 5),
-          agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 0.0001, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0001)")
-           , decay = 0.9, clipnorm = 5)
-  interact = rlR::makeGymExperiment(sname = "CartPole-v0", "AgentActorCritic", conf = conf)
+           agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.0001)", decay = 0.9, clipnorm = 5),
+          agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)
+          )
+  interact = rlR::makeGymExperiment(sname = "CartPole-v0", "AgentPGBaseline", conf = conf)
   perf = interact$run(iter)
   return(perf)
 }

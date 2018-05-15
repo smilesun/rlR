@@ -102,10 +102,18 @@ ReplayMemLatest = R6Class("ReplayMemLatest",
   inherit = ReplayMem,
   public = list(
    sample.fun = function(k) {
-      k = min(k, self$len)
+      # k is always set to the episode length currently
+      k = min(k, self$len)  # when k is too small, the learning stops at particular step
       self$replayed.idx = (self$len - k + 1L): self$len
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
+    },
+
+    afterStep = function() {
+      # do nothing
+    },
+
+    afterEpisode = function() {
     }
     ),
   private = list(),
