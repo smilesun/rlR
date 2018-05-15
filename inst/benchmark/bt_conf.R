@@ -19,7 +19,7 @@ gbtconf$replay = c("ReplayMemUniform", "ReplayMemLatest", "ReplayMemPrioritizedR
 gbtconf$policy = c("PolicyEpsilonGreedy", "PolicyProbEpsilon")
 
 ## Experiment
-gbtconf$REG_FILE_DIR = "bt_reg"
+gbtconf$REG_FILE_DIR = "bt_reg_new"
 gbtconf$ALGO_RUN = c("rl_algo")
 gbtconf$PROB_RUN = c("rl_prob")
 gbtconf$PROB_LIST = list()
