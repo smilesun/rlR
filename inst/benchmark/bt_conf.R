@@ -14,7 +14,7 @@ rlR::listClass()
 rlR::listClass("Policy")
 rlR::listClass("ReplayMem")
 rlR::listClass("Agent")
-gbtconf$agent.name = c("AgentDQN", "AgentFDQN", "AgentDDQN")
+gbtconf$agent.name = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
 gbtconf$replay = c("ReplayMemUniform", "ReplayMemLatest", "ReplayMemPrioritizedRank")
 gbtconf$policy = c("PolicyEpsilonGreedy", "PolicyProbEpsilon")
 

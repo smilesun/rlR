@@ -1,3 +1,16 @@
+#' @title  DQN
+#' 
+#' @description DQN
+#' 
+#' @param "AgentDQN" value
+#' @param inherit value
+#' @param public value
+#' @param stateCnt value
+#' @param conf value
+#' @return returndes
+#' @export 
+#' @examples 
+#' x=c(1,2,3) 
 AgentDQN = R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
@@ -41,14 +54,16 @@ AgentDQN = R6Class("AgentDQN",
     )
   )
 
-dqn_cart_pole = function(iter = 2000L) {
+AgentDQN$test = function(iter = 2000L, sname = "CartPole-v0", render = render) {
   conf = rlR::RLConf$new(
+           render = render,
            policy.epsilon = 1,
            policy.decay = exp(-0.001),
            policy.name = "EpsilonGreedy",
            replay.batchsize = 64L,
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
-  interact = rlR::makeGymExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = conf)
+  browser()
+  interact = rlR::makeGymExperiment(sname = sname, aname = "AgentDQN", conf = conf)
   perf = interact$run(iter)
   return(perf)
 }

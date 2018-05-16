@@ -1,6 +1,6 @@
-#' @title Actor Critic Agent
+#' @title ReinforceWithBaseline
 #'
-#' @description Actor Critic Agent
+#' @description ReinforceWithBaseline
 #'
 #' @return returndes
 #' @export
@@ -90,8 +90,9 @@ AgentPGBaseline = R6Class("AgentPGBaseline",
     )
   )
 
-pg_baseline_cart_pole = function(iter = 2000L) {
+AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
   conf = rlR::RLConf$new(
+           render = render,
            policy.name = "ProbEpsilon",
            policy.epsilon = 1,
            policy.minEpsilon = 0.01,

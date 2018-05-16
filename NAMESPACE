@@ -3,6 +3,7 @@
 export(AgentActorCritic)
 export(AgentArmed)
 export(AgentDDQN)
+export(AgentDQN)
 export(AgentFDQN)
 export(AgentFactory)
 export(AgentPG)

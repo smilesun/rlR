@@ -94,14 +94,15 @@ AgentDDQN = R6Class("AgentDDQN",
     )
   )
 
-ddqn_cart_pole = function(iter = 500L) {
+AgentDDQN$test = function(iter = 500L, sname = "CartPole-v0", render = TRUE) {
   conf = rlR::RLConf$new(
+           render = render,
            policy.epsilon = 1,
            policy.decay = exp(-0.001),
            policy.name = "EpsilonGreedy",
            replay.batchsize = 64L,
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
-  interact = rlR::makeGymExperiment(sname = "CartPole-v0", aname = "AgentDDQN", conf = conf)
+  interact = rlR::makeGymExperiment(sname = sname, aname = "AgentDDQN", conf = conf)
   perf = interact$run(iter)
   return(perf)
 }

@@ -65,8 +65,9 @@ AgentPG = R6Class("AgentPG",
     )
   )
 
-pg = function(iter = 5000L, name = "CartPole-v0") {
+AgentPG$test = function(iter = 5000L, sname = "CartPole-v0", render = TRUE) {
   conf = rlR::RLConf$new(
+           render = render,
            policy.epsilon = 1,
            policy.decay = exp(-0.001),
            policy.minEpsilon = 0.01,
@@ -74,7 +75,7 @@ pg = function(iter = 5000L, name = "CartPole-v0") {
            replay.memname = "Latest",
            replay.epochs = 1L,
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
-  interact = rlR::makeGymExperiment(sname = name, aname = "AgentPG", conf = conf)
+  interact = rlR::makeGymExperiment(sname = sname, aname = "AgentPG", conf = conf)
   perf = interact$run(iter)
   return(perf)
 }
