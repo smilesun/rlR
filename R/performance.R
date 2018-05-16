@@ -54,7 +54,7 @@ Performance = R6Class("Performance",
       paste(s1, s2, s3)
     },
 
-    plot = function() {
+    plot = function(ylim = c(0,200), yintercept = 15) {
       library(ggplot2)
       self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))
       se = unlist(self$list.rewardPerEpisode)
@@ -68,9 +68,9 @@ Performance = R6Class("Performance",
           x = "Episode",
           y = "Rewards per episode"
           ) +
-        coord_cartesian(ylim = c(0, 200)) +
+        coord_cartesian(ylim = ylim) +
         geom_smooth(se = FALSE, size = 1) +
-        geom_hline(yintercept = 15, size = 1, col = "black", lty = 2)
+        geom_hline(yintercept = yintercept, size = 1, col = "black", lty = 2)
     },
 
     toScalar = function() {
