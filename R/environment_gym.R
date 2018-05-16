@@ -26,6 +26,10 @@ EnvGym = R6Class("EnvGym",
       self$state_cnt = length(state)
     },
 
+    render = function(...) {
+      self$env$render(...)
+    },
+
     step = function(action) {
       action = action - 1L
       action = self$act.cheat(action)
