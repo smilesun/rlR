@@ -1,4 +1,3 @@
-
 InteractionBase = R6Class("InteractionBase",
   public = list(
     rl.agent = NULL,

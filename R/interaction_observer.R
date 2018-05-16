@@ -27,6 +27,7 @@
 #' @examples 
 #' x=c(1,2,3) 
 Interaction = R6Class("Interaction",
+  inherit = InteractionBase,
   public = list(
     s.old = NULL,
     action = NULL,
