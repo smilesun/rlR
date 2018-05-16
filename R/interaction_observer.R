@@ -1,5 +1,32 @@
-InteractionObserver = R6Class("InteractionObserver",
-  inherit = Interaction,
+#' @title  Interaction
+#'
+#' @description Interaction
+#'
+#' @param "Interaction" value
+#' @param public value
+#' @param action value
+#' @param s_r_done_info value
+#' @param list.observers value
+#' @param idx.episode value
+#' @param idx.step value
+#' @param continue.flag value
+#' @param episode.over.flag value
+#' @param r.vec.epi value
+#' @param conf value
+#' @param beforeActPipe value
+#' @param afterStepPipe value
+#' @param list.cmd value
+#' @param maxiter value
+#' @param render value
+#' @param initialize value
+#' @param rl.agent value
+#' @param conf value
+#' @param glogger value
+#' @return returndes
+#' @export 
+#' @examples 
+#' x=c(1,2,3) 
+Interaction = R6Class("Interaction",
   public = list(
     s.old = NULL,
     action = NULL,

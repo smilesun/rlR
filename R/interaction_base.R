@@ -1,5 +1,5 @@
 
-Interaction = R6Class("Interaction",
+InteractionBase = R6Class("InteractionBase",
   public = list(
     rl.agent = NULL,
     rl.env = NULL,
