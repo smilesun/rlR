@@ -26,7 +26,7 @@ gymEnvFactory = function(name ="CartPole-v0", ...) {
 makeGymExperiment = function(sname ="CartPole-v0", aname, conf,  ...) {
   probe = gymEnvFactory(sname, ...)
   rl.agent = AgentFactory$genAgent(aname, actCnt = probe$actCnt, stateCnt = probe$stateCnt, conf = conf)
-  interact = InteractionObserver$new(rl.env = probe$env, rl.agent = rl.agent, glogger = rl.agent$glogger, conf = conf)
+  interact = Interaction$new(rl.env = probe$env, rl.agent = rl.agent, glogger = rl.agent$glogger, conf = conf)
   return(interact)
 }
 
