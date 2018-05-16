@@ -14,7 +14,6 @@ InteractionObserver = R6Class("InteractionObserver",
     beforeActPipe = NULL,
     afterStepPipe = NULL,
     list.cmd = NULL,
-    replay.size = NULL,
     maxiter = NULL,
     render = NULL,
     initialize = function(rl.env, rl.agent, conf, glogger) {
@@ -29,12 +28,11 @@ InteractionObserver = R6Class("InteractionObserver",
       self$perf = Performance$new(glogger)
       self$rl.agent = rl.agent
       self$rl.env = rl.env
-      self$replay.size = self$conf$get("replay.batchsize")
       self$r.vec.epi = vector(mode = "numeric", length = 200L)  # gym episode stops at 200
       self$beforeActPipe = self$conf$get("interact.beforeActPipe")
       self$afterStepPipe = self$conf$get("interact.afterStepPipe")
       self$list.cmd = list(
-        "render" = self$rl.env$env$render,
+        "render" = self$rl.env$render,
         "before.act" = function() {
           self$glogger$log.nn$info("in episode %d, step %d", self$idx.episode, self$idx.step)
           self$s.old = self$s_r_done_info[[1L]]
