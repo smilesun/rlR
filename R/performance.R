@@ -56,16 +56,17 @@ Performance = R6Class("Performance",
 
     plot = function() {
       library(ggplot2)
-      se = unlist(self$list.stepsPerEpisode)
+      self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))
+      se = unlist(self$list.rewardPerEpisode)
       df = data.frame(episode = seq_along(se),
         steps = se)
       ggplot(df, aes(episode, steps), col = "brown1") +
         geom_point(alpha = 0.2) +
         theme_bw() +
         labs(
-          title = "Steps Per Episode",
+          title = "Rewards Per Episode",
           x = "Episode",
-          y = "Steps per episode"
+          y = "Rewards per episode"
           ) +
         coord_cartesian(ylim = c(0, 200)) +
         geom_smooth(se = FALSE, size = 1) +
