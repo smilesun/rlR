@@ -135,7 +135,7 @@ Interaction = R6Class("Interaction",
       cat(sprintf("\n a = BBmisc::load2('%s') \n", self$conf$conf.log.perf$resultTbPath))
       write.csv(self$rl.agent$mem$dt, file = filename.experience)
       self$glogger$log.root$info("\n b = read.csv('%s')", filename.experience)
-      self$rl.env$env$render(close = TRUE)
+      self$rl.env$render(close = TRUE)
       perf <<- self$perf
     }) # try catch
     } # function
