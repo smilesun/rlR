@@ -109,7 +109,8 @@ Interaction = R6Class("Interaction",
     }},
 
     notify = function(name) {
-      if (name %nin% names(self$list.observers)) stop("not defined observer")
+      flag = name %in% names(self$list.observers)
+      if (!flag) stop("not defined observer")
       obslist = self$list.observers[[name]]
       for (method in names(obslist)) {
          do.call(obslist[[method]], args = list())

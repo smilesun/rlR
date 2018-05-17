@@ -5,10 +5,7 @@
 #' @import reticulate
 #' @import keras
 #' @import logging
-#' @import BBmisc
 #' @import openssl
-#' @import reshape2
-#' @import formattable
 NULL
 set.seed(0)
 
