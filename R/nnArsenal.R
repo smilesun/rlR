@@ -112,4 +112,4 @@ makeAnyModel = function(input =4, output = 1, list.arch) {
   eval(parse(text = text))
 }
 
-makeAnyModel(list.arch = list.arch)
+#makeAnyModel(list.arch = list.arch)
