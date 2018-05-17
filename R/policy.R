@@ -56,14 +56,8 @@ PolicyFactory$policy.predsoftmax = function(state, host) {
       return(action)
     }
 
-PolicyFactory$make0 = function(name, host) {
-  if (name %nin% names(PolicyFactory)) stop("no such policy!")
-  function(state) PolicyFactory[[name]](state, host)
-}
-
 PolicyFactory$make = function(name, host) {
   fn = paste0("Policy", name)
-  if (fn %nin% listClass("Policy")) stop("no such policy!")
   return(eval(parse(text = sprintf("%s$new(host = host)", fn))))
 }
 

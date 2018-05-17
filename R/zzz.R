@@ -6,8 +6,6 @@
 #' @import keras
 #' @import logging
 #' @import openssl
-#' @import reshape2
-#' @import formattable
 NULL
 set.seed(0)
 
