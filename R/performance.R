@@ -54,13 +54,13 @@ Performance = R6Class("Performance",
       paste(s1, s2, s3)
     },
 
-    plot = function(ylim = c(0,200), yintercept = 15) {
+    plot = function() {
       library(ggplot2)
       self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))
-      se = unlist(self$list.rewardPerEpisode)
-      df = data.frame(episode = seq_along(se),
-        steps = se)
-      ggplot(df, aes(episode, steps), col = "brown1") +
+      rewards = unlist(self$list.rewardPerEpisode)
+      df = data.frame(episode = seq_along(rewards),
+        rewards = rewards)
+      ggplot(df, aes(episode, rewards), col = "brown1") +
         geom_point(alpha = 0.2) +
         theme_bw() +
         labs(
@@ -68,9 +68,9 @@ Performance = R6Class("Performance",
           x = "Episode",
           y = "Rewards per episode"
           ) +
-        coord_cartesian(ylim = ylim) +
+        coord_cartesian(ylim = range(rewards)) +
         geom_smooth(se = FALSE, size = 1) +
-        geom_hline(yintercept = yintercept, size = 1, col = "black", lty = 2)
+        geom_hline(yintercept = median(rewards), size = 1, col = "black", lty = 2)
     },
 
     toScalar = function() {
