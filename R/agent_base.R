@@ -58,17 +58,15 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     },
 
     # transform observation to  the replay memory
-    observe = function(state.old, action, reward, state.new, done,  episode = 1L, step = 1L, action.new = NULL) {
-      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done)
+    observe = function(state.old, action, reward, state.new, done, info, episode, stepidx, action.new = NULL) {
+      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
       self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
       self$mem$add(ins)
       self$gstep.idx = self$gstep.idx + 1L
     },
 
     calculateTDError = function(ins) {
-      vec.mt = self$extractTarget(ins)  # self$yhat is calculated inside
-      err = vec.mt - self$yhat
-      mean(err ^ 2)
+      vec.mt = self$extractTarget(ins)  # self$yhat is calculated inside err = vec.mt - self$yhat mean(err ^ 2)
     },
 
     extractTarget = function(ins) {

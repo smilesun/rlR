@@ -29,6 +29,7 @@
 Interaction = R6Class("Interaction",
   inherit = InteractionBase,
   public = list(
+    epiLookBack = 100L,
     s.old = NULL,
     action = NULL,
     s_r_done_info  = NULL,
@@ -67,7 +68,7 @@ Interaction = R6Class("Interaction",
         },
         "after.step" = function() {
           self$glogger$log.nn$info("reward %f", self$s_r_done_info[[2L]])
-          self$rl.agent$observe(state.old = self$s.old, action = self$action, reward = self$s_r_done_info[[2L]], state.new = self$s_r_done_info[[1L]], done = self$s_r_done_info[[3L]])
+          self$rl.agent$observe(state.old = self$s.old, action = self$action, reward = self$s_r_done_info[[2L]], state.new = self$s_r_done_info[[1L]], done = self$s_r_done_info[[3L]], info = self$s_r_done_info[[4]], episode = self$idx.episode, stepidx = self$idx.step)
           self$r.vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
           self$idx.step = self$idx.step + 1L
           self$rl.agent$afterStep()
@@ -97,7 +98,7 @@ Interaction = R6Class("Interaction",
           cat(sprintf("Episode: %i finished with steps:%i \n", self$idx.episode, self$idx.step))  # same message to console
           self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step  # the number of steps
 
-          rew = self$perf$getAccPerf(100)
+          rew = self$perf$getAccPerf(self$epiLookBack)
           cat(sprintf("Last %d episodes average reward %f \n", 100, rew))  # same message to console
           self$idx.step = 0L
           self$episode.over.flag = FALSE
@@ -136,6 +137,7 @@ Interaction = R6Class("Interaction",
       write.csv(self$rl.agent$mem$dt, file = filename.experience)
       self$glogger$log.root$info("\n b = read.csv('%s')", filename.experience)
       self$rl.env$render(close = TRUE)
+      self$perf$list.infos = lapply(self$rl.agent$mem$samples, function(x) x$info)
       perf <<- self$perf
     }) # try catch
     } # function

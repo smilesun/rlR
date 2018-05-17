@@ -20,8 +20,8 @@ ReplayMem = R6Class("ReplayMem",
       self$dt.temp = self$dt.temp[, lapply(.SD, as.numeric)]
     },
 
-    mkInst = function(state.old, action, reward, state.new, done) {
-      list(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done)
+    mkInst = function(state.old, action, reward, state.new, done, info) {
+      list(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = info)
     },
 
     add = function(ins) {

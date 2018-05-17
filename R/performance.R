@@ -6,6 +6,7 @@ Performance = R6Class("Performance",
     list.discountedRPerEpisode = NULL,
     rewardPerStep = NULL,
     list.stepsPerEpisode = NULL,
+    list.infos = NULL,
     epi.idx = NULL,
     glogger = NULL,
 
