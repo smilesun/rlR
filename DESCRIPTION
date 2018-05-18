@@ -16,6 +16,7 @@ Imports:
     reticulate,
     keras,
     logging,
+    ggplot2,
     openssl
 LazyData: true
 RoxygenNote: 6.0.1

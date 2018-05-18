@@ -15,6 +15,7 @@ Performance = R6Class("Performance",
       self$agent = agent
       self$glogger = self$agent$glogger
       self$list.reward.epi = list()
+      self$list.infos = list()
       self$list.discount.reward.epi = list()
       self$epi.idx = 0L
       self$list.rewardPerEpisode = list()

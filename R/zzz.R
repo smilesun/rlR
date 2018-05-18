@@ -6,6 +6,7 @@
 #' @import keras
 #' @import logging
 #' @import openssl
+#' @import ggplot2
 NULL
 set.seed(0)
 

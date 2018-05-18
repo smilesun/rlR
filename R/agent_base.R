@@ -138,6 +138,10 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     afterEpisode = function() {
       self$policy$afterEpisode()
       self$mem$afterEpisode()
+    },
+    learn = function(iter) {
+      interact = Interaction$new(rl.env = probe$env, rl.agent = rl.agent)
+      Interact$run(iter)
     }
     ), # public
   private = list(),
