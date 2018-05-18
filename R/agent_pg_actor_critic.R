@@ -12,7 +12,8 @@
 AgentActorCritic = R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
-    initialize = function(actCnt, stateCnt, conf) {
+    initialize = function(actCnt, stateCnt, conf = NULL) {
+      if (is.null(conf)) conf = rlR.conf.AC()
       super$initialize(actCnt, stateCnt, conf = conf)
     },
 
@@ -78,4 +79,18 @@ AgentActorCritic$test = function(iter = 500L, sname = "CartPole-v0", render = TR
   interact = rlR::makeGymExperiment(sname = sname, "AgentActorCritic", conf = conf)
   perf = interact$run(iter)
   return(perf)
+}
+
+rlR.conf.AC = function() {
+  conf = rlR::RLConf$new(
+           render = TRUE, 
+           policy.name = "ProbEpsilon",
+           policy.epsilon = 1,
+           policy.minEpsilon = 0.01,
+           policy.decay = exp(-0.001),
+           replay.memname = "Latest",
+           replay.batchsize = 64,
+           agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.0001)", decay = 0.9, clipnorm = 5),
+          agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)
+          )
 }

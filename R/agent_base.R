@@ -38,23 +38,38 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     gstep.idx = NULL,
     # member function
     # constructor
-    initialize = function(actCnt, stateCnt, conf) {
-      self$epi.idx = 1L
-      self$random.cnt = 0L
+    initialize = function(actCnt, stateCnt, conf = NULL) {
       self$actCnt = actCnt
       self$stateCnt = stateCnt
-      self$conf = conf
       self$vec.arm.q = vector(mode = "numeric", length = self$actCnt)
+      self$gstep.idx = 1L
+      self$epi.idx = 1L
+      self$random.cnt = 0L
+      self$conf = conf
+      if (is.null(self$conf)) {
+        # 
+      }
+      else {
+        self$buildConf()
+      }
+    },
+
+    setConf = function(conf) {
+      self$conf = conf
+      self$buildConf()
+    },
+
+    buildConf = function() {
       self$epsilon = self$conf$get("policy.epsilon")
       self$replay.size = self$conf$get("replay.batchsize")
       self$gamma = self$conf$get("agent.gamma")
-      self$glogger = RLLog$new(conf)
-      self$epochs = conf$get("replay.epochs")
-      memname = conf$get("replay.memname")
-      self$mem = ReplayMem$factory(memname, agent = self, conf = conf)
-      policy_fun = conf$get("policy.name")
+      self$epochs = self$conf$get("replay.epochs")
+      # object
+      memname = self$conf$get("replay.memname")
+      self$mem = ReplayMem$factory(memname, agent = self, conf = self$conf)
+      policy_fun = self$conf$get("policy.name")
       self$policy = PolicyFactory$make(policy_fun, self)
-      self$gstep.idx = 1L
+      self$glogger = RLLog$new(self$conf)
     },
 
     # transform observation to  the replay memory

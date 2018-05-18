@@ -14,6 +14,7 @@ replay.epochs = 1L,
 interact.maxiter = 500L
 )
 
+
 rlR.conf.avail = names(rlR.conf.default)
 
 rlR.conf4log = list(

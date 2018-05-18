@@ -14,7 +14,8 @@
 AgentDQN = R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
-    initialize = function(actCnt, stateCnt, conf) {
+    initialize = function(actCnt, stateCnt, conf = NULL) {
+       if (is.null(conf)) conf = rlR.conf.DQN()
        super$initialize(actCnt, stateCnt, conf)
        self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch"))
        self$model = self$brain
@@ -76,3 +77,12 @@ AgentDQNFreeRun = R6Class("AgentDQNFreeRun",
     }
   )
 )
+
+rlR.conf.DQN = function() {
+  rlR::RLConf$new(render = TRUE,
+          policy.epsilon = 1,
+          policy.decay = exp(-0.001),
+          policy.name = "EpsilonGreedy",
+          replay.batchsize = 64L,
+          agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+}

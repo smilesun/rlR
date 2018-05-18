@@ -9,6 +9,5 @@
 AgentFactory = R6Class("AgentFactory")
 AgentFactory$genAgent = function(name, actCnt, stateCnt = stateCnt, conf = conf) {
   ee = parse(text = sprintf("%s$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)", name))
-  eval(ee)
+  eval(ee)  # the text is with respect to the passed arguments
 }
-
