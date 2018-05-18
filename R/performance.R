@@ -43,7 +43,7 @@ Performance = R6Class("Performance",
       epi.idx = length(self$list.rewardPerEpisode)
       winstart = max(1L, epi.idx - interval)
       vec = unlist(self$list.rewardPerEpisode)
-      mean(vec[winstart:epi.idx])
+      mean(vec[winstart:epi.idx], na.rm = TRUE)
     },
 
     toString = function() {
@@ -75,7 +75,7 @@ Performance = R6Class("Performance",
     },
 
     toScalar = function() {
-      getAccPerf(100L)
+      self$getAccPerf(100L)
     }
     ),
   private = list(),
