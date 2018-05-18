@@ -16,8 +16,15 @@ ReplayMem = R6Class("ReplayMem",
       self$len = 0L
       self$conf = conf
       self$agent = agent
+      # helper constant variable
       self$dt.temp = data.table("delta" = NA, "priorityRank" = NA, "priorityAbs" = NA, "priorityDelta2" = NA, "deltaOfdelta" = NA, "deltaOfdeltaPercentage" = NA)
       self$dt.temp = self$dt.temp[, lapply(.SD, as.numeric)]
+    },
+
+    reset = function() {
+      self$samples = list()
+      self$dt = data.table()
+      self$len = 0L
     },
 
     mkInst = function(state.old, action, reward, state.new, done, info) {
