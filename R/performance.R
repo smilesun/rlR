@@ -9,9 +9,11 @@ Performance = R6Class("Performance",
     list.infos = NULL,
     epi.idx = NULL,
     glogger = NULL,
+    agent = NULL,
 
-    initialize = function(glogger) {
-      self$glogger = glogger
+    initialize = function(agent) {
+      self$agent = agent
+      self$glogger = self$agent$glogger
       self$list.reward.epi = list()
       self$list.discount.reward.epi = list()
       self$epi.idx = 0L
@@ -56,12 +58,11 @@ Performance = R6Class("Performance",
     },
 
     plot = function() {
-      library(ggplot2)
       self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))
       rewards = unlist(self$list.rewardPerEpisode)
       df = data.frame(episode = seq_along(rewards),
         rewards = rewards)
-      ggplot(df, aes(episode, rewards), col = "brown1") +
+      ggplot2::ggplot(df, aes(episode, rewards), col = "brown1") +
         geom_point(alpha = 0.2) +
         theme_bw() +
         labs(
@@ -76,6 +77,10 @@ Performance = R6Class("Performance",
 
     toScalar = function() {
       self$getAccPerf(100L)
+    },
+
+    extractInfo = function() {
+      self$list.infos = lapply(self$agent$mem$samples, function(x) x$info)
     }
     ),
   private = list(),

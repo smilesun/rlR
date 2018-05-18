@@ -10,11 +10,8 @@
 #' @param idx.episode value
 #' @param idx.step value
 #' @param continue.flag value
-#' @param episode.over.flag value
 #' @param r.vec.epi value
 #' @param conf value
-#' @param beforeActPipe value
-#' @param afterStepPipe value
 #' @param list.cmd value
 #' @param maxiter value
 #' @param render value
@@ -34,32 +31,26 @@ Interaction = R6Class("Interaction",
     action = NULL,
     s_r_done_info  = NULL,
     list.observers = NULL,
-    idx.episode = 0,
-    idx.step = 0,
+    idx.episode = NULL,
+    idx.step = NULL,
     continue.flag = NULL,
-    episode.over.flag = NULL,
     r.vec.epi = NULL,
     conf = NULL,
-    beforeActPipe = NULL,
-    afterStepPipe = NULL,
     list.cmd = NULL,
     maxiter = NULL,
     render = NULL,
-    initialize = function(rl.env, rl.agent, conf, glogger) {
-      self$conf = conf
+    initialize = function(rl.env, rl.agent) {
+      self$rl.agent = rl.agent
+      self$conf = self$rl.agent$conf
       self$render = self$conf$get("render")
       temp = NULL
       if (self$render) temp = "render"
-      self$maxiter = conf$get("interact.maxiter")
-      self$glogger = glogger
+      self$maxiter = self$conf$get("interact.maxiter")
       self$continue.flag = TRUE
-      self$episode.over.flag = FALSE
-      self$perf = Performance$new(glogger)
-      self$rl.agent = rl.agent
+      self$glogger = self$rl.agent$glogger
+      self$perf = Performance$new(self$rl.agent)
       self$rl.env = rl.env
       self$r.vec.epi = vector(mode = "numeric", length = 200L)  # gym episode stops at 200
-      self$beforeActPipe = self$conf$get("interact.beforeActPipe")
-      self$afterStepPipe = self$conf$get("interact.afterStepPipe")
       self$list.cmd = list(
         "render" = self$rl.env$render,
         "before.act" = function() {
@@ -68,7 +59,7 @@ Interaction = R6Class("Interaction",
         },
         "after.step" = function() {
           self$glogger$log.nn$info("reward %f", self$s_r_done_info[[2L]])
-          self$rl.agent$observe(state.old = self$s.old, action = self$action, reward = self$s_r_done_info[[2L]], state.new = self$s_r_done_info[[1L]], done = self$s_r_done_info[[3L]], info = self$s_r_done_info[[4]], episode = self$idx.episode, stepidx = self$idx.step)
+          self$rl.agent$observe(state.old = self$s.old, action = self$action, reward = self$s_r_done_info[[2L]], state.new = self$s_r_done_info[[1L]], done = self$s_r_done_info[[3L]], info = self$s_r_done_info[[4]], episode = self$idx.episode + 1L, stepidx = self$idx.step + 1L)
           self$r.vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
           self$idx.step = self$idx.step + 1L
           self$rl.agent$afterStep()
@@ -87,7 +78,6 @@ Interaction = R6Class("Interaction",
     checkEpisodeOver = function() {
         if (self$s_r_done_info[[3L]]) {
           self$perf$epi.idx = self$perf$epi.idx + 1L
-          self$episode.over.flag = TRUE
           self$idx.episode = self$idx.episode + 1L
           self$rl.agent$epi.idx = self$idx.episode
           self$rl.env$reset()
@@ -99,10 +89,9 @@ Interaction = R6Class("Interaction",
           self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step  # the number of steps
 
           rew = self$perf$getAccPerf(self$epiLookBack)
-          cat(sprintf("Last %d episodes average reward %f \n", 100, rew))  # same message to console
+          cat(sprintf("Last %d episodes average reward %f \n", self$epiLookBack, rew))  # same message to console
           self$idx.step = 0L
-          self$episode.over.flag = FALSE
-          if (self$idx.episode > self$maxiter) {
+          if (self$idx.episode >= self$maxiter) {
             self$continue.flag = FALSE
           }
           self$rl.agent$afterEpisode(self)
@@ -117,6 +106,9 @@ Interaction = R6Class("Interaction",
       }},
 
     run = function(maxiter = NULL) {
+      self$idx.step = 0L
+      self$idx.episode = 0L
+      self$continue.flag = TRUE
       if (!is.null(maxiter)) self$maxiter = maxiter
       self$s_r_done_info = self$rl.env$reset()
       tryCatch({
@@ -127,10 +119,12 @@ Interaction = R6Class("Interaction",
           self$s_r_done_info = self$rl.env$step(action = as.integer(self$action))
           self$notify("afterStep")
         }
+        self$perf$extractInfo()
         return(self$perf)
     }, finally = {
       self$perf$toString()   # print out performance
       self$perf$persist(self$conf$conf.log.perf$resultTbPath)
+      self$perf$extractInfo()
       filename.replay = file.path(rlR.conf4log$filePrefix, "replay.dt.csv")
       filename.experience = file.path(self$conf$conf.log.perf$filePrefix, "experience.dt.csv")
       self$glogger$log.root$info("\n a = BBmisc::load2('%s')\n", self$conf$conf.log.perf$resultTbPath)
@@ -138,8 +132,7 @@ Interaction = R6Class("Interaction",
       write.csv(self$rl.agent$mem$dt, file = filename.experience)
       self$glogger$log.root$info("\n b = read.csv('%s')", filename.experience)
       self$rl.env$render(close = TRUE)
-      self$perf$list.infos = lapply(self$rl.agent$mem$samples, function(x) x$info)
-      perf <<- self$perf
+      rlR.global.perf <<- self$perf
     }) # try catch
     } # function
     ), # public

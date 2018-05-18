@@ -65,3 +65,14 @@ AgentDQN$test = function(iter = 2000L, sname = "CartPole-v0", render = FALSE) {
   perf = interact$run(iter)
   return(perf)
 }
+
+AgentDQNFreeRun = R6Class("AgentDQNFreeRun",
+  inherit = AgentArmed,
+  public = list(
+    initialize = function(actCnt, stateCnt, conf) {
+       super$initialize(actCnt, stateCnt, conf)
+       self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch"))
+       self$model = self$brain
+    }
+  )
+)
