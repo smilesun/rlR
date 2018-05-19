@@ -122,17 +122,11 @@ Interaction = R6Class("Interaction",
         self$perf$extractInfo()
         return(self$perf)
     }, finally = {
-      self$perf$toString()   # print out performance
-      self$perf$persist(self$conf$conf.log.perf$resultTbPath)
-      self$perf$extractInfo()
-      filename.replay = file.path(rlR.conf4log$filePrefix, "replay.dt.csv")
-      filename.experience = file.path(self$conf$conf.log.perf$filePrefix, "experience.dt.csv")
-      self$glogger$log.root$info("\n a = BBmisc::load2('%s')\n", self$conf$conf.log.perf$resultTbPath)
-      cat(sprintf("\n a = BBmisc::load2('%s') \n", self$conf$conf.log.perf$resultTbPath))
-      write.csv(self$rl.agent$mem$dt, file = filename.experience)
-      self$glogger$log.root$info("\n b = read.csv('%s')", filename.experience)
+      self$perf$rescue()
+      self$glogger$rescue()
       self$rl.env$render(close = TRUE)
       rlR.global.perf <<- self$perf
+      rlR.rescue.global.agent <<- self$rl.agent
     }) # try catch
     } # function
     ), # public

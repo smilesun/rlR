@@ -9,6 +9,7 @@
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
+    interact = NULL,
     epi.idx = NULL,
     advantage = NULL,
     list.acts = NULL,
@@ -47,7 +48,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$random.cnt = 0L
       self$conf = conf
       if (is.null(self$conf)) {
-        # 
+        #
       }
       else {
         self$buildConf()
@@ -57,6 +58,14 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     setConf = function(conf) {
       self$conf = conf
       self$buildConf()
+    },
+
+    loginfo = function(str, ...) {
+      self$glogger$log.nn$info(str, ...)
+    },
+
+    setInteract = function(rl.env) {
+      self$interact = Interaction$new(rl.env = rl.env, rl.agent = self)
     },
 
     buildConf = function() {
@@ -154,9 +163,15 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$policy$afterEpisode()
       self$mem$afterEpisode()
     },
+
     learn = function(iter) {
-      interact = Interaction$new(rl.env = probe$env, rl.agent = rl.agent)
-      Interact$run(iter)
+      self$interact$run(iter)
+    },
+
+    continue = function(new_env, iter) {
+      self$mem$reset()  ##clean memory
+      self$interact = Interaction$new(rl.env = new_env, rl.agent = self)
+      self$interact$run(maxiter = iter)
     }
     ), # public
   private = list(),

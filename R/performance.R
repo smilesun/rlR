@@ -82,6 +82,12 @@ Performance = R6Class("Performance",
 
     extractInfo = function() {
       self$list.infos = lapply(self$agent$mem$samples, function(x) x$info)
+    },
+
+    rescue = function() {
+      self$toString()   # print out performance
+      if (self$glogger$flag) self$persist(self$agent$conf$conf.log.perf$resultTbPath)
+      self$extractInfo()
     }
     ),
   private = list(),
