@@ -1,0 +1,19 @@
+# rlR: Reinforcement learning in R
+
+```{r}
+library(rlR)
+env = makeGymEnv("CartPole-v0")
+listAvailAgent()
+```
+
+
+```{r}
+agent = makeAgent("AgentActorCritic", env)
+system.time({
+perf = agent$learn(500)
+})
+perf$plot()
+```
+
+
+

@@ -19,7 +19,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     conf = NULL,
     vec.arm.q = NULL,      # store Q value for each arm
     random.action = NULL,  # store random.action
-    epsilon = NULL,  # policy_fun currently do not have this parameter
     # built from conf
     glogger = NULL,
     mem = NULL,  # replay memory
@@ -60,6 +59,10 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$buildConf()
     },
 
+    updatePara = function(name, val) {
+      self$conf$updatePara(name, val)
+    },
+
     loginfo = function(str, ...) {
       self$glogger$log.nn$info(str, ...)
     },
@@ -69,7 +72,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     },
 
     buildConf = function() {
-      self$epsilon = self$conf$get("policy.epsilon")
       self$replay.size = self$conf$get("replay.batchsize")
       self$gamma = self$conf$get("agent.gamma")
       self$epochs = self$conf$get("replay.epochs")
@@ -77,7 +79,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       memname = self$conf$get("replay.memname")
       self$mem = ReplayMem$factory(memname, agent = self, conf = self$conf)
       policy_fun = self$conf$get("policy.name")
-      self$policy = PolicyFactory$make(policy_fun, self)
+      self$policy = makePolicy(policy_fun, self)
       self$glogger = RLLog$new(self$conf)
     },
 
@@ -148,15 +150,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     afterStep = function() {
       # do nothing
-    },
-
-    decayEpsilon = function() {
-      temp = self$epsilon * self$conf$get("policy.decay")
-      self$epsilon = max(temp, self$conf$get("policy.minEpsilon"))
-      cat(sprintf("Epsilon%f \n", temp))  # same message to console
-      self$glogger$log.nn$info("rand steps:%i \n", self$random.cnt)
-      cat(sprintf("rand steps:%i \n", self$random.cnt))  # same message to console
-      self$random.cnt = 0L
     },
 
     afterEpisode = function() {

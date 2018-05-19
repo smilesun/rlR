@@ -20,7 +20,7 @@ RLConf = R6Class("Conf",
       str.time = gsub(" ", "_", str.time)
       str.date = toString(Sys.Date())
       filePrefix = file.path(getwd(), self$conf.log.perf$ROOTFOLDERNAME, str.date, str.time, hash.conf)
-      cat(sprintf("logout file path %s", filePrefix))
+      #cat(sprintf("logout file path %s", filePrefix))
       self$conf.log.perf$filePrefix = filePrefix
       self$conf.log.perf$resultTbPath =  file.path(filePrefix, rlR.conf4log$resultTbPath)  # RData file persistence place
     },
@@ -28,12 +28,17 @@ RLConf = R6Class("Conf",
     initialize = function(...) {
       self$static = data.table::copy(rlR.conf.default)  # deep copy
       par.list = list(...)
-      dns = setdiff(names(self$static), names(par.list))
+      dns = setdiff(names(par.list), rlR.conf.default)
       list.default = setNames(lapply(dns, function(x) self$static[[x]]), dns)
-      cat("default parameters: \n")
-      lapply(dns, function(x) cat(sprintf("-%s: %s-\n", x, list.default[[x]])))
       self$set(...)
       self$getPersist()
+      cat("parameters: \n")
+      dns = names(self$static)
+      lapply(dns, function(x) cat(sprintf("-%s: %s- %s-\n", x, {
+            ns = names(self$static[[x]])
+            if (is.null(ns)) ns = ""
+            ns
+        }, self$static[[x]])))
     },
 
     get = function(name) {

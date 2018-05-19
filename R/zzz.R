@@ -17,3 +17,8 @@ listClass = function(name = NULL) {
   mem.idx = which(sapply(all, function(x) grepl(name, x)))
   all[mem.idx]
 }
+
+#' @export 
+listAvailAgent = function() {
+  c("AgentDQN:deep q learning", "AgentFDQN:frozen target deep q learning", "AgentDDQN: double deep q learning", "AgentPG: policy gradient basic", "AgentPGBaseline: policy gradient with baseline", "AgentActorCritic: actor critic method")
+}

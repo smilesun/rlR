@@ -97,7 +97,7 @@ AgentDDQN = R6Class("AgentDDQN",
 AgentDDQN$test = function(iter = 500L, sname = "CartPole-v0", render = TRUE) {
   conf = rlR::RLConf$new(
            render = render,
-           policy.epsilon = 1,
+           policy.maxEpsilon = 1,
            policy.decay = exp(-0.001),
            policy.name = "EpsilonGreedy",
            replay.batchsize = 64L,

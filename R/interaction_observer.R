@@ -39,17 +39,25 @@ Interaction = R6Class("Interaction",
     list.cmd = NULL,
     maxiter = NULL,
     render = NULL,
+    consoleFlag = NULL,
+    printf = NULL,
     initialize = function(rl.env, rl.agent) {
+      self$rl.env = rl.env
       self$rl.agent = rl.agent
       self$conf = self$rl.agent$conf
       self$render = self$conf$get("render")
       temp = NULL
       if (self$render) temp = "render"
+      temp2 = self$rl.agent$conf$get("console")
+      if (is.null(temp2)) self$consoleFlag = FALSE
+      else  self$consoleFlag = temp2
+      if (self$consoleFlag) self$printf = function(str, ...) cat(sprintf(str, ...))
+      else self$printf = function(str, ...) {
+      }
       self$maxiter = self$conf$get("interact.maxiter")
       self$continue.flag = TRUE
       self$glogger = self$rl.agent$glogger
       self$perf = Performance$new(self$rl.agent)
-      self$rl.env = rl.env
       self$r.vec.epi = vector(mode = "numeric", length = 200L)  # gym episode stops at 200
       self$list.cmd = list(
         "render" = self$rl.env$render,
@@ -75,6 +83,10 @@ Interaction = R6Class("Interaction",
       self$s_r_done_info[[3L]]
     },
 
+    toConsole = function(str, ...) {
+      do.call(self$printf, args = c(list(str = str), list(...)))
+    },
+
     checkEpisodeOver = function() {
         if (self$s_r_done_info[[3L]]) {
           self$perf$epi.idx = self$perf$epi.idx + 1L
@@ -85,11 +97,11 @@ Interaction = R6Class("Interaction",
           self$perf$list.reward.epi[[self$perf$epi.idx]] = self$r.vec.epi[1L:self$idx.step]   # the reward vector
           self$perf$list.discount.reward.epi[[self$perf$epi.idx]] = self$perf$computeDiscount(self$r.vec.epi[1L:self$idx.step])
           self$glogger$log.nn$info("Episode: %i, steps:%i\n", self$idx.episode, self$idx.step)
-          cat(sprintf("Episode: %i finished with steps:%i \n", self$idx.episode, self$idx.step))  # same message to console
+          self$toConsole("Episode: %i finished with steps:%i \n", self$idx.episode, self$idx.step)
           self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step  # the number of steps
 
           rew = self$perf$getAccPerf(self$epiLookBack)
-          cat(sprintf("Last %d episodes average reward %f \n", self$epiLookBack, rew))  # same message to console
+          self$toConsole("Last %d episodes average reward %f \n", self$epiLookBack, rew)
           self$idx.step = 0L
           if (self$idx.episode >= self$maxiter) {
             self$continue.flag = FALSE

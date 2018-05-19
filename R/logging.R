@@ -37,10 +37,10 @@ RLLog = R6Class("RLLog",
       if (self$flag) {
       filename.replay = file.path(rlR.conf4log$filePrefix, "replay.dt.csv")
       filename.experience = file.path(self$conf$conf.log.perf$filePrefix, "experience.dt.csv")
-      self$glogger$log.root$info("\n a = BBmisc::load2('%s')\n", self$conf$conf.log.perf$resultTbPath)
+      self$log.root$info("\n a = BBmisc::load2('%s')\n", self$conf$conf.log.perf$resultTbPath)
       cat(sprintf("\n a = BBmisc::load2('%s') \n", self$conf$conf.log.perf$resultTbPath))
       write.csv(self$rl.agent$mem$dt, file = filename.experience)
-      self$glogger$log.root$info("\n b = read.csv('%s')", filename.experience)
+      self$log.root$info("\n b = read.csv('%s')", filename.experience)
       }
     },
 
