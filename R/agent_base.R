@@ -145,7 +145,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     },
 
     sampleRandomAct = function(state) {
-        self$random.action = self$randomAct
+        self$random.action = sample.int(self$actCnt)[1L]
     },
 
     afterStep = function() {
@@ -168,9 +168,5 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     }
     ), # public
   private = list(),
-  active = list(
-    randomAct = function() {
-      sample.int(self$actCnt)[1L]
-    }
-    )
+  active = list()
   )

@@ -1,5 +1,10 @@
 # rlR: Reinforcement learning in R
 
+## Installation
+```{r}
+devtools::install_github("compstat-lmu/rlR", dependencies = TRUE)
+```
+## Usage
 
 ```r
 library(rlR)
@@ -19,7 +24,7 @@ listAvailAgent()
 
 
 ```r
-agent = makeAgent("AgentActorCritic", env)
+agent = makeAgent("AgentDQN", env)
 ```
 
 ```
@@ -27,43 +32,33 @@ agent = makeAgent("AgentActorCritic", env)
 ## -render: - TRUE-
 ## -agent.gamma: - 0.99-
 ## -policy.maxEpsilon: - 1-
-## -policy.minEpsilon: - 0.01-
+## -policy.minEpsilon: - 0.001-
 ## -policy.decay: - 0.999000499833375-
-## -replay.memname: - Latest-
+## -replay.memname: - Uniform-
 ## -replay.epochs: - 1-
 ## -interact.maxiter: - 500-
-## -log: - FALSE-
 ## -console: - FALSE-
+## -log: - FALSE-
 ## -policy.name: - EpsilonGreedy-
-## -agent.nn.arch.actor: nhidden- 64-
-##  -agent.nn.arch.actor: act1- relu-
-##  -agent.nn.arch.actor: act2- softmax-
-##  -agent.nn.arch.actor: loss- categorical_crossentropy-
-##  -agent.nn.arch.actor: lr- 0.025-
-##  -agent.nn.arch.actor: kernel_regularizer- regularizer_l2(l=0.0001)-
-##  -agent.nn.arch.actor: bias_regularizer- regularizer_l2(l=0.0001)-
-##  -agent.nn.arch.actor: decay- 0.9-
-##  -agent.nn.arch.actor: clipnorm- 5-
-## -agent.nn.arch.critic: nhidden- 64-
-##  -agent.nn.arch.critic: act1- relu-
-##  -agent.nn.arch.critic: act2- linear-
-##  -agent.nn.arch.critic: loss- mse-
-##  -agent.nn.arch.critic: lr- 0.025-
-##  -agent.nn.arch.critic: kernel_regularizer- regularizer_l2(l=0.0001)-
-##  -agent.nn.arch.critic: bias_regularizer- regularizer_l2(l=0)-
-##  -agent.nn.arch.critic: decay- 0.9-
-##  -agent.nn.arch.critic: clipnorm- 5-
+## -replay.batchsize: - 64-
+## -agent.nn.arch: nhidden- 64-
+##  -agent.nn.arch: act1- relu-
+##  -agent.nn.arch: act2- linear-
+##  -agent.nn.arch: loss- mse-
+##  -agent.nn.arch: lr- 0.00025-
+##  -agent.nn.arch: kernel_regularizer- regularizer_l2(l=0.0)-
+##  -agent.nn.arch: bias_regularizer- regularizer_l2(l=0.0)-
 ```
 
 ```r
 system.time({
-perf = agent$learn(500)
+perf = agent$learn(1000)
 })
 ```
 
 ```
-##    user  system elapsed 
-## 683.860  11.168 730.674
+##     user   system  elapsed 
+## 5592.336   73.720 5595.750
 ```
 
 ```r
@@ -71,10 +66,10 @@ perf$plot()
 ```
 
 ```
-## `geom_smooth()` using method = 'loess'
+## `geom_smooth()` using method = 'gam'
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+![plot of chunk unnamed-chunk-2](figure/dqn.png)
 
 
 

@@ -56,8 +56,12 @@ AgentDQN = R6Class("AgentDQN",
   )
 
 rlR.conf.DQN = function() {
-  rlR::RLConf$new(render = TRUE,
+  rlR::RLConf$new(
+          render = TRUE,
+          console = FALSE,
+          log = FALSE,
           policy.maxEpsilon = 1,
+          policy.minEpsilon = 0.001,
           policy.decay = exp(-0.001),
           policy.name = "EpsilonGreedy",
           replay.batchsize = 64L,
