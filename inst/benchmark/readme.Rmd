@@ -1,0 +1,19 @@
+# pitfall
+- note that when using  neural network, there is multiple output and the error is only compared on one bit of this output
+
+# Cart-pole
+- Observable space (4 scalars here indicating the angle of the pole, the position of the cart, the velocity of angular and translation)
+```{python}
+x  = x + self.tau * x_dot
+x_dot = x_dot + self.tau * xacc
+theta = theta + self.tau * theta_dot
+theta_dot = theta_dot + self.tau * thetaacc
+```
+- Control variable (-1 +1 for turning the cart left or right)
+- Feedback variable: scalar reward. +1 if pole still stand in Cart-pole.
+- Goal: pertain the pole standing for more steps (if the angle exceed a certain degree the episode ends), the longer the episode, the better.
+
+# Mountain Car
+- Reasons sometimes it exceed 200 steps in the mountain car problem: the neural network prediction for the do nothing action exceed the right action and the do nothing action is always taken. The episode before such an ill episode is normal with a decreasing TD error for each experience encounter. The ill behavior might be due to the way of replaying: one should not always update the last(latest) 5 experience encounter since this might at some point make the unwanted arm dominate **a little bit** the optimal arm in terms of neural network prediction. And this ** A little bit** will continuously deteriorate the neural network prediction by letting the agent choose the wrong behavior although the difference between the wrong behavior and the optimal behavior only differs by **A little bit** .
+- when use prioritized replay, the bellman equation converges very quickly which means that the TD error drops very quickly but this is the reinforcement over-fitting which means that the agent is not exploring at all. When TD error converges, the mountain car will always fail
+- It is better to change the epsilon according to the average TD error to change the epsilon according to the average TD error to avoid over-fitting and use epsilon to stimulate the exploration when the TD error converges

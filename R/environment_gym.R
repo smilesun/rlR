@@ -1,0 +1,59 @@
+EnvGym = R6Class("EnvGym",
+  inherit = Environment,
+  public = list(
+    env = NULL,
+    state.cheat = NULL,
+    act.cheat = NULL,
+    act_cnt = NULL,
+    state_cnt = NULL,
+    initialize = function(genv, state.cheat = identity, act.cheat = identity, actcnt = NULL, statecnt = NULL) {
+      self$env = genv
+      self$state.cheat = state.cheat
+      self$act.cheat = act.cheat
+      if (is.null(actcnt)) {
+        self$act_cnt = genv$action_space$n   # get the number of actions/control bits
+      } else {
+        self$act_cnt = actcnt
+      }
+      if (is.null(statecnt)) {
+        self$state_cnt = genv$observation_space$shape[[1L]]  # get the number of state variables
+      } else {
+        self$state_cnt = statecnt
+      }
+      state = genv$reset()  # only state is returned!
+      state = self$state.cheat(state)
+
+      self$state_cnt = length(state)
+    },
+
+    render = function(...) {
+      self$env$render(...)
+    },
+
+    step = function(action) {
+      action = action - 1L
+      action = self$act.cheat(action)
+      action = as.integer(action)
+      s_r_d_info = self$env$step(action)
+      names(s_r_d_info) = c("state", "reward", "done", "info")
+      s_r_d_info[["state"]] = self$state.cheat(s_r_d_info[["state"]])
+      sl = length(s_r_d_info[["state"]])
+      s_r_d_info
+    },
+
+    reset = function() {
+      s = self$env$reset()
+      s = self$state.cheat(s)
+      r = NULL
+      return(list(s, r, FALSE, ""))
+    },
+
+    next.instance = function() {
+      self$env$reset()
+      r = NULL
+      r
+    }
+    ),
+  private = list(),
+  active = list()
+  )
