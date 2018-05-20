@@ -18,10 +18,10 @@ AgentPGBaseline = R6Class("AgentPGBaseline",
     p.next.c = NULL,
     delta = NULL,
     list.rewards = NULL,
-    initialize = function(actCnt, stateCnt, conf) {
-      super$initialize(actCnt, stateCnt, conf = conf)
-      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch.actor"))
-      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch.critic"))
+    initialize = function(actCnt, stateDim, conf) {
+      super$initialize(actCnt, stateDim, conf = conf)
+      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch.actor"))
+      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch.critic"))
       },
 
      getReplayYhat = function(batchsize) {

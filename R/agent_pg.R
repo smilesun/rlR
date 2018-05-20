@@ -10,9 +10,9 @@ AgentPG = R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
     total.step = NULL,
-    initialize = function(actCnt, stateCnt, conf) {
-      super$initialize(actCnt = actCnt, stateCnt = stateCnt, conf = conf)
-      self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch"))
+    initialize = function(actCnt, stateDim, conf) {
+      super$initialize(actCnt = actCnt, stateDim = stateDim, conf = conf)
+      self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
 },
     extractTarget = function(ins) {
         act =  ReplayMem$extractAction(ins)

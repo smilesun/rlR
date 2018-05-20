@@ -14,10 +14,10 @@
 AgentDQN = R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
-    initialize = function(actCnt, stateCnt, conf = NULL) {
+    initialize = function(actCnt, stateDim, conf = NULL) {
        if (is.null(conf)) conf = rlR.conf.DQN()
-       super$initialize(actCnt, stateCnt, conf)
-       self$brain = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch"))
+       super$initialize(actCnt, stateDim, conf)
+       self$brain = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
        self$model = self$brain
     },
 

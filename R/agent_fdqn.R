@@ -10,9 +10,9 @@ AgentFDQN = R6Class("AgentFDQN",
   inherit = AgentDQN,
   public = list(
     brain.u = NULL,
-    initialize = function(actCnt, stateCnt, conf) {
-      super$initialize(actCnt, stateCnt, conf)
-      self$brain.u = SurroNN$new(actCnt = self$actCnt, stateCnt = self$stateCnt, arch.list = conf$get("agent.nn.arch"))
+    initialize = function(actCnt, stateDim, conf) {
+      super$initialize(actCnt, stateDim, conf)
+      self$brain.u = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
     },
 
       replay = function(batchsize) {

@@ -16,6 +16,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     random.cnt = NULL,
     actCnt = NULL,
     stateCnt = NULL,
+    stateDim = NULL,
     conf = NULL,
     vec.arm.q = NULL,      # store Q value for each arm
     random.action = NULL,  # store random.action
@@ -38,9 +39,9 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     gstep.idx = NULL,
     # member function
     # constructor
-    initialize = function(actCnt, stateCnt, conf = NULL) {
+    initialize = function(actCnt, stateDim, conf = NULL) {
       self$actCnt = actCnt
-      self$stateCnt = stateCnt
+      self$stateDim = stateDim
       self$vec.arm.q = vector(mode = "numeric", length = self$actCnt)
       self$gstep.idx = 1L
       self$epi.idx = 1L
@@ -117,7 +118,8 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     getYhat = function(list.states.old) {
       nr = length(list.states.old)
-      p = length(list.states.old[[1]])
+      #p = length(list.states.old[[1]])
+      p = dim(list.states.old[[1]])
       old.state = Reduce(rbind, list.states.old)
       old.state = array(old.state, dim = c(nr, p))
       p.old = self$model$pred(old.state)
@@ -133,7 +135,14 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
         self$p.next = self$getYhat(list.states.next)
         list.targets = lapply(1:length(self$list.replay), self$extractTarget)
         self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
-        self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
+        #self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
+        temp = Reduce(rbind, list.states.old)
+        nr = length(list.states.old)
+        temp = simplify2array(list.states.old) # R array put elements columnwise
+        mdim = dim(temp)
+        norder = length(mdim)
+        self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
+        # assert(self$replay.x[1,,,]== list.states.old[[1L]])
         self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
     },
 
