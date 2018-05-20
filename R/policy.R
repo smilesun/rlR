@@ -41,7 +41,7 @@ PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
     act = function(state) {
       action = which.max(self$host$vec.arm.q)
       if (runif(1L) < self$epsilon) {
-        action = self$host$sampleRandomAct()
+        self$host$sampleRandomAct()
         action = self$host$random.action
         self$host$random.cnt = self$host$random.cnt + 1L  # increment random count
         self$host$glogger$log.nn$info("random action: %d", action)
