@@ -7,8 +7,8 @@
 #' @examples 
 #' x=c(1,2,3) 
 AgentFactory = R6Class("AgentFactory")
-AgentFactory$genAgent = function(name, actCnt, stateCnt = stateCnt, conf = conf) {
-  ee = parse(text = sprintf("%s$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)", name))
+AgentFactory$genAgent = function(name, actCnt, stateDim, conf = conf) {
+  ee = parse(text = sprintf("%s$new(actCnt = actCnt, stateDim = stateDim, conf = conf)", name))
   eval(ee)  # the text is with respect to the passed arguments
 }
 
@@ -21,11 +21,11 @@ AgentFactory$genAgent = function(name, actCnt, stateCnt = stateCnt, conf = conf)
 #' @return AgentArmed
 #' @export
 #' @examples
-#' makeAgent("AgentDQN", actCnt = 2, stateCnt = 2)
+#' makeAgent("AgentDQN", actCnt = 2, stateDim = 2)
 makeAgent = function(name, env, conf = NULL) {
   actCnt = env$act_cnt
-  stateCnt = env$state_cnt
-  ee = parse(text = sprintf("%s$new(actCnt = actCnt, stateCnt = stateCnt, conf = conf)", name))
+  stateDim = env$state_dim
+  ee = parse(text = sprintf("%s$new(actCnt = actCnt, stateDim = stateDim, conf = conf)", name))
   agent = eval(ee)  # the text is with respect to the passed arguments
   agent$setInteract(env)
   agent

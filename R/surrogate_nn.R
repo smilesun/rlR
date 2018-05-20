@@ -1,10 +1,14 @@
 SurroNN = R6Class("SurroNN",
   inherit = Surrogate,
   public = list(
-    initialize = function(actCnt, stateCnt, arch.list) {
+    initialize = function(actCnt, stateDim, arch.list) {
       self$actCnt = actCnt
-      self$stateCnt = stateCnt
-      self$model = makeKerasModel(input_shape = self$stateCnt, output_shape = self$actCnt, arch.list = arch.list)  # proxy method
+      self$stateDim = stateDim
+      if (length(self$stateDim) > 1L) {
+        self$model = makeCnn(input_shape = self$stateDim, act_cnt = self$actCnt)
+      } else {
+        self$model = makeKerasModel(input_shape = self$stateDim, output_shape = self$actCnt, arch.list = arch.list)
+      }
     },
 
     getWeights = function() {
@@ -30,8 +34,8 @@ SurroNN4PG = R6Class("SurroNN4PG",
   inherit = SurroNN,
   public = list(
     lr = NULL,
-    initialize = function(actCnt, stateCnt, arch.list) {
-      super$initialize(actCnt, stateCnt, arch.list)
+    initialize = function(actCnt, stateDim, arch.list) {
+      super$initialize(actCnt, stateDim, arch.list)
       self$lr = arch.list[["lr"]]
     },
 

@@ -12,9 +12,9 @@
 AgentActorCritic = R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
-    initialize = function(actCnt, stateCnt, conf = NULL) {
+    initialize = function(actCnt, stateDim, conf = NULL) {
       if (is.null(conf)) conf = rlR.conf.AC()
-      super$initialize(actCnt, stateCnt, conf = conf)
+      super$initialize(actCnt, stateDim, conf = conf)
     },
 
     replay = function(batchsize) {
@@ -69,7 +69,7 @@ rlR.conf.AC = function() {
   conf = rlR::RLConf$new(
            render = TRUE,
            log = FALSE,
-           console = TRUE,
+           console = FALSE,
            policy.name = "EpsilonGreedy",
            policy.maxEpsilon = 1,
            policy.minEpsilon = 0.001,

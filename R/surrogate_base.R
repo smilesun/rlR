@@ -2,12 +2,13 @@ Surrogate = R6Class("Surrogate",
   public = list(
       actCnt = NULL,
       stateCnt = NULL,
+      stateDim = NULL,
       createModel.fun = NULL,
       model = NULL,
-    initialize = function(actionCnt, stateCnt, createModel.fun) {
+    initialize = function(actionCnt, stateDim, createModel.fun) {
       self$actCnt = actionCnt
-      self$stateCnt = stateCnt
-      self$model = self$createModel.fun(input_shape = stateCnt, output_shape = actionCnt)  # proxy method
+      self$stateDim = stateDim
+      self$createModel.fun = createModel.fun
     },
 
     train = function(X_train, Y_train, epochs) {
