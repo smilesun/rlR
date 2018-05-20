@@ -87,6 +87,10 @@ ReplayMem$extractNextState = function(x) {
 ReplayMem$extractDone = function(x) {
   return(x[[5L]])
 }
+ReplayMem$extractStep = function(x) {
+  return(x[[6L]][["stepidx"]])
+}
+
 
 #' @export
 ReplayMemUniform = R6Class("ReplayMemUniform",
