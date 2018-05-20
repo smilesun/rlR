@@ -37,9 +37,17 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     replay.y = NULL,
     replay.x = NULL,
     gstep.idx = NULL,
+    env = NULL,
     # member function
     # constructor
-    initialize = function(actCnt, stateDim, conf = NULL) {
+    initialize = function(env, conf) {
+      actCnt = env$act_cnt
+      stateDim = env$state_dim
+      self$env = env
+      self$initialize2(actCnt = actCnt, stateDim = stateDim, conf = conf)
+    },
+
+    initialize2 = function(actCnt = NULL, stateDim = NULL, conf = NULL) {
       self$actCnt = actCnt
       self$stateDim = stateDim
       self$vec.arm.q = vector(mode = "numeric", length = self$actCnt)
@@ -62,13 +70,14 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     updatePara = function(name, val) {
       self$conf$updatePara(name, val)
+      self$buildConf()
     },
 
     loginfo = function(str, ...) {
       self$glogger$log.nn$info(str, ...)
     },
 
-    setInteract = function(rl.env) {
+    createInteract = function(rl.env) {
       self$interact = Interaction$new(rl.env = rl.env, rl.agent = self)
     },
 
@@ -82,6 +91,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       policy_fun = self$conf$get("policy.name")
       self$policy = makePolicy(policy_fun, self)
       self$glogger = RLLog$new(self$conf)
+      self$createInteract(self$env)  # initialize after all other members are initialized!!
     },
 
     # transform observation to  the replay memory

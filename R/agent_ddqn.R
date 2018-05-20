@@ -13,8 +13,15 @@ AgentDDQN = R6Class("AgentDDQN",
     brain_u = NULL,  # u: to be updated
     brain_h = NULL,  # h: to help
     p.next.h = NULL,
-    initialize = function(actCnt, stateDim, conf) {
-      super$initialize(actCnt, stateDim, conf)
+    #initialize = function(actCnt, stateDim, conf) {
+    initialize = function(env, conf) {
+      #super$initialize(actCnt, stateDim, conf)
+      super$initialize(env, conf)
+      self$brain2 = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
+    },
+
+    updatePara = function(name, val) {
+      super$updatePara(name, val)
       self$brain2 = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
     },
 

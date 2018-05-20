@@ -55,6 +55,8 @@ Interaction = R6Class("Interaction",
       else self$printf = function(str, ...) {
       }
       self$maxiter = self$conf$get("interact.maxiter")
+      self$idx.episode = 0
+      self$idx.step = 0
       self$continue.flag = TRUE
       self$glogger = self$rl.agent$glogger
       self$perf = Performance$new(self$rl.agent)

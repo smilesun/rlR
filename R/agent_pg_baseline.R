@@ -18,11 +18,19 @@ AgentPGBaseline = R6Class("AgentPGBaseline",
     p.next.c = NULL,
     delta = NULL,
     list.rewards = NULL,
-    initialize = function(actCnt, stateDim, conf) {
-      super$initialize(actCnt, stateDim, conf = conf)
+    #initialize = function(actCnt, stateDim, conf) {
+    initialize = function(env, conf) {
+      #super$initialize(actCnt, stateDim, conf = conf)
+      super$initialize(env, conf = conf)
       self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch.actor"))
       self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch.critic"))
       },
+
+    updatePara = function(name, val) {
+      super$updatePara(name, val)
+      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch.actor"))
+      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch.critic"))
+    },
 
      getReplayYhat = function(batchsize) {
         self$list.replay = self$mem$sample.fun(batchsize)
@@ -41,7 +49,9 @@ AgentPGBaseline = R6Class("AgentPGBaseline",
           self$getReplayYhat(batchsize)
           len = length(self$list.replay)   # replay.list might be smaller than batchsize
           self$delta = self$advantage - self$p.old.c
-          ded = cumprod(rep(self$gamma, len))
+          # ded = cumprod(rep(self$gamma, len))
+          vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
+          ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
           list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
           list.targets.actor = lapply(1:len, function(i) list.targets.actor[[i]] * ded[i])
           list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))

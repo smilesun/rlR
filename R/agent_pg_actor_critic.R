@@ -12,9 +12,11 @@
 AgentActorCritic = R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
-    initialize = function(actCnt, stateDim, conf = NULL) {
+    #initialize = function(actCnt, stateDim, conf = NULL) {
+    initialize = function(env, conf = NULL) {
       if (is.null(conf)) conf = rlR.conf.AC()
-      super$initialize(actCnt, stateDim, conf = conf)
+      #super$initialize(actCnt, stateDim, conf = conf)
+      super$initialize(env, conf = conf)
     },
 
     replay = function(batchsize) {
@@ -25,7 +27,10 @@ AgentActorCritic = R6Class("AgentActorCritic",
               idx = which(vec.done)
               nv[idx, ] = 0   # at episode end, v[next] = 0
               self$delta = (unlist(self$list.rewards) + nv) - self$p.old.c  # Bellman Error as advantage
-              ded = cumprod(rep(self$gamma, len))   # FIXME: this restain the agent to do uniform replay
+              # ded = cumprod(rep(self$gamma, len))   # FIXME: this restain the agent to do uniform replay
+
+              vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
+              ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
               list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
               list.targets.actor = lapply(1:len, function(i) list.targets.actor[[i]] * ded[i])
               list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
@@ -43,7 +48,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
       extractActorTarget = function(i) {
           advantage = self$delta[i]
           act = self$list.acts[[i]]
-          advantage = (+1) * as.vector(advantage)  # convert (1,1) matrix to scalar
+          advantage = (+1) * as.vector(advantage)
           vec.act = rep(0L, self$actCnt)
           vec.act[act] = 1L
           target = advantage * array(vec.act, dim = c(1L, self$actCnt))
@@ -70,18 +75,18 @@ rlR.conf.AC = function() {
            render = TRUE,
            log = FALSE,
            console = FALSE,
-           policy.name = "EpsilonGreedy",
+           policy.name = "PG",
            policy.maxEpsilon = 1,
-           policy.minEpsilon = 0.001,
+           policy.minEpsilon = 0.000,
            policy.decay = exp(-0.001),
            replay.epochs = 5L,
            replay.memname = "Latest",
-           agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5),
-        agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)
+           agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
+        agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
           )
 }
 
-AgentActorCritic$test = function(iter = 500L, sname = "CartPole-v0", render = TRUE) {
+AgentActorCritic$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
   conf = rlR.conf.AC()
   conf$updatePara("render", render)
   interact = rlR::makeGymExperiment(sname = sname, "AgentActorCritic", conf)

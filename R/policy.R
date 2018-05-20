@@ -3,12 +3,14 @@ Policy = R6Class("Policy",
   public = list(
     epsilon = NULL,
     decay = NULL,
+    logdecay = NULL,
     host = NULL,
     minEpsilon = 0.01,
     maxEpsilon = 1,
     initialize = function(host) {
       self$host = host
       self$decay = self$host$conf$get("policy.decay")
+      self$logdecay = log(self$decay)
       self$minEpsilon = self$host$conf$get("policy.minEpsilon")
       self$maxEpsilon = self$host$conf$get("policy.maxEpsilon")
       self$epsilon = self$maxEpsilon
@@ -50,7 +52,7 @@ PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
     },
 
     afterStep = function() {
-      self$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(-0.001 * self$host$gstep.idx)
+      self$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(self$logdecay * self$host$gstep.idx)
     },
 
     afterEpisode = function() {
@@ -79,7 +81,7 @@ PolicyProbEpsilon = R6Class("PolicyProbEpsilon",
     )
   )
 
-PolicyPG = R6Class("PolicyProbEpsilon",
+PolicyPG = R6Class("PolicyPG",
   inherit = PolicyEpsilonGreedy,
   public = list(
 
@@ -87,13 +89,16 @@ PolicyPG = R6Class("PolicyProbEpsilon",
     softmax = function(state) {
       prob = exp(+1 * self$host$vec.arm.q)
       prob = prob / sum(prob)
-      action = sample.int(self$host$actCnt, prob = prob)[1L]
-      return(action)
+      action = sample.int(self$host$actCnt, prob = prob)
+      action = rmultinom(n = 1L, size = 1L, prob = prob)  # FIXME: any difference between multinomial and sample.int? 
+      arm = which.max(action)
+      return(arm)
     },
 
     act = function(state) {
-      action = self$softmax(state, self$host)
+      action = self$softmax(state)
       if (runif(1L) < self$epsilon) {
+        self$host$sampleRandomAct()
         action = self$host$random.action
         self$host$random.cnt = self$host$random.cnt + 1L  # increment random count
         self$host$glogger$log.nn$info("random action: %d", action)

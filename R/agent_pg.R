@@ -10,10 +10,17 @@ AgentPG = R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
     total.step = NULL,
-    initialize = function(actCnt, stateDim, conf) {
-      super$initialize(actCnt = actCnt, stateDim = stateDim, conf = conf)
+    #initialize = function(actCnt, stateDim, conf) {
+    initialize = function(env, conf) {
+      #super$initialize(actCnt = actCnt, stateDim = stateDim, conf = conf)
+      super$initialize(env, conf = conf)
       self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
 },
+    updatePara = function(name, val) {
+          super$updatePara(name, val)
+          self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
+        },
+
     extractTarget = function(ins) {
         act =  ReplayMem$extractAction(ins)
         temp.act = rep(0L, self$actCnt)
@@ -24,7 +31,9 @@ AgentPG = R6Class("AgentPG",
     getXY = function(batchsize) {
         self$list.replay = self$mem$sample.fun(batchsize)
         len = length(self$list.replay)
-        ded = cumprod(rep(self$gamma, len))   # FIXME: this restain the agent to do uniform replay
+        #ded = cumprod(rep(self$gamma, len))   # FIXME: this restain the agent to do uniform replay
+        vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
+        ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
         list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
         list.targets = lapply(self$list.replay, self$extractTarget)

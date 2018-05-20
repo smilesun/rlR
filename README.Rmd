@@ -15,6 +15,7 @@ listAvailAgent()
 
 ```{r}
 agent = makeAgent("AgentDQN", env)
+agent$updatePara("console", FALSE)
 system.time({
 perf = agent$learn(1000)
 })
