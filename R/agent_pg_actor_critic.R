@@ -74,11 +74,11 @@ rlR.conf.AC = function() {
   conf = rlR::RLConf$new(
            render = TRUE,
            log = FALSE,
-           console = FALSE,
+           console = TRUE,
            policy.name = "PG",
            policy.maxEpsilon = 1,
            policy.minEpsilon = 0.000,
-           policy.decay = exp(-0.001),
+           policy.decay = exp(-0.0001),
            replay.epochs = 5L,
            replay.memname = "Latest",
            agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),

@@ -7,6 +7,7 @@ Policy = R6Class("Policy",
     host = NULL,
     minEpsilon = 0.01,
     maxEpsilon = 1,
+    action = NULL,
     initialize = function(host) {
       self$host = host
       self$decay = self$host$conf$get("policy.decay")
@@ -25,7 +26,7 @@ Policy = R6Class("Policy",
     decayEpsilon = function() {
         temp = self$epsilon * self$decay
         self$epsilon = max(temp, self$minEpsilon)
-        self$host$interact$toConsole("Epsilon%f \n", temp)  # same message to console
+        self$host$interact$toConsole("Epsilon%f \n", temp)
         self$host$glogger$log.nn$info("rand steps:%i \n", self$host$random.cnt)
         self$host$interact$toConsole("rand steps:%i \n", self$host$random.cnt)  # same message to console
         self$host$random.cnt = 0L
@@ -40,15 +41,19 @@ Policy = R6Class("Policy",
 PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
   inherit = Policy,
   public = list(
-    act = function(state) {
-      action = which.max(self$host$vec.arm.q)
+    toss = function() {
       if (runif(1L) < self$epsilon) {
         self$host$sampleRandomAct()
-        action = self$host$random.action
+        self$action = self$host$random.action
         self$host$random.cnt = self$host$random.cnt + 1L  # increment random count
-        self$host$glogger$log.nn$info("random action: %d", action)
+        self$host$glogger$log.nn$info("random action: %d", self$action)
       }
-      return(action)
+    },
+
+    act = function(state) {
+      self$action = which.max(self$host$vec.arm.q)
+      self$toss()
+      return(self$action)
     },
 
     afterStep = function() {
@@ -90,20 +95,15 @@ PolicyPG = R6Class("PolicyPG",
       prob = exp(+1 * self$host$vec.arm.q)
       prob = prob / sum(prob)
       action = sample.int(self$host$actCnt, prob = prob)
-      action = rmultinom(n = 1L, size = 1L, prob = prob)  # FIXME: any difference between multinomial and sample.int? 
+      action = rmultinom(n = 1L, size = self$host$actCnt, prob = prob)  # FIXME: any difference between multinomial and sample.int?
       arm = which.max(action)
       return(arm)
     },
 
     act = function(state) {
-      action = self$softmax(state)
-      if (runif(1L) < self$epsilon) {
-        self$host$sampleRandomAct()
-        action = self$host$random.action
-        self$host$random.cnt = self$host$random.cnt + 1L  # increment random count
-        self$host$glogger$log.nn$info("random action: %d", action)
-      }
-      action
+      self$action = self$softmax(state)
+      self$toss()  # epsilon chance
+      return(self$action)
     },
 
     afterEpisode = function() {
