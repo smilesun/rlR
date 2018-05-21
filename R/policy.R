@@ -1,4 +1,3 @@
-#' @export
 Policy = R6Class("Policy",
   public = list(
     epsilon = NULL,
@@ -38,7 +37,6 @@ Policy = R6Class("Policy",
   )
   )
 
-#' @export
 PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
   inherit = Policy,
   public = list(
@@ -72,7 +70,6 @@ PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
     )
   )
 
-#' @export
 PolicyProbEpsilon = R6Class("PolicyProbEpsilon",
   inherit = PolicyEpsilonGreedy,
   public = list(

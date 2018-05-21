@@ -1,5 +1,6 @@
 #' @title ReinforceWithBaseline
 #'
+#' @format \code{\link{R6Class}} object
 #' @description ReinforceWithBaseline
 #'
 #' @return [\code{\link{AgentPGBaseline}}].

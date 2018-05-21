@@ -1,6 +1,11 @@
 #' @title AgentActorCritic
 #'
+#' @format \code{\link{R6Class}} object
 #' @description ActorCritic Agent
+#'
+#' @section Methods:
+#' Inherited from \code{AgentArmed}:
+#' @inheritSection AgentArmed Methods
 #'
 #' @return [\code{\link{AgentActorCritic}}].
 #' @export

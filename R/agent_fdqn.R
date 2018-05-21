@@ -1,6 +1,11 @@
 #' @title Frozen target Q learning
 #'
+#' @format \code{\link{R6Class}} object
 #' @description Frozen target Q learning
+#'
+#' @section Methods:
+#' Inherited from \code{AgentArmed}:
+#' @inheritSection AgentArmed Methods
 #'
 #' @return [\code{\link{AgentFDQN}}].
 #' @export
