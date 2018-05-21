@@ -1,6 +1,21 @@
 language: r
-sudo: false
+sudo: required
 cache: packages
+matrix:
+  include:
+    - python:2.7
+    - python:3.6
+addons:
+  apt:
+    update: true
+    packages:
+      - python2.7
+      - python-pip 
+      - python-dev 
+      - build-essential
+before_install:
+  - sudo pip install gym
+  - sudo pip install tensorflow
 env:
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
@@ -12,8 +27,10 @@ r:
 r_github_packages:
 - jimhester/covr
 - hadley/pkgdown
+- rstudio/keras
 before_script:
 - R --no-save <<< 'library("devtools"); document()'
+- R --no-save <<< 'library("keras"); install_keras()'
 after_success:
 - 'if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_R_VERSION_STRING" == "release" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
     R --no-save <<< "devtools::install(); pkgdown::build_site()";
