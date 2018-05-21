@@ -13,7 +13,7 @@ addons:
       - python-dev 
       - build-essential
 before_install:
-  - pip install gym
+  - sudo pip install gym
 env:
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
