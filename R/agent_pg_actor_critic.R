@@ -1,8 +1,7 @@
 #' @title AgentActorCritic
 #'
-#' @description ActorCritic
+#' @description ActorCritic Agent
 #'
-#' @param "AgentActorCritic" value
 #' @return [\code{\link{AgentActorCritic}}].
 #' @export
 AgentActorCritic = R6Class("AgentActorCritic",

@@ -18,7 +18,9 @@ listClass = function(name = NULL) {
   all[mem.idx]
 }
 
-#' @export 
+#' @title listAvailAgent
+#' @description List all implemented Agents
+#' @export
 listAvailAgent = function() {
   c("AgentDQN:deep q learning", "AgentFDQN:frozen target deep q learning", "AgentDDQN: double deep q learning", "AgentPG: policy gradient basic", "AgentPGBaseline: policy gradient with baseline", "AgentActorCritic: actor critic method")
 }

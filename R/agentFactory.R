@@ -1,6 +1,7 @@
 #' @title Make Agent
 #' @description Make Agent
 #' @param name The name of the Agent
+#' @param env The environment to initialize the Agent
 #' @param conf The configuration
 #' @return [\code{\link{AgentArmed}}].
 #' @export

@@ -48,6 +48,10 @@ EnvGym = R6Class("EnvGym",
       self$env$reset()
       r = NULL
       r
+    },
+
+    afterAll = function() {
+      self$env$render(close = TRUE)
     }
     ),
   private = list(),

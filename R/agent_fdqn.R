@@ -8,9 +8,7 @@ AgentFDQN = R6Class("AgentFDQN",
   inherit = AgentDQN,
   public = list(
     brain.u = NULL,
-    #initialize = function(actCnt, stateDim, conf) {
     initialize = function(env, conf) {
-      #super$initialize(actCnt, stateDim, conf)
       super$initialize(env, conf)
       self$brain.u = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
     },

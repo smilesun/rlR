@@ -107,12 +107,12 @@ list.par.val = makeHidden(
   )
 )
 
+#'makeAnyModel(list.arch = list.arch)
 makeAnyModel = function(input =4, output = 1, list.arch) {
   text = keras_helper(input, output, list.arch)
   eval(parse(text = text))
 }
 
-#makeAnyModel(list.arch = list.arch)
 makeCnn = function(input_shape = c(32, 32, 3), act_cnt = 10L) {
   model <- keras_model_sequential()
   model %>%

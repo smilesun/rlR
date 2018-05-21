@@ -1,14 +1,36 @@
 #' @title Discrete Action Agent
 #'
-#' @description Discrete Action Agent
+#' @format \code{\link{R6Class}} object
 #'
+#' @description
+#' A \code{\link[R6]{R6Class}} to represent Discrete Action Agent or Armed Agent
+#'
+#' @section Member Variables:
+#'
+#' \describe{
+#'   \item{interact}{[\code{Interaction}] \cr
+#'   Interaction object between Agent and Environment.}
+#'   \item{mem}{[\code{ReplayMem}] \cr
+#'     Replay memory for the Agent}
+#'   \item{brain}{[\code{Surrogate}] \cr
+#'     A Surrogate model to evaluate the current state.}
+#'   \item{model}{[\code{Surrogate}] \cr
+#'     A reference to the Surrogate model.}
+#' }
+#'
+#' @section Methods:
+#' \describe{
+#'   \item{updatePara(name, val)}{[\code{function}] \cr Function to update parameter setting.}
+#'   \item{continue(new_env, iter)}{[\code{function}] \cr Continue with a new environment new_env for iter number of episodes}
+#'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes}
+#' }
 #' @return [\code{\link{AgentArmed}}].
 #' @export
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
     interact = NULL,
-    epi.idx = NULL,
+    mem = NULL,  # replay memory
     advantage = NULL,
     list.acts = NULL,
     random.cnt = NULL,
@@ -20,7 +42,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     random.action = NULL,  # store random.action
     # built from conf
     glogger = NULL,
-    mem = NULL,  # replay memory
     policy = NULL,
     gamma = NULL,
     # for init in other child class
@@ -34,7 +55,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     list.replay = NULL,
     replay.y = NULL,
     replay.x = NULL,
-    gstep.idx = NULL,
     env = NULL,
     # member function
     # constructor
@@ -50,8 +70,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$actCnt = actCnt
       self$stateDim = stateDim
       self$vec.arm.q = vector(mode = "numeric", length = self$actCnt)
-      self$gstep.idx = 1L
-      self$epi.idx = 1L
       self$random.cnt = 0L
       self$conf = conf
       if (is.null(self$conf)) {
@@ -98,7 +116,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
       self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
       self$mem$add(ins)
-      self$gstep.idx = self$gstep.idx + 1L
     },
 
     calculateTDError = function(ins) {

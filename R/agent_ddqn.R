@@ -1,6 +1,7 @@
 #' @title Double Q learning
 #'
 #' @description
+#' A \code{\link[R6]{R6Class}} to represent Double Deep Q learning Armed Agent
 #' %$Q_u(S, a; \theta_1) = r + Q_u(S', argmax_a' Q_h(S',a'), \theta_1) + delta$
 #' @return [\code{\link{AgentDDQN}}].
 #' @export
@@ -11,9 +12,7 @@ AgentDDQN = R6Class("AgentDDQN",
     brain_u = NULL,  # u: to be updated
     brain_h = NULL,  # h: to help
     p.next.h = NULL,
-    #initialize = function(actCnt, stateDim, conf) {
     initialize = function(env, conf) {
-      #super$initialize(actCnt, stateDim, conf)
       super$initialize(env, conf)
       self$brain2 = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
     },

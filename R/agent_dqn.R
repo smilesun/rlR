@@ -7,7 +7,6 @@
 AgentDQN = R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
-    #initialize = function(actCnt, stateDim, conf = NULL) {
     initialize = function(env, conf = NULL) {
        if (is.null(conf)) conf = rlR.conf.DQN()
        super$initialize(env, conf)
@@ -51,7 +50,7 @@ AgentDQN = R6Class("AgentDQN",
 
 rlR.conf.DQN = function() {
   rlR::RLConf$new(
-          render = TRUE,
+          render = FALSE,
           console = FALSE,
           log = FALSE,
           policy.maxEpsilon = 1,

@@ -7,6 +7,7 @@ Policy = R6Class("Policy",
     host = NULL,
     minEpsilon = 0.01,
     maxEpsilon = 1,
+    gstep.idx = 1,
     action = NULL,
     initialize = function(host) {
       self$host = host
@@ -41,6 +42,10 @@ Policy = R6Class("Policy",
 PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
   inherit = Policy,
   public = list(
+    initialize = function(host) {
+      super$initialize(host)
+    },
+
     toss = function() {
       if (runif(1L) < self$epsilon) {
         self$host$sampleRandomAct()
@@ -57,7 +62,8 @@ PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
     },
 
     afterStep = function() {
-      self$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(self$logdecay * self$host$gstep.idx)
+      self$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(self$logdecay * self$gstep.idx)
+      self$gstep.idx = self$gstep.idx + 1L
     },
 
     afterEpisode = function() {
@@ -70,6 +76,9 @@ PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
 PolicyProbEpsilon = R6Class("PolicyProbEpsilon",
   inherit = PolicyEpsilonGreedy,
   public = list(
+    initialize = function(host) {
+      super$initialize(host)
+    },
 
     # all suboptimal arm probability sum up to epsilon with probability epsilon/actCnt
     act = function(state) {
@@ -89,6 +98,9 @@ PolicyProbEpsilon = R6Class("PolicyProbEpsilon",
 PolicyPG = R6Class("PolicyPG",
   inherit = PolicyEpsilonGreedy,
   public = list(
+    initialize = function(host) {
+      super$initialize(host)
+    },
 
     # softmax will magnify the difference
     softmax = function(state) {
