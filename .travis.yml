@@ -9,8 +9,12 @@ addons:
   apt:
     packages:
       - python2.7
-      - gym
       - python-numpy
+      - python-pip 
+      - python-dev 
+      - build-essential
+before_install:
+  - pip install gym
 env:
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
