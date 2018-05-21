@@ -10,6 +10,7 @@ Performance = R6Class("Performance",
     epi.idx = NULL,
     glogger = NULL,
     agent = NULL,
+    r.vec.epi = NULL,
 
     initialize = function(agent) {
       self$agent = agent
@@ -21,6 +22,7 @@ Performance = R6Class("Performance",
       self$list.rewardPerEpisode = list()
       self$list.discountedRPerEpisode = list()
       self$list.stepsPerEpisode = list()
+      self$r.vec.epi = vector(mode = "numeric", length = 2000L)  # FIXME: how to set a reasonble number here?
     },
 
     computeDiscount = function(rewardvec) {
@@ -88,6 +90,14 @@ Performance = R6Class("Performance",
       self$toString()   # print out performance
       if (self$glogger$flag) self$persist(self$agent$conf$conf.log.perf$resultTbPath)
       self$extractInfo()
+    },
+
+    afterEpisode = function() {
+      self$epi.idx = self$epi.idx + 1L
+      self$list.reward.epi[[self$epi.idx]] = vector(mode = "list")
+      self$list.reward.epi[[self$epi.idx]] = self$r.vec.epi[1L:self$agent$interact$idx.step]   # the reward vector
+      self$list.discount.reward.epi[[self$epi.idx]] = self$computeDiscount(self$r.vec.epi[1L:self$agent$interact$idx.step])
+      self$list.stepsPerEpisode[[self$epi.idx]] = self$agent$interact$idx.step  # the number of steps
     }
     ),
   private = list(),

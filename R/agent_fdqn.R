@@ -1,18 +1,19 @@
 #' @title Frozen target Q learning
 #'
+#' @format \code{\link{R6Class}} object
 #' @description Frozen target Q learning
 #'
-#' @return returndes
+#' @section Methods:
+#' Inherited from \code{AgentArmed}:
+#' @inheritSection AgentArmed Methods
+#'
+#' @return [\code{\link{AgentFDQN}}].
 #' @export
-#' @examples
-#' x=c(1,2,3)
 AgentFDQN = R6Class("AgentFDQN",
   inherit = AgentDQN,
   public = list(
     brain.u = NULL,
-    #initialize = function(actCnt, stateDim, conf) {
     initialize = function(env, conf) {
-      #super$initialize(actCnt, stateDim, conf)
       super$initialize(env, conf)
       self$brain.u = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
     },

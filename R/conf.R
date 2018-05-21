@@ -2,10 +2,8 @@
 #'
 #' @description The reason that there exist a Configuration object which is throughout the experiment is that we want to look at the effect of those configuration parameters.
 #'
-#' @return returndes
+#' @return [\code{\link{RLConf}}].
 #' @export
-#' @examples
-#' x=c(1,2,3)
 RLConf = R6Class("Conf",
   public = list(
     static = NULL,

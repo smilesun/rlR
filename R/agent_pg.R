@@ -1,18 +1,19 @@
 #' @title Policy Gradient
 #'
+#' @format \code{\link{R6Class}} object
 #' @description Policy Gradient
 #'
-#' @return returndes
+#' @section Methods:
+#' Inherited from \code{AgentArmed}:
+#' @inheritSection AgentArmed Methods
+#'
+#' @return [\code{\link{AgentPG}}].
 #' @export
-#' @examples
-#' x=c(1,2,3)
 AgentPG = R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
     total.step = NULL,
-    #initialize = function(actCnt, stateDim, conf) {
     initialize = function(env, conf) {
-      #super$initialize(actCnt = actCnt, stateDim = stateDim, conf = conf)
       super$initialize(env, conf = conf)
       self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
 },
@@ -31,7 +32,6 @@ AgentPG = R6Class("AgentPG",
     getXY = function(batchsize) {
         self$list.replay = self$mem$sample.fun(batchsize)
         len = length(self$list.replay)
-        #ded = cumprod(rep(self$gamma, len))   # FIXME: this restain the agent to do uniform replay
         vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
         ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
         self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)

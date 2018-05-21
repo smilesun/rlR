@@ -1,16 +1,36 @@
-#' @title Discrete Action
+#' @title Discrete Action Agent
 #'
-#' @description Discrete Action
+#' @format \code{\link{R6Class}} object
 #'
-#' @return returndes
+#' @description
+#' A \code{\link[R6]{R6Class}} to represent Discrete Action Agent or Armed Agent
+#'
+#' @section Member Variables:
+#'
+#' \describe{
+#'   \item{interact}{[\code{Interaction}] \cr
+#'   Interaction object between Agent and Environment.}
+#'   \item{mem}{[\code{ReplayMem}] \cr
+#'     Replay memory for the Agent}
+#'   \item{brain}{[\code{Surrogate}] \cr
+#'     A Surrogate model to evaluate the current state.}
+#'   \item{model}{[\code{Surrogate}] \cr
+#'     A reference to the Surrogate model.}
+#' }
+#'
+#' @section Methods:
+#' \describe{
+#'   \item{updatePara(name, val)}{[\code{function}] \cr Function to update parameter setting.}
+#'   \item{continue(new_env, iter)}{[\code{function}] \cr Continue with a new environment new_env for iter number of episodes}
+#'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes}
+#' }
+#' @return [\code{\link{AgentArmed}}].
 #' @export
-#' @examples
-#' x=c(1,2,3)
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
     interact = NULL,
-    epi.idx = NULL,
+    mem = NULL,  # replay memory
     advantage = NULL,
     list.acts = NULL,
     random.cnt = NULL,
@@ -22,7 +42,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     random.action = NULL,  # store random.action
     # built from conf
     glogger = NULL,
-    mem = NULL,  # replay memory
     policy = NULL,
     gamma = NULL,
     # for init in other child class
@@ -36,7 +55,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
     list.replay = NULL,
     replay.y = NULL,
     replay.x = NULL,
-    gstep.idx = NULL,
     env = NULL,
     # member function
     # constructor
@@ -47,12 +65,11 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$initialize2(actCnt = actCnt, stateDim = stateDim, conf = conf)
     },
 
+    # seperate initialize2 allow for reconfiguration
     initialize2 = function(actCnt = NULL, stateDim = NULL, conf = NULL) {
       self$actCnt = actCnt
       self$stateDim = stateDim
       self$vec.arm.q = vector(mode = "numeric", length = self$actCnt)
-      self$gstep.idx = 1L
-      self$epi.idx = 1L
       self$random.cnt = 0L
       self$conf = conf
       if (is.null(self$conf)) {
@@ -99,7 +116,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
       self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
       self$mem$add(ins)
-      self$gstep.idx = self$gstep.idx + 1L
     },
 
     calculateTDError = function(ins) {
@@ -128,7 +144,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     getYhat = function(list.states.old) {
       nr = length(list.states.old)
-      #p = length(list.states.old[[1]])
       p = dim(list.states.old[[1]])
       old.state = Reduce(rbind, list.states.old)
       old.state = array(old.state, dim = c(nr, p))
@@ -145,7 +160,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
         self$p.next = self$getYhat(list.states.next)
         list.targets = lapply(1:length(self$list.replay), self$extractTarget)
         self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
-        #self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
         temp = Reduce(rbind, list.states.old)
         nr = length(list.states.old)
         temp = simplify2array(list.states.old) # R array put elements columnwise

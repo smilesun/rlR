@@ -1,28 +1,3 @@
-#' @title  Interaction
-#'
-#' @description Interaction
-#'
-#' @param "Interaction" value
-#' @param public value
-#' @param action value
-#' @param s_r_done_info value
-#' @param list.observers value
-#' @param idx.episode value
-#' @param idx.step value
-#' @param continue.flag value
-#' @param r.vec.epi value
-#' @param conf value
-#' @param list.cmd value
-#' @param maxiter value
-#' @param render value
-#' @param initialize value
-#' @param rl.agent value
-#' @param conf value
-#' @param glogger value
-#' @return returndes
-#' @export 
-#' @examples 
-#' x=c(1,2,3) 
 Interaction = R6Class("Interaction",
   inherit = InteractionBase,
   public = list(
@@ -34,7 +9,6 @@ Interaction = R6Class("Interaction",
     idx.episode = NULL,
     idx.step = NULL,
     continue.flag = NULL,
-    r.vec.epi = NULL,
     conf = NULL,
     list.cmd = NULL,
     maxiter = NULL,
@@ -46,11 +20,11 @@ Interaction = R6Class("Interaction",
       self$rl.agent = rl.agent
       self$conf = self$rl.agent$conf
       self$render = self$conf$get("render")
-      temp = NULL
-      if (self$render) temp = "render"
-      temp2 = self$rl.agent$conf$get("console")
-      if (is.null(temp2)) self$consoleFlag = FALSE
-      else  self$consoleFlag = temp2
+      render_cmd = NULL
+      if (self$render) render_cmd = "render"
+      console_cmd = self$rl.agent$conf$get("console")
+      if (is.null(console_cmd)) self$consoleFlag = FALSE
+      else  self$consoleFlag = console_cmd
       if (self$consoleFlag) self$printf = function(str, ...) cat(sprintf(str, ...))
       else self$printf = function(str, ...) {
       }
@@ -60,7 +34,6 @@ Interaction = R6Class("Interaction",
       self$continue.flag = TRUE
       self$glogger = self$rl.agent$glogger
       self$perf = Performance$new(self$rl.agent)
-      self$r.vec.epi = vector(mode = "numeric", length = 200L)  # gym episode stops at 200
       self$list.cmd = list(
         "render" = self$rl.env$render,
         "before.act" = function() {
@@ -70,13 +43,13 @@ Interaction = R6Class("Interaction",
         "after.step" = function() {
           self$glogger$log.nn$info("reward %f", self$s_r_done_info[[2L]])
           self$rl.agent$observe(state.old = self$s.old, action = self$action, reward = self$s_r_done_info[[2L]], state.new = self$s_r_done_info[[1L]], done = self$s_r_done_info[[3L]], info = self$s_r_done_info[[4]], episode = self$idx.episode + 1L, stepidx = self$idx.step + 1L)
-          self$r.vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
+          self$perf$r.vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
           self$idx.step = self$idx.step + 1L
           self$rl.agent$afterStep()
           self$checkEpisodeOver()
         })
       self$list.observers = list(
-        "beforeAct" = self$list.cmd[c("before.act", temp)],
+        "beforeAct" = self$list.cmd[c("before.act", render_cmd)],
         "afterStep" = self$list.cmd["after.step"]
         )
     },
@@ -91,17 +64,11 @@ Interaction = R6Class("Interaction",
 
     checkEpisodeOver = function() {
         if (self$s_r_done_info[[3L]]) {
-          self$perf$epi.idx = self$perf$epi.idx + 1L
-          self$idx.episode = self$idx.episode + 1L
-          self$rl.agent$epi.idx = self$idx.episode
           self$rl.env$reset()
-          self$perf$list.reward.epi[[self$perf$epi.idx]] = vector(mode = "list")
-          self$perf$list.reward.epi[[self$perf$epi.idx]] = self$r.vec.epi[1L:self$idx.step]   # the reward vector
-          self$perf$list.discount.reward.epi[[self$perf$epi.idx]] = self$perf$computeDiscount(self$r.vec.epi[1L:self$idx.step])
+          self$idx.episode = self$idx.episode + 1L
           self$glogger$log.nn$info("Episode: %i, steps:%i\n", self$idx.episode, self$idx.step)
           self$toConsole("Episode: %i finished with steps:%i \n", self$idx.episode, self$idx.step)
-          self$perf$list.stepsPerEpisode[[self$perf$epi.idx]] = self$idx.step  # the number of steps
-
+          self$perf$afterEpisode()
           rew = self$perf$getAccPerf(self$epiLookBack)
           self$toConsole("Last %d episodes average reward %f \n", self$epiLookBack, rew)
           self$idx.step = 0L

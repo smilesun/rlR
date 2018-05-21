@@ -1,21 +1,20 @@
 #' @title AgentActorCritic
 #'
-#' @description ActorCritic
+#' @format \code{\link{R6Class}} object
+#' @description ActorCritic Agent
 #'
-#' @param "AgentActorCritic" value
-#' @param inherit value
-#' @param public value
-#' @return returndes
+#' @section Methods:
+#' Inherited from \code{AgentArmed}:
+#' @inheritSection AgentArmed Methods
+#'
+#' @return [\code{\link{AgentActorCritic}}].
 #' @export
-#' @examples
-#' x=c(1,2,3)
 AgentActorCritic = R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
     #initialize = function(actCnt, stateDim, conf = NULL) {
     initialize = function(env, conf = NULL) {
       if (is.null(conf)) conf = rlR.conf.AC()
-      #super$initialize(actCnt, stateDim, conf = conf)
       super$initialize(env, conf = conf)
     },
 
@@ -74,11 +73,11 @@ rlR.conf.AC = function() {
   conf = rlR::RLConf$new(
            render = TRUE,
            log = FALSE,
-           console = FALSE,
+           console = TRUE,
            policy.name = "PG",
            policy.maxEpsilon = 1,
            policy.minEpsilon = 0.000,
-           policy.decay = exp(-0.001),
+           policy.decay = exp(-0.0001),
            replay.epochs = 5L,
            replay.memname = "Latest",
            agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
