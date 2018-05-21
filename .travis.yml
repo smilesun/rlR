@@ -5,6 +5,11 @@ matrix:
   include:
     - python:2.7
     - python:3.6
+addons:
+  apt:
+    packages:
+      - python2.7
+      - python-numpy
 env:
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
