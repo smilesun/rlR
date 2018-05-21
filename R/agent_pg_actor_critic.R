@@ -12,7 +12,6 @@
 AgentActorCritic = R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
-    #initialize = function(actCnt, stateDim, conf = NULL) {
     initialize = function(env, conf = NULL) {
       if (is.null(conf)) conf = rlR.conf.AC()
       super$initialize(env, conf = conf)
@@ -26,8 +25,6 @@ AgentActorCritic = R6Class("AgentActorCritic",
               idx = which(vec.done)
               nv[idx, ] = 0   # at episode end, v[next] = 0
               self$delta = (unlist(self$list.rewards) + nv) - self$p.old.c  # Bellman Error as advantage
-              # ded = cumprod(rep(self$gamma, len))   # FIXME: this restain the agent to do uniform replay
-
               vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
               ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
               list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
@@ -38,7 +35,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
               self$brain_critic$train(self$replay.x, y_critic)  # first update critic
               self$brain_actor$train(self$replay.x, y_actor)
           },
-    
+
       extractCriticTarget = function(i) {
           y = self$p.old.c[i, ] + self$delta[i]
           return(y)
@@ -55,7 +52,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
     },
 
     afterStep = function() {
-        self$policy$afterStep()
+         # self$policy$afterStep()
     },
 
     afterEpisode = function(interact) {
@@ -77,11 +74,11 @@ rlR.conf.AC = function() {
            policy.name = "PG",
            policy.maxEpsilon = 1,
            policy.minEpsilon = 0.000,
-           policy.decay = exp(-0.0001),
-           replay.epochs = 5L,
+           policy.decay = exp(-0.001),
+           replay.epochs = 1L,
            replay.memname = "Latest",
-           agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
-        agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
+           agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
+        agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 1e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
           )
 }
 
