@@ -51,7 +51,7 @@ EnvGym = R6Class("EnvGym",
     },
 
     afterAll = function() {
-      self$env$render(close = TRUE)
+      self$env$close()
     }
     ),
   private = list(),

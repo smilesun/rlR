@@ -105,7 +105,7 @@ Interaction = R6Class("Interaction",
     }, finally = {
       self$perf$rescue()
       self$glogger$rescue()
-      self$rl.env$render(close = TRUE)
+      self$rl.env$afterAll()
       rlR.global.perf <<- self$perf
       rlR.rescue.global.agent <<- self$rl.agent
     }) # try catch
