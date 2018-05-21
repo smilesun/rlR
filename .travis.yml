@@ -9,7 +9,6 @@ addons:
   apt:
     packages:
       - python2.7
-      - python-numpy
       - python-pip 
       - python-dev 
       - build-essential
