@@ -9,6 +9,7 @@ addons:
   apt:
     packages:
       - python2.7
+      - gym
       - python-numpy
 env:
   matrix:
