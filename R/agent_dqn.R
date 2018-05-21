@@ -1,23 +1,15 @@
 #' @title  DQN
-#' 
-#' @description DQN
-#' 
-#' @param "AgentDQN" value
-#' @param inherit value
-#' @param public value
-#' @param stateCnt value
-#' @param conf value
-#' @return returndes
-#' @export 
-#' @examples 
-#' x=c(1,2,3) 
+#'
+#' @description Deep Q Network
+#'
+#' @return [\code{\link{AgentDQN}}].
+#' @export
 AgentDQN = R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
     #initialize = function(actCnt, stateDim, conf = NULL) {
     initialize = function(env, conf = NULL) {
        if (is.null(conf)) conf = rlR.conf.DQN()
-       #super$initialize(actCnt, stateDim, conf)
        super$initialize(env, conf)
        self$brain = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
        self$model = self$brain

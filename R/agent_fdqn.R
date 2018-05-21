@@ -2,10 +2,8 @@
 #'
 #' @description Frozen target Q learning
 #'
-#' @return returndes
+#' @return [\code{\link{AgentFDQN}}].
 #' @export
-#' @examples
-#' x=c(1,2,3)
 AgentFDQN = R6Class("AgentFDQN",
   inherit = AgentDQN,
   public = list(

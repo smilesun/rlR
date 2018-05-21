@@ -1,11 +1,9 @@
-#' @title Discrete Action
+#' @title Discrete Action Agent
 #'
-#' @description Discrete Action
+#' @description Discrete Action Agent
 #'
-#' @return returndes
+#' @return [\code{\link{AgentArmed}}].
 #' @export
-#' @examples
-#' x=c(1,2,3)
 AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
@@ -47,6 +45,7 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
       self$initialize2(actCnt = actCnt, stateDim = stateDim, conf = conf)
     },
 
+    # seperate initialize2 allow for reconfiguration
     initialize2 = function(actCnt = NULL, stateDim = NULL, conf = NULL) {
       self$actCnt = actCnt
       self$stateDim = stateDim
@@ -128,7 +127,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
 
     getYhat = function(list.states.old) {
       nr = length(list.states.old)
-      #p = length(list.states.old[[1]])
       p = dim(list.states.old[[1]])
       old.state = Reduce(rbind, list.states.old)
       old.state = array(old.state, dim = c(nr, p))
@@ -145,7 +143,6 @@ AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
         self$p.next = self$getYhat(list.states.next)
         list.targets = lapply(1:length(self$list.replay), self$extractTarget)
         self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
-        #self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
         temp = Reduce(rbind, list.states.old)
         nr = length(list.states.old)
         temp = simplify2array(list.states.old) # R array put elements columnwise

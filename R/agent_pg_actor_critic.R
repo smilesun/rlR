@@ -3,19 +3,14 @@
 #' @description ActorCritic
 #'
 #' @param "AgentActorCritic" value
-#' @param inherit value
-#' @param public value
-#' @return returndes
+#' @return [\code{\link{AgentActorCritic}}].
 #' @export
-#' @examples
-#' x=c(1,2,3)
 AgentActorCritic = R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
     #initialize = function(actCnt, stateDim, conf = NULL) {
     initialize = function(env, conf = NULL) {
       if (is.null(conf)) conf = rlR.conf.AC()
-      #super$initialize(actCnt, stateDim, conf = conf)
       super$initialize(env, conf = conf)
     },
 
