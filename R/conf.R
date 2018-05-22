@@ -1,8 +1,4 @@
-#' @title Configuration object for experiment.
-#'
-#' @description The reason that there exist a Configuration object which is throughout the experiment is that we want to look at the effect of those configuration parameters.
-#'
-#' @return [\code{\link{RLConf}}].
+# The reason that there exist a Configuration object which is throughout the experiment is that we want to look at the effect of those configuration parameters.
 RLConf = R6Class("Conf",
   public = list(
     static = NULL,
