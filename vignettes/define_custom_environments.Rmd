@@ -20,6 +20,9 @@ knitr::opts_chunk$set(cache = TRUE, collapse = FALSE, dev = "svg", fig.height = 
 knitr::knit_hooks$set(document = function(x){
   gsub("```\n*```r*\n*", "", x)
 })
+library(reticulate)
+os = import("os")
+os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
 ```
 
 # rlR: Define custom environments for Deep Reinforcement learning in R

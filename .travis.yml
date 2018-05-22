@@ -17,6 +17,7 @@ before_install:
   - sudo pip install gym
   - sudo pip install h5py==2.8.0rc1
   - sudo pip install tensorflow
+  - sudo pip install numpy==1.13.0
 env:
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
