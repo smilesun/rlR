@@ -25,12 +25,12 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
+  
+  
 <meta property="og:title" content="Wrapper for Gym OpenAI environment — makeGymEnv" />
 
 <meta property="og:description" content="Depends on Gym API definition" />
 <meta name="twitter:card" content="summary" />
-
-
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -38,8 +38,6 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
-
-
 
 
   </head>
@@ -55,12 +53,8 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="../index.html">rlR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
-      </span>
+      <a class="navbar-brand" href="../index.html">rlR</a>
     </div>
-
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
@@ -73,7 +67,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/basic_usage.html">Basic usage</a>
+      <a href="../articles/basic_usage_gym_openai.html">Basic usage with Gym OpenAI environment</a>
+    </li>
+    <li>
+      <a href="../articles/define_custom_environment.html">Build Custom Environment</a>
     </li>
   </ul>
 </li>
@@ -94,7 +91,6 @@
   </a>
 </li>
       </ul>
-      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -102,12 +98,10 @@
       
       </header>
 
-<div class="row">
+      <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Wrapper for Gym OpenAI environment</h1>
-    <small>Source: <a href='https://github.com/compstat-lmu/rlR/blob/master/R/experiment.R'><code>R/experiment.R</code></a></small>
-    <div class="hidden name"><code>makeGymEnv.Rd</code></div>
     </div>
 
     
@@ -116,7 +110,7 @@
 
     <pre class="usage"><span class='fu'>makeGymEnv</span>(<span class='kw'>name</span> <span class='kw'>=</span> <span class='st'>"CartPole-v0"</span>, <span class='no'>...</span>)</pre>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
@@ -158,8 +152,5 @@
       </footer>
    </div>
 
-  
-
   </body>
 </html>
-

@@ -1,0 +1,83 @@
+---
+title: "Define custom environment for deep reinforcement learn"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+    dev: svg
+vignette: >
+  %\VignetteIndexEntry{Define custom environment for deep reinforcement learn}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+library(rlR)
+set.seed(123)
+knitr::opts_chunk$set(cache = TRUE, collapse = FALSE, dev = "svg", fig.height = 3.5)
+knitr::knit_hooks$set(document = function(x){
+  gsub("```\n*```r*\n*", "", x)
+})
+```
+
+# rlR: Define custom environments for Deep Reinforcement learning in R
+
+## Environment class
+If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment. Below is a template. Where the listed fields (member variables and methods) must exist in your implemented R6 class. You could define other public and private members as you like. 
+
+```{r}
+library(rlR)
+library(R6)
+MyEnv = R6Class("MyEnv",
+  public = list(
+    state_dim = NULL,  # obligatory field, should be vector. c(28, 28, 3) which is usually the dimension for an order 3 tensor which can represent an RGB image for example.
+    act_cnt = NULL, # obligatory field, should be type integer
+    initialize = function(...) {
+      # put your initialization code here for example
+      self$state_dim = 4
+      self$act_cnt = 2
+    },
+
+    render = function(...) {
+      # you could leave this field empty. 
+    },
+
+    # this function will be called at each step of the learning
+    step = function(action) {
+      s_r_d_info = vector(mode = "list", length = 4)
+      # input your custom function here
+      names(s_r_d_info) = c("state", "reward", "done", "info")
+      s_r_d_info[["state"]] = as.array(s_r_d_info[["state"]]) # this must be the same dimension as the self$state_dim
+      s_r_d_info
+    },
+
+    # this function will be called at the beginning of the learning and at the end of each episode
+    reset = function() {
+      s_r_d_info = vector(mode = "list", length = 4)
+      # input your custom function here
+      names(s_r_d_info) = c("state", "reward", "done", "info")
+      s_r_d_info[["state"]] = as.array(s_r_d_info[["state"]]) # this must be the same dimension as the self$state_dim
+      s_r_d_info
+    },
+
+    afterAll = function() {
+      # what to do after the whole learning is finished?  could be left empty
+    }
+    ),
+  private = list(),
+  active = list()
+  )
+```
+
+Afterwards you could choose one of the available  Agents to learn on this newly defined environments. 
+```{r}
+env = MyEnv$new()
+listAvailAgent()
+agent = makeAgent("AgentDQN", env)
+agent$updatePara("console", FALSE)
+# perf = agent$learn(10)
+# perf$plot()
+```
+

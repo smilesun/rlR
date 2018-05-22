@@ -1,5 +1,7 @@
 ---
+author: "Xudong Sun"
 title: "Deep reinforcement learning in R"
+date: "`r Sys.Date()`"
 output:
   html_document:
     toc: true
@@ -11,6 +13,7 @@ vignette: >
   %\VignetteIndexEntry{Deep reinforcement learning in R}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\usepackage[UTF-8]{inputenc}
 ---
 
 ```{r setup, include = FALSE, cache = FALSE}
@@ -41,7 +44,7 @@ listAvailAgent()
 agent = makeAgent("AgentDQN", env)
 agent$updatePara("console", FALSE)
 system.time({
-perf = agent$learn(1000)
+#perf = agent$learn(1000)  # umcomment this line to run yourself which might take a while
 })
-perf$plot()
+#perf$plot()
 ```

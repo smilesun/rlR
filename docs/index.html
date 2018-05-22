@@ -18,7 +18,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-article">
+    <div class="container template-vignette">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -27,12 +27,8 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">rlR</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
-      </span>
+      <a class="navbar-brand" href="index.html">rlR</a>
     </div>
-
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li class="dropdown">
@@ -45,7 +41,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/basic_usage.html">Basic usage</a>
+      <a href="articles/basic_usage_gym_openai.html">Basic usage with Gym OpenAI environment</a>
+    </li>
+    <li>
+      <a href="articles/define_custom_environment.html">Build Custom Environment</a>
     </li>
   </ul>
 </li>
@@ -74,40 +73,35 @@
 
       
       </header><div class="row">
-  <div class="col-md-9 contents">
+  <div class="col-md-9">
     
 
     
     
+<div class="contents">
 <div id="rlr-reinforcement-learning-in-r" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#rlr-reinforcement-learning-in-r" class="anchor"></a>rlR: Reinforcement learning in R</h1></div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">"compstat-lmu/rlR"</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Downloading GitHub repo compstat-lmu/rlR@master
-## from URL https://api.github.com/repos/compstat-lmu/rlR/zipball/master</code></pre>
-<pre><code>## Installing rlR</code></pre>
-<pre><code>## '/usr/lib/R/bin/R' --no-site-file --no-environ --no-save --no-restore  \
-##   --quiet CMD INSTALL  \
-##   '/tmp/RtmpkrRqna/devtools2764213b2246/compstat-lmu-rlR-3925b5e'  \
-##   --library='/home/sunxd/R/library/3.4' --install-tests</code></pre>
-<pre><code>## </code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">"compstat-lmu/rlR"</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)</code></pre>
+<pre><code>## Skipping install of 'rlR' from a github remote, the SHA1 (d507ddd3) has not changed since last install.
+##   Use `force = TRUE` to force installation</code></pre>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
 env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
-<span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre></div>
+<span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre>
 <pre><code>## [1] "AgentDQN:deep q learning"                      
 ## [2] "AgentFDQN:frozen target deep q learning"       
 ## [3] "AgentDDQN: double deep q learning"             
 ## [4] "AgentPG: policy gradient basic"                
 ## [5] "AgentPGBaseline: policy gradient with baseline"
 ## [6] "AgentActorCritic: actor critic method"</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env)</code></pre></div>
+<pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env)</code></pre>
 <pre><code>## parameters: 
 ## -render: - FALSE-
 ## -agent.gamma: - 0.99-
@@ -128,45 +122,34 @@ env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.htm
 ##  -agent.nn.arch: lr- 0.00025-
 ##  -agent.nn.arch: kernel_regularizer- regularizer_l2(l=0.0)-
 ##  -agent.nn.arch: bias_regularizer- regularizer_l2(l=0.0)-</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent$<span class="kw">updatePara</span>(<span class="st">"console"</span>, <span class="ot">FALSE</span>)
+<pre class="sourceCode r"><code class="sourceCode r">agent$<span class="kw">updatePara</span>(<span class="st">"console"</span>, <span class="ot">FALSE</span>)
 <span class="kw">system.time</span>({
-perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">1000</span>)
-})</code></pre></div>
-<pre><code>##     user   system  elapsed 
-## 4499.103   82.783 4430.667</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">perf$<span class="kw">plot</span>()</code></pre></div>
-<pre><code>## `geom_smooth()` using method = 'gam'</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<span class="co"># perf = agent$learn(1000)  # uncomment this to run, which might take some time</span>
+})</code></pre>
+<pre><code>##    user  system elapsed 
+##       0       0       0</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># perf$plot()</span></code></pre>
+</div>
 </div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <div class="links">
-<h2>Links</h2>
+    <h2 class="hasAnchor">
+<a href="#sidebar" class="anchor"></a>Links</h2>
 <ul class="list-unstyled">
 <li>Browse source code at <br><a href="https://github.com/compstat-lmu/rlR">https://​github.com/​compstat-lmu/​rlR</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/compstat-lmu/rlR/issues">https://​github.com/​compstat-lmu/​rlR/​issues</a>
 </li>
 </ul>
-</div>
-<div class="license">
 <h2>License</h2>
-<ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/BSD-2-Clause">BSD_2_clause</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
-</ul>
-</div>
-<div class="developers">
+<p><a href="https://opensource.org/licenses/BSD-2-Clause">BSD_2_clause</a> + file <a href="LICENSE.html">LICENSE</a></p>
 <h2>Developers</h2>
 <ul class="list-unstyled">
 <li>Xudong Sun <br><small class="roles"> Author, maintainer </small>  </li>
 </ul>
 </div>
-
-      </div>
 
 </div>
 
@@ -181,8 +164,6 @@ perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="
 
       </footer>
 </div>
-
-  
 
   </body>
 </html>
