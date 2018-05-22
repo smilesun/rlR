@@ -47,7 +47,7 @@ AgentFDQN = R6Class("AgentFDQN",
   )
 
 AgentFDQN$test = function(iter = 500L, sname = "CartPole-v0", render = TRUE) {
-  conf = rlR::RLConf$new(
+  conf = RLConf$new(
            render = render,
            policy.maxEpsilon = 1,
            policy.minEpsilon = 0.01,

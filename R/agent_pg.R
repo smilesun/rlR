@@ -75,7 +75,7 @@ AgentPG = R6Class("AgentPG",
   )
 
 AgentPG$test = function(iter = 5000L, sname = "CartPole-v0", render = TRUE) {
-  conf = rlR::RLConf$new(
+  conf = RLConf$new(
            render = render,
            policy.epsilon = 1,
            policy.decay = exp(-0.001),

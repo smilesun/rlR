@@ -54,7 +54,7 @@ AgentDQN = R6Class("AgentDQN",
   )
 
 rlR.conf.DQN = function() {
-  rlR::RLConf$new(
+  RLConf$new(
           render = FALSE,
           console = FALSE,
           log = FALSE,
