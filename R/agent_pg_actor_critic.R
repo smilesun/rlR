@@ -67,7 +67,7 @@ AgentActorCritic = R6Class("AgentActorCritic",
 
 
 rlR.conf.AC = function() {
-  conf = rlR::RLConf$new(
+  conf = RLConf$new(
            render = TRUE,
            log = FALSE,
            console = TRUE,

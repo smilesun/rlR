@@ -100,7 +100,7 @@ AgentPGBaseline = R6Class("AgentPGBaseline",
   )
 
 AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
-  conf = rlR::RLConf$new(
+  conf = RLConf$new(
            render = render,
            policy.name = "ProbEpsilon",
            policy.epsilon = 1,
