@@ -21,7 +21,7 @@ LazyData: true
 RoxygenNote: 6.0.1
 BugReports: https://github.com/compstat-lmu/rlR/issues
 URL: https://github.com/compstat-lmu/rlR
-SystemRequirements: (Python package gym if you want to use gym environment which is standard for reinforcement learning)
+SystemRequirements: (Python package gym if you want to use gym environment which is standard for reinforcement learning, tensorflow is the default computating backend and version 1.1.0 has been test on Ubuntu 14.04)
 Suggests: 
     devtools,
     testthat,
