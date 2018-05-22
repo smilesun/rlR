@@ -101,7 +101,7 @@ PolicyPG = R6Class("PolicyPG",
 
     # softmax will magnify the difference
     softmax = function(state) {
-      prob = exp(+1 * self$host$vec.arm.q)
+      prob = exp(+1 * self$host$vec.arm.q - max(self$host$vec.arm.q))  # numerical stability
       prob = prob / sum(prob)
       action = sample.int(self$host$actCnt, prob = prob)[1L]
       action = rmultinom(n = 1L, size = self$host$actCnt, prob = prob)  # FIXME: any difference between multinomial and sample.int?

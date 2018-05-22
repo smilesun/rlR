@@ -14,12 +14,13 @@ AgentPG = R6Class("AgentPG",
   public = list(
     total.step = NULL,
     initialize = function(env, conf) {
+      if (is.null(conf)) conf = rlR.AgentPG.conf()
       super$initialize(env, conf = conf)
-      self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
+      self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
 },
     updatePara = function(name, val) {
           super$updatePara(name, val)
-          self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
+          self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
         },
 
     extractTarget = function(ins) {
@@ -74,17 +75,20 @@ AgentPG = R6Class("AgentPG",
     )
   )
 
-AgentPG$test = function(iter = 5000L, sname = "CartPole-v0", render = TRUE) {
-  conf = RLConf$new(
-           render = render,
-           policy.epsilon = 1,
-           policy.decay = exp(-0.001),
-           policy.minEpsilon = 0.01,
-           policy.name = "ProbEpsilon",
-           replay.memname = "Latest",
-           replay.epochs = 1L,
-           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
-  interact = rlR::makeGymExperiment(sname = sname, aname = "AgentPG", conf = conf)
+rlR.AgentPG.conf = function() {
+  RLConf$new(
+          render = FALSE,
+          policy.maxEpsilon = 1,
+          policy.decay = exp(-0.001),
+          policy.minEpsilon = 0.01,
+          policy.name = "ProbEpsilon",
+          replay.memname = "Latest",
+          replay.epochs = 1L,
+          agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
+}
+
+AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
+  interact = rlR::makeGymExperiment(sname = sname, aname = "AgentPG", conf = rlR.AgentPG.conf())
   perf = interact$run(iter)
   return(perf)
 }

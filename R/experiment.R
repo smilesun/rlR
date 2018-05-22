@@ -6,6 +6,8 @@
 #' @export
 makeGymEnv = function(name ="CartPole-v0", ...) {
   gym = reticulate::import("gym")
+  gym$logger$set_level(40)  # supress warning
+  gym$logger$setLevel(40)
   genv = gym$make(name)
   env = EnvGym$new(genv, ...)  # EnvGym is a wrapper to original gym environment
   return(env)

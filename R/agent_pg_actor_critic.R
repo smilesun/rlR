@@ -17,6 +17,8 @@ AgentActorCritic = R6Class("AgentActorCritic",
       super$initialize(env, conf = conf)
     },
 
+    # update para is already defined in parent class
+
     replay = function(batchsize) {
               self$getReplayYhat(batchsize)
               len = length(self$list.replay)
@@ -27,6 +29,8 @@ AgentActorCritic = R6Class("AgentActorCritic",
               self$delta = (unlist(self$list.rewards) + nv) - self$p.old.c  # Bellman Error as advantage
               vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
               ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
+              ded = ded - mean(ded)  #  normalize
+              ded = ded / sum(ded ^ 2)  # normalize
               list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
               list.targets.actor = lapply(1:len, function(i) list.targets.actor[[i]] * ded[i])
               list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
@@ -71,14 +75,14 @@ rlR.conf.AC = function() {
            render = TRUE,
            log = FALSE,
            console = TRUE,
-           policy.name = "PG",
+           policy.name = "EpsilonGreedy",
            policy.maxEpsilon = 1,
            policy.minEpsilon = 0.000,
-           policy.decay = exp(-0.001),
+           policy.decay = exp(-0.006),
            replay.epochs = 1L,
            replay.memname = "Latest",
-           agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
-        agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 1e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
+           agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
+        agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
           )
 }
 

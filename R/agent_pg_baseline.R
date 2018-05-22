@@ -17,18 +17,17 @@ AgentPGBaseline = R6Class("AgentPGBaseline",
     p.next.c = NULL,
     delta = NULL,
     list.rewards = NULL,
-    #initialize = function(actCnt, stateDim, conf) {
     initialize = function(env, conf) {
-      #super$initialize(actCnt, stateDim, conf = conf)
+      if (is.null(conf)) conf = rlR.AgentPGBaseline.conf()
       super$initialize(env, conf = conf)
-      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch.actor"))
-      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch.critic"))
+      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
+      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
       },
 
     updatePara = function(name, val) {
       super$updatePara(name, val)
-      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch.actor"))
-      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch.critic"))
+      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
+      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
     },
 
      getReplayYhat = function(batchsize) {
@@ -48,9 +47,10 @@ AgentPGBaseline = R6Class("AgentPGBaseline",
           self$getReplayYhat(batchsize)
           len = length(self$list.replay)   # replay.list might be smaller than batchsize
           self$delta = self$advantage - self$p.old.c
-          # ded = cumprod(rep(self$gamma, len))
           vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
           ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
+          ded = ded - mean(ded)  #  normalize
+          ded = ded / sum(ded ^ 2)  # normalize
           list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
           list.targets.actor = lapply(1:len, function(i) list.targets.actor[[i]] * ded[i])
           list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
@@ -99,9 +99,9 @@ AgentPGBaseline = R6Class("AgentPGBaseline",
     )
   )
 
-AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
-  conf = RLConf$new(
-           render = render,
+rlR.AgentPGBaseline.conf = function() {
+  RLConf$new(
+           render = FALSE,
            policy.name = "ProbEpsilon",
            policy.epsilon = 1,
            policy.minEpsilon = 0.01,
@@ -110,7 +110,10 @@ AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = TR
            agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.0001)", decay = 0.9, clipnorm = 5),
           agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)
           )
-  interact = rlR::makeGymExperiment(sname = "CartPole-v0", "AgentPGBaseline", conf = conf)
+}
+
+AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
+  interact = rlR::makeGymExperiment(sname = "CartPole-v0", "AgentPGBaseline", conf = rlR.AgentPGBaseline.conf())
   perf = interact$run(iter)
   return(perf)
 }
