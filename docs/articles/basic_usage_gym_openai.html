@@ -18,7 +18,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-vignette">
+    <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -27,8 +27,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">rlR</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">rlR</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li class="dropdown">
@@ -44,7 +48,7 @@
       <a href="../articles/basic_usage_gym_openai.html">Basic usage with Gym OpenAI environment</a>
     </li>
     <li>
-      <a href="../articles/define_custom_environment.html">Build Custom Environment</a>
+      <a href="../articles/define_custom_environments.html">Build Custom Environment</a>
     </li>
   </ul>
 </li>
@@ -73,25 +77,28 @@
 
       
       </header><div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Deep reinforcement learning in R</h1>
                         <h4 class="author">Xudong Sun</h4>
             
             <h4 class="date">2018-05-22</h4>
-          </div>
+      
+      <small class="dont-index">Source: <a href="https://github.com/compstat-lmu/rlR/blob/master/vignettes/basic_usage_gym_openai.Rmd"><code>vignettes/basic_usage_gym_openai.Rmd</code></a></small>
+      <div class="hidden name"><code>basic_usage_gym_openai.Rmd</code></div>
+
+    </div>
 
     
     
-<div class="contents">
 <div id="rlr-deep-reinforcement-learning-in-r" class="section level1">
 <h1 class="hasAnchor">
 <a href="#rlr-deep-reinforcement-learning-in-r" class="anchor"></a>rlR: Deep Reinforcement learning in R</h1>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">"compstat-lmu/rlR"</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)
-## Skipping install of 'rlR' from a github remote, the SHA1 (d507ddd3) has not changed since last install.
+<pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">"compstat-lmu/rlR"</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)</code></pre>
+<pre><code>## Skipping install of 'rlR' from a github remote, the SHA1 (9880b5e0) has not changed since last install.
 ##   Use `force = TRUE` to force installation</code></pre>
 </div>
 <div id="usage" class="section level2">
@@ -99,15 +106,15 @@
 <a href="#usage" class="anchor"></a>Usage</h2>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
 env =<span class="st"> </span><span class="kw"><a href="../reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
-<span class="kw"><a href="../reference/listAvailAgent.html">listAvailAgent</a></span>()
-## [1] "AgentDQN:deep q learning"                      
+<span class="kw"><a href="../reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre>
+<pre><code>## [1] "AgentDQN:deep q learning"                      
 ## [2] "AgentFDQN:frozen target deep q learning"       
 ## [3] "AgentDDQN: double deep q learning"             
 ## [4] "AgentPG: policy gradient basic"                
 ## [5] "AgentPGBaseline: policy gradient with baseline"
 ## [6] "AgentActorCritic: actor critic method"</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env)
-## parameters: 
+<pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env)</code></pre>
+<pre><code>## parameters: 
 ## -render: - FALSE-
 ## -agent.gamma: - 0.99-
 ## -policy.maxEpsilon: - 1-
@@ -126,15 +133,14 @@ env =<span class="st"> </span><span class="kw"><a href="../reference/makeGymEnv.
 ##  -agent.nn.arch: loss- mse-
 ##  -agent.nn.arch: lr- 0.00025-
 ##  -agent.nn.arch: kernel_regularizer- regularizer_l2(l=0.0)-
-##  -agent.nn.arch: bias_regularizer- regularizer_l2(l=0.0)-
-agent$<span class="kw">updatePara</span>(<span class="st">"console"</span>, <span class="ot">FALSE</span>)
+##  -agent.nn.arch: bias_regularizer- regularizer_l2(l=0.0)-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">agent$<span class="kw">updatePara</span>(<span class="st">"console"</span>, <span class="ot">FALSE</span>)
 <span class="kw">system.time</span>({
 <span class="co">#perf = agent$learn(1000)  # umcomment this line to run yourself which might take a while</span>
-})
-##    user  system elapsed 
-##       0       0       0
-<span class="co">#perf$plot()</span></code></pre>
-</div>
+})</code></pre>
+<pre><code>##    user  system elapsed 
+##       0       0       0</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#perf$plot()</span></code></pre>
 </div>
 </div>
   </div>
@@ -167,6 +173,8 @@ agent$<span class="kw">updatePara</span>(<span class="st">"console"</span>, <spa
 
       </footer>
 </div>
+
+  
 
   </body>
 </html>

@@ -25,9 +25,12 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-  
-  
+
+
+
 <meta property="og:title" content="Function reference" />
+
+
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -50,8 +53,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">rlR</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">rlR</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
@@ -67,7 +74,7 @@
       <a href="../articles/basic_usage_gym_openai.html">Basic usage with Gym OpenAI environment</a>
     </li>
     <li>
-      <a href="../articles/define_custom_environment.html">Build Custom Environment</a>
+      <a href="../articles/define_custom_environments.html">Build Custom Environment</a>
     </li>
   </ul>
 </li>
@@ -88,6 +95,7 @@
   </a>
 </li>
       </ul>
+      
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -95,106 +103,101 @@
       
       </header>
 
-      <div class="row">
-  <div class="col-md-9">
+<div class="row">
+  <div class="contents col-md-9">
     <div class="page-header">
-      <h1>
-        Reference
-        <small>version&nbsp;0.1.0</small>
-      </h1>
+      <h1>Reference</h1>
     </div>
 
-    <div class="contents">
-      <table class="ref-index">
+    <table class="ref-index">
 
-      <colgroup>
-        <col class="alias" />
-        <col class="title" />
-      </colgroup>
+    <colgroup>
+      <col class="alias" />
+      <col class="title" />
+    </colgroup>
 
-      <tbody>
-        <tr>
-          <th colspan="2">
-            <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-            <p class="section-desc"></p>
-          </th>
-        </tr>
-        <tr>
-          <!--  -->
-          <td>
-            <p><code><a href="AgentActorCritic.html">AgentActorCritic</a></code> </p>
-          </td>
-          <td><p>AgentActorCritic</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="AgentArmed.html">AgentArmed</a></code> </p>
-          </td>
-          <td><p>Discrete Action Agent</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="AgentDDQN.html">AgentDDQN</a></code> </p>
-          </td>
-          <td><p>Double Q learning</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="AgentDQN.html">AgentDQN</a></code> </p>
-          </td>
-          <td><p>DQN</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="AgentFDQN.html">AgentFDQN</a></code> </p>
-          </td>
-          <td><p>Frozen target Q learning</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="AgentPGBaseline.html">AgentPGBaseline</a></code> </p>
-          </td>
-          <td><p>ReinforceWithBaseline</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="AgentPG.html">AgentPG</a></code> </p>
-          </td>
-          <td><p>Policy Gradient</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="listAvailAgent.html">listAvailAgent</a></code> </p>
-          </td>
-          <td><p>listAvailAgent</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="makeAgent.html">makeAgent</a></code> </p>
-          </td>
-          <td><p>Make Agent</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="makeGymEnv.html">makeGymEnv</a></code> </p>
-          </td>
-          <td><p>Wrapper for Gym OpenAI environment</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="makeGymExperiment.html">makeGymExperiment</a></code> </p>
-          </td>
-          <td><p>Make Gym Open AI experiment</p></td>
-        </tr><tr>
-          <!--  -->
-          <td>
-            <p><code><a href="RLConf.html">RLConf</a></code> </p>
-          </td>
-          <td><p>Configuration object for experiment.</p></td>
-        </tr>
-      </tbody>
-      </table>
-    </div>
+    <tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        <!--  -->
+        <td>
+          <p><code><a href="AgentActorCritic.html">AgentActorCritic</a></code> </p>
+        </td>
+        <td><p>AgentActorCritic</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="AgentArmed.html">AgentArmed</a></code> </p>
+        </td>
+        <td><p>Discrete Action Agent</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="AgentDDQN.html">AgentDDQN</a></code> </p>
+        </td>
+        <td><p>Double Q learning</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="AgentDQN.html">AgentDQN</a></code> </p>
+        </td>
+        <td><p>DQN</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="AgentFDQN.html">AgentFDQN</a></code> </p>
+        </td>
+        <td><p>Frozen target Q learning</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="AgentPG.html">AgentPG</a></code> </p>
+        </td>
+        <td><p>Policy Gradient</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="AgentPGBaseline.html">AgentPGBaseline</a></code> </p>
+        </td>
+        <td><p>ReinforceWithBaseline</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="RLConf.html">RLConf</a></code> </p>
+        </td>
+        <td><p>Configuration object for experiment.</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="listAvailAgent.html">listAvailAgent()</a></code> </p>
+        </td>
+        <td><p>listAvailAgent</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="makeAgent.html">makeAgent()</a></code> </p>
+        </td>
+        <td><p>Make Agent</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="makeGymEnv.html">makeGymEnv()</a></code> </p>
+        </td>
+        <td><p>Wrapper for Gym OpenAI environment</p></td>
+      </tr><tr>
+        <!--  -->
+        <td>
+          <p><code><a href="makeGymExperiment.html">makeGymExperiment()</a></code> </p>
+        </td>
+        <td><p>Make Gym Open AI experiment</p></td>
+      </tr>
+    </tbody>
+    </table>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -217,5 +220,8 @@
       </footer>
    </div>
 
+  
+
   </body>
 </html>
+

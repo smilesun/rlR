@@ -23,4 +23,9 @@ BugReports: https://github.com/compstat-lmu/rlR/issues
 URL: https://github.com/compstat-lmu/rlR
 SystemRequirements: (Python package gym if you want to use gym environment which is standard for reinforcement learning)
 Suggests: 
-    testthat
+    devtools,
+    testthat,
+    knitr,
+    covr, 
+    rmarkdown
+VignetteBuilder: knitr

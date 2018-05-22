@@ -10,7 +10,7 @@ navbar:
       - text: Basic usage with Gym OpenAI environment
         href: articles/basic_usage_gym_openai.html
       - text: Build Custom Environment
-        href: articles/define_custom_environment.html
+        href: articles/define_custom_environments.html
   - text: Reference
     icon: fa-book
     href: reference/index.html

@@ -1,0 +1,7 @@
+pandoc: 1.12.4.2
+pkgdown: 1.0.0
+pkgdown_sha: ~
+articles:
+  basic_usage_gym_openai: basic_usage_gym_openai.html
+  define_custom_environments: define_custom_environments.html
+
