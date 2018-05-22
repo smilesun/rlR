@@ -10,10 +10,10 @@ gbtconf$SEED_REGISTRY     = 1273L                                 # global seed 
 gbtconf$SEED_ADDPROBLEM   = 1L                                    # seed for each problem
 gbtconf$REPLS = 1L
 
-rlR::listClass()
-rlR::listClass("Policy")
-rlR::listClass("ReplayMem")
-rlR::listClass("Agent")
+rlR:::listClass()
+rlR:::listClass("Policy")
+rlR:::listClass("ReplayMem")
+rlR:::listClass("Agent")
 gbtconf$agent.name = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
 gbtconf$replay = c("ReplayMemUniform", "ReplayMemLatest", "ReplayMemPrioritizedRank")
 gbtconf$policy = c("PolicyEpsilonGreedy", "PolicyProbEpsilon")
