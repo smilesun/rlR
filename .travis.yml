@@ -15,6 +15,7 @@ addons:
       - build-essential
 before_install:
   - sudo pip install gym
+  - sudo pip install h5py==2.8.0rc1
   - sudo pip install tensorflow
 env:
   matrix:
