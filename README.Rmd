@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/compstat-lmu/rlR.svg?branch=master)](https://travis-ci.com/compstat-lmu/rlR)
 # rlR: Reinforcement learning in R
 
 ## Installation
