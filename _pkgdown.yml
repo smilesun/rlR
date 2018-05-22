@@ -1,0 +1,15 @@
+template:
+  params:
+    bootswatch: cosmo
+
+navbar:
+  left:
+  - text: Topics
+    icon: fa-file-text-o
+    menu:
+      - text: Basic usage
+        href: articles/basic_usage.html
+  - text: Reference
+    icon: fa-book
+    href: reference/index.html
+
