@@ -5,11 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reinforcement learning in R • rlR</title>
+<title>Reinforcement Learning in R • rlR</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="jquery.sticky-kit.min.js"></script><script src="pkgdown.js"></script><meta property="og:title" content="Reinforcement learning in R">
+<script src="jquery.sticky-kit.min.js"></script><script src="pkgdown.js"></script><meta property="og:title" content="Reinforcement Learning in R">
 <meta property="og:description" content="Reinforcement Learning with deep Q learning, double deep Q learning, frozen target deep Q learning, policy gradient deep learning, policy gradient with baseline deep learning, actor-critic deep reinforcement learning.">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -79,19 +79,23 @@
 
     
     
-<p><a href="https://travis-ci.com/compstat-lmu/rlR"><img src="https://travis-ci.com/compstat-lmu/rlR.svg?branch=master" alt="Build Status"></a> # rlR: Reinforcement learning in R</p>
+
+<div id="rlr-reinforcement-learning-in-r" class="section level1">
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#rlr-reinforcement-learning-in-r" class="anchor"></a>rlR: Reinforcement learning in R</h1></div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">"compstat-lmu/rlR"</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)</code></pre>
-<pre><code>## Skipping install of 'rlR' from a github remote, the SHA1 (29457704) has not changed since last install.
+<pre><code>## Skipping install of 'rlR' from a github remote, the SHA1 (a335cb6d) has not changed since last install.
 ##   Use `force = TRUE` to force installation</code></pre>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
-env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)</code></pre>
+<pre><code>## Loading required package: R6</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
 <span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre>
 <pre><code>## [1] "AgentDQN:deep q learning"                      
 ## [2] "AgentFDQN:frozen target deep q learning"       
@@ -128,6 +132,7 @@ env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.htm
 ##       0       0       0</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># perf$plot()</span></code></pre>
 </div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -155,7 +160,13 @@ env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.htm
 </ul>
 </div>
 
-      </div>
+      <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://travis-ci.com/compstat-lmu/rlR"><img src="https://travis-ci.com/compstat-lmu/rlR.svg?branch=master" alt="Build Status"></a></li>
+</ul>
+</div>
+</div>
 
 </div>
 

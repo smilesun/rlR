@@ -1,4 +1,4 @@
-ReplayMem = R6Class("ReplayMem",
+ReplayMem = R6::R6Class("ReplayMem",
   public = list(
     samples = NULL,
     dt = NULL,
@@ -91,7 +91,7 @@ ReplayMem$extractStep = function(x) {
 }
 
 
-ReplayMemUniform = R6Class("ReplayMemUniform",
+ReplayMemUniform = R6::R6Class("ReplayMemUniform",
   inherit = ReplayMem,
   public = list(
     sample.fun = function(k) {
@@ -106,7 +106,7 @@ ReplayMemUniform = R6Class("ReplayMemUniform",
   )
 
 
-ReplayMemLatest = R6Class("ReplayMemLatest",
+ReplayMemLatest = R6::R6Class("ReplayMemLatest",
   inherit = ReplayMem,
   public = list(
    sample.fun = function(k) {
@@ -128,7 +128,7 @@ ReplayMemLatest = R6Class("ReplayMemLatest",
   active = list()
   )
 
-ReplayMemLatestProb = R6Class("ReplayMemLatestProb",
+ReplayMemLatestProb = R6::R6Class("ReplayMemLatestProb",
   inherit = ReplayMem,
   public = list(
    sample.fun = function(k) {
@@ -146,7 +146,7 @@ ReplayMemLatestProb = R6Class("ReplayMemLatestProb",
   active = list()
   )
 
-ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
+ReplayMemPrioritizedAbs = R6::R6Class("ReplayMemPrioritizedAbs",
   inherit = ReplayMem,
   public = list(
     sample.fun = function(k) {
@@ -164,7 +164,7 @@ ReplayMemPrioritizedAbs = R6Class("ReplayMemPrioritizedAbs",
   active = list()
   )
 
-ReplayMemPrioritizedRank = R6Class("ReplayMemPrioritizedRank",
+ReplayMemPrioritizedRank = R6::R6Class("ReplayMemPrioritizedRank",
   inherit = ReplayMem,
   public = list(
     sample.fun = function(k) {

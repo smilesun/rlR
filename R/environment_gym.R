@@ -1,4 +1,4 @@
-EnvGym = R6Class("EnvGym",
+EnvGym = R6::R6Class("EnvGym",
   inherit = Environment,
   public = list(
     env = NULL,

@@ -1,4 +1,4 @@
-SurroNN = R6Class("SurroNN",
+SurroNN = R6::R6Class("SurroNN",
   inherit = Surrogate,
   public = list(
     initialize = function(actCnt, stateDim, arch.list) {
@@ -30,7 +30,7 @@ SurroNN = R6Class("SurroNN",
   active = list()
   )
 
-SurroNN4PG = R6Class("SurroNN4PG",
+SurroNN4PG = R6::R6Class("SurroNN4PG",
   inherit = SurroNN,
   public = list(
     lr = NULL,

@@ -9,7 +9,7 @@
 #'
 #' @return [\code{\link{AgentFDQN}}].
 #' @export
-AgentFDQN = R6Class("AgentFDQN",
+AgentFDQN = R6::R6Class("AgentFDQN",
   inherit = AgentDQN,
   public = list(
     brain.u = NULL,

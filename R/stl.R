@@ -1,4 +1,4 @@
-STList = R6Class("STList",
+STList = R6::R6Class("STList",
   public = list(
     member = list(),
     add = function(value) {

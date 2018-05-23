@@ -9,7 +9,7 @@
 #'
 #' @return [\code{\link{AgentActorCritic}}].
 #' @export
-AgentActorCritic = R6Class("AgentActorCritic",
+AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
     initialize = function(env, conf = NULL) {

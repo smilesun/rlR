@@ -1,5 +1,5 @@
 logReset()
-RLLog = R6Class("RLLog",
+RLLog = R6::R6Class("RLLog",
   public = list(
     log.root = NULL,
     log.nn = NULL,
