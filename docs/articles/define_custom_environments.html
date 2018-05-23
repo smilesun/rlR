@@ -95,7 +95,7 @@
 <p>If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment. Below is a template. Where the listed fields (member variables and methods) must exist in your implemented R6 class. You could define other public and private members as you like.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
 <span class="kw">library</span>(R6)
-MyEnv =<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/R6/topics/R6Class">R6Class</a></span>(<span class="st">"MyEnv"</span>,
+MyEnv =<span class="st"> </span>R6::<span class="kw"><a href="http://www.rdocumentation.org/packages/R6/topics/R6Class">R6Class</a></span>(<span class="st">"MyEnv"</span>,
   <span class="dt">public =</span> <span class="kw">list</span>(
     <span class="dt">state_dim =</span> <span class="ot">NULL</span>,  <span class="co"># obligatory field, should be vector. c(28, 28, 3) which is usually the dimension for an order 3 tensor which can represent an RGB image for example.</span>
     <span class="dt">act_cnt =</span> <span class="ot">NULL</span>, <span class="co"># obligatory field, should be type integer</span>

@@ -1,4 +1,4 @@
-Interaction = R6Class("Interaction",
+Interaction = R6::R6Class("Interaction",
   inherit = InteractionBase,
   public = list(
     epiLookBack = 100L,

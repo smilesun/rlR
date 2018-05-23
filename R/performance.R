@@ -1,4 +1,4 @@
-Performance = R6Class("Performance",
+Performance = R6::R6Class("Performance",
   public = list(
     list.reward.epi = NULL,  # take reward vector of each episode
     list.discount.reward.epi = NULL,  # discounted reward per episode

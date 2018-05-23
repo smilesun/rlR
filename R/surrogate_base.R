@@ -1,4 +1,4 @@
-Surrogate = R6Class("Surrogate",
+Surrogate = R6::R6Class("Surrogate",
   public = list(
       actCnt = NULL,
       stateCnt = NULL,

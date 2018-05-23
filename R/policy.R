@@ -1,4 +1,4 @@
-Policy = R6Class("Policy",
+Policy = R6::R6Class("Policy",
   public = list(
     epsilon = NULL,
     decay = NULL,
@@ -37,7 +37,7 @@ Policy = R6Class("Policy",
   )
   )
 
-PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
+PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
   inherit = Policy,
   public = list(
     initialize = function(host) {
@@ -70,7 +70,7 @@ PolicyEpsilonGreedy = R6Class("PolicyEpsilonGreedy",
     )
   )
 
-PolicyProbEpsilon = R6Class("PolicyProbEpsilon",
+PolicyProbEpsilon = R6::R6Class("PolicyProbEpsilon",
   inherit = PolicyEpsilonGreedy,
   public = list(
     initialize = function(host) {
@@ -92,7 +92,7 @@ PolicyProbEpsilon = R6Class("PolicyProbEpsilon",
     )
   )
 
-PolicyPG = R6Class("PolicyPG",
+PolicyPG = R6::R6Class("PolicyPG",
   inherit = PolicyEpsilonGreedy,
   public = list(
     initialize = function(host) {

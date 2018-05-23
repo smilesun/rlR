@@ -1,4 +1,4 @@
-Environment = R6Class("Environment",
+Environment = R6::R6Class("Environment",
   public = list(
     env = NULL,
     act_cnt = NULL,

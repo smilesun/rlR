@@ -33,7 +33,7 @@ If you want to use this package for your self defined task, you need to implemen
 ```{r}
 library(rlR)
 library(R6)
-MyEnv = R6Class("MyEnv",
+MyEnv = R6::R6Class("MyEnv",
   public = list(
     state_dim = NULL,  # obligatory field, should be vector. c(28, 28, 3) which is usually the dimension for an order 3 tensor which can represent an RGB image for example.
     act_cnt = NULL, # obligatory field, should be type integer

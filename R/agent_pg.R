@@ -9,7 +9,7 @@
 #'
 #' @return [\code{\link{AgentPG}}].
 #' @export
-AgentPG = R6Class("AgentPG",
+AgentPG = R6::R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
     total.step = NULL,

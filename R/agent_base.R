@@ -3,7 +3,7 @@
 #' @format \code{\link{R6Class}} object
 #'
 #' @description
-#' A \code{\link[R6]{R6Class}} to represent Discrete Action Agent or Armed Agent
+#' A \code{\link{R6Class}} to represent Discrete Action Agent or Armed Agent
 #'
 #' @section Member Variables:
 #'
@@ -26,7 +26,7 @@
 #' }
 #' @return [\code{\link{AgentArmed}}].
 #' @export
-AgentArmed = R6Class("AgentArmed",  # agent do choose between arms
+AgentArmed = R6::R6Class("AgentArmed",  # agent do choose between arms
   public = list(
     # constructor init
     interact = NULL,

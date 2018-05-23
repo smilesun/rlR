@@ -2,7 +2,7 @@
 #'
 #' @format \code{\link{R6Class}} object
 #' @description
-#' A \code{\link[R6]{R6Class}} to represent Double Deep Q learning Armed Agent
+#' A \code{\link{R6Class}} to represent Double Deep Q learning Armed Agent
 #' %$Q_u(S, a; \theta_1) = r + Q_u(S', argmax_a' Q_h(S',a'), \theta_1) + delta$
 #' @section Methods:
 #' Inherited from \code{AgentArmed}:
@@ -10,7 +10,7 @@
 #'
 #' @return [\code{\link{AgentDDQN}}].
 #' @export
-AgentDDQN = R6Class("AgentDDQN",
+AgentDDQN = R6::R6Class("AgentDDQN",
   inherit = AgentDQN,
   public = list(
     brain2 = NULL,
