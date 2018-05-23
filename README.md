@@ -71,6 +71,6 @@ perf$plot()
 ## `geom_smooth()` using method = 'gam'
 ```
 
-![plot of chunk unnamed-chunk-2](inst/figure/dqn.png)
+![plot of chunk unnamed-chunk-2](man/figure/dqn.png)
 
 
