@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.com/compstat-lmu/rlR.svg?branch=master)](https://travis-ci.com/compstat-lmu/rlR)
+[![Coverage Status](https://coveralls.io/repos/github/smilesun/rlR/badge.svg?branch=master)](https://coveralls.io/github/smilesun/rlR?branch=master)
+
 # rlR: Reinforcement learning in R
 
 ## Installation
