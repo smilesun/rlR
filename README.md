@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/compstat-lmu/rlR.svg?branch=master)](https://travis-ci.com/compstat-lmu/rlR)
+
 # rlR: Reinforcement learning in R
 
 ## Installation
@@ -70,6 +71,6 @@ perf$plot()
 ## `geom_smooth()` using method = 'gam'
 ```
 
-![plot of chunk unnamed-chunk-2](inst/figure/dqn.png)
+![plot of chunk unnamed-chunk-2](man/figure/dqn.png)
 
 

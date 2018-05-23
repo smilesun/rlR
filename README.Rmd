@@ -1,10 +1,13 @@
 [![Build Status](https://travis-ci.com/compstat-lmu/rlR.svg?branch=master)](https://travis-ci.com/compstat-lmu/rlR)
+[![Coverage Status](https://coveralls.io/repos/github/smilesun/rlR/badge.svg?branch=master)](https://coveralls.io/github/smilesun/rlR?branch=master)
+
+
 
 # rlR: Reinforcement learning in R
 
 ## Installation
 ```{r}
-devtools::install_github("compstat-lmu/rlR", dependencies = TRUE)
+# devtools::install_github("smilesun/rlR", dependencies = TRUE)
 ```
 
 ## Usage
@@ -19,9 +22,9 @@ listAvailAgent()
 agent = makeAgent("AgentDQN", env)
 agent$updatePara("console", FALSE)
 system.time({
-# perf = agent$learn(500)  # uncomment this to run, which might take some time
+ #perf = agent$learn(500) # uncomment this to run which might take some time
 })
-# perf$plot()
+ #perf$plot()
 ```
 
 
