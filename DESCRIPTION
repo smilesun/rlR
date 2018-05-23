@@ -1,6 +1,6 @@
 Package: rlR
 Type: Package
-Title: Reinforcement learning in R
+Title: Reinforcement Learning in R
 Version: 0.1.0
 Authors@R: person("Xudong", "Sun", email = {"smilesun.east@gmail.com"}, role = c("aut", "cre"))
 Maintainer: Xudong Sun <smilesun.east@gmail.com>
@@ -21,6 +21,7 @@ LazyData: true
 RoxygenNote: 6.0.1
 BugReports: https://github.com/compstat-lmu/rlR/issues
 URL: https://github.com/compstat-lmu/rlR
+OS_type: unix
 SystemRequirements: (Python package gym if you want to use gym environment which is standard for reinforcement learning)
 Suggests: 
     devtools,
