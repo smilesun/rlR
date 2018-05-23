@@ -37,10 +37,20 @@ MyEnv = R6::R6Class("MyEnv",
   public = list(
     state_dim = NULL,  # obligatory field, should be vector. c(28, 28, 3) which is usually the dimension for an order 3 tensor which can represent an RGB image for example.
     act_cnt = NULL, # obligatory field, should be type integer
+    s_r_d_info = NULL,
+    step_cnt = NULL,
     initialize = function(...) {
       # put your initialization code here for example
       self$state_dim = 4
       self$act_cnt = 2
+      self$step_cnt = 0L
+      self$s_r_d_info = vector(mode = "list", length = 4)
+      names(self$s_r_d_info) = c("state", "reward", "done", "info")
+      self$s_r_d_info[["reward"]] = 1  # design your own reward scheme in step function below
+      self$s_r_d_info[["done"]] = FALSE  # whether the episode is finished?
+      self$s_r_d_info[["state"]] = array(0, dim = self$state_dim) # state must be array of the same dimension as the self$state_dim
+      self$s_r_d_info[["info"]] = list()  # info can be arbitray object
+      as.array
     },
 
     render = function(...) {
@@ -49,20 +59,19 @@ MyEnv = R6::R6Class("MyEnv",
 
     # this function will be called at each step of the learning
     step = function(action) {
-      s_r_d_info = vector(mode = "list", length = 4)
-      # input your custom function here
-      names(s_r_d_info) = c("state", "reward", "done", "info")
-      s_r_d_info[["state"]] = as.array(s_r_d_info[["state"]]) # this must be the same dimension as the self$state_dim
-      s_r_d_info
+      # input your custom code here
+      self$step_cnt = self$step_cnt + 1L
+      self$s_r_d_info[["reward"]] = rnorm(1L)  # design your own reward scheme in step function below
+      if(self$step_cnt > 5L)  self$s_r_d_info[["done"]] = TRUE
+      self$s_r_d_info
     },
 
     # this function will be called at the beginning of the learning and at the end of each episode
     reset = function() {
-      s_r_d_info = vector(mode = "list", length = 4)
-      # input your custom function here
-      names(s_r_d_info) = c("state", "reward", "done", "info")
-      s_r_d_info[["state"]] = as.array(s_r_d_info[["state"]]) # this must be the same dimension as the self$state_dim
-      s_r_d_info
+      # input your custom function FALSE
+      self$step_cnt = 0
+      self$s_r_d_info[["done"]] = FALSE
+      self$s_r_d_info
     },
 
     afterAll = function() {
@@ -80,7 +89,6 @@ env = MyEnv$new()
 listAvailAgent()
 agent = makeAgent("AgentDQN", env)
 agent$updatePara("console", FALSE)
-# perf = agent$learn(10)
-# perf$plot()
+perf = agent$learn(10)
 ```
 

@@ -99,10 +99,20 @@ MyEnv =<span class="st"> </span>R6::<span class="kw"><a href="http://www.rdocume
   <span class="dt">public =</span> <span class="kw">list</span>(
     <span class="dt">state_dim =</span> <span class="ot">NULL</span>,  <span class="co"># obligatory field, should be vector. c(28, 28, 3) which is usually the dimension for an order 3 tensor which can represent an RGB image for example.</span>
     <span class="dt">act_cnt =</span> <span class="ot">NULL</span>, <span class="co"># obligatory field, should be type integer</span>
+    <span class="dt">s_r_d_info =</span> <span class="ot">NULL</span>,
+    <span class="dt">step_cnt =</span> <span class="ot">NULL</span>,
     <span class="dt">initialize =</span> function(...) {
       <span class="co"># put your initialization code here for example</span>
       self$state_dim =<span class="st"> </span><span class="dv">4</span>
       self$act_cnt =<span class="st"> </span><span class="dv">2</span>
+      self$step_cnt =<span class="st"> </span>0L
+      self$s_r_d_info =<span class="st"> </span><span class="kw">vector</span>(<span class="dt">mode =</span> <span class="st">"list"</span>, <span class="dt">length =</span> <span class="dv">4</span>)
+      <span class="kw">names</span>(self$s_r_d_info) =<span class="st"> </span><span class="kw">c</span>(<span class="st">"state"</span>, <span class="st">"reward"</span>, <span class="st">"done"</span>, <span class="st">"info"</span>)
+      self$s_r_d_info[[<span class="st">"reward"</span>]] =<span class="st"> </span><span class="dv">1</span>  <span class="co"># design your own reward scheme in step function below</span>
+      self$s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">FALSE</span>  <span class="co"># whether the episode is finished?</span>
+      self$s_r_d_info[[<span class="st">"state"</span>]] =<span class="st"> </span><span class="kw">array</span>(<span class="dv">0</span>, <span class="dt">dim =</span> self$state_dim) <span class="co"># state must be array of the same dimension as the self$state_dim</span>
+      self$s_r_d_info[[<span class="st">"info"</span>]] =<span class="st"> </span><span class="kw">list</span>()  <span class="co"># info can be arbitray object</span>
+      as.array
     },
 
     <span class="dt">render =</span> function(...) {
@@ -111,20 +121,19 @@ MyEnv =<span class="st"> </span>R6::<span class="kw"><a href="http://www.rdocume
 
     <span class="co"># this function will be called at each step of the learning</span>
     <span class="dt">step =</span> function(action) {
-      s_r_d_info =<span class="st"> </span><span class="kw">vector</span>(<span class="dt">mode =</span> <span class="st">"list"</span>, <span class="dt">length =</span> <span class="dv">4</span>)
-      <span class="co"># input your custom function here</span>
-      <span class="kw">names</span>(s_r_d_info) =<span class="st"> </span><span class="kw">c</span>(<span class="st">"state"</span>, <span class="st">"reward"</span>, <span class="st">"done"</span>, <span class="st">"info"</span>)
-      s_r_d_info[[<span class="st">"state"</span>]] =<span class="st"> </span><span class="kw">as.array</span>(s_r_d_info[[<span class="st">"state"</span>]]) <span class="co"># this must be the same dimension as the self$state_dim</span>
-      s_r_d_info
+      <span class="co"># input your custom code here</span>
+      self$step_cnt =<span class="st"> </span>self$step_cnt +<span class="st"> </span>1L
+      self$s_r_d_info[[<span class="st">"reward"</span>]] =<span class="st"> </span><span class="kw">rnorm</span>(1L)  <span class="co"># design your own reward scheme in step function below</span>
+      if(self$step_cnt &gt;<span class="st"> </span>5L)  self$s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">TRUE</span>
+      self$s_r_d_info
     },
 
     <span class="co"># this function will be called at the beginning of the learning and at the end of each episode</span>
     <span class="dt">reset =</span> function() {
-      s_r_d_info =<span class="st"> </span><span class="kw">vector</span>(<span class="dt">mode =</span> <span class="st">"list"</span>, <span class="dt">length =</span> <span class="dv">4</span>)
-      <span class="co"># input your custom function here</span>
-      <span class="kw">names</span>(s_r_d_info) =<span class="st"> </span><span class="kw">c</span>(<span class="st">"state"</span>, <span class="st">"reward"</span>, <span class="st">"done"</span>, <span class="st">"info"</span>)
-      s_r_d_info[[<span class="st">"state"</span>]] =<span class="st"> </span><span class="kw">as.array</span>(s_r_d_info[[<span class="st">"state"</span>]]) <span class="co"># this must be the same dimension as the self$state_dim</span>
-      s_r_d_info
+      <span class="co"># input your custom function FALSE</span>
+      self$step_cnt =<span class="st"> </span><span class="dv">0</span>
+      self$s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">FALSE</span>
+      self$s_r_d_info
     },
 
     <span class="dt">afterAll =</span> function() {
@@ -165,8 +174,7 @@ agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent
 ##  -agent.nn.arch: kernel_regularizer- regularizer_l2(l=0.0)-
 ##  -agent.nn.arch: bias_regularizer- regularizer_l2(l=0.0)-
 agent$<span class="kw">updatePara</span>(<span class="st">"console"</span>, <span class="ot">FALSE</span>)
-<span class="co"># perf = agent$learn(10)</span>
-<span class="co"># perf$plot()</span></code></pre>
+perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">10</span>)</code></pre>
 </div>
 </div>
   </div>
