@@ -88,7 +88,7 @@ rlR.AgentPG.conf = function() {
 }
 
 AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
-  interact = rlR::makeGymExperiment(sname = sname, aname = "AgentPG", conf = rlR.AgentPG.conf())
+  interact = makeGymExperiment(sname = sname, aname = "AgentPG", conf = rlR.AgentPG.conf())
   perf = interact$run(iter)
   return(perf)
 }

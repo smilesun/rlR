@@ -40,4 +40,3 @@ Agentmlr = R6Class("Agentmlr",
   active = list(
     )
   )
-

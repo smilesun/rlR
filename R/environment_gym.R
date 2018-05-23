@@ -13,6 +13,8 @@ EnvGym = R6Class("EnvGym",
       self$act.cheat = act.cheat
       if (is.null(actcnt)) {
         self$act_cnt = genv$action_space$n   # get the number of actions/control bits
+        if (is.null(genv$action_space$n)) stop("currently we do not support array action!")
+        # currently no support for continuous action space
       } else {
         self$act_cnt = actcnt
       }

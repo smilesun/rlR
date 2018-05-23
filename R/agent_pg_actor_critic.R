@@ -89,7 +89,7 @@ rlR.conf.AC = function() {
 AgentActorCritic$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
   conf = rlR.conf.AC()
   conf$updatePara("render", render)
-  interact = rlR::makeGymExperiment(sname = sname, "AgentActorCritic", conf)
+  interact = makeGymExperiment(sname = sname, "AgentActorCritic", conf)
   perf = interact$run(iter)
   return(perf)
 }

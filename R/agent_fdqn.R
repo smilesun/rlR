@@ -55,7 +55,7 @@ AgentFDQN$test = function(iter = 500L, sname = "CartPole-v0", render = TRUE) {
            policy.name = "EpsilonGreedy",
            replay.batchsize = 64L,
            agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
-  interact = rlR::makeGymExperiment(sname = sname, aname = "AgentFDQN", conf = conf)
+  interact = makeGymExperiment(sname = sname, aname = "AgentFDQN", conf = conf)
   perf = interact$run(iter)
   return(perf)
 }
