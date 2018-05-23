@@ -86,16 +86,7 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">"smilesun/rlR"</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)</code></pre>
-<pre><code>## Downloading GitHub repo smilesun/rlR@master
-## from URL https://api.github.com/repos/smilesun/rlR/zipball/master</code></pre>
-<pre><code>## Installing rlR</code></pre>
-<pre><code>## '/usr/lib/R/bin/R' --no-site-file --no-environ --no-save --no-restore  \
-##   --quiet CMD INSTALL  \
-##   '/tmp/user/1000/RtmpJmdOVA/devtools65546051b7fd/smilesun-rlR-4738bcc'  \
-##   --library='/home/sunxd/R/x86_64-pc-linux-gnu-library/3.4'  \
-##   --install-tests</code></pre>
-<pre><code>## </code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># devtools::install_github("smilesun/rlR", dependencies = TRUE)</span></code></pre>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
@@ -133,11 +124,11 @@
 ##  -agent.nn.arch: bias_regularizer- regularizer_l2(l=0.0)-</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r">agent$<span class="kw">updatePara</span>(<span class="st">"console"</span>, <span class="ot">FALSE</span>)
 <span class="kw">system.time</span>({
-<span class="co"># perf = agent$learn(500)  # uncomment this to run, which might take some time</span>
+ <span class="co">#perf = agent$learn(500) # uncomment this to run which might take some time</span>
 })</code></pre>
 <pre><code>##    user  system elapsed 
 ##       0       0       0</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># perf$plot()</span></code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"> <span class="co">#perf$plot()</span></code></pre>
 </div>
 </div>
   </div>
@@ -171,6 +162,7 @@
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://travis-ci.com/compstat-lmu/rlR"><img src="https://travis-ci.com/compstat-lmu/rlR.svg?branch=master" alt="Build Status"></a></li>
+<li><a href="https://coveralls.io/github/smilesun/rlR?branch=master"><img src="https://coveralls.io/repos/github/smilesun/rlR/badge.svg?branch=master" alt="Coverage Status"></a></li>
 </ul>
 </div>
 </div>
