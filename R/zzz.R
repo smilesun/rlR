@@ -1,4 +1,4 @@
-#' @import R6Class
+#' @import R6
 #' @import data.table
 #' @import checkmate
 #' @import data.table
