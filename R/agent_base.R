@@ -26,7 +26,7 @@
 #' }
 #' @return [\code{\link{AgentArmed}}].
 #' @export
-AgentArmed = R6::R6Class("AgentArmed",  # agent do choose between arms
+AgentArmed = R6::R6Class("AgentArmed",
   public = list(
     # constructor init
     interact = NULL,
@@ -59,23 +59,22 @@ AgentArmed = R6::R6Class("AgentArmed",  # agent do choose between arms
     # member function
     # constructor
     initialize = function(env, conf) {
-      actCnt = env$act_cnt
-      stateDim = env$state_dim
-      self$env = env
-      self$initialize2(actCnt = actCnt, stateDim = stateDim, conf = conf)
+      self$random.cnt = 0L
+      self$initializeEnv(env)
+      self$initializeConf(conf = conf)
     },
 
-    # seperate initialize2 allow for reconfiguration
-    initialize2 = function(actCnt = NULL, stateDim = NULL, conf = NULL) {
-      self$actCnt = actCnt
-      self$stateDim = stateDim
+    initializeEnv = function(env) {
+      self$env = env
+      self$actCnt =  env$act_cnt
+      self$stateDim = env$state_dim
       self$vec.arm.q = vector(mode = "numeric", length = self$actCnt)
-      self$random.cnt = 0L
+    },
+
+    # seperate initializeConf allow for reconfiguration
+    initializeConf = function(conf = NULL) {
       self$conf = conf
-      if (is.null(self$conf)) {
-        #
-      }
-      else {
+      if (!is.null(self$conf)) {
         self$buildConf()
       }
     },
@@ -109,6 +108,11 @@ AgentArmed = R6::R6Class("AgentArmed",  # agent do choose between arms
       self$policy = makePolicy(policy_fun, self)
       self$glogger = RLLog$new(self$conf)
       self$createInteract(self$env)  # initialize after all other members are initialized!!
+      self$setBrain()
+    },
+
+    setBrain = function() {
+      # do nothing
     },
 
     # transform observation to  the replay memory

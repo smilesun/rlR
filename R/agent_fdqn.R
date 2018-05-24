@@ -15,12 +15,12 @@ AgentFDQN = R6::R6Class("AgentFDQN",
     brain.u = NULL,
     initialize = function(env, conf) {
       super$initialize(env, conf)
-      self$brain.u = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
+      self$setBrain()
     },
 
-    updatePara = function(name, val) {
-      super$updatePara(name, val)
-      self$brain.u = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = conf$get("agent.nn.arch"))
+    setBrain = function() {
+      super$setBrain()
+      self$brain.u = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
     },
 
       replay = function(batchsize) {

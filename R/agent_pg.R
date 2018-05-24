@@ -16,12 +16,13 @@ AgentPG = R6::R6Class("AgentPG",
     initialize = function(env, conf) {
       if (is.null(conf)) conf = rlR.AgentPG.conf()
       super$initialize(env, conf = conf)
-      self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+      self$setBrain()
 },
-    updatePara = function(name, val) {
-          super$updatePara(name, val)
-          self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
-        },
+
+    setBrain = function() {
+      super$setBrain()
+      self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+    },
 
     extractTarget = function(ins) {
         act =  ReplayMem$extractAction(ins)

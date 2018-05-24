@@ -2,6 +2,7 @@
 rlR.conf.default = list(
 render = TRUE,
 agent.gamma = 0.99,
+brain.build_fun = NULL,  # user specific function to create surrogate model
 policy.maxEpsilon = 0.01,
 policy.minEpsilon = 0.01,
 policy.decay = 1, # exp(-1.0 / 10),

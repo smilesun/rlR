@@ -20,12 +20,11 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
     initialize = function(env, conf) {
       if (is.null(conf)) conf = rlR.AgentPGBaseline.conf()
       super$initialize(env, conf = conf)
-      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
-      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
+      self$setBrain()
       },
 
-    updatePara = function(name, val) {
-      super$updatePara(name, val)
+    setBrain = function() {
+      super$setBrain()
       self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
       self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
     },
