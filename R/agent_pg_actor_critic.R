@@ -30,7 +30,7 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
       idx = which(vec.done)
       nv[idx, ] = 0   # at episode end, v[next] = 0
       self$delta = (unlist(self$list.rewards) + nv) - self$p.old.c  # Bellman Error as advantage
-      cat(sprintf("totoal delta: %s", sum(self$delta) / length(self$delta)))
+      self$interact$toConsole("totoal delta: %s", sum(self$delta) / length(self$delta))
       vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
       ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
       ded = ded - mean(ded)  #  normalize
@@ -74,11 +74,11 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
     rescue = function() {
         flag = self$interact$perf$isBad()
         if (flag[1]) {
-          cat(sprintf("\n bad perform for last window, %d times \n", self$wait_cnt + 1L))
+          self$interact$toConsole("\n bad perform for last window, %d times \n", self$wait_cnt + 1L)
           self$wait_cnt = self$wait_cnt + 1L
           self$policy$epsilon = min(1, self$policy$epsilon * 1.01)
           if (self$wait_cnt > self$wait_epi) {
-            cat(sprintf("\n going to reset brain\n"))
+            self$interact$toConsole("\n going to reset brain\n")
             self$setBrain()
             self$policy$epsilon = self$policy$maxEpsilon
             self$wait_cnt = 0

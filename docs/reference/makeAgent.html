@@ -151,6 +151,8 @@
 #&gt; -replay.memname: - Uniform-
 #&gt; -replay.epochs: - 1-
 #&gt; -interact.maxiter: - 500-
+#&gt; -policy.epi_wait_ini: - 100-
+#&gt; -policy.epi_wait_expl: - 20-
 #&gt; -console: - FALSE-
 #&gt; -log: - FALSE-
 #&gt; -policy.name: - EpsilonGreedy-
@@ -185,7 +187,8 @@
 #&gt;     getYhat: function (list.states.old) 
 #&gt;     glogger: RLLog, R6
 #&gt;     initialize: function (env, conf = NULL) 
-#&gt;     initialize2: function (actCnt = NULL, stateDim = NULL, conf = NULL) 
+#&gt;     initializeConf: function (conf = NULL) 
+#&gt;     initializeEnv: function (env) 
 #&gt;     interact: Interaction, InteractionBase, R6
 #&gt;     learn: function (iter) 
 #&gt;     list.acts: NULL
@@ -205,6 +208,7 @@
 #&gt;     replay.y: NULL
 #&gt;     sampleRandomAct: function (state) 
 #&gt;     setAdvantage: function (adv) 
+#&gt;     setBrain: function () 
 #&gt;     setConf: function (conf) 
 #&gt;     stateCnt: NULL
 #&gt;     stateDim: 4
