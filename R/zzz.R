@@ -17,6 +17,12 @@ listClass = function(name = NULL) {
   all[mem.idx]
 }
 
+#' @title  Install dependencies
+#'
+#' @description Install tensorflow and keras dependencies, if dependencies already installed, will not re-install
+#' NULL
+#' @return NULL
+#' @export
 installDep = function() {
   res <- try({
     sess = tf$Session()
