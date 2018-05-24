@@ -12,7 +12,10 @@
 AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
+    wait_epi = 10,
+    wait_cnt = NULL,
     initialize = function(env, conf = NULL) {
+      self$wait_cnt = 0L
       if (is.null(conf)) conf = rlR.conf.AC()
       super$initialize(env, conf = conf)
     },
@@ -27,6 +30,7 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
               idx = which(vec.done)
               nv[idx, ] = 0   # at episode end, v[next] = 0
               self$delta = (unlist(self$list.rewards) + nv) - self$p.old.c  # Bellman Error as advantage
+              cat(sprintf("totoal delta: %s", sum(self$delta)/length(self$delta)))
               vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
               ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
               ded = ded - mean(ded)  #  normalize
@@ -64,6 +68,7 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
         self$replay(self$total.step)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
+        self$rescue()
     }
 
     )

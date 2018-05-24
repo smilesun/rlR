@@ -19,13 +19,10 @@ listAvailAgent()
 
 
 ```{r fig.path="inst/figure"}
-agent = makeAgent("AgentDQN", env)
+agent = makeAgent("AgentActorCritic", env)
 agent$updatePara("console", FALSE)
 system.time({
- #perf = agent$learn(500) # uncomment this to run which might take some time
+ perf = agent$learn(500) # uncomment this to run which might take some time
 })
- #perf$plot()
+ perf$plot()
 ```
-
-
-

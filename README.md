@@ -1,15 +1,22 @@
 [![Build Status](https://travis-ci.com/compstat-lmu/rlR.svg?branch=master)](https://travis-ci.com/compstat-lmu/rlR)
+[![Coverage Status](https://coveralls.io/repos/github/smilesun/rlR/badge.svg?branch=master)](https://coveralls.io/github/smilesun/rlR?branch=master)
+
+
 
 # rlR: Reinforcement learning in R
 
 ## Installation
-```{r}
-devtools::install_github("compstat-lmu/rlR", dependencies = TRUE)
+
+```r
+# devtools::install_github("smilesun/rlR", dependencies = TRUE)
+
 ```
+
 ## Usage
 
 ```r
 library(rlR)
+# installDep()   # this will run tensorflow::install_tensorflow() and keras::install_keras()
 env = makeGymEnv("CartPole-v0")
 listAvailAgent()
 ```
@@ -26,7 +33,7 @@ listAvailAgent()
 
 
 ```r
-agent = makeAgent("AgentDQN", env)
+agent = makeAgent("AgentActorCritic", env)
 ```
 
 ```
@@ -34,43 +41,52 @@ agent = makeAgent("AgentDQN", env)
 ## -render: - TRUE-
 ## -agent.gamma: - 0.99-
 ## -policy.maxEpsilon: - 1-
-## -policy.minEpsilon: - 0.001-
-## -policy.decay: - 0.999000499833375-
-## -replay.memname: - Uniform-
+## -policy.minEpsilon: - 0-
+## -policy.decay: - 0.994017964053935-
+## -replay.memname: - Latest-
 ## -replay.epochs: - 1-
 ## -interact.maxiter: - 500-
-## -console: - FALSE-
 ## -log: - FALSE-
+## -console: - TRUE-
 ## -policy.name: - EpsilonGreedy-
-## -replay.batchsize: - 64-
-## -agent.nn.arch: nhidden- 64-
-##  -agent.nn.arch: act1- relu-
-##  -agent.nn.arch: act2- linear-
-##  -agent.nn.arch: loss- mse-
-##  -agent.nn.arch: lr- 0.00025-
-##  -agent.nn.arch: kernel_regularizer- regularizer_l2(l=0.0)-
-##  -agent.nn.arch: bias_regularizer- regularizer_l2(l=0.0)-
+## -agent.nn.arch.actor: nhidden- 64-
+##  -agent.nn.arch.actor: act1- tanh-
+##  -agent.nn.arch.actor: act2- softmax-
+##  -agent.nn.arch.actor: loss- categorical_crossentropy-
+##  -agent.nn.arch.actor: lr- 1e-04-
+##  -agent.nn.arch.actor: kernel_regularizer- regularizer_l2(l=0.0001)-
+##  -agent.nn.arch.actor: bias_regularizer- regularizer_l2(l=1e-4)-
+##  -agent.nn.arch.actor: decay- 0.9-
+##  -agent.nn.arch.actor: clipnorm- 5-
+## -agent.nn.arch.critic: nhidden- 64-
+##  -agent.nn.arch.critic: act1- tanh-
+##  -agent.nn.arch.critic: act2- linear-
+##  -agent.nn.arch.critic: loss- mse-
+##  -agent.nn.arch.critic: lr- 1e-04-
+##  -agent.nn.arch.critic: kernel_regularizer- regularizer_l2(l=0.0001)-
+##  -agent.nn.arch.critic: bias_regularizer- regularizer_l2(l=1e-4)-
+##  -agent.nn.arch.critic: decay- 0.9-
+##  -agent.nn.arch.critic: clipnorm- 5-
 ```
 
 ```r
+agent$updatePara("console", FALSE)
 system.time({
-perf = agent$learn(1000)
+ perf = agent$learn(500)
 })
 ```
 
 ```
-##     user   system  elapsed 
-## 5592.336   73.720 5595.750
+##    user  system elapsed 
+## 726.996  12.000 777.714
 ```
 
 ```r
-perf$plot()
+ perf$plot()
 ```
 
 ```
-## `geom_smooth()` using method = 'gam'
+## `geom_smooth()` using method = 'loess'
 ```
 
-![plot of chunk unnamed-chunk-2](man/figure/dqn.png)
-
-
+![plot of chunk unnamed-chunk-3](inst/figureunnamed-chunk-3-1.png)

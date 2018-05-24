@@ -51,6 +51,10 @@ Performance = R6::R6Class("Performance",
       mean(vec[winstart:epi.idx], na.rm = TRUE)
     },
 
+    isBad = function() {
+      self$getAccPerf(50) < self$getAccPerf(100)
+    },
+
     toString = function() {
       s1 = sprintf("steps per episode:%s \n", toString(self$list.stepsPerEpisode))
       self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))
