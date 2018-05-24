@@ -12,10 +12,10 @@
 AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
-    wait_epi = 10,
+    wait_epi = 100,
     wait_cnt = NULL,
     initialize = function(env, conf = NULL) {
-      self$wait_cnt = 0L
+      self$wait_cnt = self$wait_epi
       if (is.null(conf)) conf = rlR.conf.AC()
       super$initialize(env, conf = conf)
     },
@@ -69,7 +69,22 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
         self$policy$afterEpisode()
         self$mem$afterEpisode()
         self$rescue()
+    },
+
+    rescue = function() {
+        cat(self$interact$perf$isBad())
+        if (self$interact$perf$isBad()) 
+        {
+          self$wait_cnt = self$wait_cnt + 1L
+          self$policy$epsilon = min(1, self$policy$epsilon * 1.01)
+          if(self$wait_cnt > self$wait_epi) {
+      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
+      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
+          self$wait_cnt = 0
+          }
+        }
     }
+
 
     )
   )

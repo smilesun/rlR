@@ -68,19 +68,6 @@ AgentPG = R6::R6Class("AgentPG",
         self$getAdv(interact)
         self$replay(self$total.step)   # key difference here
         self$policy$afterEpisode()
-    },
-
-    rescue = function() {
-        #cat(self$interact$perf$isBad())
-        if (self$interact$perf$isBad()) 
-        {
-          self$wait_cnt = self$wait_cnt + 1L
-          if(self$wait_cnt > self$wait_epi) {
-      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
-      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
-          self$wait_cnt = 0
-          }
-        }
     }
     ), # public
   private = list(),

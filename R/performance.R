@@ -11,9 +11,13 @@ Performance = R6::R6Class("Performance",
     glogger = NULL,
     agent = NULL,
     r.vec.epi = NULL,
+    epi_wait_ini = NULL,   # number of episode to wait until to reinitialize
+    epi_wait_expl = NULL,  # number of episode to wait until to increase epsilon for exploration
 
     initialize = function(agent) {
       self$agent = agent
+      self$epi_wait_ini = self$agent$conf$get("policy.epi_wait_ini")
+      self$epi_wait_expl = self$agent$conf$get("policy.epi_wait_expl")
       self$glogger = self$agent$glogger
       self$list.reward.epi = list()
       self$list.infos = list()
@@ -52,7 +56,7 @@ Performance = R6::R6Class("Performance",
     },
 
     isBad = function() {
-      self$getAccPerf(50) < self$getAccPerf(100)
+      self$getAccPerf(20) < self$getAccPerf(100)
     },
 
     toString = function() {
