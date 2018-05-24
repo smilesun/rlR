@@ -15,15 +15,18 @@
 ## Usage
 ```{r}
 library(rlR)
+# rlR::installDep()
 env = makeGymEnv("CartPole-v0")
 listAvailAgent()
 ```
 
 
-```{r fig.path="inst/figure"}
+```{r fig.path="inst/figures"}
 agent = makeAgent("AgentActorCritic", env)
 system.time({
- perf = agent$learn(200)
+ perf = agent$learn(300)
 })
  perf$plot()
+ # if the performance is not good as expected, just let it run another number of episodes by using
+ # perf = agent$learn(300) again
 ```
