@@ -15,12 +15,14 @@ Performance = R6::R6Class("Performance",
     epi_wait_expl = NULL,  # number of episode to wait until to increase epsilon for exploration
     recent_win = 20L,
     recent_door = 40L,
-    bad_ratio = 0.95,
+    bad_ratio = 0.99,
+    gamma = NULL,
 
     initialize = function(agent) {
       self$agent = agent
       self$epi_wait_ini = self$agent$conf$get("policy.epi_wait_ini")
       self$epi_wait_expl = self$agent$conf$get("policy.epi_wait_expl")
+      self$gamma = self$agent$conf$get("agent.gamma")
       self$glogger = self$agent$glogger
       self$list.reward.epi = list()
       self$list.infos = list()
@@ -37,7 +39,7 @@ Performance = R6::R6Class("Performance",
       running_add = 0
       i = length(rewardvec)
       while (i > 0) {
-        running_add = running_add * 0.99 + rewardvec[i]
+        running_add = running_add * self$gamma + rewardvec[i]
         discounted_r[i] = running_add
         i = i - 1L
       }
@@ -63,7 +65,9 @@ Performance = R6::R6Class("Performance",
       pdoor = self$getAccPerf(self$recent_door)
       self$agent$interact$toConsole("Last %d episodes average reward %f \n", self$recent_win, pwin)
       self$agent$interact$toConsole("Last %d episodes average reward %f \n", self$recent_door, pdoor)
-      pwin < self$bad_ratio * pdoor
+      flag1 = pwin < self$bad_ratio * pdoor
+      flag2 = pwin < self$getAccPerf(100L)
+      c(flag1, flag2)
     },
 
     toString = function() {
