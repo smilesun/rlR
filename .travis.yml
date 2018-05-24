@@ -32,6 +32,7 @@ r_github_packages:
 - rstudio/keras
 before_script:
 - R --no-save <<< 'library("devtools"); document()'
+- R --no-save <<< 'library("tensorflow"); install_tensorflow()'
 - R --no-save <<< 'library("keras"); install_keras()'
 after_success:
 - 'if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_R_VERSION_STRING" == "release" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
