@@ -1,7 +1,6 @@
-[![Build Status](https://travis-ci.com/compstat-lmu/rlR.svg?branch=master)](https://travis-ci.com/compstat-lmu/rlR)
+[![Build Status](https://travis-ci.com/smilesun/rlR.svg?branch=master)](https://travis-ci.com/smilesun/rlR)
 [![Coverage Status](https://coveralls.io/repos/github/smilesun/rlR/badge.svg?branch=master)](https://coveralls.io/github/smilesun/rlR?branch=master)
-
-
+[![Build status](https://ci.appveyor.com/api/projects/status/d0oyb358bh3e8r7r?svg=true)](https://ci.appveyor.com/project/smilesun/rlr)
 
 # rlR: Reinforcement learning in R
 

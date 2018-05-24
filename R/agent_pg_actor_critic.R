@@ -12,7 +12,7 @@
 AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
-    wait_epi = 100,
+    wait_epi = 25L,
     wait_cnt = NULL,
     initialize = function(env, conf = NULL) {
       self$wait_cnt = self$wait_epi
@@ -72,22 +72,24 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
     },
 
     rescue = function() {
-        cat(self$interact$perf$isBad())
-        if (self$interact$perf$isBad()) 
-        {
+        flag = self$interact$perf$isBad()
+        if (flag) {
+          cat(sprintf("\n bad perform for last window, %d times \n", self$wait_cnt + 1L))
           self$wait_cnt = self$wait_cnt + 1L
-          self$policy$epsilon = min(1, self$policy$epsilon * 1.01)
-          if(self$wait_cnt > self$wait_epi) {
-      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
-      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
-          self$wait_cnt = 0
+          # self$policy$epsilon = min(1, self$policy$epsilon * 1.01)
+          if (self$wait_cnt > self$wait_epi) {
+            cat(sprintf("\n going to reset brain\n"))
+            self$setBrain()
+            #self$policy$epsilon = min(1, self$policy$epsilon * 1.01)
+            self$policy$epsilon = self$policy$maxEpsilon
+            self$wait_cnt = 0
           }
+        } else {
+          self$wait_cnt = 0
         }
     }
-
-
     )
-  )
+)
 
 
 rlR.conf.AC = function() {

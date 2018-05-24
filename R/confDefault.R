@@ -8,7 +8,9 @@ policy.minEpsilon = 0.01,
 policy.decay = 1, # exp(-1.0 / 10),
 replay.memname = "Uniform",
 replay.epochs = 1L,
-interact.maxiter = 500L
+interact.maxiter = 500L,
+policy.epi_wait_ini = 100L,
+policy.epi_wait_expl = 20L
 )
 
 

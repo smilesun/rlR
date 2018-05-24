@@ -13,6 +13,9 @@ Performance = R6::R6Class("Performance",
     r.vec.epi = NULL,
     epi_wait_ini = NULL,   # number of episode to wait until to reinitialize
     epi_wait_expl = NULL,  # number of episode to wait until to increase epsilon for exploration
+    recent_win = 20L,
+    recent_door = 40L,
+    bad_ratio = 0.95,
 
     initialize = function(agent) {
       self$agent = agent
@@ -56,7 +59,11 @@ Performance = R6::R6Class("Performance",
     },
 
     isBad = function() {
-      self$getAccPerf(20) < self$getAccPerf(100)
+      pwin = self$getAccPerf(self$recent_win)
+      pdoor = self$getAccPerf(self$recent_door)
+      self$agent$interact$toConsole("Last %d episodes average reward %f \n", self$recent_win, pwin)
+      self$agent$interact$toConsole("Last %d episodes average reward %f \n", self$recent_door, pdoor)
+      pwin < self$bad_ratio * pdoor
     },
 
     toString = function() {

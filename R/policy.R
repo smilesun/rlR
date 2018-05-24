@@ -60,8 +60,9 @@ PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
     },
 
     afterStep = function() {
-      self$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(self$logdecay * self$gstep.idx)
-      self$gstep.idx = self$gstep.idx + 1L
+      #self$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(self$logdecay * self$gstep.idx)
+      #self$gstep.idx = self$gstep.idx + 1L
+      self$epsilon = self$epsilon * self$decay
     },
 
     afterEpisode = function() {
