@@ -12,10 +12,7 @@
 AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
-    wait_epi = 25L,
-    wait_cnt = NULL,
     initialize = function(env, conf = NULL) {
-      self$wait_cnt = self$wait_epi
       if (is.null(conf)) conf = rlR.conf.AC()
       super$initialize(env, conf = conf)
     },
@@ -69,25 +66,9 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
         self$policy$afterEpisode()
         self$mem$afterEpisode()
         self$rescue()
-    },
-
-    rescue = function() {
-        flag = self$interact$perf$isBad()
-        if (flag[1]) {
-          self$interact$toConsole("\n bad perform for last window, %d times \n", self$wait_cnt + 1L)
-          self$wait_cnt = self$wait_cnt + 1L
-          self$policy$epsilon = min(1, self$policy$epsilon * 1.01)
-          if (self$wait_cnt > self$wait_epi) {
-            self$interact$toConsole("\n going to reset brain\n")
-            self$setBrain()
-            self$policy$epsilon = self$policy$maxEpsilon
-            self$wait_cnt = 0
-          } else {
-          if (!flag[2]) self$wait_cnt = 0
-        }
-        }
     }
-    )
+
+  )
 )
 
 

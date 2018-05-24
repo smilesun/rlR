@@ -12,8 +12,11 @@
 AgentPG = R6::R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
+    wait_epi = 25L,
+    wait_cnt = NULL,
     total.step = NULL,
     initialize = function(env, conf) {
+      self$wait_cnt = self$wait_epi
       if (is.null(conf)) conf = rlR.AgentPG.conf()
       super$initialize(env, conf = conf)
       self$setBrain()
@@ -69,7 +72,25 @@ AgentPG = R6::R6Class("AgentPG",
         self$getAdv(interact)
         self$replay(self$total.step)   # key difference here
         self$policy$afterEpisode()
-    }
+        self$rescue()
+    },
+
+    rescue = function() {
+            flag = self$interact$perf$isBad()
+            if (flag[1]) {
+              self$interact$toConsole("\n bad perform for last window, %d times \n", self$wait_cnt + 1L)
+              self$wait_cnt = self$wait_cnt + 1L
+              self$policy$epsilon = min(1, self$policy$epsilon * 1.01)
+              if (self$wait_cnt > self$wait_epi) {
+                self$interact$toConsole("\n going to reset brain\n")
+                self$setBrain()
+                self$policy$epsilon = self$policy$maxEpsilon
+                self$wait_cnt = 0
+              } else {
+              if (!flag[2]) self$wait_cnt = 0
+            }
+            }
+        }
     ), # public
   private = list(),
   active = list(
@@ -79,6 +100,7 @@ AgentPG = R6::R6Class("AgentPG",
 rlR.AgentPG.conf = function() {
   RLConf$new(
           render = FALSE,
+          console = FALSE,
           policy.maxEpsilon = 1,
           policy.decay = exp(-0.001),
           policy.minEpsilon = 0.01,
@@ -89,7 +111,9 @@ rlR.AgentPG.conf = function() {
 }
 
 AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
-  interact = makeGymExperiment(sname = sname, aname = "AgentPG", conf = rlR.AgentPG.conf())
+  conf = rlR.AgentPG.conf()
+  conf$updatePara("console", TRUE)
+  interact = makeGymExperiment(sname = sname, aname = "AgentPG", conf = conf)
   perf = interact$run(iter)
   return(perf)
 }

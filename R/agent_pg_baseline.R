@@ -84,6 +84,7 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
         self$replay(self$total.step)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
+        self$rescue()
     },
 
     evaluateArm = function(state) {
