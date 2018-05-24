@@ -93,7 +93,8 @@
 <a href="#usage" class="anchor"></a>Usage</h2>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)</code></pre>
 <pre><code>## Loading required package: R6</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># rlR::installDep()</span>
+env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
 <span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre>
 <pre><code>## [1] "AgentDQN:deep q learning"                      
 ## [2] "AgentFDQN:frozen target deep q learning"       
@@ -135,155 +136,15 @@
 ##  -agent.nn.arch.critic: decay- 0.9-
 ##  -agent.nn.arch.critic: clipnorm- 5-</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">system.time</span>({
- perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">200</span>)
+ perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">300</span>)
 })</code></pre>
-<pre><code>## totoal delta: 1.00754915043712totoal delta: 1.03524202482089totoal delta: 0.973580548403164totoal delta: 1.08772096261043totoal delta: 0.957117643940395totoal delta: 1.06112024447093totoal delta: 1.05172349813466totoal delta: 0.940737298287451totoal delta: 0.897647991210222totoal delta: 0.895787977963686totoal delta: 0.917237827330828totoal delta: 0.911539131477475totoal delta: 0.89035792157054totoal delta: 0.914309970349073totoal delta: 1.10772814830596totoal delta: 1.11291833656281totoal delta: 1.11862801156938totoal delta: 1.07129359050964totoal delta: 1.11102897983458totoal delta: 1.11813329901546totoal delta: 1.1021562756002totoal delta: 1.07364355996108totoal delta: 0.885431556619704
-##  bad perform for last window, 26 times 
-## 
-##  going to reset brain
-## totoal delta: 0.953770698979497
-##  bad perform for last window, 1 times 
-## totoal delta: 1.07067580428388
-##  bad perform for last window, 2 times 
-## totoal delta: 1.0306831336646
-##  bad perform for last window, 3 times 
-## totoal delta: 1.04670551000784
-##  bad perform for last window, 4 times 
-## totoal delta: 1.04151135847474
-##  bad perform for last window, 5 times 
-## totoal delta: 0.947615639134668
-##  bad perform for last window, 6 times 
-## totoal delta: 0.942051802038808
-##  bad perform for last window, 7 times 
-## totoal delta: 0.943714988333484
-##  bad perform for last window, 8 times 
-## totoal delta: 0.938746487393298
-##  bad perform for last window, 9 times 
-## totoal delta: 0.916384167894721
-##  bad perform for last window, 10 times 
-## totoal delta: 0.924528313618567
-##  bad perform for last window, 11 times 
-## totoal delta: 1.03891713113352totoal delta: 0.935184049022694totoal delta: 0.933466460775671totoal delta: 0.941425614337126totoal delta: 0.923953881531954totoal delta: 0.920180520415306totoal delta: 0.901500656139106totoal delta: 1.0875576768236totoal delta: 1.08451216184348totoal delta: 1.06189471996962totoal delta: 0.908513511560029totoal delta: 0.932122645471245totoal delta: 0.930122829832137totoal delta: 0.92862160644748totoal delta: 1.06997331285341totoal delta: 1.07365322793523totoal delta: 1.08351851204783
-##  bad perform for last window, 12 times 
-## totoal delta: 1.09519865094788
-##  bad perform for last window, 13 times 
-## totoal delta: 1.09061130964922
-##  bad perform for last window, 14 times 
-## totoal delta: 1.10247410898097
-##  bad perform for last window, 15 times 
-## totoal delta: 1.07819148983806
-##  bad perform for last window, 16 times 
-## totoal delta: 1.07873717888174
-##  bad perform for last window, 17 times 
-## totoal delta: 1.07712070133198
-##  bad perform for last window, 18 times 
-## totoal delta: 1.06901648108255
-##  bad perform for last window, 19 times 
-## totoal delta: 0.917175032161176
-##  bad perform for last window, 20 times 
-## totoal delta: 0.905503879164656
-##  bad perform for last window, 21 times 
-## totoal delta: 0.915255806624889
-##  bad perform for last window, 22 times 
-## totoal delta: 0.893658962380141
-##  bad perform for last window, 23 times 
-## totoal delta: 0.921432953819633
-##  bad perform for last window, 24 times 
-## totoal delta: 0.922384381931689
-##  bad perform for last window, 25 times 
-## totoal delta: 0.923724804486317
-##  bad perform for last window, 26 times 
-## 
-##  going to reset brain
-## totoal delta: 1.03096451618057
-##  bad perform for last window, 1 times 
-## totoal delta: 1.01240548532743
-##  bad perform for last window, 2 times 
-## totoal delta: 0.988668587484011totoal delta: 1.02282423303754totoal delta: 1.0591986938715totoal delta: 1.02927664182736totoal delta: 0.947871245764196totoal delta: 0.966083694124328totoal delta: 0.967102031879127totoal delta: 0.948173814631171totoal delta: 0.948216956595425totoal delta: 0.934744166947073totoal delta: 0.942664248780771totoal delta: 0.929953988658057totoal delta: 0.959201005895489totoal delta: 1.0559554072897totoal delta: 0.94099084360732totoal delta: 0.931485466294818totoal delta: 0.935345478363335totoal delta: 0.925818309775657totoal delta: 0.929647366967466totoal delta: 0.923003212548792totoal delta: 0.9410770550453totoal delta: 1.05738792041486
-##  bad perform for last window, 3 times 
-## totoal delta: 1.05355330502987
-##  bad perform for last window, 4 times 
-## totoal delta: 1.0674776295945
-##  bad perform for last window, 5 times 
-## totoal delta: 1.06574188089371
-##  bad perform for last window, 6 times 
-## totoal delta: 1.06385162691275
-##  bad perform for last window, 7 times 
-## totoal delta: 1.06807894296116
-##  bad perform for last window, 8 times 
-## totoal delta: 1.06200681252778
-##  bad perform for last window, 9 times 
-## totoal delta: 1.0534018766135
-##  bad perform for last window, 10 times 
-## totoal delta: 1.06306417826563
-##  bad perform for last window, 11 times 
-## totoal delta: 1.04471569231246
-##  bad perform for last window, 12 times 
-## totoal delta: 1.06898404702544
-##  bad perform for last window, 13 times 
-## totoal delta: 1.0459607623859
-##  bad perform for last window, 14 times 
-## totoal delta: 0.937710240815174
-##  bad perform for last window, 15 times 
-## totoal delta: 0.93607762748748
-##  bad perform for last window, 16 times 
-## totoal delta: 0.941191126817668
-##  bad perform for last window, 17 times 
-## totoal delta: 0.937592686079443
-##  bad perform for last window, 18 times 
-## totoal delta: 0.939791897176342
-##  bad perform for last window, 19 times 
-## totoal delta: 0.93097790647712
-##  bad perform for last window, 20 times 
-## totoal delta: 0.937343135528266
-##  bad perform for last window, 21 times 
-## totoal delta: 0.934307788714766
-##  bad perform for last window, 22 times 
-## totoal delta: 0.941636153094471
-##  bad perform for last window, 23 times 
-## totoal delta: 0.926472903026475
-##  bad perform for last window, 24 times 
-## totoal delta: 0.931645348668098
-##  bad perform for last window, 25 times 
-## totoal delta: 0.931126980955402totoal delta: 0.930415386739704totoal delta: 0.930789562629329totoal delta: 0.935773090705275totoal delta: 0.933283311150968totoal delta: 0.947746141362521totoal delta: 0.929366359793477totoal delta: 0.93730021186173totoal delta: 0.93149440844357totoal delta: 0.927525910081135totoal delta: 0.930319556544224
-##  bad perform for last window, 26 times 
-## 
-##  going to reset brain
-## totoal delta: 0.921310349485049totoal delta: 0.941010441311325
-##  bad perform for last window, 1 times 
-## totoal delta: 0.973294040414251totoal delta: 0.980956906165775totoal delta: 1.00849847277521totoal delta: 1.01460582836398totoal delta: 0.979117470304755totoal delta: 1.01157161147537totoal delta: 1.0117641188424totoal delta: 1.01741689360413totoal delta: 0.953051738142967totoal delta: 1.0151834257732totoal delta: 0.988944470195307totoal delta: 0.994036733443549totoal delta: 0.993716886187904totoal delta: 0.990623748882208totoal delta: 1.02468769437928totoal delta: 1.0096823586609totoal delta: 1.02378200339619totoal delta: 1.00882581685388totoal delta: 1.01514146867225totoal delta: 1.00226985677412totoal delta: 0.971968777443359totoal delta: 0.973423603383791totoal delta: 0.996181803203546totoal delta: 0.977750981750112totoal delta: 0.99272600811507totoal delta: 1.01658650534848totoal delta: 0.976823974101499totoal delta: 0.986612241208892totoal delta: 0.993597770323395totoal delta: 0.988911538662081totoal delta: 0.991338062117119totoal delta: 0.991627836489897totoal delta: 1.0032721192123totoal delta: 1.00799424715818totoal delta: 1.03804307202958totoal delta: 1.0133661374918totoal delta: 0.988061040077249totoal delta: 0.970963059038456totoal delta: 0.989953238887068totoal delta: 1.0050997790526totoal delta: 0.995801330779002totoal delta: 1.03727018192537totoal delta: 1.00572356408488totoal delta: 0.972243703668814totoal delta: 0.990748351794583totoal delta: 1.02909252403651totoal delta: 1.00506120152771totoal delta: 0.967780965327596totoal delta: 0.997402943701093totoal delta: 1.00864302356202totoal delta: 1.0104763267093totoal delta: 0.981166700649731totoal delta: 0.981711011952518totoal delta: 0.978758571475398totoal delta: 0.974250242882973totoal delta: 0.982706595173349totoal delta: 0.997441001222892totoal delta: 1.02641994146998totoal delta: 1.01721038362254totoal delta: 1.00586999786336totoal delta: 1.00245147720063totoal delta: 0.987362574088671
-##  bad perform for last window, 2 times 
-## totoal delta: 0.986525598938266totoal delta: 1.02514035837702
-##  bad perform for last window, 1 times 
-## totoal delta: 0.995370389331132
-##  bad perform for last window, 1 times 
-## totoal delta: 1.02234163439966
-##  bad perform for last window, 1 times 
-## totoal delta: 1.01596962892168
-##  bad perform for last window, 1 times 
-## totoal delta: 0.983422053170462
-##  bad perform for last window, 1 times 
-## totoal delta: 1.01627568139662
-##  bad perform for last window, 1 times 
-## totoal delta: 0.977299904431
-##  bad perform for last window, 1 times 
-## totoal delta: 0.989307574677385
-##  bad perform for last window, 1 times 
-## totoal delta: 0.99632702187398
-##  bad perform for last window, 1 times 
-## totoal delta: 1.00703444505335
-##  bad perform for last window, 1 times 
-## totoal delta: 0.965599319656224
-##  bad perform for last window, 1 times 
-## totoal delta: 0.97989836465398
-##  bad perform for last window, 1 times 
-## totoal delta: 1.00966801567003
-##  bad perform for last window, 1 times</code></pre>
 <pre><code>##    user  system elapsed 
-##  68.868   1.604  75.047</code></pre>
+## 315.548   6.048 341.267</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"> perf$<span class="kw">plot</span>()</code></pre>
 <pre><code>## `geom_smooth()` using method = 'loess'</code></pre>
-<p><img src="inst/figureunnamed-chunk-3-1.png" width="700"></p>
+<p><img src="inst/figuresunnamed-chunk-3-1.png" width="700"></p>
+<pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># if the performance is not good as expected, just let it run another number of episodes by using</span>
+ <span class="co"># perf = agent$learn(300) again</span></code></pre>
 </div>
 </div>
   </div>
