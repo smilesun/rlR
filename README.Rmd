@@ -16,7 +16,7 @@
 ```{r}
 library(rlR)
 # rlR::installDep()
-env = makeGymEnv("CartPole-v0")
+env = makeGymEnv("CartPole-v0", ok_step = 100, ok_reward = 195)
 listAvailAgent()
 ```
 

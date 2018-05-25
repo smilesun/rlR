@@ -34,6 +34,18 @@ Performance = R6::R6Class("Performance",
       self$r.vec.epi = vector(mode = "numeric", length = 2000L)  # FIXME: how to set a reasonble number here?
     },
 
+    success = function() {
+        ok_reward = self$agent$env$ok_reward
+        ok_step = self$agent$env$ok_step
+        if (is.null(ok_reward) || is.null(ok_step)) {
+          return(FALSE)
+        }
+        if (self$getAccPerf(ok_step) > ok_reward) {
+          return(TRUE)
+        }
+        return(FALSE)
+    },
+
     computeDiscount = function(rewardvec) {
       discounted_r = vector(mode = "double", length = length(rewardvec))
       running_add = 0

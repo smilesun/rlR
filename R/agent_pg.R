@@ -12,7 +12,7 @@
 AgentPG = R6::R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
-    wait_epi = 25L,
+    wait_epi = 20L,
     wait_cnt = NULL,
     total.step = NULL,
     initialize = function(env, conf) {
@@ -86,9 +86,9 @@ AgentPG = R6::R6Class("AgentPG",
                 self$setBrain()
                 self$policy$epsilon = self$policy$maxEpsilon
                 self$wait_cnt = 0
-              } else {
-              if (!flag[2]) self$wait_cnt = 0
-            }
+              } else if (!flag[2]) {
+                        self$wait_cnt = 0
+                      }
             }
         }
     ), # public

@@ -92,7 +92,7 @@ AgentActorCritic$test = function(iter = 1000L, sname = "CartPole-v0", render = T
   conf = rlR.conf.AC()
   conf$updatePara("console", TRUE)
   conf$updatePara("render", render)
-  interact = makeGymExperiment(sname = sname, "AgentActorCritic", conf)
+  interact = makeGymExperiment(sname = sname, "AgentActorCritic", conf, ok_step = 100, ok_reward = 195)
   perf = interact$run(iter)
   return(perf)
 }

@@ -7,8 +7,12 @@ EnvGym = R6::R6Class("EnvGym",
     act_cnt = NULL,
     state_cnt = NULL,
     state_dim = NULL,
-    initialize = function(genv, state.cheat = identity, act.cheat = identity, actcnt = NULL) {
+    ok_reward = NULL,
+    ok_step = NULL,
+    initialize = function(genv, state.cheat = identity, act.cheat = identity, actcnt = NULL, ok_reward = NULL, ok_step = NULL) {
       self$env = genv
+      self$ok_reward = ok_reward
+      self$ok_step = ok_step
       self$state.cheat = state.cheat
       self$act.cheat = act.cheat
       if (is.null(actcnt)) {
