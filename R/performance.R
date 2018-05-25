@@ -114,7 +114,7 @@ Performance = R6::R6Class("Performance",
         self$agent$interact$toConsole("\n bad perform for last window, %d times \n", self$wait_cnt + 1L)
         self$wait_cnt = self$wait_cnt + 1L
         total_step = self$total.step
-        ratio = exp(-self$agent$policy$logdecay * 2 * total_step)
+        ratio = exp(-self$agent$policy$logdecay * total_step)
         # self$agent$policy$epsilon = min(1, self$agent$policy$epsilon * ratio)  #FIXME: shall we increase explore here ?
         flag_new_start = self$wait_cnt > self$agent$conf$get("policy.epi_wait_middle")
         flag_start = all(flag) && flag_new_start

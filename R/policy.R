@@ -23,14 +23,24 @@ Policy = R6::R6Class("Policy",
       return(action)
     },
 
-    decayEpsilon = function() {
-        temp = self$epsilon * self$decay
-        self$epsilon = max(temp, self$minEpsilon)
-        self$host$interact$toConsole("Epsilon%f \n", temp)
+    info = function() {
+        self$host$interact$toConsole("Epsilon%f \n", self$epsilon)
         self$host$glogger$log.nn$info("rand steps:%i \n", self$host$random.cnt)
         self$host$interact$toConsole("rand steps:%i \n", self$host$random.cnt)  # same message to console
         self$host$random.cnt = 0L
-      },
+
+    },
+
+    decayEpsilon = function() {
+        temp = self$epsilon * self$decay
+        self$epsilon = max(temp, self$minEpsilon)
+    },
+
+    # not using currently
+    decayEpsilon2 = function() {
+        self$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(self$logdecay * self$gstep.idx)
+        self$gstep.idx = self$gstep.idx + 1L
+    },
 
     afterEpisode = function() {
     }
@@ -60,13 +70,12 @@ PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
     },
 
     afterStep = function() {
-      #self$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(self$logdecay * self$gstep.idx)
-      #self$gstep.idx = self$gstep.idx + 1L
-      self$epsilon = self$epsilon * self$decay
+      self$decayEpsilon()
     },
 
     afterEpisode = function() {
       self$decayEpsilon()
+      self$info()
     }
     )
   )

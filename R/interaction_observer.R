@@ -113,9 +113,9 @@ Interaction = R6::R6Class("Interaction",
       self$rl.env$afterAll()
       rlR.global.perf <<- self$perf
       rlR.global.perf$agent$conf$updatePara("render", FALSE)
-      rlR.rescue.global.agent <<- self$rl.agent$clone(deep = TRUE)
-      rlR.rescue.global.agent$updatePara("render", FALSE)
-      rlR.rescue.global.inter <<- self
+      #rlR.rescue.global.agent <<- self$rl.agent$clone(deep = TRUE)
+      #rlR.rescue.global.agent$updatePara("render", FALSE)
+      #rlR.rescue.global.inter <<- self
     }) # try catch
     } # function
     ), # public
