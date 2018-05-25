@@ -86,11 +86,14 @@ AgentPG = R6::R6Class("AgentPG",
                 self$setBrain()
                 self$policy$epsilon = self$policy$maxEpsilon
                 self$wait_cnt = 0
-              } else if (!flag[2]) {
-                        self$wait_cnt = 0
-                      }
+              }
+            } else {
+              if (!flag[2]) {
+                  self$wait_cnt = 0
+              } else
+                self$wait_cnt = max(0, self$wait_cnt - 1)
             }
-        }
+    } # fun
     ), # public
   private = list(),
   active = list(
