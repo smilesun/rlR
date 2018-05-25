@@ -13,13 +13,28 @@ Performance = R6::R6Class("Performance",
     r.vec.epi = NULL,
     epi_wait_ini = NULL,   # number of episode to wait until to reinitialize
     epi_wait_expl = NULL,  # number of episode to wait until to increase epsilon for exploration
-    recent_win = 20L,
-    recent_door = 40L,
-    bad_ratio = 0.99,
+    recent_win = NULL,
+    recent_door = NULL,
+    bad_ratio = NULL,
     gamma = NULL,
-
+    bad_reward = NULL,
+    good_cnt = NULL,
+    wait_epi = NULL,
+    wait_cnt = NULL,
+    reset_cnt = NULL,
+    total.step = NULL,  # how many times model has been reset
     initialize = function(agent) {
+      self$reset_cnt = 0L  
+      self$wait_epi = agent$conf$get("policy.epi_wait_ini")
+      self$wait_cnt = 0L
+      self$good_cnt = 0L
+      self$recent_win = 20L
+      self$recent_door = 40L
+      self$bad_ratio = 0.99
       self$agent = agent
+      if (!is.null(self$agent$env$bad_reward)) self$bad_reward = self$agent$env$bad_reward
+      else self$bad_reward = -Inf
+
       self$epi_wait_ini = self$agent$conf$get("policy.epi_wait_ini")
       self$epi_wait_expl = self$agent$conf$get("policy.epi_wait_expl")
       self$gamma = self$agent$conf$get("agent.gamma")
@@ -35,15 +50,15 @@ Performance = R6::R6Class("Performance",
     },
 
     success = function() {
-        ok_reward = self$agent$env$ok_reward
-        ok_step = self$agent$env$ok_step
-        if (is.null(ok_reward) || is.null(ok_step)) {
-          return(FALSE)
-        }
-        if (self$getAccPerf(ok_step) > ok_reward) {
-          return(TRUE)
-        }
+      ok_reward = self$agent$env$ok_reward
+      ok_step = self$agent$env$ok_step
+      if (is.null(ok_reward) || is.null(ok_step)) {
         return(FALSE)
+      }
+      if (self$getAccPerf(ok_step) > ok_reward) {
+        return(TRUE)
+      }
+      return(FALSE)
     },
 
     computeDiscount = function(rewardvec) {
@@ -77,10 +92,55 @@ Performance = R6::R6Class("Performance",
       pdoor = self$getAccPerf(self$recent_door)
       self$agent$interact$toConsole("Last %d episodes average reward %f \n", self$recent_win, pwin)
       self$agent$interact$toConsole("Last %d episodes average reward %f \n", self$recent_door, pdoor)
+      all_rewards = unlist(self$list.rewardPerEpisode)
       flag1 = pwin < self$bad_ratio * pdoor
-      flag2 = pwin < self$getAccPerf(100L)
-      c(flag1, flag2)
+      flag2 = pwin < (1/self$bad_ratio) * self$getAccPerf(100L)
+      flag2old = flag2
+      flag3 = pwin < median(all_rewards)
+      flag4 = pwin < mean(all_rewards)
+      flag22 = (flag2 || flag2old)
+      if (!flag22)  self$good_cnt = self$good_cnt + 1L
+      else self$good_cnt = 0L
+      res = c(flag1, flag2, flag3, flag4, flag22)
+      names(res) = c("bad_small", "bad_middle", "bad_big1", "bad_big2", "bad_middle2")
+      self$agent$interact$toConsole("%s", toString(res))
+      return(res)
     },
+
+    rescue = function() {
+      flag = self$isBad()
+      self$wait_epi = min(self$agent$conf$get("policy.epi_wait_expl"), self$wait_epi + 1)
+      if (flag[1]) {
+        self$agent$interact$toConsole("\n bad perform for last window, %d times \n", self$wait_cnt + 1L)
+        self$wait_cnt = self$wait_cnt + 1L
+        total_step = self$total.step
+        ratio = exp(-self$agent$policy$logdecay * 2 * total_step)
+        # self$agent$policy$epsilon = min(1, self$agent$policy$epsilon * ratio)  #FIXME: shall we increase explore here ?
+        flag_new_start = self$wait_cnt > self$agent$conf$get("policy.epi_wait_middle")
+        flag_start = all(flag) && flag_new_start
+        if (self$wait_cnt > self$wait_epi || flag_start) {
+          if (flag[2] || flag[3]) {
+            self$agent$interact$toConsole("\n\n### going to reset brain ###\n\n\n")
+            self$agent$setBrain()
+            self$wait_epi = self$agent$conf$get("policy.epi_wait_expl")
+            self$reset_cnt = self$reset_cnt + 1L
+            self$agent$policy$epsilon = self$agent$policy$maxEpsilon
+            self$wait_cnt = 0
+          } else {
+            self$wait_cnt = max(0, self$wait_cnt - 1)
+            self$agent$policy$epsilon = self$agent$policy$maxEpsilon
+          }
+        }
+      } else {
+        if (self$good_cnt > 5L) {
+          self$agent$interact$toConsole("\n# success more than 5 \n")
+          self$wait_cnt = max(0, self$wait_cnt - self$agent$conf$get("policy.epi_wait_ini"))
+      }} 
+      #else if (flag["bad_middle2"])
+      # self$wait_cnt = max(0, self$wait_cnt - 1)
+      # }
+      self$agent$interact$toConsole("\n wait cnt: %d times \n", self$wait_cnt)
+    }, # fun
 
     toString = function() {
       s1 = sprintf("steps per episode:%s \n", toString(self$list.stepsPerEpisode))
@@ -117,7 +177,7 @@ Performance = R6::R6Class("Performance",
       self$list.infos = lapply(self$agent$mem$samples, function(x) x$info)
     },
 
-    rescue = function() {
+    afterAll = function() {
       self$toString()   # print out performance
       if (self$glogger$flag) self$persist(self$agent$conf$conf.log.perf$resultTbPath)
       self$extractInfo()

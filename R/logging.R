@@ -33,7 +33,7 @@ RLLog = R6::R6Class("RLLog",
       self$log.root$info(info)
     },
 
-    rescue = function() {
+    afterAll = function() {
       if (self$flag) {
       filename.replay = file.path(rlR.conf4log$filePrefix, "replay.dt.csv")
       filename.experience = file.path(self$conf$conf.log.perf$filePrefix, "experience.dt.csv")

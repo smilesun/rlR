@@ -2,6 +2,7 @@
 rlR.conf.default = list(
 render = FALSE,
 log = FALSE,
+console = FALSE,
 agent.gamma = 0.99,
 brain.build_fun = NULL,  # user specific function to create surrogate model
 policy.maxEpsilon = 0.01,
@@ -11,6 +12,7 @@ replay.memname = "Uniform",
 replay.epochs = 1L,
 interact.maxiter = 500L,
 policy.epi_wait_ini = 5L,  # initially the performance should increase
+policy.epi_wait_middle = 25L,
 policy.epi_wait_expl = 40L
 )
 

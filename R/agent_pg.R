@@ -12,15 +12,8 @@
 AgentPG = R6::R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
-    wait_epi = NULL,
-    wait_cnt = NULL,
-    reset_cnt = NULL,
-    total.step = NULL,
     initialize = function(env, conf) {
       if (is.null(conf)) conf = rlR.AgentPG.conf()
-      self$wait_epi = conf$get("policy.epi_wait_ini")
-      self$wait_cnt = 0L
-      self$reset_cnt = 0L
       super$initialize(env, conf = conf)
       self$setBrain()
 },
@@ -60,7 +53,7 @@ AgentPG = R6::R6Class("AgentPG",
     getAdv = function(interact) {
         episode.idx = interact$perf$epi.idx
         total.reward = sum(interact$perf$list.reward.epi[[episode.idx]])
-        self$total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
+        self$interact$perf$total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
         adg = interact$perf$list.discount.reward.epi[[episode.idx]]
         adg = adg - mean(adg)
         adg = adg / sum(adg ^ 2)
@@ -73,40 +66,10 @@ AgentPG = R6::R6Class("AgentPG",
 
     afterEpisode = function(interact) {
         self$getAdv(interact)
-        self$replay(self$total.step)   # key difference here
+        self$replay(self$interact$perf$total.step)   # key difference here
         self$policy$afterEpisode()
-        self$rescue()
-    },
-
-    rescue = function() {
-            flag = self$interact$perf$isBad()
-            self$wait_epi = min(self$conf$get("policy.epi_wait_expl"), self$wait_epi + 1)
-            if (flag[1]) {
-              self$interact$toConsole("\n bad perform for last window, %d times \n", self$wait_cnt + 1L)
-              self$wait_cnt = self$wait_cnt + 1L
-              total_step = self$total.step
-              ratio = exp(-self$policy$logdecay * 2 * total_step)
-              self$policy$epsilon = min(1, self$policy$epsilon * ratio)  
-              if (self$wait_cnt > self$wait_epi) {
-                if (flag[2]) {
-                    self$interact$toConsole("\n going to reset brain\n")
-                    self$setBrain()
-                    self$wait_epi = self$conf$get("policy.epi_wait_expl")
-                    self$reset_cnt = self$reset_cnt + 1L
-                    self$policy$epsilon = self$policy$maxEpsilon
-                    self$wait_cnt = 0
-                } else {
-                    self$wait_cnt = max(0, self$wait_cnt - 1)
-                    self$policy$epsilon = self$policy$maxEpsilon
-                }
-              }
-            } else {
-              if (!flag[2]) {
-                  self$wait_cnt = 0
-              } else
-                self$wait_cnt = max(0, self$wait_cnt - 1)
-            }
-    } # fun
+        self$interact$perf$rescue()
+    }
     ), # public
   private = list(),
   active = list(

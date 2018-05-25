@@ -27,7 +27,7 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
       idx = which(vec.done)
       nv[idx, ] = 0   # at episode end, v[next] = 0
       self$delta = (unlist(self$list.rewards) + nv) - self$p.old.c  # Bellman Error as advantage
-      self$interact$toConsole("totoal delta: %s", sum(self$delta) / length(self$delta))
+      self$interact$toConsole("ac: total delta: %s \n", sum(self$delta) / length(self$delta))
       vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
       ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
       ded = ded - mean(ded)  #  normalize
@@ -62,10 +62,10 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
 
     afterEpisode = function(interact) {
         self$getAdv(interact)
-        self$replay(self$total.step)
+        self$replay(self$interact$perf$total.step)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
-        self$rescue()
+        self$interact$perf$rescue()
     }
 
   )
