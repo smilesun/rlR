@@ -84,7 +84,9 @@ AgentPG = R6::R6Class("AgentPG",
             if (flag[1]) {
               self$interact$toConsole("\n bad perform for last window, %d times \n", self$wait_cnt + 1L)
               self$wait_cnt = self$wait_cnt + 1L
-              self$policy$epsilon = min(1, self$policy$epsilon * 1.2)  # FIXME: increasement to epsilon should be bigger than the decay of the last few episode
+              total_step = self$total.step
+              ratio = exp(-self$policy$logdecay * 2 * total_step)
+              self$policy$epsilon = min(1, self$policy$epsilon * ratio)  
               if (self$wait_cnt > self$wait_epi) {
                 if (flag[2]) {
                     self$interact$toConsole("\n going to reset brain\n")
