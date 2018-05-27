@@ -8,8 +8,7 @@ Description: Reinforcement Learning with deep Q learning, double deep Q learning
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 3.4.0),
-         R6,
-         tensorflow
+         R6
 Imports:
     checkmate,
     data.table,

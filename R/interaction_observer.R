@@ -76,7 +76,12 @@ Interaction = R6::R6Class("Interaction",
             self$continue.flag = FALSE
           }
           self$rl.agent$afterEpisode(self)
-    }},
+          sucess_flag = self$perf$success()
+          if (sucess_flag) {
+            self$continue.flag = FALSE
+          }
+        }
+    },
 
     notify = function(name) {
       flag = name %in% names(self$list.observers)
@@ -103,14 +108,19 @@ Interaction = R6::R6Class("Interaction",
         self$perf$extractInfo()
         return(self$perf)
     }, finally = {
-      self$perf$rescue()
-      self$glogger$rescue()
+      self$perf$afterAll()
+      self$glogger$afterAll()
       self$rl.env$afterAll()
       rlR.global.perf <<- self$perf
-      rlR.rescue.global.agent <<- self$rl.agent
+      rlR.global.perf$agent$conf$updatePara("render", FALSE)
+      #rlR.rescue.global.agent <<- self$rl.agent$clone(deep = TRUE)
+      #rlR.rescue.global.agent$updatePara("render", FALSE)
+      #rlR.rescue.global.inter <<- self
     }) # try catch
     } # function
     ), # public
   private = list(),
   active = list()
   )
+
+continue = function() rlR.rescue.global.agent$learn(1000)

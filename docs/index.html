@@ -93,7 +93,8 @@
 <a href="#usage" class="anchor"></a>Usage</h2>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)</code></pre>
 <pre><code>## Loading required package: R6</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># rlR::installDep()</span>
+env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
 <span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre>
 <pre><code>## [1] "AgentDQN:deep q learning"                      
 ## [2] "AgentFDQN:frozen target deep q learning"       
@@ -101,34 +102,49 @@
 ## [4] "AgentPG: policy gradient basic"                
 ## [5] "AgentPGBaseline: policy gradient with baseline"
 ## [6] "AgentActorCritic: actor critic method"</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentActorCritic"</span>, env)</code></pre>
 <pre><code>## parameters: 
-## -render: - FALSE-
+## -render: - TRUE-
 ## -agent.gamma: - 0.99-
 ## -policy.maxEpsilon: - 1-
 ## -policy.minEpsilon: - 0.001-
-## -policy.decay: - 0.999000499833375-
-## -replay.memname: - Uniform-
+## -policy.decay: - 0.994017964053935-
+## -replay.memname: - Latest-
 ## -replay.epochs: - 1-
 ## -interact.maxiter: - 500-
-## -console: - FALSE-
+## -policy.epi_wait_ini: - 100-
+## -policy.epi_wait_expl: - 20-
 ## -log: - FALSE-
+## -console: - FALSE-
 ## -policy.name: - EpsilonGreedy-
-## -replay.batchsize: - 64-
-## -agent.nn.arch: nhidden- 64-
-##  -agent.nn.arch: act1- relu-
-##  -agent.nn.arch: act2- linear-
-##  -agent.nn.arch: loss- mse-
-##  -agent.nn.arch: lr- 0.00025-
-##  -agent.nn.arch: kernel_regularizer- regularizer_l2(l=0.0)-
-##  -agent.nn.arch: bias_regularizer- regularizer_l2(l=0.0)-</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">agent$<span class="kw">updatePara</span>(<span class="st">"console"</span>, <span class="ot">FALSE</span>)
-<span class="kw">system.time</span>({
- <span class="co">#perf = agent$learn(500) # uncomment this to run which might take some time</span>
+## -agent.nn.arch.actor: nhidden- 64-
+##  -agent.nn.arch.actor: act1- tanh-
+##  -agent.nn.arch.actor: act2- softmax-
+##  -agent.nn.arch.actor: loss- categorical_crossentropy-
+##  -agent.nn.arch.actor: lr- 1e-04-
+##  -agent.nn.arch.actor: kernel_regularizer- regularizer_l2(l=0.0001)-
+##  -agent.nn.arch.actor: bias_regularizer- regularizer_l2(l=1e-4)-
+##  -agent.nn.arch.actor: decay- 0.9-
+##  -agent.nn.arch.actor: clipnorm- 5-
+## -agent.nn.arch.critic: nhidden- 64-
+##  -agent.nn.arch.critic: act1- tanh-
+##  -agent.nn.arch.critic: act2- linear-
+##  -agent.nn.arch.critic: loss- mse-
+##  -agent.nn.arch.critic: lr- 1e-04-
+##  -agent.nn.arch.critic: kernel_regularizer- regularizer_l2(l=0.0001)-
+##  -agent.nn.arch.critic: bias_regularizer- regularizer_l2(l=1e-4)-
+##  -agent.nn.arch.critic: decay- 0.9-
+##  -agent.nn.arch.critic: clipnorm- 5-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">system.time</span>({
+ perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">300</span>)
 })</code></pre>
 <pre><code>##    user  system elapsed 
-##       0       0       0</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"> <span class="co">#perf$plot()</span></code></pre>
+## 315.548   6.048 341.267</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"> perf$<span class="kw">plot</span>()</code></pre>
+<pre><code>## `geom_smooth()` using method = 'loess'</code></pre>
+<p><img src="inst/figuresunnamed-chunk-3-1.png" width="700"></p>
+<pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># if the performance is not good as expected, just let it run another number of episodes by using</span>
+ <span class="co"># perf = agent$learn(300) again</span></code></pre>
 </div>
 </div>
   </div>
@@ -161,8 +177,9 @@
       <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://travis-ci.com/compstat-lmu/rlR"><img src="https://travis-ci.com/compstat-lmu/rlR.svg?branch=master" alt="Build Status"></a></li>
+<li><a href="https://travis-ci.com/smilesun/rlR"><img src="https://travis-ci.com/smilesun/rlR.svg?branch=master" alt="Build Status"></a></li>
 <li><a href="https://coveralls.io/github/smilesun/rlR?branch=master"><img src="https://coveralls.io/repos/github/smilesun/rlR/badge.svg?branch=master" alt="Coverage Status"></a></li>
+<li><a href="https://ci.appveyor.com/project/smilesun/rlr"><img src="https://ci.appveyor.com/api/projects/status/d0oyb358bh3e8r7r?svg=true" alt="Build status"></a></li>
 </ul>
 </div>
 </div>

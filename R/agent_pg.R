@@ -12,16 +12,16 @@
 AgentPG = R6::R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
-    total.step = NULL,
     initialize = function(env, conf) {
       if (is.null(conf)) conf = rlR.AgentPG.conf()
       super$initialize(env, conf = conf)
-      self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+      self$setBrain()
 },
-    updatePara = function(name, val) {
-          super$updatePara(name, val)
-          self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
-        },
+
+    setBrain = function() {
+      super$setBrain()
+      self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+    },
 
     extractTarget = function(ins) {
         act =  ReplayMem$extractAction(ins)
@@ -53,7 +53,7 @@ AgentPG = R6::R6Class("AgentPG",
     getAdv = function(interact) {
         episode.idx = interact$perf$epi.idx
         total.reward = sum(interact$perf$list.reward.epi[[episode.idx]])
-        self$total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
+        self$interact$perf$total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
         adg = interact$perf$list.discount.reward.epi[[episode.idx]]
         adg = adg - mean(adg)
         adg = adg / sum(adg ^ 2)
@@ -66,8 +66,9 @@ AgentPG = R6::R6Class("AgentPG",
 
     afterEpisode = function(interact) {
         self$getAdv(interact)
-        self$replay(self$total.step)   # key difference here
+        self$replay(self$interact$perf$total.step)   # key difference here
         self$policy$afterEpisode()
+        self$interact$perf$rescue()
     }
     ), # public
   private = list(),
@@ -78,6 +79,7 @@ AgentPG = R6::R6Class("AgentPG",
 rlR.AgentPG.conf = function() {
   RLConf$new(
           render = FALSE,
+          console = FALSE,
           policy.maxEpsilon = 1,
           policy.decay = exp(-0.001),
           policy.minEpsilon = 0.01,
@@ -88,7 +90,9 @@ rlR.AgentPG.conf = function() {
 }
 
 AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
-  interact = makeGymExperiment(sname = sname, aname = "AgentPG", conf = rlR.AgentPG.conf())
+  conf = rlR.AgentPG.conf()
+  conf$updatePara("console", TRUE)
+  interact = makeGymExperiment(sname = sname, aname = "AgentPG", conf = conf)
   perf = interact$run(iter)
   return(perf)
 }

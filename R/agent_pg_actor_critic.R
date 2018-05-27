@@ -12,10 +12,7 @@
 AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
-    wait_epi = 100,
-    wait_cnt = NULL,
     initialize = function(env, conf = NULL) {
-      self$wait_cnt = self$wait_epi
       if (is.null(conf)) conf = rlR.conf.AC()
       super$initialize(env, conf = conf)
     },
@@ -23,26 +20,26 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
     # update para is already defined in parent class
 
     replay = function(batchsize) {
-              self$getReplayYhat(batchsize)
-              len = length(self$list.replay)
-              nv = self$gamma * self$p.next.c
-              vec.done = unlist(lapply(self$list.replay, ReplayMem$extractDone))
-              idx = which(vec.done)
-              nv[idx, ] = 0   # at episode end, v[next] = 0
-              self$delta = (unlist(self$list.rewards) + nv) - self$p.old.c  # Bellman Error as advantage
-              cat(sprintf("totoal delta: %s", sum(self$delta)/length(self$delta)))
-              vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
-              ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
-              ded = ded - mean(ded)  #  normalize
-              ded = ded / sum(ded ^ 2)  # normalize
-              list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
-              list.targets.actor = lapply(1:len, function(i) list.targets.actor[[i]] * ded[i])
-              list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
-              y_actor = t(simplify2array(list.targets.actor))
-              y_critic = array(unlist(list.targets.critic), dim = c(len, 1L))
-              self$brain_critic$train(self$replay.x, y_critic)  # first update critic
-              self$brain_actor$train(self$replay.x, y_actor)
-          },
+      self$getReplayYhat(batchsize)
+      len = length(self$list.replay)
+      nv = self$gamma * self$p.next.c
+      vec.done = unlist(lapply(self$list.replay, ReplayMem$extractDone))
+      idx = which(vec.done)
+      nv[idx, ] = 0   # at episode end, v[next] = 0
+      self$delta = (unlist(self$list.rewards) + nv) - self$p.old.c  # Bellman Error as advantage
+      self$interact$toConsole("ac: total delta: %s \n", sum(self$delta) / length(self$delta))
+      vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
+      ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
+      ded = ded - mean(ded)  #  normalize
+      ded = ded / sum(ded ^ 2)  # normalize
+      list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
+      list.targets.actor = lapply(1:len, function(i) list.targets.actor[[i]] * ded[i])
+      list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
+      y_actor = t(simplify2array(list.targets.actor))
+      y_critic = array(unlist(list.targets.critic), dim = c(len, 1L))
+      self$brain_critic$train(self$replay.x, y_critic)  # first update critic
+      self$brain_actor$train(self$replay.x, y_actor)
+    },
 
       extractCriticTarget = function(i) {
           y = self$p.old.c[i, ] + self$delta[i]
@@ -60,44 +57,29 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
     },
 
     afterStep = function() {
-         # self$policy$afterStep()
+        self$policy$afterStep()
     },
 
     afterEpisode = function(interact) {
         self$getAdv(interact)
-        self$replay(self$total.step)
+        self$replay(self$interact$perf$total.step)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
-        self$rescue()
-    },
-
-    rescue = function() {
-        cat(self$interact$perf$isBad())
-        if (self$interact$perf$isBad()) 
-        {
-          self$wait_cnt = self$wait_cnt + 1L
-          self$policy$epsilon = min(1, self$policy$epsilon * 1.01)
-          if(self$wait_cnt > self$wait_epi) {
-      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
-      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
-          self$wait_cnt = 0
-          }
-        }
+        self$interact$perf$rescue()
     }
 
-
-    )
   )
+)
 
 
 rlR.conf.AC = function() {
   conf = RLConf$new(
            render = TRUE,
            log = FALSE,
-           console = TRUE,
+           console = FALSE,
            policy.name = "EpsilonGreedy",
            policy.maxEpsilon = 1,
-           policy.minEpsilon = 0.000,
+           policy.minEpsilon = 0.001,
            policy.decay = exp(-0.006),
            replay.epochs = 1L,
            replay.memname = "Latest",
@@ -108,8 +90,9 @@ rlR.conf.AC = function() {
 
 AgentActorCritic$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
   conf = rlR.conf.AC()
+  conf$updatePara("console", TRUE)
   conf$updatePara("render", render)
-  interact = makeGymExperiment(sname = sname, "AgentActorCritic", conf)
+  interact = makeGymExperiment(sname = sname, "AgentActorCritic", conf, ok_step = 100, ok_reward = 195)
   perf = interact$run(iter)
   return(perf)
 }
