@@ -8,7 +8,6 @@
 #' @import openssl
 #' @import ggplot2
 NULL
-set.seed(0)
 
 listClass = function(name = NULL) {
   if (is.null(name)) return(c("Agent", "Policy", "ReplayMem"))

@@ -55,18 +55,21 @@ AgentPG = R6::R6Class("AgentPG",
         total.reward = sum(interact$perf$list.reward.epi[[episode.idx]])
         self$interact$perf$total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
         adg = interact$perf$list.discount.reward.epi[[episode.idx]]
-        adg = adg - mean(adg)
-        adg = adg / sum(adg ^ 2)
+        if (length(adg) > 1) {
+          adg = adg - mean(adg)
+          adg = adg / sqrt(sum(adg ^ 2))
+        }
         self$setAdvantage(adg)
     },
 
     afterStep = function() {
+        self$replay(1)   # key difference here
         self$policy$afterStep()
     },
 
     afterEpisode = function(interact) {
         self$getAdv(interact)
-        self$replay(self$interact$perf$total.step)   # key difference here
+        #self$replay(self$interact$perf$total.step)   # key difference here
         self$policy$afterEpisode()
         self$interact$perf$rescue()
     }

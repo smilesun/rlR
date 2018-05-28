@@ -97,7 +97,7 @@ PolicyProbEpsilon = R6::R6Class("PolicyProbEpsilon",
     },
 
     afterEpisode = function() {
-      self$decayEpsilon()
+      super$afterEpisode()
     }
     )
   )

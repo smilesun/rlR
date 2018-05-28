@@ -14,6 +14,7 @@ Performance = R6::R6Class("Performance",
     epi_wait_ini = NULL,   # number of episode to wait until to reinitialize
     epi_wait_expl = NULL,  # number of episode to wait until to increase epsilon for exploration
     recent_win = NULL,
+    epiLookBack = NULL,
     recent_door = NULL,
     bad_ratio = NULL,
     gamma = NULL,
@@ -24,6 +25,7 @@ Performance = R6::R6Class("Performance",
     reset_cnt = NULL,
     total.step = NULL,  # how many times model has been reset
     initialize = function(agent) {
+      self$epiLookBack = 100L
       self$reset_cnt = 0L  
       self$wait_epi = agent$conf$get("policy.epi_wait_ini")
       self$wait_cnt = 0L
@@ -113,9 +115,8 @@ Performance = R6::R6Class("Performance",
       if (flag[1]) {
         self$agent$interact$toConsole("\n bad perform for last window, %d times \n", self$wait_cnt + 1L)
         self$wait_cnt = self$wait_cnt + 1L
-        total_step = self$total.step
-        ratio = exp(-self$agent$policy$logdecay * total_step)
-        # self$agent$policy$epsilon = min(1, self$agent$policy$epsilon * ratio)  #FIXME: shall we increase explore here ?
+        ratio = exp(-self$agent$policy$logdecay * self$total_step)
+        #self$agent$policy$epsilon = min(1, self$agent$policy$epsilon * ratio)  #FIXME: shall we increase explore here ? Again and again exporation will never converge
         flag_new_start = self$wait_cnt > self$agent$conf$get("policy.epi_wait_middle")
         flag_start = all(flag) && flag_new_start
         if (self$wait_cnt > self$wait_epi || flag_start) {
@@ -184,11 +185,17 @@ Performance = R6::R6Class("Performance",
     },
 
     afterEpisode = function() {
+      self$agent$interact$idx.episode = self$agent$interact$idx.episode + 1L
+      self$agent$interact$glogger$log.nn$info("Episode: %i, steps:%i\n", self$agent$interact$idx.episode, self$agent$interact$idx.step)
+      self$agent$interact$toConsole("Episode: %i finished with steps:%i \n", self$agent$interact$idx.episode, self$agent$interact$idx.step)
       self$epi.idx = self$epi.idx + 1L
       self$list.reward.epi[[self$epi.idx]] = vector(mode = "list")
       self$list.reward.epi[[self$epi.idx]] = self$r.vec.epi[1L:self$agent$interact$idx.step]   # the reward vector
       self$list.discount.reward.epi[[self$epi.idx]] = self$computeDiscount(self$r.vec.epi[1L:self$agent$interact$idx.step])
       self$list.stepsPerEpisode[[self$epi.idx]] = self$agent$interact$idx.step  # the number of steps
+      rew = self$getAccPerf(self$epiLookBack)
+      self$agent$interact$toConsole("Last %d episodes average reward %f \n", self$epiLookBack, rew)
+
     }
     ),
   private = list(),
