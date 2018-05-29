@@ -29,6 +29,8 @@
 AgentArmed = R6::R6Class("AgentArmed",
   public = list(
     # constructor init
+    plateau = NULL,
+    lr_decay = NULL,
     interact = NULL,
     mem = NULL,  # replay memory
     advantage = NULL,
@@ -101,6 +103,8 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$replay.size = self$conf$get("replay.batchsize")
       self$gamma = self$conf$get("agent.gamma")
       self$epochs = self$conf$get("replay.epochs")
+      self$plateau = self$conf$get("agent.reward2adalr")
+      self$lr_decay = self$conf$get("agent.lr_decay")
       # object
       memname = self$conf$get("replay.memname")
       self$mem = ReplayMem$factory(memname, agent = self, conf = self$conf)
@@ -196,6 +200,14 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     learn = function(iter) {
       self$interact$run(iter)
+    },
+
+    adaptLearnRate = function() {
+      if (is.null(self$plateau)) return(NULL)
+      if (self$interact$perf$getAccPerf(100L) > self$plateau)  {
+        self$brain_actor$lr =  self$brain_actor$lr * self$lr_decay
+        self$brain_critic$lr =  self$brain_critic$lr * self$lr_decay
+      }
     },
 
     continue = function(new_env, iter) {

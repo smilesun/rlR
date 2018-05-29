@@ -25,8 +25,8 @@ AgentPG = R6::R6Class("AgentPG",
 
     extractTarget = function(ins) {
         act =  ReplayMem$extractAction(ins)
-        temp.act = rep(0L, self$actCnt)
-        temp.act[act] =  1L
+        temp.act = rep(0.0, self$actCnt)
+        temp.act[act] =  1.0
         return(temp.act)
     },
 
