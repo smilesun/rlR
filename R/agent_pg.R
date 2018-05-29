@@ -63,13 +63,12 @@ AgentPG = R6::R6Class("AgentPG",
     },
 
     afterStep = function() {
-        self$replay(1)   # key difference here
         self$policy$afterStep()
     },
 
     afterEpisode = function(interact) {
         self$getAdv(interact)
-        #self$replay(self$interact$perf$total.step)   # key difference here
+        self$replay(self$interact$perf$total.step)   # key difference here
         self$policy$afterEpisode()
         self$interact$perf$rescue()
     }

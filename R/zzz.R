@@ -9,13 +9,6 @@
 #' @import ggplot2
 NULL
 
-listClass = function(name = NULL) {
-  if (is.null(name)) return(c("Agent", "Policy", "ReplayMem"))
-  all = getNamespaceExports("rlR")
-  mem.idx = which(sapply(all, function(x) grepl(name, x)))
-  all[mem.idx]
-}
-
 #' @title  Install dependencies
 #'
 #' @description Install Keras dependencies, if dependencies already installed, will not re-install
@@ -92,4 +85,12 @@ listAvailAgent = function() {
   #' conf = list(list.par.val = list(list(layer_dense.units = 64, activation_fun = "relu", reg_type = "regularizer_l1", kernel_regularizer = 0.001, bias_regularizer = 0)), loss = "mse", lr = 0.00025 )
   #' a = keras_helper(256, 10, "softmax", conf$loss, conf$lr, conf$list.par.val)
   #' eval(parse(text = a))
+
+listClass = function(name = NULL) {
+  if (is.null(name)) return(c("Agent", "Policy", "ReplayMem"))
+  all = getNamespaceExports("rlR")
+  mem.idx = which(sapply(all, function(x) grepl(name, x)))
+  all[mem.idx]
+}
+
 
