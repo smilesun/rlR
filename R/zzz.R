@@ -25,10 +25,10 @@ installDep = function() {
   #  tensorflow::install_tensorflow()
   #}
   res <- try({
-    makeAnyModel(input =4, output = 1, list.arch = list.arch)
-    }, silent = TRUE)
+    makeAnyModel(input = 4, output = 1, list.arch = list.arch)
+  }, silent = TRUE)
   if (class(res)[1L] == "try-error") {
-    keras::install_keras()
+    keras::install_keras(tensorflow = "1.1.0")
   }
   print("empty return means dependency met")
 }
@@ -86,11 +86,10 @@ listAvailAgent = function() {
   #' a = keras_helper(256, 10, "softmax", conf$loss, conf$lr, conf$list.par.val)
   #' eval(parse(text = a))
 
-listClass = function(name = NULL) {
-  if (is.null(name)) return(c("Agent", "Policy", "ReplayMem"))
-  all = getNamespaceExports("rlR")
-  mem.idx = which(sapply(all, function(x) grepl(name, x)))
-  all[mem.idx]
-}
 
-
+# listClass = function(name = NULL) {
+#   if (is.null(name)) return(c("Agent", "Policy", "ReplayMem"))
+#   all = getNamespaceExports("rlR")
+#   mem.idx = which(sapply(all, function(x) grepl(name, x)))
+#   all[mem.idx]
+# }
