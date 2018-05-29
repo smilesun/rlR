@@ -15,8 +15,8 @@
 ## Usage
 ```{r}
 library(rlR)
-env = makeGymEnv("CartPole-v0", ok_step = 100, ok_reward = 150)
-# Define success to be the last 100 episodes having an average rewards of 150
+env = makeGymEnv("CartPole-v0", ok_step = 100, ok_reward = 195)
+# Define success to be the last 100 episodes having an average rewards of 195
 listAvailAgent()
 ```
 
