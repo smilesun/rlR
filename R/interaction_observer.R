@@ -116,5 +116,3 @@ Interaction = R6::R6Class("Interaction",
   private = list(),
   active = list()
   )
-
-continue = function() rlR.rescue.global.agent$learn(1000)
