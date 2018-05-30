@@ -16,8 +16,6 @@ NULL
 #'
 #' @return TRUE if tensorflow works
 #' @export
-#' @examples 
-#' rlr_test_if_tensorflow_works()
 rlr_test_if_tensorflow_works = function() {
   res <- try({
     tf = reticulate::import("tensorflow")
