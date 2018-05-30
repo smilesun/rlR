@@ -3,8 +3,8 @@ gbtconf = list()
 
 ## Dependencies
 gbtconf$preSource = c("bt_algorithms.R", "bt_conf.R", "bt_problem.R")
-gbtconf$prePackage = c("batchtools", "checkmate", "aslib", "data.table", "R6", "reticulate", "keras", "logging", "BBmisc", "openssl", "ggplot2", "reshape2", "rlR")
-
+gbtconf$prePackage = c("batchtools", "checkmate", "data.table", "R6", "reticulate", "keras", "logging", "BBmisc", "openssl", "ggplot2", "reshape2", "rlR")
+#gbtconf$prePackage = c("aslib")
 ## EVALUATION
 gbtconf$SEED_REGISTRY     = 1273L                                 # global seed for reg
 gbtconf$SEED_ADDPROBLEM   = 1L                                    # seed for each problem
