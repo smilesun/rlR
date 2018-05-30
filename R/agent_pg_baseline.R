@@ -68,22 +68,21 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
 
       extractActorTarget = function(i) {
           act = self$list.acts[[i]]
-          advantage = (+1) * as.vector(self$delta[i])
+          advantage = (+1.0) * as.vector(self$delta[i])
           #FIXME: interestingly, multiply advantage by -1 also works
           vec.act = rep(0L, self$actCnt)
-          vec.act[act] = 1L
+          vec.act[act] = 1.0
           target = advantage * array(vec.act, dim = c(1L, self$actCnt))
           return(target)
     },
 
     afterStep = function() {
-        self$replay(1)
         self$policy$afterStep()
     },
 
     afterEpisode = function(interact) {
         self$getAdv(interact)
-        #self$replay(self$interact$perf$total.step)
+        self$replay(self$interact$perf$total.step)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
         self$interact$perf$rescue()
@@ -114,8 +113,10 @@ rlR.AgentPGBaseline.conf = function() {
           )
 }
 
-AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
-  interact = makeGymExperiment(sname = "CartPole-v0", "AgentPGBaseline", conf = rlR.AgentPGBaseline.conf())
+AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+  conf = rlR.AgentPGBaseline.conf()
+  conf$updatePara("console", console)
+  interact = makeGymExperiment(sname = "CartPole-v0", "AgentPGBaseline", conf = conf)
   perf = interact$run(iter)
   return(perf)
 }
