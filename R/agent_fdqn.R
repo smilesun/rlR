@@ -68,7 +68,7 @@ AgentFDQN = R6::R6Class("AgentFDQN",
   )
 
 
-AgentFDQN$test = function(iter = 500L, sname = "CartPole-v0", render = TRUE, console = FALSE) {
+AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE, console = FALSE) {
   conf = rlR.conf.DQN()
   conf$updatePara("console", console)
   conf$updatePara("render", render)

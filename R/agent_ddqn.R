@@ -4,6 +4,7 @@
 #' @description
 #' A \code{\link{R6Class}} to represent Double Deep Q learning Armed Agent
 #' %$Q_u(S, a; \theta_1) = r + Q_u(S', argmax_a' Q_h(S',a'), \theta_1) + delta$
+#' target action = argmax Q_h
 #' @section Methods:
 #' Inherited from \code{AgentArmed}:
 #' @inheritSection AgentArmed Methods
@@ -50,8 +51,13 @@ AgentDDQN = R6::R6Class("AgentDDQN",
         self$p.next.h = self$getYhat(list.states.next)
         list.targets = lapply(1:length(self$list.replay), self$extractTarget)
         self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
-        self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
         self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
+        temp = simplify2array(list.states.old) # R array put elements columnwise
+        mdim = dim(temp)
+        norder = length(mdim)
+        self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
+        #assert(self$replay.x[1,]== list.states.old[[1L]])
+        self$replay.y = as.array(t(as.data.table(list.targets)))  # array p
     },
 
 
@@ -66,13 +72,13 @@ AgentDDQN = R6::R6Class("AgentDDQN",
           yhat = self$p.old[i, ]
           vec.next.Q.u = self$p.next[i, ]
           vec.next.Q.h = self$p.next.h[i, ]
-          a_1 = which.max(vec.next.Q.h)
+          a_1 = which.max(vec.next.Q.u)  # not h!
           r = ReplayMem$extractReward(ins)
           done = ReplayMem$extractDone(ins)
           if (done) {
             target = r
           } else {
-            target = r + self$gamma * vec.next.Q.u[a_1]
+            target = r + self$gamma * vec.next.Q.h[a_1]  # not u!
           }
           mt = yhat
           mt[act2update] = target
@@ -89,6 +95,7 @@ AgentDDQN = R6::R6Class("AgentDDQN",
     act = function(state) {
       self$toss()
       assert(class(state) == "array")
+      self$model = self$brain_u
       self$evaluateArm(state)
       self$policy$act(state)
     }
@@ -115,7 +122,7 @@ rlR.conf.DDQN = function() {
 
 
 
-AgentDDQN$test = function(iter = 500L, sname = "CartPole-v0", render = TRUE, console = FALSE) {
+AgentDDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE, console = FALSE) {
   conf = rlR.conf.DDQN()
   conf$updatePara("console", console)
   interact = makeGymExperiment(sname = sname, aname = "AgentDDQN", conf = conf)
