@@ -93,3 +93,4 @@ listAvailAgent = function() {
 #   mem.idx = which(sapply(all, function(x) grepl(name, x)))
 #   all[mem.idx]
 # }
+reticulate::use_python("~/anaconda3/bin/python")
