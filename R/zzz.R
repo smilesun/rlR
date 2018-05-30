@@ -28,7 +28,7 @@ installDep = function() {
     makeAnyModel(input = 4, output = 1, list.arch = list.arch)
   }, silent = TRUE)
   if (class(res)[1L] == "try-error") {
-    keras::install_keras(tensorflow = "1.1.0")
+    keras::install_keras(tensorflow = "1.8.0")
   }
   print("empty return means dependency met")
 }
