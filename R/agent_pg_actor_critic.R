@@ -93,10 +93,10 @@ rlR.conf.AC = function() {
           )
 }
 
-AgentActorCritic$test = function(iter = 2000L, sname = "CartPole-v0", render = TRUE) {
+AgentActorCritic$test = function(iter = 2000L, sname = "CartPole-v0", render = TRUE, console = FALSE) {
   set.seed(0)
   conf = rlR.conf.AC()
-  conf$updatePara("console", TRUE)
+  conf$updatePara("console", console)
   conf$updatePara("render", render)
   interact = makeGymExperiment(sname = sname, "AgentActorCritic", conf, ok_step = 100, ok_reward = 195)
   perf = interact$run(iter)

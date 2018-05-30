@@ -30,6 +30,12 @@ rlr_test_if_tensorflow_works = function() {
   #tensorflow::install_tensorflow()
 }
 
+#' @title  Test if keras works
+#' 
+#' @description Test if keras is installed
+#' 
+#' @return TRUE if success
+#' @export 
 rlr_test_if_keras_works = function() {
   res <- try({
       makeAnyModel(input = 4, output = 1, list.arch = list.arch)
@@ -38,6 +44,12 @@ rlr_test_if_keras_works = function() {
   return(TRUE)
 }
 
+#' @title  Test if gym is installed
+#' 
+#' @description Test if gym is installed
+#' 
+#' @return TRUE if success
+#' @export 
 rlr_test_if_gym_works = function() {
   res <- try({
     gym = reticulate::import("gym")
@@ -50,16 +62,24 @@ rlr_test_if_gym_works = function() {
 }
 
 #' @title  Install dependencies
-#'
+#' @param gpu Wehter to use gpu tensorflow or not
 #' @description Install Keras dependencies, if dependencies already installed, will not re-install
 #' @return NULL
 #' @export
-installDep = function() {
+installDep = function(gpu = FALSE) {
   flag_keras = rlr_test_if_keras_works()
   flag_gym = rlr_test_if_gym_works()
+  if (gpu) {
+    if (!flag_keras) {
+      if (flag_gym) keras::install_keras(tensorflow ='1.8-gpu')
+      else keras::install_keras(tensorflow = "1.8-gpu", extra_packages = c("gym"))
+    }
+  }
+  else {
   if (!flag_keras) {
     if (flag_gym) keras::install_keras(tensorflow = "1.8.0")
     else keras::install_keras(tensorflow = "1.8.0", extra_packages = c("gym"))
+  }
   }
 }
 

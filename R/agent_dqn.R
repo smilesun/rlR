@@ -75,8 +75,10 @@ rlR.conf.DQN = function() {
           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
 }
 
-AgentDQN$test = function(iter = 2000L, sname = "CartPole-v0", render = FALSE) {
-  interact = makeGymExperiment(sname = sname, aname = "AgentDQN", conf = rlR.conf.DQN())
+AgentDQN$test = function(iter = 2000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+  conf = rlR.conf.DQN()
+  conf$updatePara("console", console)
+  interact = makeGymExperiment(sname = sname, aname = "AgentDQN", conf = conf)
   perf = interact$run(iter)
   return(perf)
 }

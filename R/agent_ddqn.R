@@ -98,14 +98,26 @@ AgentDDQN = R6::R6Class("AgentDDQN",
     )
   )
 
-AgentDDQN$test = function(iter = 500L, sname = "CartPole-v0", render = TRUE) {
-  conf = RLConf$new(
-           render = render,
-           policy.maxEpsilon = 1,
-           policy.decay = exp(-0.001),
-           policy.name = "EpsilonGreedy",
-           replay.batchsize = 64L,
-           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+
+rlR.conf.DDQN = function() {
+  RLConf$new(
+          render = FALSE,
+          console = FALSE,
+          log = FALSE,
+          policy.maxEpsilon = 1,
+          policy.minEpsilon = 0.001,
+          policy.decay = exp(-0.001),
+          policy.name = "EpsilonGreedy",
+          replay.batchsize = 64L,
+          agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+}
+
+
+
+
+AgentDDQN$test = function(iter = 500L, sname = "CartPole-v0", render = TRUE, console = FALSE) {
+  conf = rlR.conf.DDQN()
+  conf$updatePara("console", console)
   interact = makeGymExperiment(sname = sname, aname = "AgentDDQN", conf = conf)
   perf = interact$run(iter)
   return(perf)
