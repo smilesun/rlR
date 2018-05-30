@@ -140,13 +140,13 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     replay = function(batchsize) {
         self$getXY(batchsize)
-        self$brain$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
+        self$model$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
     },
 
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
       self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
-      self$vec.arm.q = self$brain$pred(state)
+      self$vec.arm.q = self$model$pred(state)
       self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
     },
 

@@ -17,6 +17,10 @@ SurroNN = R6::R6Class("SurroNN",
       keras::get_weights(self$model)
     },
 
+    setWeights = function(weights) {
+      keras::set_weights(self$model, weights)
+    },
+
     train = function(X_train, Y_train, epochs = 1L) {
       #nr = nrow(X_train)
       #keras::k_set_value(self$model$optimizer$lr, self$lr / 3)
