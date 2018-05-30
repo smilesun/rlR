@@ -24,7 +24,7 @@ listAvailAgent()
 ```{r fig.path="inst/figures"}
 agent = makeAgent("AgentActorCritic", env)
 system.time({
- perf = agent$learn(300)  # to let travis pass, could not set too much iteration
+ perf = agent$learn(30)  # to let travis pass, could not set too much iteration
 })
  perf$plot()
 ```
