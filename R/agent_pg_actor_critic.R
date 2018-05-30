@@ -79,7 +79,7 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
 
 rlR.conf.AC = function() {
   conf = RLConf$new(
-           render = TRUE,
+           render = FALSE,
            log = FALSE,
            console = FALSE,
            policy.name = "EpsilonGreedy",
