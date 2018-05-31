@@ -12,7 +12,8 @@
 AgentFDQN = R6::R6Class("AgentFDQN",
   inherit = AgentDQN,
   public = list(
-    brain.u = NULL,
+    brain_target = NULL,
+    brain_update = NULL,
     initialize = function(env, conf) {
       super$initialize(env, conf)
       self$setBrain()
@@ -20,16 +21,36 @@ AgentFDQN = R6::R6Class("AgentFDQN",
 
     setBrain = function() {
       super$setBrain()
-      self$brain.u = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+      self$brain_update = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+      self$brain_target = self$brain
     },
 
       replay = function(batchsize) {
+          self$model = self$brain_target  # use target network to generate target
           self$getXY(batchsize)
-          self$brain.u$train(self$replay.x, self$replay.y)  # update the policy model
+          self$brain_update$train(self$replay.x, self$replay.y)  # update the policy model
+          #w1 = self$brain_target$getWeights()
+          #print("replay")
+          #w2 = self$brain$getWeights()
+          #w3 = self$brain_update$getWeights()
+          #print(all.equal(w1,w2))
+          #print(all.equal(w1,w3))
+      },
+   
+      act = function(state) {
+        assert(class(state) == "array")
+        self$model = self$brain_update
+        self$evaluateArm(state)
+        self$policy$act(state)
       },
 
+      # 
       updateModel = function() {
-        self$brain = self$brain.u
+        uw = self$brain_update$getWeights()
+        self$brain_target$setWeights(uw)
+        #self$brain_target = self$brain_update$clone(deep = TRUE)
+        #print(self$brain_target$getWeights())
+        #print("update model")
       },
 
       afterStep = function() {
@@ -46,16 +67,13 @@ AgentFDQN = R6::R6Class("AgentFDQN",
     )
   )
 
-AgentFDQN$test = function(iter = 500L, sname = "CartPole-v0", render = TRUE) {
-  conf = RLConf$new(
-           render = render,
-           policy.maxEpsilon = 1,
-           policy.minEpsilon = 0.01,
-           policy.decay = exp(-0.001),
-           policy.name = "EpsilonGreedy",
-           replay.batchsize = 64L,
-           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00005, kernel_regularizer = "regularizer_l2(l=0.000001)", bias_regularizer = "regularizer_l2(l=0.000011)"))
+
+AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE, console = FALSE) {
+  conf = rlR.conf.DQN()
+  conf$updatePara("console", console)
+  conf$updatePara("render", render)
   interact = makeGymExperiment(sname = sname, aname = "AgentFDQN", conf = conf)
+
   perf = interact$run(iter)
   return(perf)
 }

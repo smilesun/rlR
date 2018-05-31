@@ -4,11 +4,14 @@ Title: Reinforcement Learning in R
 Version: 0.1.0
 Authors@R: person("Xudong", "Sun", email = {"smilesun.east@gmail.com"}, role = c("aut", "cre"))
 Maintainer: Xudong Sun <smilesun.east@gmail.com>
-Description: Reinforcement Learning with deep Q learning, double deep Q learning, frozen target deep Q learning, policy gradient deep learning, policy gradient with baseline deep learning, actor-critic deep reinforcement learning.
+Description: Reinforcement Learning with deep Q learning, double deep Q
+    learning, frozen target deep Q learning, policy gradient deep learning, policy
+    gradient with baseline deep learning, actor-critic deep reinforcement learning.
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8
-Depends: R (>= 3.4.0),
-         R6
+Depends:
+    R (>= 3.4.0),
+    R6
 Imports:
     checkmate,
     data.table,
@@ -18,15 +21,15 @@ Imports:
     ggplot2,
     openssl
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1
 BugReports: https://github.com/smilesun/rlR/issues
 URL: https://github.com/smilesun/rlR
 OS_type: unix
-SystemRequirements: (Python package gym if you want to use gym environment which is standard for reinforcement learning, tensorflow is the default computating backend and version 1.1.0 has been test on Ubuntu 14.04)
-Suggests: 
+SystemRequirements: The following python package are needed to use the gym openAI environment. gym >= 0.10.5; At least one deep learning backend which keras requires(tensorflow, cntk, theano) should be installed on your computer, for example tensorflow >= 1.1.0 (tested on Ubuntu 14.04); The backend keras requires could be installed by keras::install_keras(); Both dependencies can also be installed by rlR::installDep() function. It is important to note that the user should run 'reticulate::use_python("/usr/local/bin/python")' to specify the python path and 'reticulate::use_virtualenv("myenv")' to specify which virtual environment to use. By default, the package is using "~/anaconda3/bin/python"  as its python version. For detail, please refer to https://rstudio.github.io/reticulate/articles/versions.html
+Suggests:
     devtools,
     testthat,
     knitr,
-    covr, 
+    covr,
     rmarkdown
 VignetteBuilder: knitr

@@ -1,9 +1,11 @@
 SurroNN = R6::R6Class("SurroNN",
   inherit = Surrogate,
   public = list(
+    lr = NULL,
     initialize = function(actCnt, stateDim, arch.list) {
       self$actCnt = actCnt
       self$stateDim = stateDim
+      self$lr = arch.list$lr
       if (length(self$stateDim) > 1L) {
         self$model = makeCnn(input_shape = self$stateDim, act_cnt = self$actCnt)
       } else {
@@ -15,16 +17,31 @@ SurroNN = R6::R6Class("SurroNN",
       keras::get_weights(self$model)
     },
 
+    setWeights = function(weights) {
+      keras::set_weights(self$model, weights)
+    },
+
     train = function(X_train, Y_train, epochs = 1L) {
-      nr = nrow(X_train)
-      lr = keras::k_get_value(self$model$optimizer$lr)
+      #nr = nrow(X_train)
+      #keras::k_set_value(self$model$optimizer$lr, self$lr / 3)
+      #lr = keras::k_get_value(self$model$optimizer$lr)
+      #cat(sprintf("learning rate: %s", lr))
       keras::fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
     },
 
     pred = function(X) {
-      res = self$model %>% predict(X)
-      res  # prediction might be NA from Keras
+      res = keras::predict_on_batch(self$model, X)
+      res  # FIXME: prediction might be NA from Keras
+    },
+
+    afterEpisode = function() {
+        #nr = nrow(X_train)
+        # keras::k_set_value(self$model$optimizer$lr, self$lr / nr)
+        keras::k_set_value(self$model$optimizer$lr, self$lr)
+        lr = keras::k_get_value(self$model$optimizer$lr)
+        cat(sprintf("learning rate: %s  \n", lr))
     }
+
     ),
   private = list(),
   active = list()
@@ -35,14 +52,20 @@ SurroNN4PG = R6::R6Class("SurroNN4PG",
   public = list(
     lr = NULL,
     initialize = function(actCnt, stateDim, arch.list) {
-      super$initialize(actCnt, stateDim, arch.list)
+      super$initialize(actCnt, stateDim, arch.list)  # FIXME: arch.list could be None when PG surrogate is called as super prior to PGBaseline is called.
       self$lr = arch.list[["lr"]]
     },
 
     train = function(X_train, Y_train, epochs = 1L) {
-          nr = nrow(X_train)
-          keras::k_set_value(self$model$optimizer$lr, self$lr / nr)
           keras::fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
-        }
+    },
+
+    afterEpisode = function() {
+        #nr = nrow(X_train)
+        # keras::k_set_value(self$model$optimizer$lr, self$lr / nr)
+        keras::k_set_value(self$model$optimizer$lr, self$lr)
+        lr = keras::k_get_value(self$model$optimizer$lr)
+        cat(sprintf("learning rate: %s  \n", lr))
+    }
     )
   )

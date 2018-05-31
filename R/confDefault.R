@@ -10,10 +10,12 @@ policy.minEpsilon = 0.01,
 policy.decay = 1, # exp(-1.0 / 10),
 replay.memname = "Uniform",
 replay.epochs = 1L,
-interact.maxiter = 500L,
+interact.maxiter = 5000L,
 policy.epi_wait_ini = 5L,  # initially the performance should increase
 policy.epi_wait_middle = 25L,
-policy.epi_wait_expl = 40L
+policy.epi_wait_expl = 40L,
+agent.reward2adalr = 150,
+agent.lr_decay = 0.1
 )
 
 

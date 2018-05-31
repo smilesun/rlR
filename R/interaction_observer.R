@@ -1,7 +1,6 @@
 Interaction = R6::R6Class("Interaction",
   inherit = InteractionBase,
   public = list(
-    epiLookBack = 100L,
     s.old = NULL,
     action = NULL,
     s_r_done_info  = NULL,
@@ -65,12 +64,7 @@ Interaction = R6::R6Class("Interaction",
     checkEpisodeOver = function() {
         if (self$s_r_done_info[[3L]]) {
           self$rl.env$reset()
-          self$idx.episode = self$idx.episode + 1L
-          self$glogger$log.nn$info("Episode: %i, steps:%i\n", self$idx.episode, self$idx.step)
-          self$toConsole("Episode: %i finished with steps:%i \n", self$idx.episode, self$idx.step)
           self$perf$afterEpisode()
-          rew = self$perf$getAccPerf(self$epiLookBack)
-          self$toConsole("Last %d episodes average reward %f \n", self$epiLookBack, rew)
           self$idx.step = 0L
           if (self$idx.episode >= self$maxiter) {
             self$continue.flag = FALSE
@@ -101,7 +95,7 @@ Interaction = R6::R6Class("Interaction",
         while (self$continue.flag) {
           self$notify("beforeAct")
           self$action = self$rl.agent$act(self$s.old)
-          self$glogger$log.nn$info("action taken:%i \n", self$action)
+          self$glogger$log.nn$info("action taken:%s \n", self$action)
           self$s_r_done_info = self$rl.env$step(action = as.integer(self$action))
           self$notify("afterStep")
         }
@@ -122,5 +116,3 @@ Interaction = R6::R6Class("Interaction",
   private = list(),
   active = list()
   )
-
-continue = function() rlR.rescue.global.agent$learn(1000)

@@ -8,37 +8,77 @@
 #' @import openssl
 #' @import ggplot2
 NULL
-set.seed(0)
 
-listClass = function(name = NULL) {
-  if (is.null(name)) return(c("Agent", "Policy", "ReplayMem"))
-  all = getNamespaceExports("rlR")
-  mem.idx = which(sapply(all, function(x) grepl(name, x)))
-  all[mem.idx]
+
+#' @title Test if tensorflow works from R session
+#'
+#' @description Test if tensorflow works from R session
+#'
+#' @return TRUE if tensorflow works
+#' @export
+rlr_test_if_tensorflow_works = function() {
+  res <- try({
+    tf = reticulate::import("tensorflow")
+    sess = tf$Session()
+    hello = tf$constant('Hello, TensorFlow!')
+    sess$run(hello)
+  }, silent = FALSE)
+  if (class(res)[1L] == "try-error") return(FALSE)
+  return(TRUE)
+  #tensorflow::install_tensorflow()
+}
+
+#' @title  Test if keras works
+#' 
+#' @description Test if keras is installed
+#' 
+#' @return TRUE if success
+#' @export 
+rlr_test_if_keras_works = function() {
+  res <- try({
+      makeAnyModel(input = 4, output = 1, list.arch = list.arch)
+  }, silent = FALSE)
+  if (class(res)[1L] == "try-error") return(FALSE)
+  return(TRUE)
+}
+
+#' @title  Test if gym is installed
+#' 
+#' @description Test if gym is installed
+#' 
+#' @return TRUE if success
+#' @export 
+rlr_test_if_gym_works = function() {
+  res <- try({
+    gym = reticulate::import("gym")
+    gym$logger$set_level(40)  # supress warning
+    gym$logger$setLevel(40)
+    genv = gym$make("CartPole-v0")
+  }, silent = FALSE)
+  if (class(res)[1L] == "try-error") return(FALSE)
+  return(TRUE)
 }
 
 #' @title  Install dependencies
-#'
+#' @param gpu Wehter to use gpu tensorflow or not
 #' @description Install Keras dependencies, if dependencies already installed, will not re-install
-#' NULL
 #' @return NULL
 #' @export
-installDep = function() {
-  #res <- try({
-  #  sess = tf$Session()
-  #  hello <- tf$constant('Hello, TensorFlow!')
-  #  sess$run(hello)
-  #}, silent = TRUE)
-  #if (class(res) == "try-error") {
-  #  tensorflow::install_tensorflow()
-  #}
-  res <- try({
-    makeAnyModel(input =4, output = 1, list.arch = list.arch)
-    }, silent = TRUE)
-  if (class(res)[1L] == "try-error") {
-    keras::install_keras()
+installDep = function(gpu = FALSE) {
+  flag_keras = rlr_test_if_keras_works()
+  flag_gym = rlr_test_if_gym_works()
+  if (gpu) {
+    if (!flag_keras) {
+      if (flag_gym) keras::install_keras(tensorflow ='1.8-gpu')
+      else keras::install_keras(tensorflow = "1.8-gpu", extra_packages = c("gym"))
+    }
   }
-  print("empty return means dependency met")
+  else {
+  if (!flag_keras) {
+    if (flag_gym) keras::install_keras(tensorflow = "1.8.0")
+    else keras::install_keras(tensorflow = "1.8.0", extra_packages = c("gym"))
+  }
+  }
 }
 
 #' @title listAvailAgent
@@ -48,49 +88,12 @@ listAvailAgent = function() {
   c("AgentDQN:deep q learning", "AgentFDQN:frozen target deep q learning", "AgentDDQN: double deep q learning", "AgentPG: policy gradient basic", "AgentPGBaseline: policy gradient with baseline", "AgentActorCritic: actor critic method")
 }
 
-# keras convention
-# input_shape: Dimensionality of the input (integer) not including the samples axis. This argument is required when using this layer as the first layer in a model.
-#
-# batch_input_shape: Shapes, including the batch size. For instance,
-#           ‘batch_input_shape=c(10, 32)’ indicates that the expected
-#           input will be batches of 10 32-dimensional vectors.
-#           ‘batch_input_shape=list(NULL, 32)’ indicates batches of an
-#           arbitrary number of 32-dimensional vectors.
-#
-# Input and Output Shapes:
-#
-#      Input shape: nD tensor with shape: ‘(batch_size, ..., input_dim)’.
-#      The most common situation would be a 2D input with shape
-#      ‘(batch_size, input_dim)’.
-#
-#      Output shape: nD tensor with shape: ‘(batch_size, ..., units)’.
-#      For instance, for a 2D input with shape ‘(batch_size, input_dim)’,
-#      the output would have shape ‘(batch_size, unit)’.
-#
-  #   reshape is not changing the shape, but only changes the filling scheme of the shape
-  #'   state = array_reshape(state, c(1L, dim(state))) # fill first the row dimension while in R normally column is filled first
-  #'   state = array_reshape(state, c(1L, length(state))) # fill first the row dimension while in R normally column is filled first
-  #'   temp = array(1:8, dim = c(2,2,2))
-  #'   length(temp) = 8
-  #'   Rank: the number of dimensions needed to represent a tensor
-  #'   Shape:  c(1,2,3) for rank 3
-  #'   "input_shape" parameter for layer_dense should be  c(batchsize(None), input_dim), dim in keras is row major
-  #'   model = keras_model_sequential()
-  #'   model %>%
-  #'     layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape)) %>%
-  #'     layer_dense(units = output_shape, activation = 'linear')
-  #'   model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
-  #'   return(model)
-  #'   model = keras_model_sequential()
-  #'   model %>%
-  #'     layer_dense(units = 64L, activation = 'relu', input_shape = c(input_shape), kernel_regularizer = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1)) %>%
-  #'     layer_dense(units = output_shape, activation = 'linear', kernel_regularizer
-  #'       = regularizer_l2(l = 0.01), bias_regularizer = regularizer_l2(l = 0.1))
-  #'   model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 0.0025))
-  #'   return(model)
-  #'
-  #' Keras helper:
-  #' conf = list(list.par.val = list(list(layer_dense.units = 64, activation_fun = "relu", reg_type = "regularizer_l1", kernel_regularizer = 0.001, bias_regularizer = 0)), loss = "mse", lr = 0.00025 )
-  #' a = keras_helper(256, 10, "softmax", conf$loss, conf$lr, conf$list.par.val)
-  #' eval(parse(text = a))
 
+# listClass = function(name = NULL) {
+#   if (is.null(name)) return(c("Agent", "Policy", "ReplayMem"))
+#   all = getNamespaceExports("rlR")
+#   mem.idx = which(sapply(all, function(x) grepl(name, x)))
+#   all[mem.idx]
+# }
+rlR.xd = function() reticulate::use_python("~/anaconda3/bin/python")
+rlR.xd()

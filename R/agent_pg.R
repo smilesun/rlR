@@ -21,12 +21,13 @@ AgentPG = R6::R6Class("AgentPG",
     setBrain = function() {
       super$setBrain()
       self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+      self$model = self$brain
     },
 
     extractTarget = function(ins) {
         act =  ReplayMem$extractAction(ins)
-        temp.act = rep(0L, self$actCnt)
-        temp.act[act] =  1L
+        temp.act = rep(0.0, self$actCnt)
+        temp.act[act] =  1.0
         return(temp.act)
     },
 
@@ -46,7 +47,7 @@ AgentPG = R6::R6Class("AgentPG",
 
     replay = function(batchsize) {
         self$getXY(batchsize)
-        self$replay.y = self$replay.y * self$advantage * (-1)
+        self$replay.y = self$replay.y * self$advantage * (+1)
         self$brain$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
     },
 
@@ -55,8 +56,10 @@ AgentPG = R6::R6Class("AgentPG",
         total.reward = sum(interact$perf$list.reward.epi[[episode.idx]])
         self$interact$perf$total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
         adg = interact$perf$list.discount.reward.epi[[episode.idx]]
-        adg = adg - mean(adg)
-        adg = adg / sum(adg ^ 2)
+        if (length(adg) > 1) {
+          adg = adg - mean(adg)
+          adg = adg / sqrt(sum(adg ^ 2))
+        }
         self$setAdvantage(adg)
     },
 

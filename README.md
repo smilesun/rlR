@@ -17,15 +17,8 @@
 
 ```r
 library(rlR)
-# rlR::installDep()
-```
-
-```
-## Loading required package: R6
-```
-
-```r
-env = makeGymEnv("CartPole-v0")
+env = makeGymEnv("CartPole-v0", ok_step = 100, ok_reward = 195)
+# Define success to be the last 100 episodes having an average rewards of 195
 listAvailAgent()
 ```
 
@@ -47,17 +40,18 @@ agent = makeAgent("AgentActorCritic", env)
 ```
 ## parameters: 
 ## -render: - TRUE-
+## -log: - FALSE-
+## -console: - FALSE-
 ## -agent.gamma: - 0.99-
 ## -policy.maxEpsilon: - 1-
 ## -policy.minEpsilon: - 0.001-
-## -policy.decay: - 0.994017964053935-
+## -policy.decay: - 0.999000499833375-
 ## -replay.memname: - Latest-
 ## -replay.epochs: - 1-
 ## -interact.maxiter: - 500-
-## -policy.epi_wait_ini: - 100-
-## -policy.epi_wait_expl: - 20-
-## -log: - FALSE-
-## -console: - FALSE-
+## -policy.epi_wait_ini: - 5-
+## -policy.epi_wait_middle: - 25-
+## -policy.epi_wait_expl: - 40-
 ## -policy.name: - EpsilonGreedy-
 ## -agent.nn.arch.actor: nhidden- 64-
 ##  -agent.nn.arch.actor: act1- tanh-
@@ -81,24 +75,22 @@ agent = makeAgent("AgentActorCritic", env)
 
 ```r
 system.time({
- perf = agent$learn(300)
+ perf = agent$learn(1000)
 })
 ```
 
+
 ```
-##    user  system elapsed 
-## 258.284   4.872 276.880
+##     user   system  elapsed 
+## 3793.068   62.600 3818.827
 ```
 
 ```r
  perf$plot()
- # if the performance is not good as expected, just let it run another number of episodes by using
- # perf = agent$learn(300) again
-
 ```
 
 ```
 ## `geom_smooth()` using method = 'loess'
 ```
 
-![plot of chunk unnamed-chunk-3](inst/figures/ac300.png)
+![plot of chunk unnamed-chunk-3](inst/figures/ac.png)

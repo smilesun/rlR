@@ -35,10 +35,10 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
         list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
         list.states.next = lapply(self$list.replay, ReplayMem$extractNextState)
         self$list.rewards = lapply(self$list.replay, ReplayMem$extractReward)
+        self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
         self$model = self$brain_critic
         self$p.old.c = self$getYhat(list.states.old)
         self$p.next.c = self$getYhat(list.states.next)
-        self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
         self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
     },
 
@@ -48,8 +48,10 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
           self$delta = self$advantage - self$p.old.c
           vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
           ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
-          ded = ded - mean(ded)  #  normalize
-          ded = ded / sum(ded ^ 2)  # normalize
+          if(length(ded) > 1) {
+            ded = ded - mean(ded)  #  normalize
+            ded = ded / sqrt(sum(ded ^ 2))  # normalize
+          }
           list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
           list.targets.actor = lapply(1:len, function(i) list.targets.actor[[i]] * ded[i])
           list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
@@ -65,12 +67,11 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
       },
 
       extractActorTarget = function(i) {
-          ins = self$list.replay[[i]]
-          act = ReplayMem$extractAction(ins)
-          advantage = (+1) * as.vector(self$delta[i])
+          act = self$list.acts[[i]]
+          advantage = (+1.0) * as.vector(self$delta[i])
           #FIXME: interestingly, multiply advantage by -1 also works
           vec.act = rep(0L, self$actCnt)
-          vec.act[act] = 1L
+          vec.act[act] = 1.0
           target = advantage * array(vec.act, dim = c(1L, self$actCnt))
           return(target)
     },
@@ -112,8 +113,10 @@ rlR.AgentPGBaseline.conf = function() {
           )
 }
 
-AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
-  interact = makeGymExperiment(sname = "CartPole-v0", "AgentPGBaseline", conf = rlR.AgentPGBaseline.conf())
+AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+  conf = rlR.AgentPGBaseline.conf()
+  conf$updatePara("console", console)
+  interact = makeGymExperiment(sname = "CartPole-v0", "AgentPGBaseline", conf = conf)
   perf = interact$run(iter)
   return(perf)
 }
