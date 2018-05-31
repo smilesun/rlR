@@ -88,14 +88,15 @@ AgentDDQN = R6::R6Class("AgentDDQN",
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
       self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
-      self$vec.arm.q = self$brain_h$pred(state)
+      vec.arm.q.u = self$brain_u$pred(state)
+      vec.arm.q.h = self$brain_h$pred(state)
+      self$vec.arm.q = (vec.arm.q.u + vec.arm.q.h) / 2.0
       self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
     },
 
     act = function(state) {
       self$toss()
       assert(class(state) == "array")
-      self$model = self$brain_u
       self$evaluateArm(state)
       self$policy$act(state)
     }
@@ -125,7 +126,7 @@ rlR.conf.DDQN = function() {
 AgentDDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE, console = FALSE) {
   conf = rlR.conf.DDQN()
   conf$updatePara("console", console)
-  interact = makeGymExperiment(sname = sname, aname = "AgentDDQN", conf = conf)
-  perf = interact$run(iter)
-  return(perf)
-}
+    interact = makeGymExperiment(sname = sname, aname = "AgentDDQN", conf = conf, ok_reward = 195, ok_step = 100)
+    perf = interact$run(iter)
+    return(perf)
+    }
