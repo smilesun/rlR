@@ -68,7 +68,7 @@ rlR.conf.DQN = function() {
           console = FALSE,
           log = FALSE,
           policy.maxEpsilon = 1,
-          policy.minEpsilon = 0.001,
+          policy.minEpsilon = 0.01,
           policy.decay = exp(-0.001),
           policy.name = "EpsilonGreedy",
           replay.batchsize = 64L,
@@ -76,6 +76,14 @@ rlR.conf.DQN = function() {
 }
 
 AgentDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+  conf = rlR.conf.DQN()
+  conf$updatePara("console", console)
+  interact = makeGymExperiment(sname = sname, aname = "AgentDQN", conf = conf)
+  perf = interact$run(iter)
+  return(perf)
+}
+
+AgentDQN$test2 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
   conf = rlR.conf.DQN()
   conf$updatePara("console", console)
   interact = makeGymExperiment(sname = sname, aname = "AgentDQN", conf = conf)
