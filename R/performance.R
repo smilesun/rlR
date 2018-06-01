@@ -180,7 +180,8 @@ Performance = R6::R6Class("Performance",
 
     afterAll = function() {
       self$toString()   # print out performance
-      if (self$glogger$flag) self$persist(self$agent$conf$conf.log.perf$resultTbPath)
+      ns = self$agent$conf$conf.log.perf$resultTbPath
+      if (self$glogger$flag) self$persist(file.path(ns))
       self$extractInfo()
     },
 
