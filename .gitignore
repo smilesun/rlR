@@ -5,3 +5,4 @@ logout
 .Rhistory
 .RData
 .Ruserdata
+replay_memory

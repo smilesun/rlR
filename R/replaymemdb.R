@@ -2,7 +2,6 @@ ReplayMemDB = R6::R6Class(
   "ReplayMemDB",
   inherit = ReplayMem,
   public = list(
-    samples = NULL,
     dt = NULL,
     len = NULL,
     replayed.idx = NULL,
@@ -10,9 +9,16 @@ ReplayMemDB = R6::R6Class(
     agent = NULL,
     dt.temp = NULL,
     smooth = NULL,
+    db.con = NULL,
+    table.name = NULL,
     initialize = function(agent, conf) {
+      # initialize sqlite connection
+      self$db.con = RSQLite::dbConnect(RSQLite::SQLite(), dbname = "replay_memory")
+      # pick the env name as table name
+      self$table.name = agent$env$env %>%
+        stringr::str_extract("<([a-z]|[A-Z]|-|[0-9])*>") %>%
+        stringr::str_remove_all("<|>")   # there's maybe a better solution
       self$smooth = rlR.conf4log[["replay.mem.laplace.smoother"]]
-      self$samples = list()
       self$dt = data.table()
       self$len = 0L
       self$conf = conf
@@ -23,19 +29,37 @@ ReplayMemDB = R6::R6Class(
     },
 
     reset = function() {
-      self$samples = list()
+      RSQLite::dbExecute( self$db.con, paste("DROP TABLE", self$table.name) )
       self$dt = data.table()
       self$len = 0L
     },
 
     mkInst = function(state.old, action, reward, state.new, done, info) {
-      list(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = info)
+      # transform/compress states into single string for DB entry
+      if (length(self$agent$stateDim) == 1) {
+        state.old %<>% paste(collapse = "_")
+        state.new %<>% paste(collapse = "_")
+      } else {
+        state.old = (state.old / 255L) %>% (png::writePNG) %>% paste(collapse = "")
+        state.new = (state.new / 255L) %>% (png::writePNG) %>% paste(collapse = "")
+      }
+      self$len = self$len + 1L
+      # don't use "." in column names - SQLite will throw up on it
+      data.frame(
+        state_id   = self$len,
+        #state.hash = digest(old_state, algo = "md5"),
+        state_old  = state.old,
+        reward     = reward,
+        action     = action,
+        state_new  = state.new,
+        done       = done,
+        info       = info$episode # TODO: rename "info" to "episode" everywhere
+      )
     },
 
     add = function(ins) {
-      len = length(self$samples)
-      self$samples[[len + 1L]] = ins
-      self$len = self$len + 1L
+      # write to sqlite table
+      RSQLite::dbWriteTable( self$db.con, self$table.name, ins, append = TRUE )
       mdt = data.table(t(unlist(ins)))
       mdt = cbind(mdt, self$dt.temp)
       self$dt = rbindlist(list(self$dt, mdt), fill = TRUE)
@@ -43,7 +67,8 @@ ReplayMemDB = R6::R6Class(
 
     updateDT = function(idx = NULL) {
       if (is.null(idx)) idx = 1L:self$len
-      td.list = lapply(idx, function(i) self$agent$calculateTDError(self$samples[[i]]))
+      list.res = self$getSamples(idx)
+      td.list = lapply(list.res, self$agent$calculateTDError)
       updatedTDError = unlist(td.list)
       cat(sprintf("mean TD error: %f\n", mean(updatedTDError)))
       old.delta = self$dt[idx, "delta"]
@@ -62,11 +87,51 @@ ReplayMemDB = R6::R6Class(
     updatePriority = function() {
       self$dt[, "priorityAbs"] =  abs(self$dt[, "delta"]) + self$smooth
       self$dt[, "priorityRank"] = order(self$dt[, "delta"])
+    },
+
+    getSamples = function(idx) {
+
+      str_to_array = function(string) {
+
+        if (length(self$agent$stateDim) == 1) {
+          strsplit(string, "_")[[1]] %>%
+            as.numeric() %>%
+            array()
+        } else if (length(self$agent$stateDim) %in% 2:4) {
+          change_storage = function(y) {storage.mode(y) <- "integer"; y}
+          (
+            string %>%
+              strsplit("") %>%
+              .[[1]] %>%
+              (function(x) paste0(x[c(TRUE, FALSE)], x[c(FALSE, TRUE)])) %>% #combine to pairs
+              as.hexmode %>%   # necessary for correct as.raw
+              as.raw %>%       # make it readable as PNG
+              (png::readPNG) * 255
+          ) %>%
+          change_storage
+        }
+      }
+
+      replay.samples = paste0("
+          SELECT state_old, action, reward, state_new, done, info
+          FROM '", self$table.name, "'
+          WHERE state_id IN (", paste(idx, collapse = ", "), ")
+        ") %>%
+        RSQLite::dbGetQuery(conn = self$db.con)
+
+      lapply(idx, function(i) list(
+        state.old = replay.samples$state_old[i] %>% str_to_array,
+        action    = replay.samples$action[i],
+        reward    = replay.samples$reward[i],
+        state.new = replay.samples$state_new[i] %>% str_to_array,
+        done      = replay.samples$done[i],
+        info      = replay.samples$info[i]
+      ))
     }
-    ),
+  ),
   private = list(),
   active = list()
-  )
+)
 
 
 ReplayMemUniformDB = R6::R6Class("ReplayMemUniformDB",
@@ -75,16 +140,16 @@ ReplayMemUniformDB = R6::R6Class("ReplayMemUniformDB",
     sample.fun = function(k) {
       k = min(k, self$len)
       self$replayed.idx = sample(self$len)[1L:k]
-      list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
+      list.res          = self$getSamples(self$replayed.idx)
       return(list.res)
     }
-    ),
+  ),
   private = list(),
   active = list()
   )
 
 
-xxxxm= function() {
+test.run = function(s) {
   conf = RLConf$new(
     render = TRUE,
     console = FALSE,
@@ -95,9 +160,9 @@ xxxxm= function() {
     policy.name = "EpsilonGreedy",
     replay.batchsize = 64L,
     replay.memname = "UniformDB",
-    agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+    agent.nn.arch = list(nhidden = 4, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
 
-  interact = makeGymExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = conf)
-  perf = interact$run(2)
-  }
+  interact = makeGymExperiment(sname = s, aname = "AgentDQN", conf = conf)
+  interact$run(1)
+}
 

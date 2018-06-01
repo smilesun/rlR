@@ -19,7 +19,16 @@ Imports:
     keras,
     logging,
     ggplot2,
-    openssl
+    openssl,
+    RSQLite,
+    png,
+    stringr,
+    magrittr,
+    DT,
+    plotly,
+    crosstalk,
+    shiny,
+    shinythemes
 LazyData: true
 RoxygenNote: 5.0.1
 BugReports: https://github.com/smilesun/rlR/issues
