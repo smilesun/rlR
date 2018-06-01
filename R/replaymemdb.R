@@ -160,7 +160,7 @@ test.run = function(s) {
     policy.name = "EpsilonGreedy",
     replay.batchsize = 64L,
     replay.memname = "UniformDB",
-    agent.nn.arch = list(nhidden = 4, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+    agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
 
   interact = makeGymExperiment(sname = s, aname = "AgentDQN", conf = conf)
   interact$run(1)
