@@ -150,7 +150,7 @@ ReplayMemUniformDB = R6::R6Class("ReplayMemUniformDB",
 
 
 test.run = function(s) {
-  conf = RLConf$new(
+  conf = rlR:::RLConf$new(
     render = TRUE,
     console = FALSE,
     log = FALSE,
