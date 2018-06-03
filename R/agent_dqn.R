@@ -72,10 +72,10 @@ rlR.conf.DQN = function() {
           policy.decay = exp(-0.001),
           policy.name = "EpsilonGreedy",
           replay.batchsize = 64L,
-          agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+          agent.nn.arch = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
 }
 
-AgentDQN$test = function(iter = 2000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+AgentDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
   conf = rlR.conf.DQN()
   conf$updatePara("console", console)
   interact = makeGymExperiment(sname = sname, aname = "AgentDQN", conf = conf)

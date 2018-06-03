@@ -18,11 +18,14 @@ RLLog = R6::R6Class("RLLog",
       self$log.nn = getLogger(conf$conf.log.perf$LOGGERNAMENN)
       # file directory
       if (self$flag) {
-      dir.create(conf$conf.log.perf$filePrefix, recursive = TRUE)
+        name = conf$conf.log.perf$filePrefix
+        nname = readline(prompt = "Please enter folder name relative to current working directory to store the log file:\n")
+        dir.create(nname, recursive = TRUE)
+      conf$conf.log.perf$filePrefix = nname
       # root logger
-      addHandler(writeToFile, file = file.path(conf$conf.log.perf$filePrefix, conf.logging$RLSufix), logger = conf.logging$LOGGERNAMERL)
+        addHandler(writeToFile, file = file.path(conf$conf.log.perf$filePrefix, conf.logging$RLSufix), logger = conf.logging$LOGGERNAMERL)
       # every step logger
-      addHandler(writeToFile, file = file.path(conf.logging$filePrefix, conf$conf.log.perf$NNSufix), logger = conf$conf.log.perf$LOGGERNAMENN)
+        addHandler(writeToFile, file = file.path(conf.logging$filePrefix, conf$conf.log.perf$NNSufix), logger = conf$conf.log.perf$LOGGERNAMENN)
       }
       removeHandler("writeToConsole", logger = conf$conf.log.perf$LOGGERNAMENN)
       removeHandler("basic.stdout", logger = conf$conf.log.perf$LOGGERNAMENN)
