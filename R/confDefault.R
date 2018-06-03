@@ -24,7 +24,6 @@ rlR.conf.avail = names(rlR.conf.default)
 rlR.conf4log = list(
 replay.mem.laplace.smoother = 0.001,
 resultTbPath = "Perf.RData",
-ROOTFOLDERNAME = "logout",
 LOGGERNAMENN = "nn.logger",
 LOGGERNAMERL = "rl.logger",
 NNSufix = "nn.log",

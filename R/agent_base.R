@@ -86,9 +86,10 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$buildConf()
     },
 
-    updatePara = function(name, val) {
-      self$conf$updatePara(name, val)
+    updatePara = function(...) {
+      self$conf$set(...)
       self$buildConf()
+      self$setBrain()
     },
 
     loginfo = function(str, ...) {
