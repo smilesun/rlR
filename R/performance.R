@@ -24,6 +24,8 @@ Performance = R6::R6Class("Performance",
     wait_cnt = NULL,
     reset_cnt = NULL,
     total.step = NULL,  # how many times model has been reset
+    list_models = NULL,
+    store_model_flag = NULL,
     initialize = function(agent) {
       self$epiLookBack = 100L
       self$reset_cnt = 0L
@@ -49,6 +51,9 @@ Performance = R6::R6Class("Performance",
       self$list.discountedRPerEpisode = list()
       self$list.stepsPerEpisode = list()
       self$r.vec.epi = vector(mode = "numeric", length = 2000L)  # FIXME: how to set a reasonble number here?
+      self$store_model_flag = self$agent$conf$get("store_model")
+      if (is.null(self$store_model_flag)) self$store_model_flag = FALSE
+      if (self$store_model_flag) self$list_models = list()
     },
 
     success = function() {
@@ -196,7 +201,10 @@ Performance = R6::R6Class("Performance",
       self$list.stepsPerEpisode[[self$epi.idx]] = self$agent$interact$idx.step  # the number of steps
       rew = self$getAccPerf(self$epiLookBack)
       self$agent$interact$toConsole("Last %d episodes average reward %f \n", self$epiLookBack, rew)
-
+      if (self$store_model_flag) {
+        len = length(self$list_models)
+        self$list_models[[len + 1L]] = self$agent$model$clone(deep = TRUE)
+      }
     }
     ),
   private = list(),
