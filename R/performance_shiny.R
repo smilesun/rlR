@@ -6,12 +6,6 @@ PerformanceShiny = R6::R6Class(
   inherit = Performance,
   public = list(
     startApp = function() {
-      # maybe put the code of this function into an extra source file
-
-      #library(DT)
-      #library(plotly)
-      #library(crosstalk)
-      #library(shiny)
 
       data = cbind( perf$agent$replay.x, perf$agent$replay.y ) %>%
         data.frame()
@@ -58,7 +52,7 @@ PerformanceShiny = R6::R6Class(
 
               # Show Interactive Graphic
               mainPanel(
-                plotlyOutput("plot_weights_2d", width = "100%", height = "900px")
+                plotly::plotlyOutput("plot_weights_2d", width = "100%", height = "900px")
               )
             ),
             br(),
@@ -77,7 +71,7 @@ PerformanceShiny = R6::R6Class(
 
               # Show Interactive Graphic
               mainPanel(
-                plotlyOutput("plot_weights_3d", width = "100%", height = "900px")
+                plotly::plotlyOutput("plot_weights_3d", width = "100%", height = "900px")
               )
             ),
             br(),
@@ -89,6 +83,7 @@ PerformanceShiny = R6::R6Class(
             sidebarLayout(
               # Sidebar with a slider and selection inputs
               sidebarPanel(
+                numericInput("iter_2d", "Training Iteration", value = 1, min = 1, max = length(perf$list_models)),
                 selectInput("x_axis_2d", "X axis", variable_selection, selected = variable_selection[[1]]),
                 selectInput("color_2d", "Dot Color", variable_selection_null, selected = "-"),
                 selectInput("size_2d", "Dot Size", variable_selection_null, selected = "-"),
@@ -102,7 +97,7 @@ PerformanceShiny = R6::R6Class(
 
               # Show Interactive Graphic
               mainPanel(
-                plotlyOutput("plot_2d", width = "100%", height = "900px")
+                plotly::plotlyOutput("plot_2d", width = "100%", height = "900px")
               )
             ),
             br(),
@@ -115,6 +110,7 @@ PerformanceShiny = R6::R6Class(
             sidebarLayout(
               # Sidebar with a slider and selection inputs
               sidebarPanel(
+                numericInput("iter_3d", "Training Iteration", value = 1, min = 1, max = length(perf$list_models)),
                 selectInput("x_axis_3d", "X axis", variable_selection, selected = variable_selection[[1]]),
                 selectInput("y_axis_3d", "Y axis", variable_selection, selected = variable_selection[[2]]),
                 selectInput("color", "Dot Color", variable_selection_null, selected = "-"),
@@ -129,7 +125,7 @@ PerformanceShiny = R6::R6Class(
 
               # Show Interactive Graphic
               mainPanel(
-                plotlyOutput("x2", width = "100%", height = "900px")
+                plotly::plotlyOutput("x2", width = "100%", height = "900px")
               )
             )
           )
@@ -137,9 +133,9 @@ PerformanceShiny = R6::R6Class(
       )
 
       server = function(input, output) {
-        s_space_maxs = SharedData$new(space_maxs)
-        s_space_mins = SharedData$new(space_mins)
-        s_data = SharedData$new(data)
+        s_space_maxs = crosstalk::SharedData$new(space_maxs)
+        s_space_mins = crosstalk::SharedData$new(space_mins)
+        s_data = crosstalk::SharedData$new(data)
         s_weights = perf$agent$brain$getWeights()
 
 
@@ -175,7 +171,7 @@ PerformanceShiny = R6::R6Class(
         })
 
 
-        output$plot_weights_2d = renderPlotly({
+        output$plot_weights_2d = plotly::renderPlotly({
 
           weights_data = reactiveVal()
           weights_data({
@@ -204,7 +200,7 @@ PerformanceShiny = R6::R6Class(
             )
         })
 
-        output$plot_weights_3d <- renderPlotly({
+        output$plot_weights_3d <- plotly::renderPlotly({
 
           weights_data = reactiveVal()
           weights_data({
@@ -234,7 +230,7 @@ PerformanceShiny = R6::R6Class(
 
 
         # highlight selected rows in the scatterplot
-        output$plot_2d <- renderPlotly({
+        output$plot_2d <- plotly::renderPlotly({
           # wait until the parameters are loaded
           req(input$x_axis_2d)
 
@@ -253,7 +249,8 @@ PerformanceShiny = R6::R6Class(
               state_space[paste0("X_", i)] = input[[paste0("slider_2d_", i)]]
           }
           state_space %<>% as.matrix
-          predictions = array(state_space, dim = c(nrow(state_space), ncol(state_space))) %>% perf$agent$brain$pred()
+          predictions = array(state_space, dim = c(nrow(state_space), ncol(state_space))) %>%
+            perf$list_models[[input$iter_2d]]$pred()
           state_space = cbind(state_space, predictions) %>% as.data.frame()
           names(state_space) = c(
             paste0("X_", 1:ncol(perf$agent$replay.x)),
@@ -288,7 +285,7 @@ PerformanceShiny = R6::R6Class(
 
 
         # highlight selected rows in the scatterplot
-        output$x2 <- renderPlotly({
+        output$x2 <- plotly::renderPlotly({
           # wait until the parameters are loaded
           req(input$x_axis_3d)
           req(input$y_axis_3d)
@@ -308,7 +305,8 @@ PerformanceShiny = R6::R6Class(
               state_space[paste0("X_", i)] = input[[paste0("slider_3d_", i)]]
           }
           state_space %<>% as.matrix()
-          predictions = array(state_space, dim = c(nrow(state_space), ncol(state_space))) %>% perf$agent$brain$pred()
+          predictions = array(state_space, dim = c(nrow(state_space), ncol(state_space))) %>%
+            perf$list_models[[input$iter_3d]]$pred()
           state_space = cbind(state_space, predictions) %>% as.data.frame()
           names(state_space) = c(
             paste0("X_", 1:ncol(perf$agent$replay.x)),
