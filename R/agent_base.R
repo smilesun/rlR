@@ -29,6 +29,7 @@
 AgentArmed = R6::R6Class("AgentArmed",
   public = list(
     # constructor init
+    replay_delta = NULL,
     plateau = NULL,
     lr_decay = NULL,
     interact = NULL,
@@ -127,10 +128,6 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$mem$add(ins)
     },
 
-    calculateTDError = function(ins) {
-      vec.mt = self$extractTarget(ins)  # self$yhat is calculated inside err = vec.mt - self$yhat mean(err ^ 2)
-    },
-
     extractTarget = function(ins) {
       stop("not implemented")
     },
@@ -140,8 +137,9 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     replay = function(batchsize) {
-        self$getXY(batchsize)
-        self$model$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
+      self$getXY(batchsize)
+      self$glogger$log.nn$info("replaying average ythat vs target error %s", mean(self$replay_delta))
+      self$model$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
     },
 
     evaluateArm = function(state) {
@@ -177,6 +175,8 @@ AgentArmed = R6::R6Class("AgentArmed",
         self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
         # assert(self$replay.x[1,,,]== list.states.old[[1L]])
         self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
+        diff_table = abs(self$replay.y - self$p.old)
+        self$replay_delta = apply(diff_table, 1, mean)
     },
 
     act = function(state) {
