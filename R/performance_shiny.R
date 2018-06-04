@@ -1,3 +1,6 @@
+#' @importFrom magrittr %>% %<>%
+#' @import shiny
+
 PerformanceShiny = R6::R6Class(
   "PerformanceShiny",
   inherit = Performance,
@@ -5,15 +8,12 @@ PerformanceShiny = R6::R6Class(
     startApp = function() {
       # maybe put the code of this function into an extra source file
 
-      library(magrittr)
-      library(DT)
-      library(plotly)
-      library(crosstalk)
-      library(shiny)
-      library(shinythemes)
-      library(reticulate)
+      #library(DT)
+      #library(plotly)
+      #library(crosstalk)
+      #library(shiny)
 
-      data = cbind( perf$agent$replay.x, perf$agent$replay.y ) %>% #mtcars %>%
+      data = cbind( perf$agent$replay.x, perf$agent$replay.y ) %>%
         data.frame()
 
       names(data) = c(
@@ -43,7 +43,7 @@ PerformanceShiny = R6::R6Class(
       ui = tagList(
         # shinythemes::themeSelector(), # uncomment this to check out different themes
         navbarPage(
-          theme = shinytheme("cerulean"),
+          theme = shinythemes::shinytheme("cerulean"),
           "RL Visualization",
 
           tabPanel(
@@ -186,7 +186,7 @@ PerformanceShiny = R6::R6Class(
           })
 
           weights_data %>%
-            plot_ly(
+            plotly::plot_ly(
               x = ~ col_index,
               y = ~ row_index,
               color = ~ value,
@@ -194,12 +194,12 @@ PerformanceShiny = R6::R6Class(
               size  = I(10),
               type  = "scatter"
             ) %>%
-            layout(
+            plotly::layout(
               showlegend = FALSE,
               xaxis = list(title = "Column Index", titlefont = list(size = 18)),
               yaxis = list(title = "Row Index", titlefont = list(size = 18))
             ) %>%
-            add_trace(
+            plotly::add_trace(
               text = ~ value
             )
         })
@@ -215,7 +215,7 @@ PerformanceShiny = R6::R6Class(
           })
 
           weights_data %>%
-            plot_ly(
+            plotly::plot_ly(
               x = ~ col_index,
               y = ~ row_index,
               z = ~ value,
@@ -224,7 +224,7 @@ PerformanceShiny = R6::R6Class(
               size  = I(5),
               type  = "scatter3d"
             ) %>%
-            layout(
+            plotly::layout(
               showlegend = TRUE,
               xaxis = list(title = "Column Index", titlefont = list(size = 25)),
               yaxis = list(title = "Row Index", titlefont = list(size = 25)),
@@ -235,8 +235,9 @@ PerformanceShiny = R6::R6Class(
 
         # highlight selected rows in the scatterplot
         output$plot_2d <- renderPlotly({
-
+          # wait until the parameters are loaded
           req(input$x_axis_2d)
+
           s = input$x1_rows_selected
 
           state_space = data.frame(X_1 = 0:99)
@@ -244,7 +245,10 @@ PerformanceShiny = R6::R6Class(
           for (i in 1:ncol(perf$agent$replay.x)) {
             if (paste0("X_", i) == input$x_axis_2d)
               # generate evenly distributed points between space borders
-              state_space[input$x_axis_2d] = sapply((s_space_maxs$data()[input$x_axis_2d] - s_space_mins$data()[input$x_axis_2d]), function(x) 0:99/99 * x, USE.NAMES = FALSE) + s_space_mins$data()[input$x_axis_2d]
+              state_space[input$x_axis_2d] = sapply(
+                (s_space_maxs$data()[input$x_axis_2d] - s_space_mins$data()[input$x_axis_2d]),
+                function(x) 0:99/99 * x, USE.NAMES = FALSE
+                ) + s_space_mins$data()[input$x_axis_2d]
             else
               state_space[paste0("X_", i)] = input[[paste0("slider_2d_", i)]]
           }
@@ -257,7 +261,7 @@ PerformanceShiny = R6::R6Class(
           )
 
           s_data %>%
-            plot_ly(
+            plotly::plot_ly(
               x = ~ get(input$x_axis_2d),
               y = ~ get(input$y_axis_2d),
               mode = "markers",
@@ -266,12 +270,12 @@ PerformanceShiny = R6::R6Class(
               name  = "Unfiltered",
               type  = "scatter"
             ) %>%
-            layout(
+            plotly::layout(
               showlegend = TRUE,
               xaxis = list(title = input$x_axis_2d, titlefont = list(size = 18)),
               yaxis = list(title = input$y_axis_2d, titlefont = list(size = 18))
             ) %>%
-            add_trace(
+            plotly::add_trace(
               data = state_space,
               x    = ~ get(input$x_axis_2d),
               y    = ~ get(input$y_axis_2d),
@@ -285,6 +289,7 @@ PerformanceShiny = R6::R6Class(
 
         # highlight selected rows in the scatterplot
         output$x2 <- renderPlotly({
+          # wait until the parameters are loaded
           req(input$x_axis_3d)
           req(input$y_axis_3d)
 
@@ -321,7 +326,7 @@ PerformanceShiny = R6::R6Class(
           state_space %<>% helper
 
           s_data %>%
-            plot_ly(
+            plotly::plot_ly(
               x = ~ get(input$x_axis_3d),
               y = ~ get(input$y_axis_3d),
               z = ~ get(input$z_axis),
@@ -330,7 +335,7 @@ PerformanceShiny = R6::R6Class(
               size  = if (input$size  == "-") I(3)       else ~ get(input$size),
               type  = "scatter3d"
             ) %>%
-            layout(
+            plotly::layout(
               dragmode = "turntable",
               showlegend = TRUE,
               scene = list(
@@ -339,7 +344,7 @@ PerformanceShiny = R6::R6Class(
                 zaxis = list(title = input$z_axis, titlefont = list(size = 30))
               )
             ) %>%
-            add_surface(
+            plotly::add_surface(
               data = state_space,
               x = ~ x,
               y = ~ y,
@@ -352,4 +357,5 @@ PerformanceShiny = R6::R6Class(
     }
   ),
   private = list(),
-  active = list())
+  active = list()
+)

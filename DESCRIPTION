@@ -30,7 +30,7 @@ Imports:
     shiny,
     shinythemes
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 BugReports: https://github.com/smilesun/rlR/issues
 URL: https://github.com/smilesun/rlR
 OS_type: unix
