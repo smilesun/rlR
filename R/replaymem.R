@@ -40,7 +40,7 @@ ReplayMem = R6::R6Class("ReplayMem",
     },
 
     updateDT = function(idx = NULL) {
-      self$agent$getXY()
+      self$agent$getXY(self$len)
       self$dt[idx, "delta"] = as.vector(self$replay_delta)
       self$updatePriority()
     },
