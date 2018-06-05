@@ -27,6 +27,7 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
       super$setBrain()
       self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
       self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
+      self$model = self$brain_critic
     },
 
      getReplayYhat = function(batchsize) {

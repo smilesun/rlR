@@ -81,6 +81,6 @@ AgentDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, co
 AgentDQN$test2 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
   env = makeGymEnv("MountainCar-v0", act.cheat = function(a) { if(a ==2) return(3); return(a)}, actcnt = 2)
   agent = makeAgent("AgentDQN", env)
-  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.minEPsilon = 0.01)
+  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEPsilon = 0.1, policy.minEPsilon = 0.1, policy.decay = 1)
   agent$learn(1000)
 }
