@@ -21,6 +21,10 @@ SurroNN = R6::R6Class("SurroNN",
       keras::set_weights(self$model, weights)
     },
 
+    persist = function(file_path) {
+      keras::save_model_hdf5(object = self$model, file_path = file_path)
+    },
+
     train = function(X_train, Y_train, epochs = 1L) {
       #nr = nrow(X_train)
       #keras::k_set_value(self$model$optimizer$lr, self$lr / 3)
@@ -43,9 +47,23 @@ SurroNN = R6::R6Class("SurroNN",
     }
 
     ),
-  private = list(),
+  private = list(
+    deep_clone = function(name, value) {
+      # With x$clone(deep=TRUE) is called, the deep_clone gets invoked once for
+      # each field, with the name and value.
+      if (name == "model") {
+        # `a` is an environment, so use this quick way of copying
+        #list2env(as.list.environment(value, all.names = TRUE),
+                 #parent = emptyenv())
+        keras::clone_model(self$model)
+      } else {
+        # For all other fields, just return the value
+        value
+      }
+    }
+  ),
   active = list()
-  )
+)
 
 SurroNN4PG = R6::R6Class("SurroNN4PG",
   inherit = SurroNN,
