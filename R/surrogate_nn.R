@@ -2,15 +2,22 @@ SurroNN = R6::R6Class("SurroNN",
   inherit = Surrogate,
   public = list(
     lr = NULL,
+    arch.list = NULL,
     initialize = function(actCnt, stateDim, arch.list) {
       self$actCnt = actCnt
       self$stateDim = stateDim
       self$lr = arch.list$lr
+      self$arch.list = arch.list
+      self$model = self$makeModel()
+    },
+
+    makeModel = function() {
       if (length(self$stateDim) > 1L) {
-        self$model = makeCnn(input_shape = self$stateDim, act_cnt = self$actCnt)
+        model = makeCnn(input_shape = self$stateDim, act_cnt = self$actCnt)
       } else {
-        self$model = makeKerasModel(input_shape = self$stateDim, output_shape = self$actCnt, arch.list = arch.list)
+        model = makeKerasModel(input_shape = self$stateDim, output_shape = self$actCnt, arch.list = self$arch.list)
       }
+      return(model)
     },
 
     getWeights = function() {
@@ -55,7 +62,11 @@ SurroNN = R6::R6Class("SurroNN",
         # `a` is an environment, so use this quick way of copying
         #list2env(as.list.environment(value, all.names = TRUE),
                  #parent = emptyenv())
-        keras::clone_model(self$model)
+        weights = self$getWeights()
+        model = self$makeModel()
+        keras::set_weights(model, weights)
+        return(model)
+        #keras::clone_model(self$model)
       } else {
         # For all other fields, just return the value
         value
