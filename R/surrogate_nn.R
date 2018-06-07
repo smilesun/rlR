@@ -3,11 +3,21 @@ SurroNN = R6::R6Class("SurroNN",
   public = list(
     lr = NULL,
     arch.list = NULL,
-    initialize = function(actCnt, stateDim, arch.list) {
-      self$actCnt = actCnt
-      self$stateDim = stateDim
-      self$lr = arch.list$lr
-      self$arch.list = arch.list
+    conf = NULL,
+    agent = NULL,
+    initialize = function(agent, arch_list_name = "agent.nn.arch", ...) {
+      par_list = list(...)
+      self$agent = agent
+      self$actCnt = self$agent$actCnt
+      if ("act_cnt" %in% names(par_list)) self$actCnt = par_list[["act_cnt"]]
+      self$stateDim = self$agent$stateDim
+      #self$actCnt = actCnt
+      #self$stateDim = stateDim
+      # 
+      self$conf = self$agent$conf
+      self$arch.list = self$conf$get(arch_list_name)
+      self$arch.list$lr = self$conf$get("agent.lr")
+      self$lr = self$arch.list$lr
       self$model = self$makeModel()
     },
 
@@ -18,6 +28,10 @@ SurroNN = R6::R6Class("SurroNN",
         model = makeKerasModel(input_shape = self$stateDim, output_shape = self$actCnt, arch.list = self$arch.list)
       }
       return(model)
+    },
+
+    setModel = function(obj) {
+      self$model = obj
     },
 
     getWeights = function() {
@@ -79,10 +93,9 @@ SurroNN = R6::R6Class("SurroNN",
 SurroNN4PG = R6::R6Class("SurroNN4PG",
   inherit = SurroNN,
   public = list(
-    lr = NULL,
-    initialize = function(actCnt, stateDim, arch.list) {
-      super$initialize(actCnt, stateDim, arch.list)  # FIXME: arch.list could be None when PG surrogate is called as super prior to PGBaseline is called.
-      self$lr = arch.list[["lr"]]
+    #initialize = function(actCnt, stateDim, arch.list) {
+    initialize = function(agent, arch_list_name, ...) {
+      super$initialize(agent, arch_list_name, ...)  # FIXME: arch.list could be None when PG surrogate is called as super prior to PGBaseline is called.
     },
 
     train = function(X_train, Y_train, epochs = 1L) {

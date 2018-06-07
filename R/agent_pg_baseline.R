@@ -25,8 +25,10 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
 
     setBrain = function() {
       super$setBrain()
-      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
-      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
+      #self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
+      self$brain_actor = SurroNN4PG$new(self, arch_list_name = "agent.nn.arch.actor")
+      self$brain_critic = SurroNN4PG$new(self, arch_list_name = "agent.nn.arch.critic", act_cnt = 1L)
+      #self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
       self$model = self$brain_critic
     },
 

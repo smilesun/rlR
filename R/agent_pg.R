@@ -20,7 +20,8 @@ AgentPG = R6::R6Class("AgentPG",
 
     setBrain = function() {
       super$setBrain()
-      self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+      # self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+      self$brain = SurroNN4PG$new(self, arch_list_name = "agent.nn.arch")
       self$model = self$brain
     },
 

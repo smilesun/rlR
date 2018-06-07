@@ -25,7 +25,8 @@ AgentDDQN = R6::R6Class("AgentDDQN",
 
     setBrain = function() {
       super$setBrain()  # current setBrain will overwrite super$setBrain()
-      self$brain2 = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+      # self$brain2 = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+      self$brain2 = SurroNN$new(self)
     },
 
       toss = function() {

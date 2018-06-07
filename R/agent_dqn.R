@@ -19,7 +19,13 @@ AgentDQN = R6::R6Class("AgentDQN",
     },
 
     setBrain = function() {
-       self$brain = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+       self$brain = SurroNN$new(self)
+       self$model = self$brain
+    },
+
+    # user creation of brain from outside
+    customizeBrain = function(obj) {
+       self$brain$setModel(obj)
        self$model = self$brain
     },
  
@@ -79,8 +85,10 @@ AgentDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, co
 }
 
 AgentDQN$test2 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  env = makeGymEnv("MountainCar-v0", act.cheat = function(a) { if(a ==2) return(3); return(a)}, actcnt = 2)
+  #env = makeGymEnv("MountainCar-v0", act.cheat = function(a) { if(a ==2) return(3); return(a)}, actcnt = 2)
+  env = makeGymEnv("MountainCar-v0")
   agent = makeAgent("AgentDQN", env)
-  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEPsilon = 0.1, policy.minEPsilon = 0.1, policy.decay = 1)
+  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 1, policy.minEpsilon = 0.1, policy.decay = exp(-0.01), replay.batchsize = 8, agent.nn.arch = list(nhidden = 8, act1 = "relu", act2 = "linear", loss = "mse", lr = 1e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+
   agent$learn(1000)
 }
