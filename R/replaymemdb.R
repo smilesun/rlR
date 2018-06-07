@@ -133,9 +133,12 @@ ReplayMemDB = R6::R6Class(
     # function taking a list of states (2d/3d/4d arrays) and transforming into video replay_<name>.mp4 in their given order
     # input arrays need at least 2 dimensions
     # mp4 file is compressed -> information loss -> only makes sense for human eyes
-    createReplayVideo <- function(name, framerate = 25) {
+    createReplayVideo = function(name, framerate = 25) {
       # check if the mp4 file doesn't exist - otherwise ffmpeg will make issues
-      if (!file.exists( paste0(getwd(), "/replay_", name, ".mp4")) ) {
+      if (length(self$agent$stateDim) == 1) {
+        stop("State data format is not suitable for video creation")
+
+      } else if (!file.exists( paste0(getwd(), "/replay_", name, ".mp4")) ) {
         # get all states of the replay memory
         states = self$getSamples(1:self$len) %>%
 
