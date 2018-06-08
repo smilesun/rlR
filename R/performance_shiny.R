@@ -46,7 +46,7 @@ PerformanceShiny = R6::R6Class(
               # Sidebar with selection inputs
               sidebarPanel(
                 selectInput("layer", "Layer", layer_index, selected = 1),
-                selectInput("weights", "Weights/Bias", list("Weights" = 0, "Bias" = 1), selected = "Weights"), # the numbers are important for later on
+                selectInput("weights", "Weights/Bias", list("Weights" = -1, "Bias" = 0), selected = "Weights"), # the numbers are important for later on
                 width = 3
               ),
 
@@ -65,7 +65,7 @@ PerformanceShiny = R6::R6Class(
               # Sidebar with selection inputs
               sidebarPanel(
                 selectInput("layer_3d", "Layer", layer_index, selected = 1),
-                selectInput("weights_3d", "Weights/Bias", list("Weights" = 0, "Bias" = 1), selected = "Weights"), # the numbers are important for later on
+                selectInput("weights_3d", "Weights/Bias", list("Weights" = -1, "Bias" = 0), selected = "Weights"), # the numbers are important for later on
                 width = 3
               ),
 
@@ -110,16 +110,22 @@ PerformanceShiny = R6::R6Class(
             sidebarLayout(
               # Sidebar with a slider and selection inputs
               sidebarPanel(
-                numericInput("iter_3d", "Training Iteration", value = 1, min = 1, max = length(perf$list_models)),
                 selectInput("x_axis_3d", "X axis", variable_selection, selected = variable_selection[[1]]),
                 selectInput("y_axis_3d", "Y axis", variable_selection, selected = variable_selection[[2]]),
+                selectInput("z_axis", "Z axis", value_selection, selected = value_selection[[1]]),
                 selectInput("color", "Dot Color", variable_selection_null, selected = "-"),
                 selectInput("size", "Dot Size", variable_selection_null, selected = "-"),
+                tags$hr(),
+                h3("Prediction Surface"),
+                numericInput("iter_3d", "Training Iteration", value = 1, min = 1, max = length(perf$list_models)),
                 lapply(1:ncol(perf$agent$replay.x), function(i) {
                   uiOutput(paste0('c', i))
                 }),
                 tags$hr(),
-                selectInput("z_axis", "Z axis", value_selection, selected = value_selection[[1]]),
+                h3("Camera Position"),
+                sliderInput("x_angle", "X Axis", min = -5, max = 5, value = 1.25, step = 0.25),
+                sliderInput("y_angle", "Y Axis", min = -5, max = 5, value = 1.25, step = 0.25),
+                sliderInput("z_angle", "Z Axis", min = -5, max = 5, value = 0.5, step = 0.25),
                 width = 3
               ),
 
@@ -173,13 +179,23 @@ PerformanceShiny = R6::R6Class(
 
         output$plot_weights_2d = plotly::renderPlotly({
 
-          weights_data = reactiveVal()
-          weights_data({
-            weight_index = as.integer(input$layer) + as.integer(input$weights)
-            dim_weights  = dim(s_weights[[weight_index]])
-            weights_data = cbind( expand.grid(1:dim_weights[1], 1:dim_weights[2]), round(c(s_weights[[weight_index]]), 4))
-            names(weights_data) = c("col_index", "row_index", "value")
-          })
+          weight_index = as.integer(input$layer) * 2 + as.integer(input$weights)
+          dim_weights  = dim(s_weights[[weight_index]])
+          weights_data = {
+            if (length(dim_weights) == 2)
+              cbind(
+                expand.grid(1:dim_weights[1], 1:dim_weights[2]),
+                round(c(s_weights[[weight_index]]), 4)
+              )
+            else
+              cbind(
+                1:dim_weights,
+                1,
+                round(c(s_weights[[weight_index]]), 4)
+              )
+            } %>%
+            as.data.frame()
+          names(weights_data) = c("col_index", "row_index", "value")
 
           weights_data %>%
             plotly::plot_ly(
@@ -202,13 +218,23 @@ PerformanceShiny = R6::R6Class(
 
         output$plot_weights_3d <- plotly::renderPlotly({
 
-          weights_data = reactiveVal()
-          weights_data({
-            weight_index = as.integer(input$layer_3d) + as.integer(input$weights_3d)
-            dim_weights  = dim(s_weights[[weight_index]])
-            weights_data = cbind( expand.grid(1:dim_weights[1], 1:dim_weights[2]), round(c(s_weights[[weight_index]]), 4))
-            names(weights_data) = c("col_index", "row_index", "value")
-          })
+          weight_index = as.integer(input$layer_3d) * 2 + as.integer(input$weights_3d)
+          dim_weights  = dim(s_weights[[weight_index]])
+          weights_data = {
+            if (length(dim_weights) == 2)
+              cbind(
+                expand.grid(1:dim_weights[1], 1:dim_weights[2]),
+                round(c(s_weights[[weight_index]]), 4)
+              )
+            else
+              cbind(
+                1:dim_weights,
+                1,
+                round(c(s_weights[[weight_index]]), 4)
+              )
+            } %>%
+            as.data.frame()
+          names(weights_data) = c("col_index", "row_index", "value")
 
           weights_data %>%
             plotly::plot_ly(
@@ -337,16 +363,20 @@ PerformanceShiny = R6::R6Class(
               dragmode = "turntable",
               showlegend = TRUE,
               scene = list(
-                xaxis = list(title = input$x_axis_3d, titlefont = list(size = 25)),
-                yaxis = list(title = input$y_axis_3d, titlefont = list(size = 25)),
-                zaxis = list(title = input$z_axis, titlefont = list(size = 30))
+                camera = list(eye   = list(x = input$x_angle, y = input$y_angle, z = input$z_angle)),
+                xaxis  = list(title = input$x_axis_3d, titlefont = list(size = 25)),
+                yaxis  = list(title = input$y_axis_3d, titlefont = list(size = 25)),
+                zaxis  = list(title = input$z_axis,    titlefont = list(size = 30))
               )
             ) %>%
             plotly::add_surface(
               data = state_space,
               x = ~ x,
               y = ~ y,
-              z = ~ get(input$z_axis)
+              z = ~ get(input$z_axis),
+              colorscale = "Viridis",
+              opacity = 0.95,
+              autocolorscale = FALSE
             )
         })
       }
