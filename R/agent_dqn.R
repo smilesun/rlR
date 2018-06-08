@@ -88,7 +88,7 @@ AgentDQN$test2 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
   #env = makeGymEnv("MountainCar-v0", act.cheat = function(a) { if(a ==2) return(3); return(a)}, actcnt = 2)
   env = makeGymEnv("MountainCar-v0")
   agent = makeAgent("AgentDQN", env)
-  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 1, policy.minEpsilon = 0.1, policy.decay = exp(-0.01), replay.batchsize = 8, agent.nn.arch = list(nhidden = 8, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.5e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 1, policy.minEpsilon = 0.1, policy.decay = exp(-0.01), replay.batchsize = 8, agent.nn.arch = list(nhidden = 8, act1 = "relu", act2 = "linear", loss = "mse", lr = 1e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
   agent$learn(1000)
 }
 
