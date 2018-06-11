@@ -5,10 +5,12 @@ SurroNN = R6::R6Class("SurroNN",
     arch.list = NULL,
     conf = NULL,
     agent = NULL,
+    custom_flag = NULL,
     initialize = function(agent, arch_list_name = "agent.nn.arch", ...) {
       par_list = list(...)
       self$agent = agent
       self$actCnt = self$agent$actCnt
+      self$custom_flag = FALSE
       if ("act_cnt" %in% names(par_list)) self$actCnt = par_list[["act_cnt"]]
       self$stateDim = self$agent$stateDim
       #self$actCnt = actCnt
@@ -32,6 +34,7 @@ SurroNN = R6::R6Class("SurroNN",
 
     setModel = function(obj) {
       self$model = obj
+      self$custom_flag = TRUE
     },
 
     getWeights = function() {
@@ -77,7 +80,11 @@ SurroNN = R6::R6Class("SurroNN",
         #list2env(as.list.environment(value, all.names = TRUE),
                  #parent = emptyenv())
         weights = self$getWeights()
-        model = self$makeModel()
+        if (self$custom_flag) {
+          model = keras::clone_model(self$model)
+        } else {
+          model = self$makeModel()
+        }
         keras::set_weights(model, weights)
         return(model)
         #keras::clone_model(self$model)
