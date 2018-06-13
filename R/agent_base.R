@@ -122,7 +122,16 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     # transform observation to  the replay memory
-    observe = function(state.old, action, reward, state.new, done, info, episode, stepidx, action.new = NULL) {
+    #observe = function(state.old, action, reward, state.new, done, info, episode, stepidx, action.new = NULL) {
+    observe = function(interact) {
+      state.old = interact$s.old
+      action = interact$action
+      reward = interact$s_r_done_info[[2L]]
+      state.new = interact$s_r_done_info[[1L]]
+      done = interact$s_r_done_info[[3L]]
+      info = interact$s_r_done_info[[4]]
+      episode = interact$idx.episode + 1L
+      stepidx = interact$idx.step + 1L
       ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
       self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
       self$mem$add(ins)

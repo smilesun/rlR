@@ -4,9 +4,9 @@ Policy = R6::R6Class("Policy",
     decay = NULL,
     logdecay = NULL,
     host = NULL,
-    minEpsilon = 0.01,
-    maxEpsilon = 1,
-    gstep.idx = 1,
+    minEpsilon = NULL,
+    maxEpsilon = NULL,
+    gstep.idx = NULL,
     action = NULL,
     initialize = function(host) {
       self$host = host
@@ -15,6 +15,7 @@ Policy = R6::R6Class("Policy",
       self$minEpsilon = self$host$conf$get("policy.minEpsilon")
       self$maxEpsilon = self$host$conf$get("policy.maxEpsilon")
       self$epsilon = self$maxEpsilon
+      self$gstep.idx = 1
     },
 
     predProbRank = function(state) {

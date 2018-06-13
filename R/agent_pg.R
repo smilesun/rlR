@@ -100,3 +100,11 @@ AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
   perf = interact$run(iter)
   return(perf)
 }
+
+AgentPG$testCNN = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+  conf = rlR.AgentPG.conf()
+  env = makeGymEnv("Pong-v0")
+  agent = makeAgent("AgentPG", env)
+  agent$updatePara(console = TRUE, render = TRUE)
+  agent$learn(1)
+}
