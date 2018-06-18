@@ -56,6 +56,7 @@ AgentDQN = R6::R6Class("AgentDQN",
     afterEpisode = function(interact) {
           self$policy$afterEpisode()
           self$mem$afterEpisode()
+          self$brain$lr =  self$brain$lr * self$lr_decay
     }
     ), # public
   private = list(),
@@ -100,7 +101,7 @@ AgentDQN$test3 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
     layer_dropout(rate = 0.25) %>%
     layer_dense(units = 3, activation = 'linear');model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 9e-4))
   model
-  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.001, policy.decay = exp(-0.001), replay.batchsize = 10, replay.epochs = 4)
+  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.001, policy.decay = exp(-0.001), replay.batchsize = 10, replay.epochs = 4, agent.lr_decay = exp(-0.001))
   agent$customizeBrain(model)
   agent$learn(50)
 }

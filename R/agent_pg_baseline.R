@@ -79,6 +79,14 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
           return(target)
     },
 
+    adaptLearnRate = function() {
+      if (is.null(self$plateau)) return(NULL)
+      if (self$interact$perf$getAccPerf(100L) > self$plateau)  {
+        self$brain_actor$lr =  self$brain_actor$lr * self$lr_decay
+        self$brain_critic$lr =  self$brain_critic$lr * self$lr_decay
+      }
+    },
+
     afterStep = function() {
         self$policy$afterStep()
     },

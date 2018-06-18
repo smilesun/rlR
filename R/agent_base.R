@@ -119,7 +119,6 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     # transform observation to  the replay memory
-    #observe = function(state.old, action, reward, state.new, done, info, episode, stepidx, action.new = NULL) {
     observe = function(interact) {
       state.old = interact$s.old
       action = interact$action
@@ -203,14 +202,6 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     learn = function(iter) {
       self$interact$run(iter)
-    },
-
-    adaptLearnRate = function() {
-      if (is.null(self$plateau)) return(NULL)
-      if (self$interact$perf$getAccPerf(100L) > self$plateau)  {
-        self$brain_actor$lr =  self$brain_actor$lr * self$lr_decay
-        self$brain_critic$lr =  self$brain_critic$lr * self$lr_decay
-      }
     },
 
     continue = function(new_env, iter) {

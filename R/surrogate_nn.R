@@ -13,8 +13,6 @@ SurroNN = R6::R6Class("SurroNN",
       self$custom_flag = FALSE
       if ("act_cnt" %in% names(par_list)) self$actCnt = par_list[["act_cnt"]]
       self$stateDim = self$agent$stateDim
-      #self$actCnt = actCnt
-      #self$stateDim = stateDim
       # 
       self$conf = self$agent$conf
       self$arch.list = self$conf$get(arch_list_name)
