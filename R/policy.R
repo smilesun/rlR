@@ -8,7 +8,11 @@ Policy = R6::R6Class("Policy",
     maxEpsilon = NULL,
     gstep.idx = NULL,
     action = NULL,
+    random_cnt = NULL,
+    random.action = NULL,
+    flag_epsilon_decay_perStep = NULL,
     initialize = function(host) {
+      self$random_cnt = 0L
       self$host = host
       self$decay = self$host$conf$get("policy.decay")
       self$logdecay = log(self$decay)
@@ -16,6 +20,10 @@ Policy = R6::R6Class("Policy",
       self$maxEpsilon = self$host$conf$get("policy.maxEpsilon")
       self$epsilon = self$maxEpsilon
       self$gstep.idx = 1
+    },
+
+    sampleRandomAct = function(state) {
+        self$random.action = sample.int(self$host$actCnt)[1L]
     },
 
     predProbRank = function(state) {
@@ -26,10 +34,9 @@ Policy = R6::R6Class("Policy",
 
     info = function() {
         self$host$interact$toConsole("Epsilon%f \n", self$epsilon)
-        self$host$glogger$log.nn$info("rand steps:%i \n", self$host$random.cnt)
-        self$host$interact$toConsole("rand steps:%i \n", self$host$random.cnt)  # same message to console
-        self$host$random.cnt = 0L
-
+        self$host$glogger$log.nn$info("rand steps:%d \n", self$random_cnt)
+        self$host$interact$toConsole("rand steps:%i \n", self$random_cnt)  # same message to console
+        self$random_cnt = 0L
     },
 
     decayEpsilon = function() {
@@ -56,11 +63,12 @@ PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
     },
 
     toss = function() {
-      if (runif(1L) < self$epsilon) {
-        self$host$sampleRandomAct()
+      flag = runif(1L) < self$epsilon
+      if (flag) {
+        self$sampleRandomAct()
         self$action = self$host$random.action
-        self$host$random.cnt = self$host$random.cnt + 1L  # increment random count
-        self$host$glogger$log.nn$info("random action: %d", self$action)
+        self$random_cnt = self$random_cnt + 1L
+        self$host$glogger$log.nn$info("epsilon random action: %d", self$action)
       }
     },
 
@@ -94,6 +102,7 @@ PolicyProbEpsilon = R6::R6Class("PolicyProbEpsilon",
       optarm = which.max(self$host$vec.arm.q)
       prob[optarm] = prob[optarm] + 1.0 - self$epsilon
       action  = sample.int(self$host$actCnt, prob = prob)[1L]
+      if (optarm != action) self$random_cnt = self$random_cnt + 1L
       return(action)
     },
 

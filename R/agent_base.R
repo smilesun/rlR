@@ -36,13 +36,11 @@ AgentArmed = R6::R6Class("AgentArmed",
     mem = NULL,  # replay memory
     advantage = NULL,
     list.acts = NULL,
-    random.cnt = NULL,
     actCnt = NULL,
     stateCnt = NULL,
     stateDim = NULL,
     conf = NULL,
     vec.arm.q = NULL,      # store Q value for each arm
-    random.action = NULL,  # store random.action
     # built from conf
     glogger = NULL,
     policy = NULL,
@@ -62,7 +60,6 @@ AgentArmed = R6::R6Class("AgentArmed",
     # member function
     # constructor
     initialize = function(env, conf) {
-      self$random.cnt = 0L
       self$initializeEnv(env)
       self$initializeConf(conf = conf)
     },
@@ -110,8 +107,8 @@ AgentArmed = R6::R6Class("AgentArmed",
       # object
       memname = self$conf$get("replay.memname")
       self$mem = ReplayMem$factory(memname, agent = self, conf = self$conf)
-      policy_fun = self$conf$get("policy.name")
-      self$policy = makePolicy(policy_fun, self)
+      policy_name = self$conf$get("policy.name")
+      self$policy = makePolicy(policy_name, self)
       self$glogger = RLLog$new(self$conf)
       self$createInteract(self$env)  # initialize after all other members are initialized!!
       self$setBrain()
@@ -189,14 +186,10 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     act = function(state) {
-      assert(class(state) == "array")
+      checkmate::assert_array(state)
       self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
       act = self$policy$act(state)  # returning the chosen action
       return(act)
-    },
-
-    sampleRandomAct = function(state) {
-        self$random.action = sample.int(self$actCnt)[1L]
     },
 
     afterStep = function() {

@@ -93,15 +93,14 @@ AgentDQN$test2 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
 }
 
 AgentDQN$test3 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  #env = makeGymEnv("MountainCar-v0", act.cheat = function(a) { if(a ==2) return(3); return(a)}, actcnt = 2)
   env = makeGymEnv("MountainCar-v0")
   agent = makeAgent("AgentDQN", env)
   model = keras_model_sequential()
   model %>% layer_dense(units = 10, activation = 'relu', input_shape = c(2)) %>%
     layer_dropout(rate = 0.25) %>%
-    layer_dense(units = 3, activation = 'linear');model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 1e-3))
+    layer_dense(units = 3, activation = 'linear');model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 9e-4))
   model
-  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.001, policy.decay = exp(-0.01), replay.batchsize = 10, replay.epochs = 4)
+  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.001, policy.decay = exp(-0.001), replay.batchsize = 10, replay.epochs = 4)
   agent$customizeBrain(model)
-  agent$learn(1000)
+  agent$learn(50)
 }
