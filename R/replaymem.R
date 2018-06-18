@@ -124,6 +124,11 @@ ReplayMemLatest = R6::R6Class("ReplayMemLatest",
   active = list()
   )
 
+ReplayMemOnline = R6::R6Class("ReplayMemOnline",
+  inherit = ReplayMemLatest,
+  public = list()
+)
+
 ReplayMemLatestProb = R6::R6Class("ReplayMemLatestProb",
   inherit = ReplayMem,
   public = list(

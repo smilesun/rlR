@@ -64,7 +64,6 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
 
     afterEpisode = function(interact) {
         self$getAdv(interact)
-        #self$replay(self$interact$perf$total.step)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
         self$interact$perf$rescue()
