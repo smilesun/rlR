@@ -19,7 +19,7 @@ RLConf = R6::R6Class("Conf",
     },
 
     initialize = function(...) {
-      self$conf.log.perf = data.table::copy(rlR.conf4log)
+      self$conf.log.perf = data.table::copy(rlR.conf4log)  # valid only when log = TRUE
       self$static = data.table::copy(rlR.conf.default)  # deep copy
       #par.list = list(...)
       #dns = setdiff(names(par.list), rlR.conf.default)
