@@ -8,6 +8,7 @@ ReplayMem = R6::R6Class("ReplayMem",
     agent = NULL,
     dt.temp = NULL,
     smooth = NULL,
+    flag_dt = NULL,
     initialize = function(agent, conf) {
       self$smooth = rlR.conf4log[["replay.mem.laplace.smoother"]]
       self$samples = list()
@@ -15,7 +16,11 @@ ReplayMem = R6::R6Class("ReplayMem",
       self$len = 0L
       self$conf = conf
       self$agent = agent
-      # helper constant variable
+      self$flag_dt = self$conf$get("replaymem.dt")
+      if (self$flag_dt) self$initTable(mem)
+    },
+
+    initTable = function() {
       self$dt.temp = data.table("delta" = NA, "priorityRank" = NA, "priorityAbs" = NA, "priorityDelta2" = NA, "deltaOfdelta" = NA, "deltaOfdeltaPercentage" = NA)
       self$dt.temp = self$dt.temp[, lapply(.SD, as.numeric)]
     },
@@ -34,6 +39,10 @@ ReplayMem = R6::R6Class("ReplayMem",
       len = length(self$samples)
       self$samples[[len + 1L]] = ins
       self$len = self$len + 1L
+      if(self$flag_dt) self$appendDT(ins)
+    },
+
+    appendDT = function(ins) {
       mdt = data.table(t(unlist(ins)))
       mdt = cbind(mdt, self$dt.temp)
       self$dt = rbindlist(list(self$dt, mdt), fill = TRUE)
@@ -126,7 +135,12 @@ ReplayMemLatest = R6::R6Class("ReplayMemLatest",
 
 ReplayMemOnline = R6::R6Class("ReplayMemOnline",
   inherit = ReplayMemLatest,
-  public = list()
+  public = list(
+    add = function(ins) {
+      self$samples[[1L]] = ins
+      self$len = 1L
+    }
+  )
 )
 
 ReplayMemLatestProb = R6::R6Class("ReplayMemLatestProb",

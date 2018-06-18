@@ -13,7 +13,6 @@ SurroNN = R6::R6Class("SurroNN",
       self$custom_flag = FALSE
       if ("act_cnt" %in% names(par_list)) self$actCnt = par_list[["act_cnt"]]
       self$stateDim = self$agent$stateDim
-      # 
       self$conf = self$agent$conf
       self$arch.list = self$conf$get(arch_list_name)
       self$arch.list$lr = self$conf$get("agent.lr")
@@ -48,10 +47,6 @@ SurroNN = R6::R6Class("SurroNN",
     },
 
     train = function(X_train, Y_train, epochs = 1L) {
-      #nr = nrow(X_train)
-      #keras::k_set_value(self$model$optimizer$lr, self$lr / 3)
-      #lr = keras::k_get_value(self$model$optimizer$lr)
-      #cat(sprintf("learning rate: %s", lr))
       keras::fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
     },
 
@@ -61,22 +56,16 @@ SurroNN = R6::R6Class("SurroNN",
     },
 
     afterEpisode = function() {
-        #nr = nrow(X_train)
-        # keras::k_set_value(self$model$optimizer$lr, self$lr / nr)
+        #FIXME: adjust learning rate with dataframe nrow?
         keras::k_set_value(self$model$optimizer$lr, self$lr)
         lr = keras::k_get_value(self$model$optimizer$lr)
-        cat(sprintf("learning rate: %s  \n", lr))
+        self$agent$interact$toConsole("learning rate: %s  \n", lr)
     }
-
     ),
   private = list(
     deep_clone = function(name, value) {
-      # With x$clone(deep=TRUE) is called, the deep_clone gets invoked once for
-      # each field, with the name and value.
+      # With x$clone(deep=TRUE) is called, the deep_clone gets invoked once for each field, with the name and value.
       if (name == "model") {
-        # `a` is an environment, so use this quick way of copying
-        #list2env(as.list.environment(value, all.names = TRUE),
-                 #parent = emptyenv())
         weights = self$getWeights()
         if (self$custom_flag) {
           model = keras::clone_model(self$model)
@@ -85,7 +74,6 @@ SurroNN = R6::R6Class("SurroNN",
         }
         keras::set_weights(model, weights)
         return(model)
-        #keras::clone_model(self$model)
       } else {
         # For all other fields, just return the value
         value
@@ -94,25 +82,3 @@ SurroNN = R6::R6Class("SurroNN",
   ),
   active = list()
 )
-
-SurroNN4PG = R6::R6Class("SurroNN4PG",
-  inherit = SurroNN,
-  public = list(
-    #initialize = function(actCnt, stateDim, arch.list) {
-    initialize = function(agent, arch_list_name, ...) {
-      super$initialize(agent, arch_list_name, ...)  # FIXME: arch.list could be None when PG surrogate is called as super prior to PGBaseline is called.
-    },
-
-    train = function(X_train, Y_train, epochs = 1L) {
-          keras::fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
-    },
-
-    afterEpisode = function() {
-        #nr = nrow(X_train)
-        # keras::k_set_value(self$model$optimizer$lr, self$lr / nr)
-        keras::k_set_value(self$model$optimizer$lr, self$lr)
-        lr = keras::k_get_value(self$model$optimizer$lr)
-        cat(sprintf("learning rate: %s  \n", lr))
-    }
-    )
-  )

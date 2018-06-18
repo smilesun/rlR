@@ -25,10 +25,8 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
 
     setBrain = function() {
       super$setBrain()
-      #self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
-      self$brain_actor = SurroNN4PG$new(self, arch_list_name = "agent.nn.arch.actor")
-      self$brain_critic = SurroNN4PG$new(self, arch_list_name = "agent.nn.arch.critic", act_cnt = 1L)
-      #self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
+      self$brain_actor = SurroNN$new(self, arch_list_name = "agent.nn.arch.actor")
+      self$brain_critic = SurroNN$new(self, arch_list_name = "agent.nn.arch.critic", act_cnt = 1L)
       self$model = self$brain_critic
     },
 
@@ -51,7 +49,7 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
           self$delta = self$advantage - self$p.old.c
           vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
           ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
-          if(length(ded) > 1) {
+          if (length(ded) > 1) {
             ded = ded - mean(ded)  #  normalize
             ded = ded / sqrt(sum(ded ^ 2))  # normalize
           }
@@ -80,11 +78,8 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
     },
 
     adaptLearnRate = function() {
-      if (is.null(self$plateau)) return(NULL)
-      if (self$interact$perf$getAccPerf(100L) > self$plateau)  {
         self$brain_actor$lr =  self$brain_actor$lr * self$lr_decay
         self$brain_critic$lr =  self$brain_critic$lr * self$lr_decay
-      }
     },
 
     afterStep = function() {
