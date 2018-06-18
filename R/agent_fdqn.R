@@ -21,7 +21,6 @@ AgentFDQN = R6::R6Class("AgentFDQN",
 
     setBrain = function() {
       super$setBrain()
-      #self$brain_update = SurroNN$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
       self$brain_update = SurroNN$new(self)
       self$brain_target = self$brain
     },
