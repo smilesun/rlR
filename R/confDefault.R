@@ -15,7 +15,8 @@ policy.epi_wait_ini = 5L,  # initially the performance should increase
 policy.epi_wait_middle = 25L,
 policy.epi_wait_expl = 40L,
 agent.reward2adalr = 150,
-agent.lr_decay = 0.1,
+#agent.lr_decay = 0.1,
+agent.lr_decay = exp(-0.001),
 agent.lr = 1e-3,
 store_model = TRUE
 )

@@ -66,7 +66,7 @@ PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
       flag = runif(1L) < self$epsilon
       if (flag) {
         self$sampleRandomAct()
-        self$action = self$host$random.action
+        self$action = self$random.action
         self$random_cnt = self$random_cnt + 1L
         self$host$glogger$log.nn$info("epsilon random action: %d", self$action)
       }
