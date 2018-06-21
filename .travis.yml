@@ -13,6 +13,7 @@ addons:
       - python-pip 
       - python-dev 
       - build-essential
+      - zlib1g-dev
 before_install:
   - sudo pip install gym
   - sudo pip install gym[atari]
