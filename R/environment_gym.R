@@ -11,7 +11,9 @@ EnvGym = R6::R6Class("EnvGym",
     ok_step = NULL,
     bad_reward = NULL,
     name = NULL,
-    initialize = function(genv, name, state.cheat = identity, act.cheat = identity, actcnt = NULL, ok_reward = NULL, ok_step = NULL, bad_reward = NULL) {
+    old_state = NULL,
+    flag_video = NULL,
+    initialize = function(genv, name, state.cheat = identity, act.cheat = identity, actcnt = NULL, ok_reward = NULL, ok_step = NULL, bad_reward = NULL, flag_video = FALSE) {
       self$env = genv
       self$name = name
       self$ok_reward = ok_reward
@@ -29,6 +31,8 @@ EnvGym = R6::R6Class("EnvGym",
       self$state_dim = unlist(genv$observation_space$shape)
       state = genv$reset()  # only state is returned!
       state = self$state.cheat(state)
+      self$old_state = state
+      self$flag_video = flag_video
       self$state_cnt = length(state)
     },
 
@@ -42,7 +46,13 @@ EnvGym = R6::R6Class("EnvGym",
       action = as.integer(action)
       s_r_d_info = self$env$step(action)
       names(s_r_d_info) = c("state", "reward", "done", "info")
-      s_r_d_info[["state"]] = self$state.cheat(s_r_d_info[["state"]])
+      cur = self$state.cheat(s_r_d_info[["state"]])
+      if (self$flag_video) {
+        s_r_d_info[["state"]] = cur - self$old_state
+        self$old_state = cur
+      } else {
+        s_r_d_info[["state"]] = cur
+      }
       sl = length(s_r_d_info[["state"]])
       s_r_d_info
     },
