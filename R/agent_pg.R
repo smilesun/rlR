@@ -43,8 +43,12 @@ AgentPG = R6::R6Class("AgentPG",
         list.targets = lapply(self$list.replay, self$extractTarget)
         list.targets = lapply(1:len, function(i) ded[i] * list.targets[[i]])
         self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
-        self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
-        self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
+        temp = simplify2array(list.states.old)
+        mdim = dim(temp)
+        norder = length(mdim)
+        self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
+        self$replay.y = t(simplify2array(list.targets))
+        # assert(self$replay.x[1,,,]== list.states.old[[1L]])
     },
 
     replay = function(batchsize) {
