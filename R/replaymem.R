@@ -39,7 +39,7 @@ ReplayMem = R6::R6Class("ReplayMem",
       len = length(self$samples)
       self$samples[[len + 1L]] = ins
       self$len = self$len + 1L
-      if(self$flag_dt) self$appendDT(ins)
+      if (self$flag_dt) self$appendDT(ins)
     },
 
     appendDT = function(ins) {

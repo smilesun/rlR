@@ -51,13 +51,12 @@ AgentDDQN = R6::R6Class("AgentDDQN",
       self$p.next.h = self$getYhat(list.states.next)
       list.targets = lapply(1:length(self$list.replay), self$extractTarget)
       self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
-      self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
       temp = simplify2array(list.states.old) # R array put elements columnwise
       mdim = dim(temp)
       norder = length(mdim)
       self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
       #assert(self$replay.x[1,]== list.states.old[[1L]])
-      self$replay.y = as.array(t(as.data.table(list.targets)))  # array p
+      self$replay.y = t(simplify2array(list.targets))  # array p
     },
 
 
