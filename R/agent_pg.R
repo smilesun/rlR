@@ -49,6 +49,7 @@ AgentPG = R6::R6Class("AgentPG",
 
     replay = function(batchsize) {
         self$getXY(batchsize)
+        self$replay.x = array_reshape(self$replay.x, c(batchsize, self$stateDim))
         self$replay.y = self$replay.y * self$advantage * (+1)
         self$brain$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
     },
