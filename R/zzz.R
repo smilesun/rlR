@@ -7,6 +7,7 @@
 #' @import logging
 #' @import openssl
 #' @import ggplot2
+#' @import tensorflow
 NULL
 
 

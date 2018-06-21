@@ -136,11 +136,16 @@ ReplayMemLatest = R6::R6Class("ReplayMemLatest",
 ReplayMemOnline = R6::R6Class("ReplayMemOnline",
   inherit = ReplayMemLatest,
   public = list(
-    add = function(ins) {
-      self$samples[[1L]] = ins
-      self$len = 1L
+  sample.fun = function(k) {
+      # k is always set to the episode length currently
+      k = min(k, self$len)  # when k is too small, the learning stops at particular step
+      self$replayed.idx = (self$len - k + 1L): self$len
+      list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
+      self$samples = list()
+      self$len = 0L
+      return(list.res)
     }
-  )
+     )
 )
 
 ReplayMemLatestProb = R6::R6Class("ReplayMemLatestProb",

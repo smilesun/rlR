@@ -6,6 +6,7 @@ SurroNN = R6::R6Class("SurroNN",
     conf = NULL,
     agent = NULL,
     custom_flag = NULL,
+    sess = NULL,
     initialize = function(agent, arch_list_name = "agent.nn.arch", ...) {
       par_list = list(...)
       self$agent = agent
@@ -16,8 +17,9 @@ SurroNN = R6::R6Class("SurroNN",
       self$conf = self$agent$conf
       self$arch.list = self$conf$get(arch_list_name)
       self$arch.list$lr = self$conf$get("agent.lr")
-      self$lr = self$arch.list$lr
+      self$lr = self$arch.list$lr 
       self$model = self$makeModel()
+      self$sess = tensorflow::tf$Session()
     },
 
     makeModel = function() {
@@ -27,6 +29,25 @@ SurroNN = R6::R6Class("SurroNN",
         model = makeKerasModel(input_shape = self$stateDim, output_shape = self$actCnt, arch.list = self$arch.list)
       }
       return(model)
+    },
+
+    calGradients = function(state, action) {
+      output = self$model$output
+      input = self$model$trainable_weights
+      tf_grad = keras::k_gradients(output, input)
+      iname = self$model$input$name
+      oname = self$model$output$name
+      self$sess$run(tensorflow::tf$global_variables_initializer())
+      np = reticulate::import("numpy", convert = FALSE)
+      sstate = np$array(state)
+      saction = np$array(action)
+      feed_dict = py_dict(c(iname, oname), c(sstate, saction))
+      self$sess$run(tf_grad, feed_dict)
+    },
+
+    getGradients = function(state) {
+      res = self$pred(state)
+      grad = self$calGradients(state = state, action = res)
     },
 
     setModel = function(obj) {
