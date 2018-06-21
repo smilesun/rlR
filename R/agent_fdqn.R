@@ -25,42 +25,32 @@ AgentFDQN = R6::R6Class("AgentFDQN",
       self$brain_target = self$brain
     },
 
-      replay = function(batchsize) {
-          self$model = self$brain_target  # use target network to generate target
-          self$getXY(batchsize)
-          self$brain_update$train(self$replay.x, self$replay.y)  # update the policy model
-          #w1 = self$brain_target$getWeights()
-          #print("replay")
-          #w2 = self$brain$getWeights()
-          #w3 = self$brain_update$getWeights()
-          #print(all.equal(w1,w2))
-          #print(all.equal(w1,w3))
-      },
-   
-      act = function(state) {
-        assert(class(state) == "array")
-        self$model = self$brain_update
-        self$evaluateArm(state)
-        self$policy$act(state)
-      },
+    replay = function(batchsize) {
+      self$model = self$brain_target  # use target network to generate target
+      self$getXY(batchsize)
+      self$brain_update$train(self$replay.x, self$replay.y)  # update the policy model
+    },
 
-      # 
-      updateModel = function() {
-        uw = self$brain_update$getWeights()
-        self$brain_target$setWeights(uw)
-        #self$brain_target = self$brain_update$clone(deep = TRUE)
-        #print(self$brain_target$getWeights())
-        #print("update model")
-      },
+    act = function(state) {
+      assert(class(state) == "array")
+      self$model = self$brain_update
+      self$evaluateArm(state)
+      self$policy$act(state)
+    },
 
-      afterStep = function() {
-        self$replay(self$replay.size)
-      },
+    updateModel = function() {
+      uw = self$brain_update$getWeights()
+      self$brain_target$setWeights(uw)
+    },
 
-      afterEpisode = function(interact) {
-        super$afterEpisode(interact)
-        self$updateModel()
-      }
+    afterStep = function() {
+      self$replay(self$replay.size)
+    },
+
+    afterEpisode = function(interact) {
+      super$afterEpisode(interact)
+      self$updateModel()
+    }
     ), # public
   private = list(),
   active = list(
@@ -73,7 +63,6 @@ AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE, co
   conf$updatePara("console", console)
   conf$updatePara("render", render)
   interact = makeGymExperiment(sname = sname, aname = "AgentFDQN", conf = conf)
-
   perf = interact$run(iter)
   return(perf)
 }

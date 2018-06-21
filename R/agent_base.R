@@ -129,7 +129,7 @@ AgentArmed = R6::R6Class("AgentArmed",
       episode = interact$idx.episode + 1L
       stepidx = interact$idx.step + 1L
       ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
-      self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
+      # self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
       self$mem$add(ins)
     },
 

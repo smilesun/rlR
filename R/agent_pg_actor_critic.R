@@ -64,7 +64,7 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
         self$getAdv(interact)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
-        self$interact$perf$rescue()
+        if(self$flag_rescue) self$interact$perf$rescue()
         self$brain_actor$afterEpisode()
         self$brain_critic$afterEpisode()
         self$adaptLearnRate()
@@ -81,7 +81,7 @@ rlR.conf.AC = function() {
            console = FALSE,
            policy.name = "EpsilonGreedy",
            policy.maxEpsilon = 1,
-           policy.minEpsilon = 0.01,
+           policy.minEpsilon = 0.02,
            policy.decay = exp(-0.001),
            replay.epochs = 1L,
            replay.memname = "Latest",

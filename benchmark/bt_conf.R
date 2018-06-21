@@ -20,6 +20,6 @@ gbtconf$ALGO_RUN = c("rl_algo")
 gbtconf$PROB_RUN = c("rl_prob")
 gbtconf$PROB_LIST = list()
 #gbtconf$PROB_LIST[["rl_prob"]] = list(fun = "rl_prob", prob.data = c("MountainCar-v0", "CartPole-v0", "Amidar-ram-v0", "WizardOfWor-ram-v0", "Asteroids-ram-v0", "KungFuMaster-ram-v0", "JourneyEscape-ram-v0", "Acrobot-v1")
-gbtconf$PROB_LIST[["rl_prob"]] = list(fun = "rl_prob", prob.data = c("MountainCar-v0", "CartPole-v0")
+gbtconf$PROB_LIST[["rl_prob"]] = list(fun = "rl_prob", prob.data = c("MountainCar-v0", "CartPole-v0", "Acrobot-v1")
 )
 gbtconf$iteration = 500L

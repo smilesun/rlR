@@ -12,8 +12,10 @@
 AgentPG = R6::R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
+    flag_rescue = NULL,
     initialize = function(env, conf) {
       if (is.null(conf)) conf = rlR.AgentPG.conf()
+      self$flag_rescue = conf$get("agent.flag_rescue")
       super$initialize(env, conf = conf)
       self$setBrain()
 },
