@@ -23,6 +23,10 @@ AgentFDQN = R6::R6Class("AgentFDQN",
       super$setBrain()
       self$brain_update = SurroNN$new(self)
       self$brain_target = self$brain
+      print("control network:")
+      print(self$brain_update$model)
+      print("target network:")
+      print(self$brain_target$model)
     },
 
     replay = function(batchsize) {
