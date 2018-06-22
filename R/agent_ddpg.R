@@ -7,7 +7,7 @@
 #' @return [\code{\link{AgentDDPG}}].
 #' @export
 AgentDDPG = R6::R6Class("AgentDDPG",
-  inherit = AgentArmed,
+  inherit = AgentActorCritic,
   public = list(
     tau = NULL,  # bilinear combination of target and update network
     model = NULL,
@@ -22,6 +22,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     brain_critic_target = NULL,
     replay_actions = NULL,
     initialize = function(env, conf) {
+      self$tau = 0.1
       super$initialize(env, conf)
       self$setBrain()
     },
@@ -43,17 +44,25 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     setBrain = function() {
       self$task = "critic.update"
       self$brain_critic_update = SurroNN$new(self)
+      self$brain_critic_target = SurroNN$new(self)
       self$task = "actor.update"
       self$brain_actor_update = SurroNN$new(self)
+      self$brain_actor_target = SurroNN$new(self)
+      self$model = self$brain_critic_update
     },
 
     trainCritic = function() {
+      # self$replay.x, self$replay.actions
+    },
+
+    trainActor = function() {
+      # 
     },
 
     replay = function(size) {
-      self$trainCritic(self$replay.x, self$replay.actions)
-      #self$brain_critic_update$train(self$replay.x, y_critic)  # first update critic
-      #self$brain_actor_update$train(self$replay.x, y_actor)
+      self$unpack(size)
+      self$trainCritic()
+      self$trainActor()
       self$updateModel()
     },
 
@@ -71,12 +80,30 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     updateModel = function() {
       # actor
       uaw = self$brain_actor_update$getWeights()
+      uaw = lapply(uaw, function(x) x * self$tau)
       taw = self$brain_actor_target$getWeights()
-      self$brain_actor_target$setWeights(self$tau * uaw + (1.0 - self$tau) * taw)
+      taw = lapply(taw, function(x) x * (1.0 - self$tau))
+      www = mapply("+", uaw, taw)
+      self$brain_actor_target$setWeights(www)
       # critic
       uaw = self$brain_critic_update$getWeights()
+      uaw = lapply(uaw, function(x) x * self$tau)
       taw = self$brain_critic_target$getWeights()
-      self$brain_critic_target$setWeights(self$tau * uaw + (1.0 - self$tau) * taw)
+      taw = lapply(taw, function(x) x * (1.0 - self$tau))
+      www = mapply("+", uaw, taw)
+      self$brain_critic_target$setWeights(www)
+    },
+
+    unpack = function(batchsize) {
+      self$list.replay = self$mem$sample.fun(batchsize)
+      list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
+      list.states.next = lapply(self$list.replay, ReplayMem$extractNextState)
+      self$list.rewards = lapply(self$list.replay, ReplayMem$extractReward)
+      self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
+      temp = simplify2array(list.states.old) # R array put elements columnwise
+      mdim = dim(temp)
+      norder = length(mdim)
+      self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
     },
 
     afterStep = function() {

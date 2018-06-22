@@ -57,9 +57,11 @@ AgentArmed = R6::R6Class("AgentArmed",
     replay.y = NULL,
     replay.x = NULL,
     env = NULL,
+    sess = NULL,
     # member function
     # constructor
     initialize = function(env, conf) {
+      self$sess = tensorflow::tf$Session()
       self$initializeEnv(env)
       self$initializeConf(conf = conf)
     },

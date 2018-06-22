@@ -102,6 +102,7 @@ Interaction = R6::R6Class("Interaction",
         self$perf$extractInfo()
         return(self$perf)
     }, finally = {
+      self$rl.agent$sess$close()
       self$perf$afterAll()
       self$glogger$afterAll()
       self$rl.env$afterAll()

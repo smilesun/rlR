@@ -22,7 +22,7 @@ SurroNN = R6::R6Class("SurroNN",
         self$lr = self$arch.list$lr
       }
       self$model = self$makeModel()
-      self$sess = tensorflow::tf$Session()
+      self$sess = agent$sess
     },
 
     makeModel = function() {
