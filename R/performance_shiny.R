@@ -11,15 +11,15 @@ PerformanceShiny = R6::R6Class(
         data.frame()
 
       names(data) = c(
-        paste0("X_", 1:ncol(perf$agent$replay.x)),
-        paste0("Y_", 1:ncol(perf$agent$replay.y))
+        paste0("State_Dim_", 1:ncol(perf$agent$replay.x)),
+        paste0("ActionVal_Dim_", 1:ncol(perf$agent$replay.y))
       )
 
       # calculate space borders
       space_mins = sapply(data.frame(perf$agent$replay.x), FUN = min)
-      names(space_mins) = paste0("X_", 1:ncol(perf$agent$replay.x))
+      names(space_mins) = paste0("State_Dim_", 1:ncol(perf$agent$replay.x))
       space_maxs = sapply(data.frame(perf$agent$replay.x), FUN = max)
-      names(space_maxs) = paste0("X_", 1:ncol(perf$agent$replay.x))
+      names(space_maxs) = paste0("State_Dim_", 1:ncol(perf$agent$replay.x))
 
       # get the weights for plotting
       weights = perf$agent$brain$getWeights()
@@ -149,9 +149,9 @@ PerformanceShiny = R6::R6Class(
           output[[paste0('b', i)]] <- renderUI({
             req(input$x_axis_2d)
             # only use sliders unequal to x-axis selection
-            if (input$x_axis_2d != paste0("X_", i))
+            if (input$x_axis_2d != paste0("State_Dim_", i))
               sliderInput(
-                paste0("slider_2d_", i), paste0("X_", i),
+                paste0("slider_2d_", i), paste0("State_Dim_", i),
                 min = s_space_mins$data()[i] %>% floor,
                 max = s_space_maxs$data()[i] %>% ceiling,
                 value = round(s_space_mins$data()[i] + (s_space_maxs$data()[i] - s_space_mins$data()[i])/2), # take the middle
@@ -165,9 +165,9 @@ PerformanceShiny = R6::R6Class(
           output[[paste0('c', i)]] <- renderUI({
             req(input$x_axis_3d)
             # only use sliders unequal to x-axis selection
-            if (input$x_axis_3d != paste0("X_", i) && input$y_axis_3d != paste0("X_", i))
+            if (input$x_axis_3d != paste0("State_Dim_", i) && input$y_axis_3d != paste0("State_Dim_", i))
               sliderInput(
-                paste0("slider_3d_", i), paste0("X_", i),
+                paste0("slider_3d_", i), paste0("State_Dim_", i),
                 min = s_space_mins$data()[i] %>% floor,
                 max = s_space_maxs$data()[i] %>% ceiling,
                 value = round(s_space_mins$data()[i] + (s_space_maxs$data()[i] - s_space_mins$data()[i])/2), # take the middle
@@ -262,25 +262,25 @@ PerformanceShiny = R6::R6Class(
 
           s = input$x1_rows_selected
 
-          state_space = data.frame(X_1 = 0:99)
+          state_space = data.frame(State_Dim_1 = 0:99)
           # using a loop, because the order of the columns is important
           for (i in 1:ncol(perf$agent$replay.x)) {
-            if (paste0("X_", i) == input$x_axis_2d)
+            if (paste0("State_Dim_", i) == input$x_axis_2d)
               # generate evenly distributed points between space borders
               state_space[input$x_axis_2d] = sapply(
                 (s_space_maxs$data()[input$x_axis_2d] - s_space_mins$data()[input$x_axis_2d]),
                 function(x) 0:99/99 * x, USE.NAMES = FALSE
                 ) + s_space_mins$data()[input$x_axis_2d]
             else
-              state_space[paste0("X_", i)] = input[[paste0("slider_2d_", i)]]
+              state_space[paste0("State_Dim_", i)] = input[[paste0("slider_2d_", i)]]
           }
           state_space %<>% as.matrix
           predictions = array(state_space, dim = c(nrow(state_space), ncol(state_space))) %>%
             perf$list_models[[input$iter_2d]]$pred()
           state_space = cbind(state_space, predictions) %>% as.data.frame()
           names(state_space) = c(
-            paste0("X_", 1:ncol(perf$agent$replay.x)),
-            paste0("Y_", 1:ncol(perf$agent$replay.y))
+            paste0("State_Dim_", 1:ncol(perf$agent$replay.x)),
+            paste0("ActionVal_Dim_", 1:ncol(perf$agent$replay.y))
           )
 
           s_data %>%
@@ -318,34 +318,37 @@ PerformanceShiny = R6::R6Class(
 
           s <- input$x1_rows_selected
 
-          state_space = data.frame(X_1 = 0:9999)
+          state_space = data.frame(State_Dim_1 = 0:9999)
           # using a loop, because the order of the columns is important
           for (i in 1:ncol(perf$agent$replay.x)) {
-            if (paste0("X_", i) == input$x_axis_3d)
+            if (paste0("State_Dim_", i) == input$x_axis_3d)
               # generate evenly distributed points between space borders
               state_space[input$x_axis_3d] = rep(sapply((s_space_maxs$data()[input$x_axis_3d] - s_space_mins$data()[input$x_axis_3d]), function(x) 0:99/99 * x, USE.NAMES = FALSE) + s_space_mins$data()[input$x_axis_3d], 100)
-            else if (paste0("X_", i) == input$y_axis_3d)
+            else if (paste0("State_Dim_", i) == input$y_axis_3d)
               # generate evenly distributed points between space borders
               state_space[input$y_axis_3d] = rep(sapply((s_space_maxs$data()[input$y_axis_3d] - s_space_mins$data()[input$y_axis_3d]), function(x) 0:99/99 * x, USE.NAMES = FALSE) + s_space_mins$data()[input$y_axis_3d], each = 100)
             else
-              state_space[paste0("X_", i)] = input[[paste0("slider_3d_", i)]]
+              state_space[paste0("State_Dim_", i)] = input[[paste0("slider_3d_", i)]]
           }
           state_space %<>% as.matrix()
           predictions = array(state_space, dim = c(nrow(state_space), ncol(state_space))) %>%
             perf$list_models[[input$iter_3d]]$pred()
           state_space = cbind(state_space, predictions) %>% as.data.frame()
           names(state_space) = c(
-            paste0("X_", 1:ncol(perf$agent$replay.x)),
-            paste0("Y_", 1:ncol(perf$agent$replay.y))
+            paste0("State_Dim_", 1:ncol(perf$agent$replay.x)),
+            paste0("ActionVal_Dim_", 1:ncol(perf$agent$replay.y))
           )
 
           helper = function(df) {
-            list(
+            result = list(
               x = unique(df[[input$x_axis_3d]]),
-              y = unique(df[[input$y_axis_3d]]),
-              Y_1 = matrix(df[[length(df)-1]], nrow = 100, ncol = 100, byrow = TRUE),
-              Y_2 = matrix(df[[length(df)]], nrow = 100, ncol = 100, byrow = TRUE)
+              y = unique(df[[input$y_axis_3d]])
             )
+
+            for (i in 1:ncol(perf$agent$replay.y))
+              result[[paste0("ActionVal_Dim_", i)]] = matrix(df[[length(df)-ncol(perf$agent$replay.y)+i]], nrow = 100, ncol = 100, byrow = TRUE)
+
+            return(result)
           }
           state_space %<>% helper
 
@@ -366,7 +369,7 @@ PerformanceShiny = R6::R6Class(
                 camera = list(eye   = list(x = input$x_angle, y = input$y_angle, z = input$z_angle)),
                 xaxis  = list(title = input$x_axis_3d, titlefont = list(size = 25)),
                 yaxis  = list(title = input$y_axis_3d, titlefont = list(size = 25)),
-                zaxis  = list(title = input$z_axis,    titlefont = list(size = 30))
+                zaxis  = list(title = input$z_axis,    titlefont = list(size = 25), tickangle = 90)
               )
             ) %>%
             plotly::add_surface(

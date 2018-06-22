@@ -120,7 +120,7 @@ ReplayMemDB = R6::R6Class(
         ") %>%
         RSQLite::dbGetQuery(conn = self$db.con)
 
-      lapply(idx, function(i) list(
+      lapply(1:nrow(replay.samples), function(i) list(
         state.old = replay.samples$state_old[i] %>% str_to_array,
         action    = replay.samples$action[i],
         reward    = replay.samples$reward[i],
@@ -130,21 +130,22 @@ ReplayMemDB = R6::R6Class(
       ))
     },
 
+    # TODO: implement way to pull the whole replay memory
     # function taking a list of states (2d/3d/4d arrays) and transforming into video replay_<name>.mp4 in their given order
     # input arrays need at least 2 dimensions
     # mp4 file is compressed -> information loss -> only makes sense for human eyes
-    createReplayVideo = function(name, framerate = 25) {
+    createReplayVideo = function(name, start_state_id = 1, end_state_id, framerate = 25) {
       # check if the mp4 file doesn't exist - otherwise ffmpeg will make issues
       if (length(self$agent$stateDim) == 1) {
         stop("State data format is not suitable for video creation")
 
       } else if (!file.exists( paste0(getwd(), "/replay_", name, ".mp4")) ) {
         # get all states of the replay memory
-        states = self$getSamples(1:self$len) %>%
+        states = self$getSamples(start_state_id:end_state_id)
 
         # create PNGs in a temporary directory
         tempdir = tempdir()
-        for (i in 1:self$len) {
+        for (i in 1:(end_state_id-start_state_id)) {
           png::writePNG(
             states[[i]]$state.old / 255,
             target = paste0(tempdir, "/img", stringr::str_pad(i, 7, pad = "0"),".png")
