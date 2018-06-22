@@ -36,13 +36,11 @@ AgentArmed = R6::R6Class("AgentArmed",
     mem = NULL,  # replay memory
     advantage = NULL,
     list.acts = NULL,
-    random.cnt = NULL,
     actCnt = NULL,
     stateCnt = NULL,
     stateDim = NULL,
     conf = NULL,
     vec.arm.q = NULL,      # store Q value for each arm
-    random.action = NULL,  # store random.action
     # built from conf
     glogger = NULL,
     policy = NULL,
@@ -62,7 +60,6 @@ AgentArmed = R6::R6Class("AgentArmed",
     # member function
     # constructor
     initialize = function(env, conf) {
-      self$random.cnt = 0L
       self$initializeEnv(env)
       self$initializeConf(conf = conf)
     },
@@ -110,8 +107,8 @@ AgentArmed = R6::R6Class("AgentArmed",
       # object
       memname = self$conf$get("replay.memname")
       self$mem = ReplayMem$factory(memname, agent = self, conf = self$conf)
-      policy_fun = self$conf$get("policy.name")
-      self$policy = makePolicy(policy_fun, self)
+      policy_name = self$conf$get("policy.name")
+      self$policy = makePolicy(policy_name, self)
       self$glogger = RLLog$new(self$conf)
       self$createInteract(self$env)  # initialize after all other members are initialized!!
       self$setBrain()
@@ -122,9 +119,17 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     # transform observation to  the replay memory
-    observe = function(state.old, action, reward, state.new, done, info, episode, stepidx, action.new = NULL) {
+    observe = function(interact) {
+      state.old = interact$s.old
+      action = interact$action
+      reward = interact$s_r_done_info[[2L]]
+      state.new = interact$s_r_done_info[[1L]]
+      done = interact$s_r_done_info[[3L]]
+      info = interact$s_r_done_info[[4]]
+      episode = interact$idx.episode + 1L
+      stepidx = interact$idx.step + 1L
       ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
-      self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
+      # self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
       self$mem$add(ins)
     },
 
@@ -174,20 +179,16 @@ AgentArmed = R6::R6Class("AgentArmed",
         norder = length(mdim)
         self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
         # assert(self$replay.x[1,,,]== list.states.old[[1L]])
-        self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
+        self$replay.y = t(simplify2array(list.targets))  # array put elements columnwise
         diff_table = abs(self$replay.y - self$p.old)
         self$replay_delta = apply(diff_table, 1, mean)
     },
 
     act = function(state) {
-      assert(class(state) == "array")
+      checkmate::assert_array(state)
       self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
       act = self$policy$act(state)  # returning the chosen action
       return(act)
-    },
-
-    sampleRandomAct = function(state) {
-        self$random.action = sample.int(self$actCnt)[1L]
     },
 
     afterStep = function() {
@@ -201,14 +202,6 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     learn = function(iter) {
       self$interact$run(iter)
-    },
-
-    adaptLearnRate = function() {
-      if (is.null(self$plateau)) return(NULL)
-      if (self$interact$perf$getAccPerf(100L) > self$plateau)  {
-        self$brain_actor$lr =  self$brain_actor$lr * self$lr_decay
-        self$brain_critic$lr =  self$brain_critic$lr * self$lr_decay
-      }
     },
 
     continue = function(new_env, iter) {

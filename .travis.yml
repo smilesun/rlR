@@ -13,8 +13,10 @@ addons:
       - python-pip 
       - python-dev 
       - build-essential
+      - zlib1g-dev
 before_install:
   - sudo pip install gym
+  - sudo pip install gym[atari]
   - sudo pip install tensorflow==1.1.0
   - sudo pip install numpy==1.12.1
   - sudo pip install h5py==2.7.0

@@ -7,6 +7,7 @@
 #' @import logging
 #' @import openssl
 #' @import ggplot2
+#' @import tensorflow
 NULL
 
 
@@ -96,4 +97,3 @@ listAvailAgent = function() {
 #   all[mem.idx]
 # }
 rlR.xd = function() reticulate::use_python("~/anaconda3/bin/python")
-rlR.xd()

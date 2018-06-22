@@ -25,8 +25,8 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
 
     setBrain = function() {
       super$setBrain()
-      self$brain_actor = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.actor"))
-      self$brain_critic = SurroNN4PG$new(actCnt = 1L, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch.critic"))
+      self$brain_actor = SurroNN$new(self, arch_list_name = "agent.nn.arch.actor")
+      self$brain_critic = SurroNN$new(self, arch_list_name = "agent.nn.arch.critic", act_cnt = 1L)
       self$model = self$brain_critic
     },
 
@@ -40,7 +40,13 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
         self$model = self$brain_critic
         self$p.old.c = self$getYhat(list.states.old)
         self$p.next.c = self$getYhat(list.states.next)
-        self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
+        #self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
+        temp = simplify2array(list.states.old) # R array put elements columnwise
+        mdim = dim(temp)
+        norder = length(mdim)
+        self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
+        # assert(self$replay.x[1,,,]== list.states.old[[1L]])
+        #self$replay.y = t(simplify2array(list.targets))  # array put
     },
 
      replay = function(batchsize) {
@@ -49,7 +55,7 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
           self$delta = self$advantage - self$p.old.c
           vec.step = unlist(lapply(self$list.replay, ReplayMem$extractStep))
           ded = sapply(vec.step, function(x) cumprod(rep(self$gamma, x))[x])
-          if(length(ded) > 1) {
+          if (length(ded) > 1) {
             ded = ded - mean(ded)  #  normalize
             ded = ded / sqrt(sum(ded ^ 2))  # normalize
           }
@@ -75,6 +81,11 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
           vec.act[act] = 1.0
           target = advantage * array(vec.act, dim = c(1L, self$actCnt))
           return(target)
+    },
+
+    adaptLearnRate = function() {
+        self$brain_actor$lr =  self$brain_actor$lr * self$lr_decay
+        self$brain_critic$lr =  self$brain_critic$lr * self$lr_decay
     },
 
     afterStep = function() {
