@@ -6,6 +6,7 @@ SurroNN = R6::R6Class("SurroNN",
     conf = NULL,
     agent = NULL,
     custom_flag = NULL,
+    action_input = NULL,
     sess = NULL,
     initialize = function(agent, arch_list_name = "agent.nn.arch", ...) {
       par_list = list(...)
@@ -15,20 +16,41 @@ SurroNN = R6::R6Class("SurroNN",
       if ("act_cnt" %in% names(par_list)) self$actCnt = par_list[["act_cnt"]]
       self$stateDim = self$agent$stateDim
       self$conf = self$agent$conf
-      self$arch.list = self$conf$get(arch_list_name)
-      self$arch.list$lr = self$conf$get("agent.lr")
-      self$lr = self$arch.list$lr 
+      if (!is.null(self$conf)) {
+        self$arch.list = self$conf$get(arch_list_name)
+        self$arch.list$lr = self$conf$get("agent.lr")
+        self$lr = self$arch.list$lr
+      }
       self$model = self$makeModel()
       self$sess = tensorflow::tf$Session()
     },
 
     makeModel = function() {
+      if (self$agent$env$flag_continous) {
+        model = self$agent$createBrain()  # the agent itself is responsible for creating the brain
+        return(model)
+      }
       if (length(self$stateDim) > 1L) {
         model = makeCnn(input_shape = self$stateDim, act_cnt = self$actCnt)
       } else {
         model = makeKerasModel(input_shape = self$stateDim, output_shape = self$actCnt, arch.list = self$arch.list)
       }
       return(model)
+    },
+
+    # calculate gradients with respect to input arm instead of weights
+    calGradients2Action = function(state_input, action_input) {
+      output = self$model$output
+      input = self$action_input
+      tf_grad = keras::k_gradients(output, input)
+      iname = self$action$name
+      oname = self$model$output$name
+      self$sess$run(tensorflow::tf$global_variables_initializer())
+      np = reticulate::import("numpy", convert = FALSE)
+      sstate = np$array(state_input)
+      saction = np$array(action_input)
+      feed_dict = py_dict(c(iname, oname), c(sstate, saction))
+      self$sess$run(tf_grad, feed_dict)
     },
 
     calGradients = function(state, action) {

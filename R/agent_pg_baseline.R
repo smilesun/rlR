@@ -40,7 +40,6 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
         self$model = self$brain_critic
         self$p.old.c = self$getYhat(list.states.old)
         self$p.next.c = self$getYhat(list.states.next)
-        #self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
         temp = simplify2array(list.states.old) # R array put elements columnwise
         mdim = dim(temp)
         norder = length(mdim)

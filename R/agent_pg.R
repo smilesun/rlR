@@ -18,7 +18,7 @@ AgentPG = R6::R6Class("AgentPG",
       self$flag_rescue = conf$get("agent.flag_rescue")
       super$initialize(env, conf = conf)
       self$setBrain()
-},
+    },
 
     setBrain = function() {
       super$setBrain()
