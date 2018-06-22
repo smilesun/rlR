@@ -8,6 +8,7 @@ ReplayMem = R6::R6Class("ReplayMem",
     agent = NULL,
     dt.temp = NULL,
     smooth = NULL,
+    flag_dt = NULL,
     initialize = function(agent, conf) {
       self$smooth = rlR.conf4log[["replay.mem.laplace.smoother"]]
       self$samples = list()
@@ -15,7 +16,11 @@ ReplayMem = R6::R6Class("ReplayMem",
       self$len = 0L
       self$conf = conf
       self$agent = agent
-      # helper constant variable
+      self$flag_dt = self$conf$get("replaymem.dt")
+      if (self$flag_dt) self$initTable(mem)
+    },
+
+    initTable = function() {
       self$dt.temp = data.table("delta" = NA, "priorityRank" = NA, "priorityAbs" = NA, "priorityDelta2" = NA, "deltaOfdelta" = NA, "deltaOfdeltaPercentage" = NA)
       self$dt.temp = self$dt.temp[, lapply(.SD, as.numeric)]
     },
@@ -34,6 +39,10 @@ ReplayMem = R6::R6Class("ReplayMem",
       len = length(self$samples)
       self$samples[[len + 1L]] = ins
       self$len = self$len + 1L
+      if (self$flag_dt) self$appendDT(ins)
+    },
+
+    appendDT = function(ins) {
       mdt = data.table(t(unlist(ins)))
       mdt = cbind(mdt, self$dt.temp)
       self$dt = rbindlist(list(self$dt, mdt), fill = TRUE)
@@ -123,6 +132,21 @@ ReplayMemLatest = R6::R6Class("ReplayMemLatest",
   private = list(),
   active = list()
   )
+
+ReplayMemOnline = R6::R6Class("ReplayMemOnline",
+  inherit = ReplayMemLatest,
+  public = list(
+  sample.fun = function(k) {
+      # k is always set to the episode length currently
+      k = min(k, self$len)  # when k is too small, the learning stops at particular step
+      self$replayed.idx = (self$len - k + 1L): self$len
+      list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
+      self$samples = list()
+      self$len = 0L
+      return(list.res)
+    }
+     )
+)
 
 ReplayMemLatestProb = R6::R6Class("ReplayMemLatestProb",
   inherit = ReplayMem,

@@ -14,12 +14,13 @@ License: BSD_2_clause + file LICENSE
 Encoding: UTF-8
 Depends:
     R (>= 3.4.0),
-    R6
 Imports:
+    R6,
     checkmate,
     data.table,
     reticulate,
     keras,
+    tensorflow,
     logging,
     ggplot2,
     openssl,

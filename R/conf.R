@@ -19,7 +19,7 @@ RLConf = R6::R6Class("Conf",
     },
 
     initialize = function(...) {
-      self$conf.log.perf = data.table::copy(rlR.conf4log)
+      self$conf.log.perf = data.table::copy(rlR.conf4log)  # valid only when log = TRUE
       self$static = data.table::copy(rlR.conf.default)  # deep copy
       #par.list = list(...)
       #dns = setdiff(names(par.list), rlR.conf.default)
@@ -49,7 +49,11 @@ RLConf = R6::R6Class("Conf",
 
     ps = function() {
       cat("parameters: \n")
-      dns = names(self$static)
+      list_param = self$static
+      dns = names(list_param)
+      ## remove agent.nn
+      flag = sapply(dns, function(x) grepl("agent.nn", x))
+      dns = dns[-which(flag)]
       lapply(dns, function(x) cat(sprintf("-%s: %s- %s-\n", x, {
             ns = names(self$static[[x]])
             if (is.null(ns)) ns = ""

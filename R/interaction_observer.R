@@ -41,8 +41,8 @@ Interaction = R6::R6Class("Interaction",
         },
         "after.step" = function() {
           self$glogger$log.nn$info("reward %f", self$s_r_done_info[[2L]])
-          self$rl.agent$observe(state.old = self$s.old, action = self$action, reward = self$s_r_done_info[[2L]], state.new = self$s_r_done_info[[1L]], done = self$s_r_done_info[[3L]], info = self$s_r_done_info[[4]], episode = self$idx.episode + 1L, stepidx = self$idx.step + 1L)
-          self$perf$r.vec.epi[self$idx.step] = self$s_r_done_info[[2L]]
+          self$rl.agent$observe(self)
+          self$perf$r.vec.epi[self$idx.step + 1L] = self$s_r_done_info[[2L]]
           self$idx.step = self$idx.step + 1L
           self$rl.agent$afterStep()
           self$checkEpisodeOver()
@@ -107,9 +107,6 @@ Interaction = R6::R6Class("Interaction",
       self$rl.env$afterAll()
       rlR.global.perf <<- self$perf
       rlR.global.perf$agent$conf$updatePara("render", FALSE)
-      #rlR.rescue.global.agent <<- self$rl.agent$clone(deep = TRUE)
-      #rlR.rescue.global.agent$updatePara("render", FALSE)
-      #rlR.rescue.global.inter <<- self
     }) # try catch
     } # function
     ), # public

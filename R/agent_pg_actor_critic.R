@@ -17,8 +17,6 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
       super$initialize(env, conf = conf)
     },
 
-    # update para is already defined in parent class
-
     replay = function(batchsize) {
       self$getReplayYhat(batchsize)  # self$list.rewards are extracted here
       self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
@@ -34,7 +32,7 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
       ded = ded / sqrt(sum(ded ^ 2))  # normalize
       ded = ded - mean(ded)  #  normalize
       list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
-      if(length(ded) > 0) list.targets.actor = lapply(1:len, function(i) list.targets.actor[[i]] * ded[i])
+      if (length(ded) > 0) list.targets.actor = lapply(1:len, function(i) list.targets.actor[[i]] * ded[i])
       list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
       y_actor = t(simplify2array(list.targets.actor))
       y_critic = array(unlist(list.targets.critic), dim = c(len, 1L))
@@ -64,10 +62,9 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
 
     afterEpisode = function(interact) {
         self$getAdv(interact)
-        #self$replay(self$interact$perf$total.step)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
-        self$interact$perf$rescue()
+        if(self$flag_rescue) self$interact$perf$rescue()
         self$brain_actor$afterEpisode()
         self$brain_critic$afterEpisode()
         self$adaptLearnRate()
@@ -84,7 +81,7 @@ rlR.conf.AC = function() {
            console = FALSE,
            policy.name = "EpsilonGreedy",
            policy.maxEpsilon = 1,
-           policy.minEpsilon = 0.001,
+           policy.minEpsilon = 0.02,
            policy.decay = exp(-0.001),
            replay.epochs = 1L,
            replay.memname = "Latest",
@@ -93,12 +90,12 @@ rlR.conf.AC = function() {
           )
 }
 
-AgentActorCritic$test = function(iter = 2000L, sname = "CartPole-v0", render = TRUE, console = FALSE) {
+AgentActorCritic$test = function(iter = 2000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
   set.seed(0)
   conf = rlR.conf.AC()
   conf$updatePara("console", console)
   conf$updatePara("render", render)
-  interact = makeGymExperiment(sname = sname, "AgentActorCritic", conf, ok_step = 100, ok_reward = 195)
+  interact = makeGymExperiment(sname = sname, "AgentActorCritic", conf, ok_step = 101, ok_reward = 195)
   perf = interact$run(iter)
   return(perf)
 }

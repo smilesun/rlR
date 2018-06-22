@@ -12,15 +12,17 @@
 AgentPG = R6::R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(
+    flag_rescue = NULL,
     initialize = function(env, conf) {
       if (is.null(conf)) conf = rlR.AgentPG.conf()
+      self$flag_rescue = conf$get("agent.flag_rescue")
       super$initialize(env, conf = conf)
       self$setBrain()
 },
 
     setBrain = function() {
       super$setBrain()
-      self$brain = SurroNN4PG$new(actCnt = self$actCnt, stateDim = self$stateDim, arch.list = self$conf$get("agent.nn.arch"))
+      self$brain = SurroNN$new(self, arch_list_name = "agent.nn.arch")
       self$model = self$brain
     },
 
@@ -41,12 +43,17 @@ AgentPG = R6::R6Class("AgentPG",
         list.targets = lapply(self$list.replay, self$extractTarget)
         list.targets = lapply(1:len, function(i) ded[i] * list.targets[[i]])
         self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
-        self$replay.x = as.array(t(as.data.table(list.states.old)))  # array put elements columnwise
-        self$replay.y = as.array(t(as.data.table(list.targets)))  # array put elements columnwise
+        temp = simplify2array(list.states.old)
+        mdim = dim(temp)
+        norder = length(mdim)
+        self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
+        self$replay.y = t(simplify2array(list.targets))
+        # assert(self$replay.x[1,,,]== list.states.old[[1L]])
     },
 
     replay = function(batchsize) {
         self$getXY(batchsize)
+        self$replay.x = array_reshape(self$replay.x, c(batchsize, self$stateDim))
         self$replay.y = self$replay.y * self$advantage * (+1)
         self$brain$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
     },
@@ -98,4 +105,12 @@ AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
   interact = makeGymExperiment(sname = sname, aname = "AgentPG", conf = conf)
   perf = interact$run(iter)
   return(perf)
+}
+
+AgentPG$testCNN = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+  conf = rlR.AgentPG.conf()
+  env = makeGymEnv("Pong-v0", flag_video = TRUE)
+  agent = makeAgent("AgentPG", env)
+  agent$updatePara(console = console, render = render, replay.memname = "Online")
+  agent$learn(iter)
 }

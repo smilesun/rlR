@@ -159,6 +159,9 @@ Performance = R6::R6Class("Performance",
 
     plot = function() {
       self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))
+      env_name = self$agent$env$name
+      class_name = class(self$agent)[1]
+      title = substitute(paste("Rewards per Episode of ", class_name, " for ", env_name, sep = ""), list(class_name = class_name, env_name = env_name))
       rewards = unlist(self$list.rewardPerEpisode)
       df = data.frame(episode = seq_along(rewards),
         rewards = rewards)
@@ -166,7 +169,7 @@ Performance = R6::R6Class("Performance",
         geom_point(alpha = 0.2) +
         theme_bw() +
         labs(
-          title = "Rewards Per Episode",
+          title = title,
           x = "Episode",
           y = "Rewards per episode"
           ) +

@@ -1,4 +1,4 @@
 # create configuration object
-rl_prob = function(job, data, s.name) {
+rl_prob = function(data, job, s.name) {
   return(s.name)
 }

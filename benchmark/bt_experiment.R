@@ -24,12 +24,20 @@ for (prob in gbtconf$PROB_RUN) {
 gbtconf$ALGO_LIST = list()
 
 
-gbtconf$ALGO_LIST$rl_algo = list(fun = rl_algo, design = data.frame(agent.name = gbtconf$agent.name, stringsAsFactors = FALSE))
+#gbtconf$ALGO_LIST$rl_algo_dqn = list(fun = rl_algo, design = data.frame(agent.name = gbtconf$agent.name, stringsAsFactors = FALSE))
+gbtconf$ALGO_LIST$rl_algo_dqn = list(fun = rl_algo_dqn)
+gbtconf$ALGO_LIST$rl_algo_fdqn = list(fun = rl_algo_fdqn)
+gbtconf$ALGO_LIST$rl_algo_ddqn = list(fun = rl_algo_ddqn)
+gbtconf$ALGO_LIST$rl_algo_pg = list(fun = rl_algo_pg)
+gbtconf$ALGO_LIST$rl_algo_pgb = list(fun = rl_algo_pgb)
+gbtconf$ALGO_LIST$rl_algo_pgac = list(fun = rl_algo_pgac)
+
 
 ades = list()
 
 for (algo in gbtconf$ALGO_RUN) {
   addAlgorithm(name = algo, fun = gbtconf$ALGO_LIST[[algo]]$fun)
-  ades[[algo]] = gbtconf$ALGO_LIST[[algo]]$design
+  # ades[[algo]] = gbtconf$ALGO_LIST[[algo]]$design
 }
-addExperiments(prob.design = pdes, algo.design = ades, repls = gbtconf$REPLS)
+addExperiments(prob.design = pdes, algo.design = NULL, repls = gbtconf$REPLS)
+unwrap(getJobPars())
