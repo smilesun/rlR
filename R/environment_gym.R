@@ -56,7 +56,10 @@ EnvGym = R6::R6Class("EnvGym",
       action = self$act.cheat(action)
       s_r_d_info = self$env$step(action)
       names(s_r_d_info) = c("state", "reward", "done", "info")
+      # for "Pendulum-v0" etc, the state return is 3*1 instead of 1*3
+      # for "CartPole-v0" etc, the state return is vector instead of state
       cur = self$state.cheat(s_r_d_info[["state"]])
+      if (grepl("Box", toString(self$env$action_space))) cur = t(cur)  # for continous action
       if (self$flag_video) {
         s_r_d_info[["state"]] = cur - self$old_state
         self$old_state = cur

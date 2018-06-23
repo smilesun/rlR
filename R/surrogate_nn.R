@@ -40,17 +40,23 @@ SurroNN = R6::R6Class("SurroNN",
     },
 
     # calculate gradients with respect to input arm instead of weights
-    calGradients2Action = function(state_input, action_input) {
+    calGradients2Action = function(state_input, action_input, output = NULL) {
       output = self$model$output
-      input = self$action_input
-      tf_grad = keras::k_gradients(output, input)
-      iname = self$action$name
+      # FIXME: hard coded here.
+      input_action = self$model$input[[1L]]
+      input_action_shape = input_action$shape
+      tf_grad = keras::k_gradients(output, input_action)
+      aname = input_action$name
+      sname = self$model$input[[2L]]$name
       oname = self$model$output$name
+      #FIXME: do we need initializer here?
       self$sess$run(tensorflow::tf$global_variables_initializer())
       np = reticulate::import("numpy", convert = FALSE)
       sstate = np$array(state_input)
       saction = np$array(action_input)
-      feed_dict = py_dict(c(iname, oname), c(sstate, saction))
+      feed_dict = py_dict(c(sname, aname), c(sstate, saction))
+      #FIXME: do we need to provide the output as well?
+      #feed_dict = py_dict(c(sname, aname, oname), c(sstate, saction, output))
       self$sess$run(tf_grad, feed_dict)
     },
 

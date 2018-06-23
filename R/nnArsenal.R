@@ -119,3 +119,45 @@ makeCnnCritic = function(input_shape = c(32, 32, 3), act_cnt = 1L) {
   model = eval(parse(text = text))
   return(model)
 }
+
+createActorNetwork = function(state_dim = 784, action_dim = 1L) {
+  input_state = keras::layer_input(shape = state_dim)
+  states_hidden = input_state %>%
+    layer_dense(units = 300, activation = "relu")
+  states_hidden2 = states_hidden %>%
+    layer_dense(units = 300, activation = "linear") %>%
+    layer_dense(units = 1, activation = "linear")
+  model = keras::keras_model(inputs = input_state, outputs = states_hidden2)
+  opt = keras::optimizer_adam(lr = 0.0001)
+  model %>% compile(
+    optimizer = opt,
+    loss = "mse",
+    metrics = c("accuracy")
+    )
+  return(list(model = model, input_state = input_state, weights = model$trainable_weights))
+}
+
+createCriticNetwork = function(state_dim, action_dim) {
+  input_state = keras::layer_input(shape = state_dim)
+  input_action = keras::layer_input(shape = action_dim, name = "input_action")
+  action_hidden = input_action %>%
+    layer_dense(units = 300, activation = "linear")
+  states_hidden = input_state %>%
+    layer_dense(units = 300, activation = "relu")
+  states_hidden2 = states_hidden %>%
+    layer_dense(units = 300, activation = "linear")
+  hiddens = keras::layer_add(c(states_hidden2, action_hidden))
+  # outputs compose input + dense layers
+  predictions = hiddens %>%
+    layer_dense(units = 300, activation = "relu") %>%
+    layer_dense(units = action_dim, activation = "linear")
+  # create and compile model
+  model = keras::keras_model(inputs = c(input_action, input_state), outputs = predictions)
+  opt = keras::optimizer_adam(lr = 0.0001)
+  model %>% compile(
+    optimizer = opt,
+    loss = "mse",
+    metrics = c("accuracy")
+    )
+  return(list(model = model, input_action = input_action, input_state = input_state))
+}
