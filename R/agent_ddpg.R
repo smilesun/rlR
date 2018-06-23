@@ -11,15 +11,19 @@ AgentDDPG = R6::R6Class("AgentDDPG",
   public = list(
     tau = NULL,  # bilinear combination of target and update network
     model = NULL,
+    list.states.next = NULL,
+    list.states.old = NULL,
     input_action_update = NULL,
     input_state_update = NULL,
-    tensor_input_state_actor_update  = NULL,
+    input_state_actor_update  = NULL,
     input_actor_update_weights = NULL,
     brain_actor_update = NULL,
     brain_critic_update = NULL,
     brain_actor_target = NULL,
     brain_critic_target = NULL,
     replay_actions = NULL,
+    tb.acts = NULL,
+    tb.state = NULL,
     initialize = function(env, conf) {
       self$tau = 0.1
       super$initialize(env, conf)
@@ -34,7 +38,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
         return(tuple$model)
       } else if (self$task == "actor.update"){
         tuple = createActorNetwork(state_dim = self$stateDim, action_dim = 1L)
-        self$tensor_input_state_actor_update = tuple$input_state
+        self$input_state_actor_update = tuple$input_state
         self$input_actor_update_weights = tuple$weights
         return(tuple$model)
       }
@@ -50,12 +54,24 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$model = self$brain_critic_update
     },
 
+    extractCriticTarget = function(i) {
+      y = self$list.rewards[[i]] + self$gamma * self$p.next[i, ]
+      return(y)
+    },
+
+    # input: state, action
+    # output: state-action value
+    # target: r_i + gamma Q_{target}(s_new, policy_action)
     trainCritic = function() {
-      # self$replay.x, self$replay.actions
+      self$getYhat()
+      len = length(self$list.replay)
+      list.targets = lapply(1:len, self$extractCriticTarget)
+      tb.targets = Reduce(rbind, list.targets)
+      self$fit2(self$tb.acts, self$tb.state, tb.targets)
     },
 
     trainActor = function() {
-      # 
+      #
     },
 
     replay = function(size) {
@@ -93,13 +109,31 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$brain_critic_target$setWeights(www)
     },
 
+    pred2 = function(action_input, state_input) {
+      #FIXME: the fixed order of action_input and state_input might be problematic
+      res = keras::predict_on_batch(self$brain_critic_update$model, x = list(action_input, state_input))
+      return(res)
+    },
+
+    fit2 = function(action_input, state_input, yhat) {
+      #FIXME: the fixed order of action_input and state_input might be problematic
+      res = keras::fit(self$brain_critic_update$model, x = list(action_input, state_input), y = yhat)
+      return(res)
+    },
+
+    getYhat = function(...) {
+      self$tb.state = Reduce(rbind, self$list.states.old)
+      self$tb.acts = Reduce(rbind, self$list.acts)
+      self$p.next = self$pred2(self$tb.acts, self$tb.state)
+    },
+
     unpack = function(batchsize) {
       self$list.replay = self$mem$sample.fun(batchsize)
-      list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
-      list.states.next = lapply(self$list.replay, ReplayMem$extractNextState)
+      self$list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
+      self$list.states.next = lapply(self$list.replay, ReplayMem$extractNextState)
       self$list.rewards = lapply(self$list.replay, ReplayMem$extractReward)
       self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
-      temp = simplify2array(list.states.old) # R array put elements columnwise
+      temp = simplify2array(self$list.states.old) # R array put elements columnwise
       mdim = dim(temp)
       norder = length(mdim)
       self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
@@ -116,52 +150,10 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 ))
 
 AgentDDPG$test = function(iter = 1000L, sname = "Pendulum-v0", render = TRUE, console = FALSE) {
+  # MountainCarContinuous-v0
   conf = rlR.conf.DQN()
   env = makeGymEnv(sname)
   agent = makeAgent("AgentDDPG", env, conf)
   agent$updatePara(render = TRUE)
-  agent$learn(1)
-}
-
-
-createActorNetwork = function(state_dim = 784, action_dim = 1L) {
-  input_state = keras::layer_input(shape = state_dim)
-  states_hidden = input_state %>%
-    layer_dense(units = 300, activation = "relu")
-  states_hidden2 = states_hidden %>%
-    layer_dense(units = 300, activation = "linear") %>%
-    layer_dense(units = 1, activation = "linear")
-  model = keras::keras_model(inputs = input_state, outputs = states_hidden2)
-  opt = keras::optimizer_adam(lr = 0.0001)
-  model %>% compile(
-    optimizer = opt,
-    loss = "mse",
-    metrics = c("accuracy")
-    )
-  return(list(model = model, input_state = input_state, weights = model$trainable_weights))
-}
-
-createCriticNetwork = function(state_dim, action_dim) {
-  input_state = keras::layer_input(shape = state_dim)
-  input_action = keras::layer_input(shape = action_dim, name = "input_action")
-  action_hidden = input_action %>%
-    layer_dense(units = 300, activation = "linear")
-  states_hidden = input_state %>%
-    layer_dense(units = 300, activation = "relu")
-  states_hidden2 = states_hidden %>%
-    layer_dense(units = 300, activation = "linear")
-  hiddens = keras::layer_add(c(states_hidden2, action_hidden))
-  # outputs compose input + dense layers
-  predictions = hiddens %>%
-    layer_dense(units = 300, activation = "relu") %>%
-    layer_dense(units = action_dim, activation = "linear")
-  # create and compile model
-  model = keras::keras_model(inputs = c(input_action, input_state), outputs = predictions)
-  opt = keras::optimizer_adam(lr = 0.0001)
-  model %>% compile(
-    optimizer = opt,
-    loss = "mse",
-    metrics = c("accuracy")
-    )
-  return(list(model = model, input_action = input_action, input_state = input_state))
+  agent$learn(2)
 }

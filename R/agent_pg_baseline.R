@@ -52,8 +52,6 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
         mdim = dim(temp)
         norder = length(mdim)
         self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
-        # assert(self$replay.x[1,,,]== list.states.old[[1L]])
-        #self$replay.y = t(simplify2array(list.targets))  # array put
     },
 
      replay = function(batchsize) {
