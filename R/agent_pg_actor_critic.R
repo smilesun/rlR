@@ -40,54 +40,54 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
       self$brain_actor$train(self$replay.x, y_actor)
     },
 
-      extractCriticTarget = function(i) {
-          y = self$p.old.c[i, ] + self$delta[i, ]
-          return(y)
-      },
+    extractCriticTarget = function(i) {
+      y = self$p.old.c[i, ] + self$delta[i, ]
+      return(y)
+    },
 
-      extractActorTarget = function(i) {
-          advantage = self$delta[i, ]
-          act = self$list.acts[[i]]
-          advantage = (+1.0) * as.vector(advantage)
-          vec.act = rep(0L, self$actCnt)
-          vec.act[act] = 1.0
-          target = advantage * array(vec.act, dim = c(1L, self$actCnt))
-          return(target)
+    extractActorTarget = function(i) {
+      advantage = self$delta[i, ]
+      act = self$list.acts[[i]]
+      advantage = (+1.0) * as.vector(advantage)
+      vec.act = rep(0L, self$actCnt)
+      vec.act[act] = 1.0
+      target = advantage * array(vec.act, dim = c(1L, self$actCnt))
+      return(target)
     },
 
     afterStep = function() {
-        self$policy$afterStep()
-        self$replay(1)
+      self$policy$afterStep()
+      self$replay(1)
     },
 
     afterEpisode = function(interact) {
-        self$getAdv(interact)
-        self$policy$afterEpisode()
-        self$mem$afterEpisode()
-        if (self$flag_rescue) self$interact$perf$rescue()
-        self$brain_actor$afterEpisode()
-        self$brain_critic$afterEpisode()
-        self$adaptLearnRate()
+      self$getAdv(interact)
+      self$policy$afterEpisode()
+      self$mem$afterEpisode()
+      if (self$flag_rescue) self$interact$perf$rescue()
+      self$brain_actor$afterEpisode()
+      self$brain_critic$afterEpisode()
+      self$adaptLearnRate()
     }
 
+    )
   )
-)
 
 
 rlR.conf.AC = function() {
   conf = RLConf$new(
-           render = FALSE,
-           log = FALSE,
-           console = FALSE,
-           policy.name = "EpsilonGreedy",
-           policy.maxEpsilon = 1,
-           policy.minEpsilon = 0.02,
-           policy.decay = exp(-0.001),
-           replay.epochs = 1L,
-           replay.memname = "Latest",
-           agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
-        agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr =1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
-          )
+    render = FALSE,
+    log = FALSE,
+    console = FALSE,
+    policy.name = "EpsilonGreedy",
+    policy.maxEpsilon = 1,
+    policy.minEpsilon = 0.02,
+    policy.decay = exp(-0.001),
+    replay.epochs = 1L,
+    replay.memname = "Latest",
+    agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
+    agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr =1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
+    )
 }
 
 AgentActorCritic$test = function(iter = 2000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
