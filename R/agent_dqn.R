@@ -28,7 +28,11 @@ AgentDQN = R6::R6Class("AgentDQN",
        self$brain$setModel(obj)
        self$model = self$brain
     },
- 
+
+    makeCnn = function()  {
+      return(makeCnnCritic(input_shape = self$stateDim, act_cnt = self$actCnt))
+    },
+
     extractTarget = function(i) {
         ins = self$list.replay[[i]]
         act2update =  ReplayMem$extractAction(ins)

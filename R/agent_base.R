@@ -57,9 +57,11 @@ AgentArmed = R6::R6Class("AgentArmed",
     replay.y = NULL,
     replay.x = NULL,
     env = NULL,
+    sess = NULL,
     # member function
     # constructor
     initialize = function(env, conf) {
+      self$sess = tensorflow::tf$Session()
       self$initializeEnv(env)
       self$initializeConf(conf = conf)
     },
@@ -178,7 +180,6 @@ AgentArmed = R6::R6Class("AgentArmed",
         mdim = dim(temp)
         norder = length(mdim)
         self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
-        # assert(self$replay.x[1,,,]== list.states.old[[1L]])
         self$replay.y = t(simplify2array(list.targets))  # array put elements columnwise
         diff_table = abs(self$replay.y - self$p.old)
         self$replay_delta = apply(diff_table, 1, mean)

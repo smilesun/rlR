@@ -1,3 +1,5 @@
+# The Discrete space allows a fixed range of non-negative numbers, so in this case valid actions are either 0 or 1
+# The Box space represents an n-dimensional box, so valid observations will be an array of 4 numbers
 EnvGym = R6::R6Class("EnvGym",
   inherit = Environment,
   public = list(
@@ -13,8 +15,10 @@ EnvGym = R6::R6Class("EnvGym",
     name = NULL,
     old_state = NULL,
     flag_video = NULL,
-    initialize = function(genv, name, state.cheat = identity, act.cheat = identity, actcnt = NULL, ok_reward = NULL, ok_step = NULL, bad_reward = NULL, flag_video = FALSE) {
+    flag_continous = NULL,
+    initialize = function(genv, name, state.cheat = identity, act.cheat = identity, actcnt = NULL, ok_reward = NULL, ok_step = NULL, bad_reward = NULL) {
       self$env = genv
+      self$flag_continous = ifelse(grepl("float", toString(genv$action_space$dtype)), TRUE, FALSE)
       self$name = name
       self$ok_reward = ok_reward
       self$ok_step = ok_step
@@ -22,9 +26,13 @@ EnvGym = R6::R6Class("EnvGym",
       self$state.cheat = state.cheat
       self$act.cheat = act.cheat
       if (is.null(actcnt)) {
-        self$act_cnt = genv$action_space$n   # get the number of actions/control bits
-        if (is.null(genv$action_space$n)) stop("currently we do not support array action!")
-        # currently no support for continuous action space
+        if (!"n" %in% names(genv$action_space)) {
+          flag_multiple_shape = length(genv$action_space$shape) > 1L
+          if (flag_multiple_shape) stop("currently we do not action space that have multiple shapes!")
+          self$act_cnt = genv$action_space$shape[[1]]
+        } else {
+          self$act_cnt = genv$action_space$n   # get the number of actions/control bits
+        }
       } else {
         self$act_cnt = actcnt
       }
@@ -32,7 +40,7 @@ EnvGym = R6::R6Class("EnvGym",
       state = genv$reset()  # only state is returned!
       state = self$state.cheat(state)
       self$old_state = state
-      self$flag_video = flag_video
+      self$flag_video = length(self$state_dim) > 1L
       self$state_cnt = length(state)
     },
 
@@ -41,9 +49,11 @@ EnvGym = R6::R6Class("EnvGym",
     },
 
     step = function(action) {
-      action = action - 1L
+      if (!self$flag_continous) {
+        action = action - 1L
+        action = as.integer(action)
+      }
       action = self$act.cheat(action)
-      action = as.integer(action)
       s_r_d_info = self$env$step(action)
       names(s_r_d_info) = c("state", "reward", "done", "info")
       cur = self$state.cheat(s_r_d_info[["state"]])

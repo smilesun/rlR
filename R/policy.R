@@ -11,6 +11,7 @@ Policy = R6::R6Class("Policy",
     random_cnt = NULL,
     random.action = NULL,
     flag_epsilon_decay_perStep = NULL,
+    softmax_magnify = NULL,
     initialize = function(host) {
       self$random_cnt = 0L
       self$host = host
@@ -20,6 +21,7 @@ Policy = R6::R6Class("Policy",
       self$maxEpsilon = self$host$conf$get("policy.maxEpsilon")
       self$epsilon = self$maxEpsilon
       self$gstep.idx = 1
+      self$softmax_magnify = self$host$conf$get("softmax.magnify")
     },
 
     sampleRandomAct = function(state) {
@@ -121,7 +123,8 @@ PolicyPG = R6::R6Class("PolicyPG",
 
     # softmax will magnify the difference
     softmax = function(state) {
-      prob = exp(+1 * self$host$vec.arm.q - max(self$host$vec.arm.q))  # numerical stability
+      z = self$host$vec.arm.q - max(self$host$vec.arm.q) # numerical stability
+      prob = exp(self$softmax_magnify * z)
       prob = prob / sum(prob)
       action = sample.int(self$host$actCnt, prob = prob)[1L]
       action = rmultinom(n = 1L, size = self$host$actCnt, prob = prob)  # FIXME: any difference between multinomial and sample.int?
