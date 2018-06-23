@@ -8,6 +8,7 @@
 AgentPGBaseline = R6::R6Class("AgentPGBaseline",
   inherit = AgentPG,
   public = list(
+    task = NULL,
     brain_actor = NULL,  # cross entropy loss
     brain_critic = NULL, # mse loss
     critic_yhat = NULL,
@@ -25,9 +26,16 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
 
     setBrain = function() {
       super$setBrain()
+      self$task = "actor"
       self$brain_actor = SurroNN$new(self, arch_list_name = "agent.nn.arch.actor")
+      self$task = "critic"
       self$brain_critic = SurroNN$new(self, arch_list_name = "agent.nn.arch.critic", act_cnt = 1L)
       self$model = self$brain_critic
+    },
+
+    makeCnn = function()  {
+      if (self$task == "critic") return(makeCnnCritic(input_shape = self$stateDim, act_cnt = 1))
+      if (self$task == "actor")  return(makeCnnActor(input_shape = self$stateDim, act_cnt = self$actCnt))
     },
 
      getReplayYhat = function(batchsize) {
@@ -96,7 +104,7 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
         self$replay(self$interact$perf$total.step)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
-        self$interact$perf$rescue()
+        if (self$flag_rescue) self$interact$perf$rescue()
     },
 
     evaluateArm = function(state) {

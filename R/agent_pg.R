@@ -20,6 +20,10 @@ AgentPG = R6::R6Class("AgentPG",
       self$setBrain()
     },
 
+    makeCnn = function()  {
+      return(makeCnnActor(input_shape = self$stateDim, act_cnt = self$actCnt))
+    },
+
     setBrain = function() {
       super$setBrain()
       self$brain = SurroNN$new(self, arch_list_name = "agent.nn.arch")
@@ -48,7 +52,6 @@ AgentPG = R6::R6Class("AgentPG",
         norder = length(mdim)
         self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
         self$replay.y = t(simplify2array(list.targets))
-        # assert(self$replay.x[1,,,]== list.states.old[[1L]])
     },
 
     replay = function(batchsize) {
@@ -78,7 +81,7 @@ AgentPG = R6::R6Class("AgentPG",
         self$getAdv(interact)
         self$replay(self$interact$perf$total.step)   # key difference here
         self$policy$afterEpisode()
-        self$interact$perf$rescue()
+        if (self$flag_rescue) self$interact$perf$rescue()
     }
     ), # public
   private = list(),
@@ -109,7 +112,7 @@ AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
 
 AgentPG$testCNN = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
   conf = rlR.AgentPG.conf()
-  env = makeGymEnv("Pong-v0", flag_video = TRUE)
+  env = makeGymEnv("Pong-v0")
   agent = makeAgent("AgentPG", env)
   agent$updatePara(console = console, render = render, replay.memname = "Online")
   agent$learn(iter)

@@ -11,7 +11,6 @@ AgentDDPG = R6::R6Class("AgentDDPG",
   public = list(
     tau = NULL,  # bilinear combination of target and update network
     model = NULL,
-    task = NULL,
     input_action_update = NULL,
     input_state_update = NULL,
     tensor_input_state_actor_update  = NULL,

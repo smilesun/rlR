@@ -16,7 +16,7 @@ EnvGym = R6::R6Class("EnvGym",
     old_state = NULL,
     flag_video = NULL,
     flag_continous = NULL,
-    initialize = function(genv, name, state.cheat = identity, act.cheat = identity, actcnt = NULL, ok_reward = NULL, ok_step = NULL, bad_reward = NULL, flag_video = FALSE) {
+    initialize = function(genv, name, state.cheat = identity, act.cheat = identity, actcnt = NULL, ok_reward = NULL, ok_step = NULL, bad_reward = NULL) {
       self$env = genv
       self$flag_continous = ifelse(grepl("float", toString(genv$action_space$dtype)), TRUE, FALSE)
       self$name = name
@@ -40,7 +40,7 @@ EnvGym = R6::R6Class("EnvGym",
       state = genv$reset()  # only state is returned!
       state = self$state.cheat(state)
       self$old_state = state
-      self$flag_video = flag_video
+      self$flag_video = length(self$state_dim) > 1L
       self$state_cnt = length(state)
     },
 

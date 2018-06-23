@@ -31,11 +31,12 @@ SurroNN = R6::R6Class("SurroNN",
         return(model)
       }
       if (length(self$stateDim) > 1L) {
-        model = makeCnn(input_shape = self$stateDim, act_cnt = self$actCnt)
+        model = self$agent$makeCnn()
+        return(model)
       } else {
         model = makeKerasModel(input_shape = self$stateDim, output_shape = self$actCnt, arch.list = self$arch.list)
+        return(model)
       }
-      return(model)
     },
 
     # calculate gradients with respect to input arm instead of weights

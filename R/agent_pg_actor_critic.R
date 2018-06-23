@@ -64,7 +64,7 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
         self$getAdv(interact)
         self$policy$afterEpisode()
         self$mem$afterEpisode()
-        if(self$flag_rescue) self$interact$perf$rescue()
+        if (self$flag_rescue) self$interact$perf$rescue()
         self$brain_actor$afterEpisode()
         self$brain_critic$afterEpisode()
         self$adaptLearnRate()

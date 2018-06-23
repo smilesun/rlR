@@ -1,5 +1,5 @@
-context("gym_basic")
-test_that("test Cart-Pole works for each Agent", {
+context("gym_video")
+test_that("test Pong works for each Agent", {
   skip_on_cran()
   env = makeGymEnv("Pong-v0")
   agent = makeAgent("AgentPG", env)

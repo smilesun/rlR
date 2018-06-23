@@ -66,7 +66,7 @@ makeAnyModel = function(input =4, output = 1, list.arch) {
   eval(parse(text = text))
 }
 
-makeCnn = function(input_shape = c(32, 32, 3), act_cnt = 10L) {
+makeCnnActor = function(input_shape = c(32, 32, 3), act_cnt = 10L) {
   text = paste("model <- keras_model_sequential();",
   'model %>%',
   ' layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same", input_shape = input_shape) %>%',
@@ -89,6 +89,33 @@ makeCnn = function(input_shape = c(32, 32, 3), act_cnt = 10L) {
     'layer_activation("softmax");',
     'opt <- optimizer_rmsprop(lr = 0.0001, decay = 1e-6);',
     'model %>% compile(loss = "categorical_crossentropy", optimizer = opt, metrics = "accuracy")')
+  model = eval(parse(text = text))
+  return(model)
+}
+
+makeCnnCritic = function(input_shape = c(32, 32, 3), act_cnt = 1L) {
+  text = paste("model <- keras_model_sequential();",
+  'model %>%',
+  ' layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same", input_shape = input_shape) %>%',
+    'layer_activation("relu") %>%',
+    'layer_conv_2d(filter = 32, kernel_size = c(3,3)) %>%',
+    'layer_activation("relu") %>%',
+    'layer_max_pooling_2d(pool_size = c(2,2)) %>%',
+    'layer_dropout(0.25) %>%',
+    'layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same") %>%',
+    'layer_activation("relu") %>%',
+    'layer_conv_2d(filter = 32, kernel_size = c(3,3)) %>%',
+    'layer_activation("relu") %>%',
+    'layer_max_pooling_2d(pool_size = c(2,2)) %>%',
+    'layer_dropout(0.25) %>%',
+    'layer_flatten() %>%',
+    'layer_dense(512) %>%',
+    'layer_activation("relu") %>%',
+    'layer_dropout(0.5) %>%',
+    'layer_dense(act_cnt) %>%',
+    'layer_activation("softmax");',
+    'opt <- optimizer_rmsprop(lr = 0.0001, decay = 1e-6);',
+    'model %>% compile(loss = "mse", optimizer = opt, metrics = "accuracy")')
   model = eval(parse(text = text))
   return(model)
 }
