@@ -25,7 +25,8 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
       },
 
     setBrain = function() {
-      super$setBrain()
+      # FIXME: do we really need to call super$setBrain?
+      # super$setBrain()
       self$task = "actor"
       self$brain_actor = SurroNN$new(self, arch_list_name = "agent.nn.arch.actor")
       self$task = "critic"
