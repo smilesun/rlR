@@ -89,6 +89,24 @@ listAvailAgent = function() {
   c("AgentDQN:deep q learning", "AgentFDQN:frozen target deep q learning", "AgentDDQN: double deep q learning", "AgentPG: policy gradient basic", "AgentPGBaseline: policy gradient with baseline", "AgentActorCritic: actor critic method")
 }
 
+#' @title listAvailEnvs
+#' @description List all environments
+#' @export
+listAvailEnvs = function() {
+  envs = import("gym.envs")
+  all_spec = envs$registry$all()
+  idx = lapply(all_spec, function(spec) {
+    env = try({env = spec$make()})
+    if (class(env) == "try-error") return(FALSE)
+    flag_discrete = "n" %in% names(env$action_space)
+    flag_nonarray = FALSE
+    if ("shape" %in% names(env$action_space)) {
+      flag_nonarray = length(env$action_space$shape) == 1L
+    }
+    return(flag_discrete || flag_nonarray)
+  })
+  lapply(all_spec[which(unlist(idx))], function(x) x$id)
+}
 
 # listClass = function(name = NULL) {
 #   if (is.null(name)) return(c("Agent", "Policy", "ReplayMem"))

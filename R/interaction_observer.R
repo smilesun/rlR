@@ -96,12 +96,13 @@ Interaction = R6::R6Class("Interaction",
           self$notify("beforeAct")
           self$action = self$rl.agent$act(self$s.old)
           self$glogger$log.nn$info("action taken:%s \n", self$action)
-          self$s_r_done_info = self$rl.env$step(action = as.integer(self$action))
+          self$s_r_done_info = self$rl.env$step(self$action)
           self$notify("afterStep")
         }
         self$perf$extractInfo()
         return(self$perf)
     }, finally = {
+      self$rl.agent$sess$close()
       self$perf$afterAll()
       self$glogger$afterAll()
       self$rl.env$afterAll()

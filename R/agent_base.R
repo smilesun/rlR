@@ -57,9 +57,11 @@ AgentArmed = R6::R6Class("AgentArmed",
     replay.y = NULL,
     replay.x = NULL,
     env = NULL,
+    sess = NULL,
     # member function
     # constructor
     initialize = function(env, conf) {
+      self$sess = tensorflow::tf$Session()
       self$initializeEnv(env)
       self$initializeConf(conf = conf)
     },
@@ -129,7 +131,6 @@ AgentArmed = R6::R6Class("AgentArmed",
       episode = interact$idx.episode + 1L
       stepidx = interact$idx.step + 1L
       ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
-      # self$glogger$log.nn$info("sars_delta: %s", ReplayMem$ins2String(ins))
       self$mem$add(ins)
     },
 
@@ -158,6 +159,7 @@ AgentArmed = R6::R6Class("AgentArmed",
       nr = length(list.states.old)
       p = dim(list.states.old[[1]])
       old.state = Reduce(rbind, list.states.old)
+      #FIXME: The transform below works for CartPole-v0 and Pong-v0 but not continous environment
       old.state = array(old.state, dim = c(nr, p))
       p.old = self$model$pred(old.state)
       return(p.old)
@@ -178,7 +180,6 @@ AgentArmed = R6::R6Class("AgentArmed",
         mdim = dim(temp)
         norder = length(mdim)
         self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
-        # assert(self$replay.x[1,,,]== list.states.old[[1L]])
         self$replay.y = t(simplify2array(list.targets))  # array put elements columnwise
         diff_table = abs(self$replay.y - self$p.old)
         self$replay_delta = apply(diff_table, 1, mean)

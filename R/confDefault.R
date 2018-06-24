@@ -8,6 +8,7 @@ brain.build_fun = NULL,  # user specific function to create surrogate model
 policy.maxEpsilon = 0.01,
 policy.minEpsilon = 0.01,
 policy.decay = 1, # exp(-1.0 / 10),
+softmax.magnify = 1,
 replay.memname = "Uniform",
 replay.epochs = 1L,
 replaymem.dt = FALSE,
