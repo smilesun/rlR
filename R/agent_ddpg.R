@@ -1,3 +1,6 @@
+#tfe = reticulate::import("tensorflow.contrib.eager")
+#tfe$python$tfe$enable_eager_execution()
+
 #' @title Deep Deterministic Policy Gradient
 #'
 #' @format \code{\link{R6Class}} object
@@ -10,6 +13,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
   inherit = AgentActorCritic,
   public = list(
     tau = NULL,  # bilinear combination of target and update network
+    optimize = NULL,
     grad2a = NULL,
     actor_pred = NULL,
     model = NULL,
@@ -24,8 +28,11 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     brain_actor_target = NULL,
     brain_critic_target = NULL,
     replay_actions = NULL,
-    tb.acts = NULL,
+    tb.acts = NULL,  # acts from replay memory
+    tb_acts_target_policy = NULL,  # acts according to policy with respect to states
+    tb_acts_update_policy = NULL,  # acts according to policy with respect to states
     tb.state = NULL,
+    tb_state_new = NULL,
     initialize = function(env, conf) {
       self$tau = 0.1
       super$initialize(env, conf)
@@ -56,52 +63,86 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$model = self$brain_critic_update
     },
 
+    # target: r_i + gamma Q_{target}(s_new, policy_action)
+    # policy_action is generated from the target policy network
     extractCriticTarget = function(i) {
       y = self$list.rewards[[i]] + self$gamma * self$p.next[i, ]
       return(y)
     },
 
-    # input: state, action
+    # input: (state, action)
     # output: state-action value
-    # target: r_i + gamma Q_{target}(s_new, policy_action)
     trainCritic = function() {
       self$getYhat()
+      self$tb.acts = Reduce(rbind, self$list.acts)
+      self$tb.state = Reduce(rbind, self$list.states.old)
       len = length(self$list.replay)
       list.targets = lapply(1:len, self$extractCriticTarget)
       tb.targets = Reduce(rbind, list.targets)
-      self$fitCritic(self$tb.acts, self$tb.state, tb.targets)
+      # yhat of critic is Q_{update}(s_i, a_i)
+      self$fitUpdateCriticNetwork(self$tb.acts, self$tb.state, tb.targets)
     },
 
     # actor is also with loss mse since action is continous!!
     extractActorTarget = function(i) {
       act = self$list.acts[[i]]
       #FIXME: how to find a target here?
-      #target = self$advantage[i, ]
       target = self$advantage[i, ] + self$actor_pred[i, ]
       return(target)
     },
 
-    trainActor = function() {
-      self$grad2a = self$brain_critic_update$calGradients2Action(state_input = self$tb.state, action_input = self$tb.acts)
+    trainActorSess = function(state_input, input_criticQ2act) {
+      ph_critic2act = tf$placeholder(dtype = tf$float32, shape = shape(NULL, self$actCnt), name = "criticQ2a")  # place holder for action
+      # chain rule: set initial value of the gradient to be -ph_critic2act
+      tensor_grad_policy2theta = tf$gradients(ys = self$brain_actor_update$model$output, xs = self$brain_actor_update$model$weights, grad_ys = tf$negative(ph_critic2act))
+      # The final gradients are Q(s_t,a = \mu(s_t)) with respect to \theta^{\mu}(actor network weights), the graph is \theta^{mu}(weights of actor network) - action(a = \mu(s)) - Q(s, a)
+      # grad is gradient, vars are the variable to be applied the gradients
+      grad_and_vars = reticulate::tuple(tensor_grad_policy2theta, self$brain_actor_target$model$weights)
+      grad_and_vars = mapply(reticulate::tuple, tensor_grad_policy2theta, self$brain_actor_target$model$weights)
+      #######
+      #x <- 1:3
+      #y <- 4:6
+      #mapply(list, x, y, SIMPLIFY=F) # gives a list of 3 tuples
+      #mapply(c, x, y, SIMPLIFY=F) # gives a list of 3 tuples
+      #######
+      opt = tf$train$AdamOptimizer(0.001)
+      self$optimize = opt$apply_gradients(grad_and_vars)
+      sname = self$brain_actor_update$model$input$name
+      aname = ph_critic2act$name
+      np = reticulate::import("numpy", convert = FALSE)
+      sstate = np$array(state_input)
+      scritic2act = np$array(input_criticQ2act)
+      feed_dict = py_dict(c(sname, aname), c(sstate, scritic2act))
+      self$sess$run(tf$initialize_all_variables())
+      self$sess$run(self$optimize, feed_dict = feed_dict)
+    },
+
+    trainActorPrepare = function() {
+      # $a = \mu(s_i)$
+      self$tb_acts_update_policy = self$brain_actor_update$pred(self$tb.state)
+      # $\nabla_aQ(s_i, a = \mu(s_i))$
+      self$grad2a = self$brain_critic_update$calGradients2Action(state_input = self$tb.state, action_input = self$tb_acts_update_policy)
       #FIXME: why the return from tensor flow is a list?
       self$grad2a = self$grad2a[[1L]]
       #FIXME: grad2a should be a scalar!
-      self$actor_pred =  self$brain_actor_update$pred(self$tb.state)
-      self$advantage = self$grad2a * self$actor_pred
-      len = dim(self$replay.x)[1L]
-      list.targets = lapply(1:len, self$extractActorTarget)
-      tb.targets = Reduce(rbind, list.targets)
-      self$fitActor(self$tb.state, tb.targets)
+      #self$actor_pred =  self$brain_actor_update$pred(self$tb.state)
+      #self$advantage = self$grad2a * self$actor_pred
+      #len = dim(self$replay.x)[1L]
+      #list.targets = lapply(1:len, self$extractActorTarget)
+      #tb.targets = Reduce(rbind, list.targets)
+      #self$fitActor(self$tb.state, tb.targets)
     },
 
     replay = function(size) {
       self$unpack(size)
       self$trainCritic()
-      self$trainActor()
+      self$trainActorPrepare()
+      self$trainActorSess(self$tb.state, self$grad2a)
       self$updateModel()
     },
 
     evaluateArm = function(state) {
+      #FIXME: plus noise here
       self$vec.arm.q = self$brain_actor_update$pred(state)
     },
 
@@ -129,13 +170,13 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$brain_critic_target$setWeights(www)
     },
 
-    predCritic = function(action_input, state_input) {
+    predTargetCritic = function(action_input, state_input) {
       #FIXME: the fixed order of action_input and state_input might be problematic
-      res = keras::predict_on_batch(self$brain_critic_update$model, x = list(action_input, state_input))
+      res = keras::predict_on_batch(self$brain_critic_target$model, x = list(action_input, state_input))
       return(res)
     },
 
-    fitCritic = function(action_input, state_input, yhat) {
+    fitUpdateCriticNetwork = function(action_input, state_input, yhat) {
       #FIXME: the fixed order of action_input and state_input might be problematic
       res = keras::fit(self$brain_critic_update$model, x = list(action_input, state_input), y = yhat)
       return(res)
@@ -148,9 +189,9 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     },
 
     getYhat = function(...) {
-      self$tb.state = Reduce(rbind, self$list.states.old)
-      self$tb.acts = Reduce(rbind, self$list.acts)
-      self$p.next = self$predCritic(self$tb.acts, self$tb.state)
+      self$tb_state_new = Reduce(rbind, self$list.states.next)
+      self$tb_acts_target_policy = self$brain_actor_target$pred(self$tb_state_new)
+      self$p.next = self$predTargetCritic(self$tb_acts_target_policy, self$tb_state_new)
     },
 
     unpack = function(batchsize) {
