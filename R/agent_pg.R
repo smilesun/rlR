@@ -110,9 +110,9 @@ AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
   return(perf)
 }
 
-AgentPG$testCNN = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+AgentPG$testCNN = function(iter = 1000L, sname = "Pong-v0", render = FALSE, console = FALSE) {
   conf = rlR.AgentPG.conf()
-  env = makeGymEnv("Pong-v0")
+  env = makeGymEnv(sname, flag_video = TRUE)
   agent = makeAgent("AgentPG", env)
   agent$updatePara(console = console, render = render, replay.memname = "Online")
   agent$learn(iter)
