@@ -216,7 +216,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
 ))
 
-AgentDDPG$test = function(iter = 1000L, sname = "Pendulum-v0", render = FALSE, console = TRUE) {
+AgentDDPG$test = function(iter = 30, sname = "Pendulum-v0", render = FALSE, console = TRUE) {
   # MountainCarContinuous-v0
   conf = rlR.conf.DQN()
   env = makeGymEnv(sname)
