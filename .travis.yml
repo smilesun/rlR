@@ -8,12 +8,16 @@ addons:
   apt:
     update: true
     packages:
-      - python3.6
       - python-pip 
       - python-dev 
       - build-essential
       - zlib1g-dev
 before_install:
+  - sudo apt-get install -y software-properties-common
+  - sudo add-apt-repository -y ppa:george-edison55/cmake-3.x
+  - sudo apt-get update
+  - sudo apt-get install -y cmake
+  - sudo apt-get install -y zlib1g-dev
   - sudo pip install gym
   - sudo pip install gym[atari]
   - sudo pip install tensorflow
