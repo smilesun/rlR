@@ -1,9 +1,22 @@
 Environment = R6::R6Class("Environment",
   public = list(
+    #env = NULL,
+    #act_cnt = NULL,
+    #state_cnt = NULL,
+    #state_dim = NULL,
     env = NULL,
+    state.cheat = NULL,
+    act.cheat = NULL,
     act_cnt = NULL,
     state_cnt = NULL,
     state_dim = NULL,
+    ok_reward = NULL,
+    ok_step = NULL,
+    bad_reward = NULL,
+    name = NULL,
+    old_state = NULL,
+    flag_video = NULL,
+    flag_continous = NULL,
 
     initialize = function(env) {
     },
@@ -13,4 +26,3 @@ Environment = R6::R6Class("Environment",
   private = list(),
   active = list()
   )
-
