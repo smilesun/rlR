@@ -32,12 +32,12 @@ model
 
 ```{r fig.path="inst/figures"}
 
-agent = makeAgent("AgentActorCritic", env)
+agent = makeAgent("AgentDQN", env)
 
 #agent$customizeBrain(model)
 
 system.time({
- perf = agent$learn(30)  # to let travis pass, could not set too many iterations
+ perf = agent$learn(10)  # to let travis pass, could not set too many iterations
 })
  perf$plot()
 ```

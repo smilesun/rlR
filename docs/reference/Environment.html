@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Install dependencies — installDep • rlR</title>
+<title>Reinforcement Learning Environment — Environment • rlR</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Install dependencies — installDep" />
+<meta property="og:title" content="Reinforcement Learning Environment — Environment" />
 
-<meta property="og:description" content="Install Keras dependencies, if dependencies already installed, will not re-install" />
+<meta property="og:description" content="A R6Class to represent reinforcement learning environments. To define custom environment, one should define a R6Class which inherit rlR::Environment." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -106,35 +106,71 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Install dependencies</h1>
-    <small class="dont-index">Source: <a href='https://github.com/smilesun/rlR/blob/master/R/zzz.R'><code>R/zzz.R</code></a></small>
-    <div class="hidden name"><code>installDep.Rd</code></div>
+    <h1>Reinforcement Learning Environment</h1>
+    <small class="dont-index">Source: <a href='https://github.com/smilesun/rlR/blob/master/R/environment_base.R'><code>R/environment_base.R</code></a></small>
+    <div class="hidden name"><code>Environment.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Install Keras dependencies, if dependencies already installed, will not re-install</p>
+    <p>A <code>R6Class</code> to represent reinforcement learning environments. To define custom environment, one should define a <code>R6Class</code> which inherit rlR::Environment.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>installDep</span>(<span class='kw'>gpu</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='no'>Environment</span></pre>
+        
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p><code>R6Class</code> object</p>
     
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>gpu</th>
-      <td><p>Wehter to use gpu tensorflow or not</p></td>
-    </tr>
-    </table>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>[<code>Environment</code>].</p>
+    
+    <h2 class="hasAnchor" id="member-variables"><a class="anchor" href="#member-variables"></a>Member Variables</h2>
+
+    
+    <dl class='dl-horizontal'>
+  <dt>act_cnt</dt><dd><p>[<code>int</code>] <br />
+    Number of actions of the agent to environment</p></dd>
+  <dt>state_dim</dt><dd><p>[<code>vector(int)</code>] <br />
+    The dimension of the observation(or state) space on the environment. Must be vector of integers. For example, c(28, 28, 3), which can be the dimension for a tensor of order 3.</p></dd>
+  <dt>name</dt><dd><p>[<code>character</code>] <br />
+    A string to represent the name of the environment</p></dd>
+  <dt>flag_continous</dt><dd><p>[<code>logic</code>] <br />
+    A boolean variable to represent whether the action space is continous or not</p></dd>
+</dl>
+    
+    <h2 class="hasAnchor" id="methods"><a class="anchor" href="#methods"></a>Methods</h2>
+
+    
+    <dl class='dl-horizontal'>
+  <dt>initialize(...)</dt><dd><p>[<code>function</code>] <br />
+  Constructor function to initialize environment</p></dd>
+  <dt>step(action)</dt><dd><p>[<code>function</code>] <br />
+  Function to make a step in the environment. Must return a named list of [<code>state(array of size state_dim), reward(reward the agent get after making the step), done(boolean variable whether the episode is finished or not), info(list of anything)</code>]. There must be stoping criteria in step function which should return [<code>list(state = state, reward = reward, done = TRUE, info = list())</code>] to stop the interaction between the environment and the agent.</p></dd>
+  <dt>reset()</dt><dd><p>[<code>function</code>] <br />
+  Reset the environment</p></dd>
+  <dt>render()</dt><dd><p>[<code>function</code>] <br />
+  Print out information to user about the environment, can be left empty</p></dd>
+  <dt>afterAll()</dt><dd><p>[<code>function</code>] <br />
+  What needs to be done after learning is finished, could be left empty</p></dd>
+</dl>
     
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#format">Format</a></li>
+
+      <li><a href="#value">Value</a></li>
+
+      <li><a href="#member-variables">Member Variables</a></li>
+
+      <li><a href="#methods">Methods</a></li>
+          </ul>
 
   </div>
 </div>

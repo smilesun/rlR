@@ -53,8 +53,8 @@ AgentDQN = R6::R6Class("AgentDQN",
     },
 
     afterStep = function() {
-          self$replay(self$replay.size)
-          self$policy$afterStep()
+        self$replay(self$replay.size)
+        self$policy$afterStep()
     },
 
     afterEpisode = function(interact) {
@@ -83,11 +83,10 @@ rlR.conf.DQN = function() {
 }
 
 AgentDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.DQN()
-  conf$updatePara("console", console)
-  interact = makeGymExperiment(sname = sname, aname = "AgentDQN", conf = conf)
-  perf = interact$run(iter)
-  return(perf)
+  env = makeGymEnv(sname)
+  agent = makeAgent("AgentDQN", env)
+  agent$updatePara(console = console, render = render)
+  agent$learn(1000)
 }
 
 AgentDQN$test2 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {

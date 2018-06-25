@@ -144,26 +144,28 @@
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>makeAgent</span>(<span class='st'>"AgentDQN"</span>, <span class='fu'><a href='makeGymEnv.html'>makeGymEnv</a></span>(<span class='kw'>name</span> <span class='kw'>=</span><span class='st'>"CartPole-v0"</span>))</div><div class='output co'>#&gt; parameters: 
 #&gt; -render: - FALSE-
+#&gt; -log: - FALSE-
+#&gt; -console: - FALSE-
 #&gt; -agent.gamma: - 0.99-
 #&gt; -policy.maxEpsilon: - 1-
-#&gt; -policy.minEpsilon: - 0.001-
+#&gt; -policy.minEpsilon: - 0.01-
 #&gt; -policy.decay: - 0.999000499833375-
+#&gt; -softmax.magnify: - 1-
 #&gt; -replay.memname: - Uniform-
+#&gt; -replaymem.size: - 20000-
 #&gt; -replay.epochs: - 1-
-#&gt; -interact.maxiter: - 500-
-#&gt; -policy.epi_wait_ini: - 100-
-#&gt; -policy.epi_wait_expl: - 20-
-#&gt; -console: - FALSE-
-#&gt; -log: - FALSE-
-#&gt; -policy.name: - EpsilonGreedy-
-#&gt; -replay.batchsize: - 64-
-#&gt; -agent.nn.arch: nhidden- 64-
-#&gt;  -agent.nn.arch: act1- relu-
-#&gt;  -agent.nn.arch: act2- linear-
-#&gt;  -agent.nn.arch: loss- mse-
-#&gt;  -agent.nn.arch: lr- 0.00025-
-#&gt;  -agent.nn.arch: kernel_regularizer- regularizer_l2(l=0.0)-
-#&gt;  -agent.nn.arch: bias_regularizer- regularizer_l2(l=0.0)-</div><div class='output co'>#&gt; &lt;AgentDQN&gt;
+#&gt; -replaymem.dt: - FALSE-
+#&gt; -interact.maxiter: - 5000-
+#&gt; -policy.epi_wait_ini: - 5-
+#&gt; -policy.epi_wait_middle: - 25-
+#&gt; -policy.epi_wait_expl: - 40-
+#&gt; -agent.reward2adalr: - 150-
+#&gt; -agent.flag_rescue: - TRUE-
+#&gt; -agent.lr_decay: - 0.999000499833375-
+#&gt; -agent.lr: - 0.001-
+#&gt; -store_model: - FALSE-
+#&gt; -policy.name: - ProbEpsilon-
+#&gt; -replay.batchsize: - 64-</div><div class='output co'>#&gt; &lt;AgentDQN&gt;
 #&gt;   Inherits from: &lt;AgentArmed&gt;
 #&gt;   Public:
 #&gt;     act: function (state) 
@@ -173,11 +175,11 @@
 #&gt;     afterStep: function () 
 #&gt;     brain: SurroNN, Surrogate, R6
 #&gt;     buildConf: function () 
-#&gt;     calculateTDError: function (ins) 
 #&gt;     clone: function (deep = FALSE) 
 #&gt;     conf: Conf, R6
 #&gt;     continue: function (new_env, iter) 
 #&gt;     createInteract: function (rl.env) 
+#&gt;     customizeBrain: function (obj) 
 #&gt;     env: EnvGym, Environment, R6
 #&gt;     epochs: 1
 #&gt;     evaluateArm: function (state) 
@@ -194,25 +196,27 @@
 #&gt;     list.acts: NULL
 #&gt;     list.replay: NULL
 #&gt;     loginfo: function (str, ...) 
+#&gt;     lr_decay: 0.999000499833375
+#&gt;     makeCnn: function () 
 #&gt;     mem: ReplayMemUniform, ReplayMem, R6
 #&gt;     model: SurroNN, Surrogate, R6
-#&gt;     observe: function (state.old, action, reward, state.new, done, info, episode, 
+#&gt;     observe: function (interact) 
+#&gt;     plateau: 150
 #&gt;     p.next: NULL
 #&gt;     p.old: NULL
-#&gt;     policy: PolicyEpsilonGreedy, Policy, R6
-#&gt;     random.action: NULL
-#&gt;     random.cnt: 0
+#&gt;     policy: PolicyProbEpsilon, PolicyEpsilonGreedy, Policy, R6
 #&gt;     replay: function (batchsize) 
+#&gt;     replay_delta: NULL
 #&gt;     replay.size: 64
 #&gt;     replay.x: NULL
 #&gt;     replay.y: NULL
-#&gt;     sampleRandomAct: function (state) 
+#&gt;     sess: tensorflow.python.client.session.Session, tensorflow.python.client.session.BaseSession, tensorflow.python.client.session.SessionInterface, python.builtin.object
 #&gt;     setAdvantage: function (adv) 
 #&gt;     setBrain: function () 
 #&gt;     setConf: function (conf) 
 #&gt;     stateCnt: NULL
 #&gt;     stateDim: 4
-#&gt;     updatePara: function (name, val) 
+#&gt;     updatePara: function (...) 
 #&gt;     vec.arm.q: 0 0
 #&gt;     yhat: NULL</div></pre>
   </div>
