@@ -108,7 +108,7 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$lr_decay = self$conf$get("agent.lr_decay")
       # object
       memname = self$conf$get("replay.memname")
-      self$mem = ReplayMem$factory(memname, agent = self, conf = self$conf)
+      self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
       policy_name = self$conf$get("policy.name")
       self$policy = makePolicy(policy_name, self)
       self$glogger = RLLog$new(self$conf)

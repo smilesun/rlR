@@ -90,7 +90,7 @@ rlR.conf.AC = function() {
     )
 }
 
-AgentActorCritic$test = function(iter = 2000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+AgentActorCritic$test = function(iter = 500L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
   set.seed(0)
   conf = rlR.conf.AC()
   conf$updatePara("console", console)

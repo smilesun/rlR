@@ -1,3 +1,4 @@
+#' @export
 Environment = R6::R6Class("Environment",
   public = list(
     #env = NULL,
