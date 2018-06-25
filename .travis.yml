@@ -8,7 +8,6 @@ addons:
   apt:
     update: true
     packages:
-      - python3.6
       - python-pip 
       - python-dev 
       - build-essential
