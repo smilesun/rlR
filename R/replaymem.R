@@ -40,9 +40,9 @@ ReplayMem = R6::R6Class("ReplayMem",
     },
 
     add = function(ins) {
-      self$len = self$len + 1L
+      self$len = self$len + 1L  # can be bigger than capacity
       pos = self$len %% self$capacity
-      if (self$len > self$capacity) self$start_idx = pos
+      if (self$len > self$capacity) self$start_idx = pos + 1L
       self$samples[[pos]] = ins
       if (self$flag_dt) self$appendDT(ins)
     },
