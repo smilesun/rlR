@@ -19,6 +19,21 @@ ReplayMemDB = R6::R6Class(
       self$table.name = agent$env$env %>%
         stringr::str_extract("<([a-z]|[A-Z]|-|[0-9])*>") %>%
         stringr::str_remove_all("<|>")   # there's maybe a better solution
+      # delete old replay table
+      RSQLite::dbExecute( self$db.con, paste0("DROP TABLE IF EXISTS '", self$table.name, "'") )
+      # manually create new table to specify primary key - this reduces index search complexity from O(n) to O(log n)
+      RSQLite::dbExecute( self$db.con, paste0("
+        CREATE TABLE '", self$table.name, "' (
+          state_id INTEGER PRIMARY KEY,
+          state_old TEXT,
+          reward NUMERIC,
+          action INTEGER,
+          state_new TEXT,
+          done INTEGER,
+          episode INTEGER,
+          stepidx INTEGER,
+          info TEXT )
+      ") )
       self$smooth = rlR.conf4log[["replay.mem.laplace.smoother"]]
       self$dt = data.table()
       self$len = 0L
@@ -54,7 +69,9 @@ ReplayMemDB = R6::R6Class(
         action     = action,
         state_new  = state.new,
         done       = done,
-        info       = info$episode # TODO: rename "info" to "episode" everywhere
+        episode    = info$episode,
+        stepidx    = info$stepidx,
+        info       = if (length(info$info)==0) "NULL" else info$info %>% as.character()
       )
     },
 
@@ -114,7 +131,7 @@ ReplayMemDB = R6::R6Class(
       }
 
       replay.samples = paste0("
-          SELECT state_old, action, reward, state_new, done, info
+          SELECT state_old, action, reward, state_new, done, info, episode, stepidx
           FROM '", self$table.name, "'
           WHERE state_id IN (", paste(idx, collapse = ", "), ")
         ") %>%
@@ -126,7 +143,11 @@ ReplayMemDB = R6::R6Class(
         reward    = replay.samples$reward[i],
         state.new = replay.samples$state_new[i] %>% str_to_array,
         done      = replay.samples$done[i],
-        info      = replay.samples$info[i]
+        info      = list(
+          episode = replay.samples$episode[i],
+          stepidx = replay.samples$stepidx[i],
+          info    = replay.samples$info[i]
+        )
       ))
     },
 
