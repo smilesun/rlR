@@ -33,6 +33,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     tb_acts_update_policy = NULL,  # acts according to policy with respect to states
     tb.state = NULL,
     tb_state_new = NULL,
+    tb.targets = NULL,
     initialize = function(env, conf) {
       self$tau = 0.1
       super$initialize(env, conf)
@@ -78,9 +79,11 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$tb.state = Reduce(rbind, self$list.states.old)
       len = length(self$list.replay)
       list.targets = lapply(1:len, self$extractCriticTarget)
-      tb.targets = Reduce(rbind, list.targets)
+      self$tb.targets = Reduce(rbind, list.targets)
       # yhat of critic is Q_{update}(s_i, a_i)
-      self$fitUpdateCriticNetwork(self$tb.acts, self$tb.state, tb.targets)
+      if (dim(self$tb.targets) != 1) {
+  	self$fitUpdateCriticNetwork(action_input = self$tb.acts, state_input = self$tb.state, yhat = self$tb.targets)
+      }
     },
 
     # actor is also with loss mse since action is continous!!
@@ -136,9 +139,11 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     replay = function(size) {
       self$unpack(size)
       self$trainCritic()
+      if (dim(self$tb.targets) != 1) {
       self$trainActorPrepare()
       self$trainActorSess(self$tb.state, self$grad2a)
       self$updateModel()
+      }
     },
 
     evaluateArm = function(state) {
@@ -178,7 +183,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
     fitUpdateCriticNetwork = function(action_input, state_input, yhat) {
       #FIXME: the fixed order of action_input and state_input might be problematic
-      res = keras::fit(self$brain_critic_update$model, x = list(action_input, state_input), y = yhat)
+      res = keras::fit(self$brain_critic_update$model, x = list(action_input, state_input), y = yhat, epochs = 1)
       return(res)
     },
 
@@ -207,11 +212,10 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     },
 
     afterStep = function() {
-
+      self$replay(self$replay.size)
     },
 
     afterEpisode = function(interact) {
-      self$replay(self$replay.size)
     }
 
 ))
