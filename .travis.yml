@@ -13,6 +13,7 @@ addons:
       - build-essential
       - zlib1g-dev
 before_install:
+  - sudo apt-get install zlib1g-dev
   - sudo pip install gym
   - sudo pip install gym[atari]
   - sudo pip install tensorflow
