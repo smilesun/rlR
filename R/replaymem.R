@@ -3,6 +3,7 @@ ReplayMem = R6::R6Class("ReplayMem",
     samples = NULL,
     dt = NULL,
     len = NULL,
+    start_idx = NULL,
     replayed.idx = NULL,
     conf = NULL,
     agent = NULL,
@@ -16,6 +17,7 @@ ReplayMem = R6::R6Class("ReplayMem",
       self$samples = list()
       self$dt = data.table()
       self$len = 0L
+      self$start_idx = 1L
       self$conf = conf
       self$agent = agent
       self$flag_dt = self$conf$get("replaymem.dt")
@@ -38,9 +40,10 @@ ReplayMem = R6::R6Class("ReplayMem",
     },
 
     add = function(ins) {
-      len = length(self$samples)
-      self$samples[[len + 1L]] = ins
-      self$len = (self$len + 1L) %% self$capacity
+      self$len = self$len + 1L
+      pos = self$len %% self$capacity
+      if (self$len > self$capacity) self$start_idx = pos
+      self$samples[[pos]] = ins
       if (self$flag_dt) self$appendDT(ins)
     },
 
