@@ -34,6 +34,7 @@ If you want to use this package for your self defined task, you need to implemen
 library(rlR)
 library(R6)
 MyEnv = R6::R6Class("MyEnv",
+  inherit = Environment,
   public = list(
     state_dim = NULL,  # obligatory field, should be vector. c(28, 28, 3) which is usually the dimension for an order 3 tensor which can represent an RGB image for example.
     act_cnt = NULL, # obligatory field, should be type integer
@@ -41,6 +42,7 @@ MyEnv = R6::R6Class("MyEnv",
     step_cnt = NULL,
     initialize = function(...) {
       # put your initialization code here for example
+      self$flag_continous = FALSE  # non-continuous action
       self$state_dim = 4
       self$act_cnt = 2
       self$step_cnt = 0L
