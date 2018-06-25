@@ -9,8 +9,10 @@ ReplayMem = R6::R6Class("ReplayMem",
     dt.temp = NULL,
     smooth = NULL,
     flag_dt = NULL,
+    capacity = NULL,
     initialize = function(agent, conf) {
       self$smooth = rlR.conf4log[["replay.mem.laplace.smoother"]]
+      self$capacity = conf$get("replaymem.size")
       self$samples = list()
       self$dt = data.table()
       self$len = 0L
@@ -38,7 +40,7 @@ ReplayMem = R6::R6Class("ReplayMem",
     add = function(ins) {
       len = length(self$samples)
       self$samples[[len + 1L]] = ins
-      self$len = self$len + 1L
+      self$len = (self$len + 1L) %% self$capacity
       if (self$flag_dt) self$appendDT(ins)
     },
 
