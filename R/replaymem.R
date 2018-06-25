@@ -1,7 +1,7 @@
 ReplayMem = R6::R6Class("ReplayMem",
   public = list(
     samples = NULL,
-    dt = NULL,
+    capacity = NULL,
     size = NULL,
     len = NULL,
     start_idx = NULL,
@@ -9,58 +9,31 @@ ReplayMem = R6::R6Class("ReplayMem",
     replayed.idx = NULL,
     conf = NULL,
     agent = NULL,
-    dt.temp = NULL,
-    smooth = NULL,
-    flag_dt = NULL,
-    capacity = NULL,
     initialize = function(agent, conf) {
-      self$smooth = rlR.conf4log[["replay.mem.laplace.smoother"]]
       self$capacity = conf$get("replaymem.size")
-      self$samples = list()
-      self$dt = data.table()
-      self$size = 0L
-      self$len = 0L
-      self$start_idx = 1L
       self$conf = conf
       self$agent = agent
-      self$flag_dt = self$conf$get("replaymem.dt")
-      if (self$flag_dt) self$initTable(mem)
-    },
-
-    initTable = function() {
-      self$dt.temp = data.table("delta" = NA, "priorityRank" = NA, "priorityAbs" = NA, "priorityDelta2" = NA, "deltaOfdelta" = NA, "deltaOfdeltaPercentage" = NA)
-      self$dt.temp = self$dt.temp[, lapply(.SD, as.numeric)]
+      self$reset()
     },
 
     reset = function() {
+      self$start_idx = 1L
+      self$end_idx = 1L
       self$samples = list()
-      self$dt = data.table()
       self$len = 0L
+      self$size = 0L
     },
 
     mkInst = function(state.old, action, reward, state.new, done, info) {
+      #FIXME: benchmark if it saves time to seperately store sars
       list(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = info)
     },
 
     add = function(ins) {
-      self$len = self$len + 1L  # can be bigger than capacity
-      pos = self$len %% self$capacity
-      if (self$len > self$capacity) self$start_idx = pos + 1L
+      pos = (self$len + 1L) %% self$capacity
       self$samples[[pos]] = ins
-      if (self$flag_dt) self$appendDT(ins)
+      self$len = self$len + 1L  # can be bigger than capacity
       self$size = length(self$samples)
-    },
-
-    appendDT = function(ins) {
-      mdt = data.table(t(unlist(ins)))
-      mdt = cbind(mdt, self$dt.temp)
-      self$dt = rbindlist(list(self$dt, mdt), fill = TRUE)
-    },
-
-    updateDT = function(idx = NULL) {
-      self$agent$getXY(self$len)
-      self$dt[idx, "delta"] = as.vector(self$replay_delta)
-      self$updatePriority()
     },
 
     afterEpisode = function(interact) {
@@ -69,41 +42,9 @@ ReplayMem = R6::R6Class("ReplayMem",
 
     afterStep = function() {
       # do nothing
-    },
-
-    updatePriority = function() {
-      self$dt[, "priorityAbs"] =  abs(self$dt[, "delta"]) + self$smooth
-      self$dt[, "priorityRank"] = order(self$dt[, "delta"])
     }
-    ),
-  private = list(),
-  active = list()
-  )
-
-ReplayMem$ins2String = function(x) x
-
-ReplayMem$extractOldState = function(x) {
-  return(x[[1L]])
-}
-
-ReplayMem$extractAction = function(x) {
-  return(x[[2L]])
-}
-
-ReplayMem$extractReward = function(x) {
-  return(x[[3L]])
-}
-
-ReplayMem$extractNextState = function(x) {
-  return(x[[4L]])
-}
-ReplayMem$extractDone = function(x) {
-  return(x[[5L]])
-}
-ReplayMem$extractStep = function(x) {
-  return(x[[6L]][["stepidx"]])
-}
-
+    )
+)
 
 ReplayMemUniform = R6::R6Class("ReplayMemUniform",
   inherit = ReplayMem,
@@ -115,11 +56,8 @@ ReplayMemUniform = R6::R6Class("ReplayMemUniform",
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
     }
-    ),
-  private = list(),
-  active = list()
-  )
-
+    )
+)
 
 ReplayMemLatest = R6::R6Class("ReplayMemLatest",
   inherit = ReplayMem,
@@ -128,7 +66,6 @@ ReplayMemLatest = R6::R6Class("ReplayMemLatest",
       # k is always set to the episode length currently
       k = min(k, self$size)  # when k is too small, the learning stops at particular step
       self$replayed.idx = (self$size - k + 1L): self$size
-      if (self$len > self$capacity) self$replayed.idx = ((self$start_idx - k):(self$start_idx - 1)) %% self$capacity
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
     },
@@ -138,11 +75,9 @@ ReplayMemLatest = R6::R6Class("ReplayMemLatest",
     },
 
     afterEpisode = function() {
-    }
-    ),
-  private = list(),
-  active = list()
-  )
+      self$reset()
+    })
+)
 
 ReplayMemOnline = R6::R6Class("ReplayMemOnline",
   inherit = ReplayMemLatest,
@@ -152,72 +87,13 @@ ReplayMemOnline = R6::R6Class("ReplayMemOnline",
       k = min(k, self$size)  # when k is too small, the learning stops at particular step
       self$replayed.idx = (self$size - k + 1L): self$size
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
-      self$samples = list()
-      self$len = 0L
+      self$reset()
       return(list.res)
     }
-     )
+  )
 )
 
-ReplayMemLatestProb = R6::R6Class("ReplayMemLatestProb",
-  inherit = ReplayMem,
-  public = list(
-   sample.fun = function(k) {
-      k = min(k, self$len)
-      self$replayed.idx = sample(self$len, prob = 1L:self$len, size = k)
-      list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
-      return(list.res)
-    },
-
-   afterEpisode = function() {
-      self$updateDT()
-    }
-    ),
-  private = list(),
-  active = list()
-  )
-
-ReplayMemPrioritizedAbs = R6::R6Class("ReplayMemPrioritizedAbs",
-  inherit = ReplayMem,
-  public = list(
-    sample.fun = function(k) {
-      k = min(k, self$len)
-      if (any(is.na(self$dt$priorityAbs))) {
-        self$replayed.idx = sample.int(self$len)
-      } else {
-      self$replayed.idx = sample.int(self$len, prob = self$dt$priorityAbs)[1L:k]   # FIXME: programe stoppped execution once self$dt$priorityAbs has NA
-      }
-      list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
-      return(list.res)
-    }
-    ),
-  private = list(),
-  active = list()
-  )
-
-ReplayMemPrioritizedRank = R6::R6Class("ReplayMemPrioritizedRank",
-  inherit = ReplayMem,
-  public = list(
-    sample.fun = function(k) {
-      k = min(k, self$len)
-      if (any(is.na(self$dt$priorityRank))) self$replayed.idx = sample.int(self$len)
-      else self$replayed.idx = sample.int(self$len, prob = self$dt$priorityRank)[1L:k]
-      list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
-      return(list.res)
-    },
-
-    afterEpisode = function() {
-      self$updateDT()
-    },
-
-    afterStep = function() {
-    }
-    ),
-  private = list(),
-  active = list()
-  )
-
-ReplayMem$factory = function(name, agent, conf) {
+makeReplayMem = function(name, agent, conf) {
   all = getNamespaceExports("rlR")
   mem.idx = which(sapply(all, function(x) grepl("ReplayMem", x)))
   #assert(paste0("ReplayMem", name) %in% all[mem.idx])
