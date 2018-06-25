@@ -2,8 +2,10 @@ ReplayMem = R6::R6Class("ReplayMem",
   public = list(
     samples = NULL,
     dt = NULL,
+    size = NULL,
     len = NULL,
     start_idx = NULL,
+    end_idx = NULL,
     replayed.idx = NULL,
     conf = NULL,
     agent = NULL,
@@ -16,6 +18,7 @@ ReplayMem = R6::R6Class("ReplayMem",
       self$capacity = conf$get("replaymem.size")
       self$samples = list()
       self$dt = data.table()
+      self$size = 0L
       self$len = 0L
       self$start_idx = 1L
       self$conf = conf
@@ -45,6 +48,7 @@ ReplayMem = R6::R6Class("ReplayMem",
       if (self$len > self$capacity) self$start_idx = pos + 1L
       self$samples[[pos]] = ins
       if (self$flag_dt) self$appendDT(ins)
+      self$size = length(self$samples)
     },
 
     appendDT = function(ins) {
@@ -105,8 +109,9 @@ ReplayMemUniform = R6::R6Class("ReplayMemUniform",
   inherit = ReplayMem,
   public = list(
     sample.fun = function(k) {
-      k = min(k, self$len)
-      self$replayed.idx = sample(self$len)[1L:k]
+      k = min(k, self$size)
+      #FIXME: the replayed.idx are not natural index, but just the position in the replay memory
+      self$replayed.idx = sample(self$size)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
     }
@@ -121,8 +126,9 @@ ReplayMemLatest = R6::R6Class("ReplayMemLatest",
   public = list(
    sample.fun = function(k) {
       # k is always set to the episode length currently
-      k = min(k, self$len)  # when k is too small, the learning stops at particular step
-      self$replayed.idx = (self$len - k + 1L): self$len
+      k = min(k, self$size)  # when k is too small, the learning stops at particular step
+      self$replayed.idx = (self$size - k + 1L): self$size
+      if (self$len > self$capacity) self$replayed.idx = ((self$start_idx - k):(self$start_idx - 1)) %% self$capacity
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
     },
@@ -143,8 +149,8 @@ ReplayMemOnline = R6::R6Class("ReplayMemOnline",
   public = list(
   sample.fun = function(k) {
       # k is always set to the episode length currently
-      k = min(k, self$len)  # when k is too small, the learning stops at particular step
-      self$replayed.idx = (self$len - k + 1L): self$len
+      k = min(k, self$size)  # when k is too small, the learning stops at particular step
+      self$replayed.idx = (self$size - k + 1L): self$size
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       self$samples = list()
       self$len = 0L
