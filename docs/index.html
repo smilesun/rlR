@@ -10,7 +10,9 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="jquery.sticky-kit.min.js"></script><script src="pkgdown.js"></script><meta property="og:title" content="Reinforcement Learning in R">
-<meta property="og:description" content="Reinforcement Learning with deep Q learning, double deep Q learning, frozen target deep Q learning, policy gradient deep learning, policy gradient with baseline deep learning, actor-critic deep reinforcement learning.">
+<meta property="og:description" content="Reinforcement Learning with deep Q learning, double deep Q
+    learning, frozen target deep Q learning, policy gradient deep learning, policy
+    gradient with baseline deep learning, actor-critic deep reinforcement learning.">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -91,9 +93,7 @@
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)</code></pre>
-<pre><code>## Loading required package: R6</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># rlR::installDep()</span>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
 env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
 <span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre>
 <pre><code>## [1] "AgentDQN:deep q learning"                      
@@ -102,49 +102,61 @@ env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.htm
 ## [4] "AgentPG: policy gradient basic"                
 ## [5] "AgentPGBaseline: policy gradient with baseline"
 ## [6] "AgentActorCritic: actor critic method"</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentActorCritic"</span>, env)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(keras)
+model =<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/keras_model_sequential">keras_model_sequential</a></span>()
+model %&gt;%<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/layer_dense">layer_dense</a></span>(<span class="dt">units =</span> <span class="dv">8</span>, <span class="dt">activation =</span> <span class="st">'relu'</span>, <span class="dt">input_shape =</span> <span class="kw">c</span>(<span class="dv">2</span>)) %&gt;%
+<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/layer_dropout">layer_dropout</a></span>(<span class="dt">rate =</span> <span class="fl">0.25</span>) %&gt;%
+<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/layer_dense">layer_dense</a></span>(<span class="dt">units =</span> <span class="dv">2</span>, <span class="dt">activation =</span> <span class="st">'linear'</span>);model$<span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/compile">compile</a></span>(<span class="dt">loss =</span> <span class="st">'mse'</span>, <span class="dt">optimizer =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/optimizer_rmsprop">optimizer_rmsprop</a></span>(<span class="dt">lr =</span> <span class="fl">1e-3</span>))
+model</code></pre>
+<pre><code>## Model
+## ___________________________________________________________________________
+## Layer (type)                     Output Shape                  Param #     
+## ===========================================================================
+## dense_1 (Dense)                  (None, 8)                     24          
+## ___________________________________________________________________________
+## dropout_1 (Dropout)              (None, 8)                     0           
+## ___________________________________________________________________________
+## dense_2 (Dense)                  (None, 2)                     18          
+## ===========================================================================
+## Total params: 42
+## Trainable params: 42
+## Non-trainable params: 0
+## ___________________________________________________________________________</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env)</code></pre>
 <pre><code>## parameters: 
-## -render: - TRUE-
-## -agent.gamma: - 0.99-
-## -policy.maxEpsilon: - 1-
-## -policy.minEpsilon: - 0.001-
-## -policy.decay: - 0.994017964053935-
-## -replay.memname: - Latest-
-## -replay.epochs: - 1-
-## -interact.maxiter: - 500-
-## -policy.epi_wait_ini: - 100-
-## -policy.epi_wait_expl: - 20-
+## -render: - FALSE-
 ## -log: - FALSE-
 ## -console: - FALSE-
-## -policy.name: - EpsilonGreedy-
-## -agent.nn.arch.actor: nhidden- 64-
-##  -agent.nn.arch.actor: act1- tanh-
-##  -agent.nn.arch.actor: act2- softmax-
-##  -agent.nn.arch.actor: loss- categorical_crossentropy-
-##  -agent.nn.arch.actor: lr- 1e-04-
-##  -agent.nn.arch.actor: kernel_regularizer- regularizer_l2(l=0.0001)-
-##  -agent.nn.arch.actor: bias_regularizer- regularizer_l2(l=1e-4)-
-##  -agent.nn.arch.actor: decay- 0.9-
-##  -agent.nn.arch.actor: clipnorm- 5-
-## -agent.nn.arch.critic: nhidden- 64-
-##  -agent.nn.arch.critic: act1- tanh-
-##  -agent.nn.arch.critic: act2- linear-
-##  -agent.nn.arch.critic: loss- mse-
-##  -agent.nn.arch.critic: lr- 1e-04-
-##  -agent.nn.arch.critic: kernel_regularizer- regularizer_l2(l=0.0001)-
-##  -agent.nn.arch.critic: bias_regularizer- regularizer_l2(l=1e-4)-
-##  -agent.nn.arch.critic: decay- 0.9-
-##  -agent.nn.arch.critic: clipnorm- 5-</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">system.time</span>({
- perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">300</span>)
+## -agent.gamma: - 0.99-
+## -policy.maxEpsilon: - 1-
+## -policy.minEpsilon: - 0.01-
+## -policy.decay: - 0.999000499833375-
+## -softmax.magnify: - 1-
+## -replay.memname: - Uniform-
+## -replaymem.size: - 20000-
+## -replay.epochs: - 1-
+## -replaymem.dt: - FALSE-
+## -interact.maxiter: - 5000-
+## -policy.epi_wait_ini: - 5-
+## -policy.epi_wait_middle: - 25-
+## -policy.epi_wait_expl: - 40-
+## -agent.reward2adalr: - 150-
+## -agent.flag_rescue: - TRUE-
+## -agent.lr_decay: - 0.999000499833375-
+## -agent.lr: - 0.001-
+## -store_model: - FALSE-
+## -policy.name: - ProbEpsilon-
+## -replay.batchsize: - 64-</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#agent$customizeBrain(model)</span>
+
+<span class="kw">system.time</span>({
+ perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">10</span>)  <span class="co"># to let travis pass, could not set too many iterations</span>
 })</code></pre>
 <pre><code>##    user  system elapsed 
-## 315.548   6.048 341.267</code></pre>
+##   7.628   0.108   7.438</code></pre>
 <pre class="sourceCode r"><code class="sourceCode r"> perf$<span class="kw">plot</span>()</code></pre>
 <pre><code>## `geom_smooth()` using method = 'loess'</code></pre>
-<p><img src="inst/figuresunnamed-chunk-3-1.png" width="700"></p>
-<pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># if the performance is not good as expected, just let it run another number of episodes by using</span>
- <span class="co"># perf = agent$learn(300) again</span></code></pre>
+<p><img src="inst/figuresunnamed-chunk-4-1.png" width="700"></p>
 </div>
 </div>
   </div>

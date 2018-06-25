@@ -4,7 +4,7 @@
 #' @title Deep Deterministic Policy Gradient
 #'
 #' @format \code{\link{R6Class}} object
-#' @description
+#' @description Continous action agent
 #' @section Methods:
 #'
 #' @return [\code{\link{AgentDDPG}}].

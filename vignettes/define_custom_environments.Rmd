@@ -28,31 +28,28 @@ os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
 # rlR: Define custom environments for Deep Reinforcement learning in R
 
 ## Environment class
-If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment. Below is a template. Where the listed fields (member variables and methods) must exist in your implemented R6 class. You could define other public and private members as you like. 
+If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment which must inherit the `rlR::Environment` Class. You could define other public and private members as you like which do not collide with the names in `rlR::Environment`.
 
 ```{r}
 library(rlR)
 library(R6)
+?rlR::Environment
 MyEnv = R6::R6Class("MyEnv",
-  inherit = Environment,
+  inherit = rlR::Environment,
   public = list(
-    state_dim = NULL,  # obligatory field, should be vector. c(28, 28, 3) which is usually the dimension for an order 3 tensor which can represent an RGB image for example.
-    act_cnt = NULL, # obligatory field, should be type integer
+    step_cnt = NULL,  # a variable that base class does not have
     s_r_d_info = NULL,
-    step_cnt = NULL,
-    initialize = function(...) {
-      # put your initialization code here for example
+    initialize = function(state_dim = 4, act_cnt = 2) {
       self$flag_continous = FALSE  # non-continuous action
-      self$state_dim = 4
-      self$act_cnt = 2
+      self$state_dim = state_dim
+      self$act_cnt = act_cnt
       self$step_cnt = 0L
-      self$s_r_d_info = vector(mode = "list", length = 4)
-      names(self$s_r_d_info) = c("state", "reward", "done", "info")
-      self$s_r_d_info[["reward"]] = 1  # design your own reward scheme in step function below
-      self$s_r_d_info[["done"]] = FALSE  # whether the episode is finished?
-      self$s_r_d_info[["state"]] = array(0, dim = self$state_dim) # state must be array of the same dimension as the self$state_dim
-      self$s_r_d_info[["info"]] = list()  # info can be arbitray object
-      as.array
+      self$s_r_d_info = list(
+            state = array(rnorm(self$state_dim), dim = self$state_dim),
+            reward = 1.0,
+            done = FALSE,
+            info = list()
+      )
     },
 
     render = function(...) {
@@ -61,28 +58,29 @@ MyEnv = R6::R6Class("MyEnv",
 
     # this function will be called at each step of the learning
     step = function(action) {
-      # input your custom code here
+      print("calling step")
       self$step_cnt = self$step_cnt + 1L
-      self$s_r_d_info[["reward"]] = rnorm(1L)  # design your own reward scheme in step function below
-      if(self$step_cnt > 5L)  self$s_r_d_info[["done"]] = TRUE
-      self$s_r_d_info
+      if(self$step_cnt > 5L) {
+        self$s_r_d_info[["done"]] = TRUE
+        return(self$s_r_d_info)
+      }
+      return(self$s_r_d_info)
     },
 
     # this function will be called at the beginning of the learning and at the end of each episode
     reset = function() {
-      # input your custom function FALSE
+      print("calling reset")
       self$step_cnt = 0
       self$s_r_d_info[["done"]] = FALSE
       self$s_r_d_info
     },
 
     afterAll = function() {
+      print("calling afterAll")
       # what to do after the whole learning is finished?  could be left empty
     }
-    ),
-  private = list(),
-  active = list()
   )
+)
 ```
 
 Afterwards you could choose one of the available  Agents to learn on this newly defined environments. 
@@ -90,7 +88,6 @@ Afterwards you could choose one of the available  Agents to learn on this newly 
 env = MyEnv$new()
 listAvailAgent()
 agent = makeAgent("AgentDQN", env)
-agent$updatePara("console", FALSE)
-perf = agent$learn(10)
+perf = agent$learn(3)
 ```
 
