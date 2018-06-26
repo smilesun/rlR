@@ -21,7 +21,7 @@ AgentPG = R6::R6Class("AgentPG",
     },
 
     makeCnn = function()  {
-      return(makeCnnActor(input_shape = self$stateDim, act_cnt = self$actCnt))
+      return(makeCnnActor(input_shape = self$stateDim, act_cnt = self$act_cnt))
     },
 
     setBrain = function() {
@@ -32,7 +32,7 @@ AgentPG = R6::R6Class("AgentPG",
 
     extractTarget = function(ins) {
         act =  ReplayMem$extractAction(ins)
-        temp.act = rep(0.0, self$actCnt)
+        temp.act = rep(0.0, self$act_cnt)
         temp.act[act] =  1.0
         return(temp.act)
     },
@@ -112,7 +112,7 @@ AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
 
 AgentPG$testCNN = function(iter = 1000L, sname = "Pong-v0", render = FALSE, console = FALSE) {
   conf = rlR.AgentPG.conf()
-  env = makeGymEnv(sname, flag_video = TRUE)
+  env = makeGymEnv(sname)
   agent = makeAgent("AgentPG", env)
   agent$updatePara(console = console, render = render, replay.memname = "Online")
   agent$learn(iter)

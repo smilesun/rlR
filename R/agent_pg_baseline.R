@@ -36,7 +36,7 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
 
     makeCnn = function()  {
       if (self$task == "critic") return(makeCnnCritic(input_shape = self$stateDim, act_cnt = 1))
-      if (self$task == "actor")  return(makeCnnActor(input_shape = self$stateDim, act_cnt = self$actCnt))
+      if (self$task == "actor")  return(makeCnnActor(input_shape = self$stateDim, act_cnt = self$act_cnt))
     },
 
      getReplayYhat = function(batchsize) {
@@ -83,9 +83,9 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
           act = self$list.acts[[i]]
           advantage = (+1.0) * as.vector(self$delta[i])
           #FIXME: interestingly, multiply advantage by -1 also works
-          vec.act = rep(0L, self$actCnt)
+          vec.act = rep(0L, self$act_cnt)
           vec.act[act] = 1.0
-          target = advantage * array(vec.act, dim = c(1L, self$actCnt))
+          target = advantage * array(vec.act, dim = c(1L, self$act_cnt))
           return(target)
     },
 

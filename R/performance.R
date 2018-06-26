@@ -18,7 +18,6 @@ Performance = R6::R6Class("Performance",
     recent_door = NULL,
     bad_ratio = NULL,
     gamma = NULL,
-    bad_reward = NULL,
     good_cnt = NULL,
     wait_epi = NULL,
     wait_cnt = NULL,
@@ -36,8 +35,6 @@ Performance = R6::R6Class("Performance",
       self$recent_door = 40L
       self$bad_ratio = 0.99
       self$agent = agent
-      if (!is.null(self$agent$env$bad_reward)) self$bad_reward = self$agent$env$bad_reward
-      else self$bad_reward = -Inf
 
       self$epi_wait_ini = self$agent$conf$get("policy.epi_wait_ini")
       self$epi_wait_expl = self$agent$conf$get("policy.epi_wait_expl")
@@ -141,7 +138,7 @@ Performance = R6::R6Class("Performance",
         if (self$good_cnt > 5L) {
           self$agent$interact$toConsole("\n# success more than 5 \n")
           self$wait_cnt = max(0, self$wait_cnt - self$agent$conf$get("policy.epi_wait_ini"))
-      }} 
+      }}
       #else if (flag["bad_middle2"])
       # self$wait_cnt = max(0, self$wait_cnt - 1)
       # }

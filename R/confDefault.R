@@ -12,6 +12,7 @@ softmax.magnify = 1,
 replay.memname = "Uniform",
 replaymem.size = 20000,
 replay.epochs = 1L,
+replay.freq = 1L,
 replaymem.dt = FALSE,
 interact.maxiter = 5000L,
 policy.epi_wait_ini = 5L,  # initially the performance should increase

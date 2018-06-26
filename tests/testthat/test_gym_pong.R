@@ -1,8 +1,6 @@
 context("gym_video")
 test_that("test Pong works for each Agent", {
   skip_on_cran()
-  skip_on_travis()
-  skip_on_appveyor()
   env = makeGymEnv("Pong-v0")
   agent = makeAgent("AgentPG", env)
   agent$updatePara(replay.memname = "Online")

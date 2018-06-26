@@ -11,9 +11,9 @@ SurroNN = R6::R6Class("SurroNN",
     initialize = function(agent, arch_list_name = "agent.nn.arch", ...) {
       par_list = list(...)
       self$agent = agent
-      self$actCnt = self$agent$actCnt
+      self$act_cnt = self$agent$act_cnt
       self$custom_flag = FALSE
-      if ("act_cnt" %in% names(par_list)) self$actCnt = par_list[["act_cnt"]]
+      if ("act_cnt" %in% names(par_list)) self$act_cnt = par_list[["act_cnt"]]
       self$stateDim = self$agent$stateDim
       self$conf = self$agent$conf
       if (!is.null(self$conf)) {
@@ -34,7 +34,7 @@ SurroNN = R6::R6Class("SurroNN",
         model = self$agent$makeCnn()
         return(model)
       } else {
-        model = makeKerasModel(input_shape = self$stateDim, output_shape = self$actCnt, arch.list = self$arch.list)
+        model = makeKerasModel(input_shape = self$stateDim, output_shape = self$act_cnt, arch.list = self$arch.list)
         return(model)
       }
     },

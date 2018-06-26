@@ -49,9 +49,9 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
       advantage = self$delta[i, ]
       act = self$list.acts[[i]]
       advantage = (+1.0) * as.vector(advantage)
-      vec.act = rep(0L, self$actCnt)
+      vec.act = rep(0L, self$act_cnt)
       vec.act[act] = 1.0
-      target = advantage * array(vec.act, dim = c(1L, self$actCnt))
+      target = advantage * array(vec.act, dim = c(1L, self$act_cnt))
       return(target)
     },
 

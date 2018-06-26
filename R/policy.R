@@ -25,12 +25,12 @@ Policy = R6::R6Class("Policy",
     },
 
     sampleRandomAct = function(state) {
-        self$random.action = sample.int(self$host$actCnt)[1L]
+        self$random.action = sample.int(self$host$act_cnt)[1L]
     },
 
     predProbRank = function(state) {
       prob = order(self$host$vec.arm.q)
-      action = sample.int(self$host$actCnt, prob = prob)[1L]
+      action = sample.int(self$host$act_cnt, prob = prob)[1L]
       return(action)
     },
 
@@ -98,12 +98,12 @@ PolicyProbEpsilon = R6::R6Class("PolicyProbEpsilon",
       super$initialize(host)
     },
 
-    # all suboptimal arm probability sum up to epsilon with probability epsilon/actCnt
+    # all suboptimal arm probability sum up to epsilon with probability epsilon/act_cnt
     act = function(state) {
-      prob = rep(self$epsilon, self$host$actCnt) / (self$host$actCnt)
+      prob = rep(self$epsilon, self$host$act_cnt) / (self$host$act_cnt)
       optarm = which.max(self$host$vec.arm.q)
       prob[optarm] = prob[optarm] + 1.0 - self$epsilon
-      action  = sample.int(self$host$actCnt, prob = prob)[1L]
+      action  = sample.int(self$host$act_cnt, prob = prob)[1L]
       if (optarm != action) self$random_cnt = self$random_cnt + 1L
       return(action)
     },
@@ -126,8 +126,8 @@ PolicyPG = R6::R6Class("PolicyPG",
       z = self$host$vec.arm.q - max(self$host$vec.arm.q) # numerical stability
       prob = exp(self$softmax_magnify * z)
       prob = prob / sum(prob)
-      action = sample.int(self$host$actCnt, prob = prob)[1L]
-      action = rmultinom(n = 1L, size = self$host$actCnt, prob = prob)  # FIXME: any difference between multinomial and sample.int?
+      action = sample.int(self$host$act_cnt, prob = prob)[1L]
+      action = rmultinom(n = 1L, size = self$host$act_cnt, prob = prob)  # FIXME: any difference between multinomial and sample.int?
       arm = which.max(action)
       return(arm)
     },

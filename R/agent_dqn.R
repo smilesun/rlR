@@ -30,7 +30,7 @@ AgentDQN = R6::R6Class("AgentDQN",
     },
 
     makeCnn = function()  {
-      return(makeCnnCritic(input_shape = self$stateDim, act_cnt = self$actCnt))
+      return(makeCnnCritic(input_shape = self$stateDim, act_cnt = self$act_cnt))
     },
 
     extractTarget = function(i) {
@@ -53,8 +53,10 @@ AgentDQN = R6::R6Class("AgentDQN",
     },
 
     afterStep = function() {
-        self$replay(self$replay.size)
-        self$policy$afterStep()
+        if (self$interact$idx.step %% self$replay.freq == 0) {
+          self$replay(self$replay.size)
+          self$policy$afterStep()
+        }
     },
 
     afterEpisode = function(interact) {
@@ -121,4 +123,17 @@ AgentDQN$test4 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
   agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.05, policy.decay = exp(-0.001), replay.batchsize = 10, replay.epochs = 4, agent.lr_decay = exp(-0.001), agent.gamma = 0.95)
   agent$customizeBrain(model)
   agent$learn(1000)
+}
+
+AgentDQN$testcnn = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+  env = makeGymEnv("Pong-v0", act_cheat = c(3, 4))
+  agent = makeAgent("AgentDQN", env)
+  agent$updatePara(replay.batchsize = 32, render = TRUE, replay.freq = 4L)
+  agent$learn(1)
+}
+
+AgentDQN$testpongram = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+  env = makeGymEnv("Pong-ram-v0", act_cheat = c(2, 3))
+  agent = makeAgent("AgentDQN", env)
+  agent$learn(1)
 }
