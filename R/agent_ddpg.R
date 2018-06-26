@@ -97,7 +97,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     },
 
     trainActorSess = function(state_input, input_criticQ2act) {
-      ph_critic2act = tf$placeholder(dtype = tf$float32, shape = shape(NULL, self$actCnt), name = "criticQ2a")  # place holder for action
+      ph_critic2act = tf$placeholder(dtype = tf$float32, shape = shape(NULL, self$act_cnt), name = "criticQ2a")  # place holder for action
       # chain rule: set initial value of the gradient to be -ph_critic2act
       tensor_grad_policy2theta = tf$gradients(ys = self$brain_actor_update$model$output, xs = self$brain_actor_update$model$weights, grad_ys = tf$negative(ph_critic2act))
       # The final gradients are Q(s_t,a = \mu(s_t)) with respect to \theta^{\mu}(actor network weights), the graph is \theta^{mu}(weights of actor network) - action(a = \mu(s)) - Q(s, a)

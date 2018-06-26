@@ -36,8 +36,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     mem = NULL,  # replay memory
     advantage = NULL,
     list.acts = NULL,
-    actCnt = NULL,
-    stateCnt = NULL,
+    act_cnt = NULL,
     stateDim = NULL,
     conf = NULL,
     vec.arm.q = NULL,      # store Q value for each arm
@@ -58,6 +57,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     replay.x = NULL,
     env = NULL,
     sess = NULL,
+    replay.freq = NULL,
     # member function
     # constructor
     initialize = function(env, conf) {
@@ -68,9 +68,14 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     initializeEnv = function(env) {
       self$env = env
-      self$actCnt =  env$act_cnt
+      self$act_cnt =  env$act_cnt
       self$stateDim = env$state_dim
-      self$vec.arm.q = vector(mode = "numeric", length = self$actCnt)
+      self$vec.arm.q = vector(mode = "numeric", length = self$act_cnt)
+    },
+
+    # user creation of brain from outside
+    customizeBrain = function(...) {
+      # 
     },
 
     # seperate initializeConf allow for reconfiguration
@@ -106,6 +111,7 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$epochs = self$conf$get("replay.epochs")
       self$plateau = self$conf$get("agent.reward2adalr")
       self$lr_decay = self$conf$get("agent.lr_decay")
+      self$replay.freq = self$conf$get("replay.freq")
       # object
       memname = self$conf$get("replay.memname")
       self$mem = makeReplayMem(memname, agent = self, conf = self$conf)

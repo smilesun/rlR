@@ -69,15 +69,13 @@ makeAnyModel = function(input =4, output = 1, list.arch) {
 makeCnnActor = function(input_shape = c(32, 32, 3), act_cnt = 10L) {
   text = paste("model <- keras_model_sequential();",
   'model %>%',
-  ' layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same", input_shape = input_shape) %>%',
+  ' layer_conv_2d(filter = 2, kernel_size = c(5,5), padding = "same", input_shape = input_shape) %>%',
     'layer_activation("relu") %>%',
-    'layer_conv_2d(filter = 32, kernel_size = c(3,3)) %>%',
+    'layer_conv_2d(filter = 2, kernel_size = c(5,5)) %>%',
     'layer_activation("relu") %>%',
     'layer_max_pooling_2d(pool_size = c(2,2)) %>%',
     'layer_dropout(0.25) %>%',
-    'layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same") %>%',
-    'layer_activation("relu") %>%',
-    'layer_conv_2d(filter = 32, kernel_size = c(3,3)) %>%',
+    'layer_conv_2d(filter = 1, kernel_size = c(3,3), padding = "same") %>%',
     'layer_activation("relu") %>%',
     'layer_max_pooling_2d(pool_size = c(2,2)) %>%',
     'layer_dropout(0.25) %>%',
@@ -96,20 +94,18 @@ makeCnnActor = function(input_shape = c(32, 32, 3), act_cnt = 10L) {
 makeCnnCritic = function(input_shape = c(32, 32, 3), act_cnt = 1L) {
   text = paste("model <- keras_model_sequential();",
   'model %>%',
-  ' layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same", input_shape = input_shape) %>%',
+  ' layer_conv_2d(filter = 1, kernel_size = c(3,3), padding = "same", input_shape = input_shape) %>%',
     'layer_activation("relu") %>%',
-    'layer_conv_2d(filter = 32, kernel_size = c(3,3)) %>%',
+    'layer_conv_2d(filter = 1, kernel_size = c(3,3)) %>%',
     'layer_activation("relu") %>%',
     'layer_max_pooling_2d(pool_size = c(2,2)) %>%',
     'layer_dropout(0.25) %>%',
-    'layer_conv_2d(filter = 32, kernel_size = c(3,3), padding = "same") %>%',
-    'layer_activation("relu") %>%',
-    'layer_conv_2d(filter = 32, kernel_size = c(3,3)) %>%',
+    'layer_conv_2d(filter = 1, kernel_size = c(3,3), padding = "same") %>%',
     'layer_activation("relu") %>%',
     'layer_max_pooling_2d(pool_size = c(2,2)) %>%',
     'layer_dropout(0.25) %>%',
     'layer_flatten() %>%',
-    'layer_dense(512) %>%',
+    'layer_dense(10) %>%',
     'layer_activation("relu") %>%',
     'layer_dropout(0.5) %>%',
     'layer_dense(act_cnt) %>%',
@@ -120,12 +116,12 @@ makeCnnCritic = function(input_shape = c(32, 32, 3), act_cnt = 1L) {
   return(model)
 }
 
-createActorNetwork = function(state_dim = 784, action_dim = 1L) {
+createActorNetwork = function(state_dim = 3, action_dim = 1L) {
   input_state = keras::layer_input(shape = state_dim)
   states_hidden = input_state %>%
-    layer_dense(units = 300, activation = "relu")
+    layer_dense(units = 27, activation = "relu")
   states_hidden2 = states_hidden %>%
-    layer_dense(units = 300, activation = "linear") %>%
+    layer_dense(units = 27, activation = "linear") %>%
     layer_dense(units = 1, activation = "linear")
   model = keras::keras_model(inputs = input_state, outputs = states_hidden2)
   opt = keras::optimizer_adam(lr = 0.0001)
@@ -160,4 +156,23 @@ createCriticNetwork = function(state_dim, action_dim) {
     metrics = c("accuracy")
     )
   return(list(model = model, input_action = input_action, input_state = input_state))
+}
+
+fun = function() {
+model <- keras_model_sequential()
+model %>% 
+  layer_dense(units = 256, activation = 'relu', input_shape = c(784)) %>% 
+  layer_dropout(rate = 0.4) %>% 
+  layer_dense(units = 128, activation = 'relu') %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 10, activation = 'softmax')
+}
+
+makeCustomNetwork = function(fun) {
+  checkmate::assertFunction(fun)
+  res = try({
+    do.call(fun, args = list())
+  })
+  checkmate::assertFALSE(class(res)[1L] == "try-error")
+  return(fun)
 }

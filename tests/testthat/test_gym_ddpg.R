@@ -1,8 +1,6 @@
 context("gym_continuous")
 test_that("test ddpg works", {
   skip_on_cran()
-  skip_on_travis()
-  skip_on_appveyor()
   env = makeGymEnv("Pendulum-v0")
   agent = makeAgent("AgentDDPG", env)
   agent$updatePara(replay.memname = "Online")

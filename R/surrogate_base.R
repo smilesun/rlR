@@ -1,12 +1,11 @@
 Surrogate = R6::R6Class("Surrogate",
   public = list(
-      actCnt = NULL,
-      stateCnt = NULL,
+      act_cnt = NULL,
       stateDim = NULL,
       createModel.fun = NULL,
       model = NULL,
     initialize = function(actionCnt, stateDim, createModel.fun) {
-      self$actCnt = actionCnt
+      self$act_cnt = actionCnt
       self$stateDim = stateDim
       self$createModel.fun = createModel.fun
     },
