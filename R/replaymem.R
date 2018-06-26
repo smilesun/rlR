@@ -31,6 +31,7 @@ ReplayMem = R6::R6Class("ReplayMem",
 
     add = function(ins) {
       pos = (self$len + 1L) %% self$capacity
+      if (pos == 0) pos = self$capacity
       self$samples[[pos]] = ins
       self$len = self$len + 1L  # can be bigger than capacity
       self$size = length(self$samples)
