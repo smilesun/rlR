@@ -159,7 +159,6 @@ createCriticNetwork = function(state_dim, action_dim) {
 }
 
 fun = function() {
-library(keras)
 model <- keras_model_sequential()
 model %>% 
   layer_dense(units = 256, activation = 'relu', input_shape = c(784)) %>% 
