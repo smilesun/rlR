@@ -5,7 +5,9 @@
 #'
 #' @format \code{\link{R6Class}} object
 #' @description Continous action agent
+#' Inherited from \code{AgentActorCritic}:
 #' @section Methods:
+#' @inheritSection AgentArmed Methods
 #'
 #' @return [\code{\link{AgentDDPG}}].
 #' @export

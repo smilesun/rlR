@@ -86,7 +86,7 @@ AgentDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, co
   env = makeGymEnv(sname)
   agent = makeAgent("AgentDQN", env)
   agent$updatePara(console = console, render = render)
-  agent$learn(1000)
+  agent$learn(iter)
 }
 
 AgentDQN$test2 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
