@@ -22,9 +22,11 @@ replay.freq = 1L
 
 rlR.conf.avail = names(rlR.conf.default)
 
-#'@export
+#' @title getDefaultConf
+#' @description List defaults hyper-parameters
+#' @export
 getDefaultConf = function() {
-  rlR.conf.df = data.frame(unlist(rlR:::rlR.conf.default))
+  rlR.conf.df = data.frame(unlist(rlR.conf.default))
   colnames(rlR.conf.df) = NULL
   rlR.conf.df
 }

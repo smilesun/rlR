@@ -26,35 +26,19 @@ rlr_test_if_tensorflow_works = function() {
   }, silent = FALSE)
   if (class(res)[1L] == "try-error") return(FALSE)
   return(TRUE)
-  #tensorflow::install_tensorflow()
-}
-
-#' @title  Test if keras works
-#' 
-#' @description Test if keras is installed
-#' 
-#' @return TRUE if success
-#' @export 
-rlr_test_if_keras_works = function() {
-  res <- try({
-      makeAnyModel(input = 4, output = 1, list.arch = list.arch)
-  }, silent = FALSE)
-  if (class(res)[1L] == "try-error") return(FALSE)
-  return(TRUE)
 }
 
 #' @title  Test if gym is installed
-#' 
 #' @description Test if gym is installed
-#' 
 #' @return TRUE if success
-#' @export 
+#' @export
 rlr_test_if_gym_works = function() {
   res <- try({
     gym = reticulate::import("gym")
     gym$logger$set_level(40)  # supress warning
     gym$logger$setLevel(40)
     genv = gym$make("CartPole-v0")
+    genv$reset()
   }, silent = FALSE)
   if (class(res)[1L] == "try-error") return(FALSE)
   return(TRUE)
@@ -70,7 +54,7 @@ installDep = function(gpu = FALSE) {
   flag_gym = rlr_test_if_gym_works()
   if (gpu) {
     if (!flag_keras) {
-      if (flag_gym) keras::install_keras(tensorflow ='1.8-gpu')
+      if (flag_gym) keras::install_keras(tensorflow = '1.8-gpu')
       else keras::install_keras(tensorflow = "1.8-gpu", extra_packages = c("gym"))
     }
   }
@@ -107,11 +91,4 @@ listAvailEnvs = function() {
   })
   lapply(all_spec[which(unlist(idx))], function(x) x$id)
 }
-
-# listClass = function(name = NULL) {
-#   if (is.null(name)) return(c("Agent", "Policy", "ReplayMem"))
-#   all = getNamespaceExports("rlR")
-#   mem.idx = which(sapply(all, function(x) grepl(name, x)))
-#   all[mem.idx]
-# }
 rlR.xd = function() reticulate::use_python("~/anaconda3/bin/python")
