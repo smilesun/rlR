@@ -30,7 +30,6 @@ AgentArmed = R6::R6Class("AgentArmed",
   public = list(
     # constructor init
     replay_delta = NULL,
-    plateau = NULL,
     lr_decay = NULL,
     interact = NULL,
     mem = NULL,  # replay memory
@@ -109,8 +108,7 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$replay.size = self$conf$get("replay.batchsize")
       self$gamma = self$conf$get("agent.gamma")
       self$epochs = self$conf$get("replay.epochs")
-      self$plateau = self$conf$get("agent.reward2adalr")
-      self$lr_decay = self$conf$get("agent.lr_decay")
+      self$lr_decay = self$conf$get("agent.lr.decay")
       self$replay.freq = self$conf$get("replay.freq")
       # object
       memname = self$conf$get("replay.memname")

@@ -15,7 +15,7 @@ AgentPG = R6::R6Class("AgentPG",
     flag_rescue = NULL,
     initialize = function(env, conf) {
       if (is.null(conf)) conf = rlR.AgentPG.conf()
-      self$flag_rescue = conf$get("agent.flag_rescue")
+      self$flag_rescue = conf$get("agent.flag.reset.net")
       super$initialize(env, conf = conf)
       self$setBrain()
     },
@@ -104,10 +104,9 @@ rlR.AgentPG.conf = function() {
 
 AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
   conf = rlR.AgentPG.conf()
-  conf$updatePara("console", TRUE)
-  interact = makeGymExperiment(sname = sname, aname = "AgentPG", conf = conf)
-  perf = interact$run(iter)
-  return(perf)
+  env = makeGymEnv(sname)
+  agent = makeAgent("AgentPG", env)
+  agent$learn(iter)
 }
 
 AgentPG$testCNN = function(iter = 1000L, sname = "Pong-v0", render = FALSE, console = FALSE) {
