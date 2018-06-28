@@ -8,36 +8,22 @@
 # rlR: Reinforcement learning in R
 
 ## Installation
-```{r}
-# devtools::install_github("smilesun/rlR", dependencies = TRUE)
+```{r eval = FALSE}
+devtools::install_github("smilesun/rlR", dependencies = TRUE)
 ```
 
 ## Usage
 ```{r}
 library(rlR)
+getDefaultConf()
 env = makeGymEnv("CartPole-v0")
 listAvailAgent()
 ```
 
-```{r}
-library(keras)
-model = keras_model_sequential()
-model %>% layer_dense(units = 8, activation = 'relu', input_shape = c(2)) %>%
-  layer_dropout(rate = 0.25) %>%
-  layer_dense(units = 2, activation = 'linear');model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 1e-3))
-model
-```
-
-
-
 ```{r fig.path="inst/figures"}
-
 agent = makeAgent("AgentDQN", env)
-
-#agent$customizeBrain(model)
-
 system.time({
- perf = agent$learn(10)  # to let travis pass, could not set too many iterations
+ perf = agent$learn(150)
 })
  perf$plot()
 ```

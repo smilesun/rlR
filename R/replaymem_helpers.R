@@ -70,7 +70,7 @@ ReplayMemPrioritizedRank = R6::R6Class("ReplayMemPrioritizedRank",
       super$initialize(agent, conf)
       self$dt = data.table()
       self$smooth = rlR.conf4log[["replay.mem.laplace.smoother"]]
-      self$flag_dt = self$conf$get("replaymem.dt")
+      self$flag_dt = self$conf$get("replay.mem.dt")
       if (self$flag_dt) self$initTable(mem)
     },
 

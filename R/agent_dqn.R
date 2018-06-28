@@ -107,7 +107,7 @@ AgentDQN$test3 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
     layer_dropout(rate = 0.25) %>%
     layer_dense(units = 3, activation = 'linear');model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 9e-4))
   model
-  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.05, policy.decay = exp(-0.001), replay.batchsize = 10, replay.epochs = 4, agent.lr_decay = exp(-0.001), agent.gamma = 0.95)
+  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.05, policy.decay = exp(-0.001), replay.batchsize = 10, replay.epochs = 4, agent.lr.decay = exp(-0.001), agent.gamma = 0.95)
   agent$customizeBrain(model)
   agent$learn(1000)
 }
@@ -120,13 +120,13 @@ AgentDQN$test4 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
     layer_dropout(rate = 0.25) %>%
     layer_dense(units = 2, activation = 'linear');model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 9e-4))
   model
-  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.05, policy.decay = exp(-0.001), replay.batchsize = 10, replay.epochs = 4, agent.lr_decay = exp(-0.001), agent.gamma = 0.95)
+  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.05, policy.decay = exp(-0.001), replay.batchsize = 10, replay.epochs = 4, agent.lr.decay = exp(-0.001), agent.gamma = 0.95)
   agent$customizeBrain(model)
   agent$learn(1000)
 }
 
 AgentDQN$testcnn = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  env = makeGymEnv("Pong-v0", act_cheat = c(3, 4))
+  env = makeGymEnv("Pong-v0", act_cheat = c(2, 3), repeat_n_act = 4)
   agent = makeAgent("AgentDQN", env)
   agent$updatePara(replay.batchsize = 32, render = TRUE, replay.freq = 4L)
   agent$learn(1)

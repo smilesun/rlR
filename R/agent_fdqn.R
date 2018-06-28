@@ -47,19 +47,12 @@ AgentFDQN = R6::R6Class("AgentFDQN",
       self$brain_target$setWeights(uw)
     },
 
-    afterStep = function() {
-      self$replay(self$replay.size)
-    },
-
     afterEpisode = function(interact) {
       super$afterEpisode(interact)
       self$updateModel()
     }
-    ), # public
-  private = list(),
-  active = list(
-    )
   )
+)
 
 
 AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
@@ -69,4 +62,10 @@ AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
   interact = makeGymExperiment(sname = sname, aname = "AgentFDQN", conf = conf)
   perf = interact$run(iter)
   return(perf)
+  #
+  env = makeGymEnv(sname)
+  agent = makeAgent("AgentFDQN", env)
+  agent$updatePara(console = console, render = render)
+  agent$learn(iter)
+
 }

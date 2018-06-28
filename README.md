@@ -10,15 +10,38 @@
 ## Installation
 
 ```r
-# devtools::install_github("smilesun/rlR", dependencies = TRUE)
+devtools::install_github("smilesun/rlR", dependencies = TRUE)
 ```
 
 ## Usage
 
 ```r
 library(rlR)
-env = makeGymEnv("CartPole-v0", ok_step = 100, ok_reward = 195)
-# Define success to be the last 100 episodes having an average rewards of 195
+getDefaultConf()
+```
+
+```
+##                                         
+## render                             FALSE
+## log                                FALSE
+## console                            FALSE
+## agent.gamma                         0.99
+## agent.flag.reset.net                TRUE
+## agent.lr.decay         0.999000499833375
+## agent.lr                           0.001
+## agent.store.model                  FALSE
+## policy.maxEpsilon                   0.01
+## policy.minEpsilon                   0.01
+## policy.decay                           1
+## policy.softmax.magnify                 1
+## replay.memname                   Uniform
+## replay.mem.size                    20000
+## replay.epochs                          1
+## replay.freq                            1
+```
+
+```r
+env = makeGymEnv("CartPole-v0")
 listAvailAgent()
 ```
 
@@ -32,57 +55,41 @@ listAvailAgent()
 ```
 
 
-
 ```r
-agent = makeAgent("AgentActorCritic", env)
+agent = makeAgent("AgentDQN", env)
 ```
 
 ```
 ## parameters: 
-## -render: - TRUE-
+## -render: - FALSE-
 ## -log: - FALSE-
 ## -console: - FALSE-
 ## -agent.gamma: - 0.99-
+## -agent.flag.reset.net: - TRUE-
+## -agent.lr.decay: - 0.999000499833375-
+## -agent.lr: - 0.001-
+## -agent.store.model: - FALSE-
 ## -policy.maxEpsilon: - 1-
-## -policy.minEpsilon: - 0.001-
+## -policy.minEpsilon: - 0.01-
 ## -policy.decay: - 0.999000499833375-
-## -replay.memname: - Latest-
+## -policy.softmax.magnify: - 1-
+## -replay.memname: - Uniform-
+## -replay.mem.size: - 20000-
 ## -replay.epochs: - 1-
-## -interact.maxiter: - 500-
-## -policy.epi_wait_ini: - 5-
-## -policy.epi_wait_middle: - 25-
-## -policy.epi_wait_expl: - 40-
-## -policy.name: - EpsilonGreedy-
-## -agent.nn.arch.actor: nhidden- 64-
-##  -agent.nn.arch.actor: act1- tanh-
-##  -agent.nn.arch.actor: act2- softmax-
-##  -agent.nn.arch.actor: loss- categorical_crossentropy-
-##  -agent.nn.arch.actor: lr- 1e-04-
-##  -agent.nn.arch.actor: kernel_regularizer- regularizer_l2(l=0.0001)-
-##  -agent.nn.arch.actor: bias_regularizer- regularizer_l2(l=1e-4)-
-##  -agent.nn.arch.actor: decay- 0.9-
-##  -agent.nn.arch.actor: clipnorm- 5-
-## -agent.nn.arch.critic: nhidden- 64-
-##  -agent.nn.arch.critic: act1- tanh-
-##  -agent.nn.arch.critic: act2- linear-
-##  -agent.nn.arch.critic: loss- mse-
-##  -agent.nn.arch.critic: lr- 1e-04-
-##  -agent.nn.arch.critic: kernel_regularizer- regularizer_l2(l=0.0001)-
-##  -agent.nn.arch.critic: bias_regularizer- regularizer_l2(l=1e-4)-
-##  -agent.nn.arch.critic: decay- 0.9-
-##  -agent.nn.arch.critic: clipnorm- 5-
+## -replay.freq: - 1-
+## -policy.name: - ProbEpsilon-
+## -replay.batchsize: - 64-
 ```
 
 ```r
 system.time({
- perf = agent$learn(1000)
+ perf = agent$learn(150)
 })
 ```
 
-
 ```
-##     user   system  elapsed 
-## 3793.068   62.600 3818.827
+##    user  system elapsed 
+## 632.296   5.828 631.660
 ```
 
 ```r
@@ -93,4 +100,4 @@ system.time({
 ## `geom_smooth()` using method = 'loess'
 ```
 
-![plot of chunk unnamed-chunk-3](inst/figures/ac.png)
+![plot of chunk unnamed-chunk-3](inst/figures/dqn.png)

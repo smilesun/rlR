@@ -21,6 +21,7 @@ Performance = R6::R6Class("Performance",
     good_cnt = NULL,
     wait_epi = NULL,
     wait_cnt = NULL,
+    wait_middle = NULL,
     reset_cnt = NULL,
     total.step = NULL,  # how many times model has been reset
     list_models = NULL,
@@ -28,16 +29,16 @@ Performance = R6::R6Class("Performance",
     initialize = function(agent) {
       self$epiLookBack = 100L
       self$reset_cnt = 0L
-      self$wait_epi = agent$conf$get("policy.epi_wait_ini")
+      self$wait_epi = rlR.conf4log[["policy.epi_wait_ini"]]
       self$wait_cnt = 0L
       self$good_cnt = 0L
       self$recent_win = 20L
       self$recent_door = 40L
       self$bad_ratio = 0.99
       self$agent = agent
-
-      self$epi_wait_ini = self$agent$conf$get("policy.epi_wait_ini")
-      self$epi_wait_expl = self$agent$conf$get("policy.epi_wait_expl")
+      self$wait_middle = rlR.conf4log[["policy.epi_wait_middle"]]
+      self$epi_wait_ini = rlR.conf4log[["policy.epi_wait_ini"]]
+      self$epi_wait_expl = rlR.conf4log[["policy.epi_wait_expl"]]
       self$gamma = self$agent$conf$get("agent.gamma")
       self$glogger = self$agent$glogger
       self$list.reward.epi = list()
@@ -48,7 +49,7 @@ Performance = R6::R6Class("Performance",
       self$list.discountedRPerEpisode = list()
       self$list.stepsPerEpisode = list()
       self$r.vec.epi = vector(mode = "numeric", length = 2000L)  # FIXME: how to set a reasonble number here?
-      self$store_model_flag = self$agent$conf$get("store_model")
+      self$store_model_flag = self$agent$conf$get("agent.store.model")
       if (is.null(self$store_model_flag)) self$store_model_flag = FALSE
       if (self$store_model_flag) self$list_models = list()
     },
@@ -113,13 +114,13 @@ Performance = R6::R6Class("Performance",
 
     rescue = function() {
       flag = self$isBad()
-      self$wait_epi = min(self$agent$conf$get("policy.epi_wait_expl"), self$wait_epi + 1)
+      self$wait_epi = min(self$epi_wait_expl, self$wait_epi + 1)
       if (flag[1]) {
         self$agent$interact$toConsole("\n bad perform for last window, %d times \n", self$wait_cnt + 1L)
         self$wait_cnt = self$wait_cnt + 1L
         ratio = exp(-self$agent$policy$logdecay * self$total_step)
         #self$agent$policy$epsilon = min(1, self$agent$policy$epsilon * ratio)  #FIXME: shall we increase explore here ? Again and again exporation will never converge
-        flag_new_start = self$wait_cnt > self$agent$conf$get("policy.epi_wait_middle")
+        flag_new_start = self$wait_cnt > self$wait_middle         
         flag_start = all(flag) && flag_new_start
         if (self$wait_cnt > self$wait_epi || flag_start) {
           if (flag[2] || flag[3]) {
@@ -137,7 +138,7 @@ Performance = R6::R6Class("Performance",
       } else {
         if (self$good_cnt > 5L) {
           self$agent$interact$toConsole("\n# success more than 5 \n")
-          self$wait_cnt = max(0, self$wait_cnt - self$agent$conf$get("policy.epi_wait_ini"))
+          self$wait_cnt = max(0, self$wait_cnt - self$wait_epi)
       }}
       #else if (flag["bad_middle2"])
       # self$wait_cnt = max(0, self$wait_cnt - 1)

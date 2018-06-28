@@ -21,7 +21,7 @@ Policy = R6::R6Class("Policy",
       self$maxEpsilon = self$host$conf$get("policy.maxEpsilon")
       self$epsilon = self$maxEpsilon
       self$gstep.idx = 1
-      self$softmax_magnify = self$host$conf$get("softmax.magnify")
+      self$softmax_magnify = self$host$conf$get("policy.softmax.magnify")
     },
 
     sampleRandomAct = function(state) {
