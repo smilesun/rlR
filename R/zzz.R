@@ -78,7 +78,7 @@ listAvailAgent = function() {
 #' @export
 listAvailEnvs = function() {
   envs = import("gym.envs")
-  all_spec = envs$registry$all()
+  all_spec = envs$registry$env_specs
   idx = lapply(all_spec, function(spec) {
     env = try({env = spec$make()})
     if (class(env) == "try-error") return(FALSE)

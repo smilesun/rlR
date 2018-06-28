@@ -20,7 +20,7 @@ env = makeGymEnv("CartPole-v0")
 listAvailAgent()
 ```
 
-```{r fig.path="inst/figures"}
+```{r eval=FALSE, fig.path="inst/figures"}
 agent = makeAgent("AgentDQN", env)
 system.time({
  perf = agent$learn(150)

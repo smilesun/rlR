@@ -88,75 +88,46 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># devtools::install_github("smilesun/rlR", dependencies = TRUE)</span></code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">install_github</span>(<span class="st">"smilesun/rlR"</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)</code></pre>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
-env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
+<span class="kw"><a href="reference/getDefaultConf.html">getDefaultConf</a></span>()</code></pre>
+<pre><code>##                                         
+## render                             FALSE
+## log                                FALSE
+## console                            FALSE
+## agent.gamma                         0.99
+## agent.flag.reset.net                TRUE
+## agent.lr.decay         0.999000499833375
+## agent.lr                           0.001
+## agent.observ_stack_len                 1
+## agent.store.model                  FALSE
+## policy.maxEpsilon                   0.01
+## policy.minEpsilon                   0.01
+## policy.decay                           1
+## policy.softmax.magnify                 1
+## replay.batchsize                      64
+## replay.memname                   Uniform
+## replay.mem.size                    20000
+## replay.epochs                          1
+## replay.freq                            1</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
 <span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre>
-<pre><code>## [1] "AgentDQN:deep q learning"                      
-## [2] "AgentFDQN:frozen target deep q learning"       
-## [3] "AgentDDQN: double deep q learning"             
-## [4] "AgentPG: policy gradient basic"                
-## [5] "AgentPGBaseline: policy gradient with baseline"
-## [6] "AgentActorCritic: actor critic method"</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(keras)
-model =<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/keras_model_sequential">keras_model_sequential</a></span>()
-model %&gt;%<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/layer_dense">layer_dense</a></span>(<span class="dt">units =</span> <span class="dv">8</span>, <span class="dt">activation =</span> <span class="st">'relu'</span>, <span class="dt">input_shape =</span> <span class="kw">c</span>(<span class="dv">2</span>)) %&gt;%
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/layer_dropout">layer_dropout</a></span>(<span class="dt">rate =</span> <span class="fl">0.25</span>) %&gt;%
-<span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/layer_dense">layer_dense</a></span>(<span class="dt">units =</span> <span class="dv">2</span>, <span class="dt">activation =</span> <span class="st">'linear'</span>);model$<span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/compile">compile</a></span>(<span class="dt">loss =</span> <span class="st">'mse'</span>, <span class="dt">optimizer =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/optimizer_rmsprop">optimizer_rmsprop</a></span>(<span class="dt">lr =</span> <span class="fl">1e-3</span>))
-model</code></pre>
-<pre><code>## Model
-## ___________________________________________________________________________
-## Layer (type)                     Output Shape                  Param #     
-## ===========================================================================
-## dense_1 (Dense)                  (None, 8)                     24          
-## ___________________________________________________________________________
-## dropout_1 (Dropout)              (None, 8)                     0           
-## ___________________________________________________________________________
-## dense_2 (Dense)                  (None, 2)                     18          
-## ===========================================================================
-## Total params: 42
-## Trainable params: 42
-## Non-trainable params: 0
-## ___________________________________________________________________________</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env)</code></pre>
-<pre><code>## parameters: 
-## -render: - FALSE-
-## -log: - FALSE-
-## -console: - FALSE-
-## -agent.gamma: - 0.99-
-## -policy.maxEpsilon: - 1-
-## -policy.minEpsilon: - 0.01-
-## -policy.decay: - 0.999000499833375-
-## -softmax.magnify: - 1-
-## -replay.memname: - Uniform-
-## -replaymem.size: - 20000-
-## -replay.epochs: - 1-
-## -replaymem.dt: - FALSE-
-## -interact.maxiter: - 5000-
-## -policy.epi_wait_ini: - 5-
-## -policy.epi_wait_middle: - 25-
-## -policy.epi_wait_expl: - 40-
-## -agent.reward2adalr: - 150-
-## -agent.flag_rescue: - TRUE-
-## -agent.lr_decay: - 0.999000499833375-
-## -agent.lr: - 0.001-
-## -store_model: - FALSE-
-## -policy.name: - ProbEpsilon-
-## -replay.batchsize: - 64-</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co">#agent$customizeBrain(model)</span>
-
+<pre><code>## [1] "AgentDQN:Deep Q learning"                                          
+## [2] "AgentFDQN:Frozen Target Deep Q Learning"                           
+## [3] "AgentDDQN: Double Deep QLearning"                                  
+## [4] "AgentPG: Policy Gradient Monte Carlo"                              
+## [5] "AgentPGBaseline: Policy Gradient with Baseline"                    
+## [6] "AgentActorCritic: Actor Critic Method"                             
+## [7] "AgentDDPG: Deep Deterministic Policy Gradient for Continous Action"</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env)
 <span class="kw">system.time</span>({
- perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">10</span>)  <span class="co"># to let travis pass, could not set too many iterations</span>
-})</code></pre>
-<pre><code>##    user  system elapsed 
-##   7.628   0.108   7.438</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"> perf$<span class="kw">plot</span>()</code></pre>
-<pre><code>## `geom_smooth()` using method = 'loess'</code></pre>
-<p><img src="inst/figuresunnamed-chunk-4-1.png" width="700"></p>
+ perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">150</span>)
+})
+ perf$<span class="kw">plot</span>()</code></pre>
 </div>
 </div>
   </div>
