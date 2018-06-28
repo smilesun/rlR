@@ -57,6 +57,8 @@ AgentArmed = R6::R6Class("AgentArmed",
     env = NULL,
     sess = NULL,
     replay.freq = NULL,
+    observ_stack_len = NULL,
+    # observ_stack_len is the number of observations one should stack
     # member function
     # constructor
     initialize = function(env, conf) {
@@ -74,7 +76,7 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     # user creation of brain from outside
     customizeBrain = function(...) {
-      # 
+      stop("The current agent does not allow customized Brain!")
     },
 
     # seperate initializeConf allow for reconfiguration
@@ -93,7 +95,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     updatePara = function(...) {
       self$conf$set(...)
       self$buildConf()
-      self$setBrain()
+      self$setBrain()  # if the updated parameter ever changed the nn structure
     },
 
     loginfo = function(str, ...) {
@@ -110,6 +112,7 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$epochs = self$conf$get("replay.epochs")
       self$lr_decay = self$conf$get("agent.lr.decay")
       self$replay.freq = self$conf$get("replay.freq")
+      self$observ_stack_len = self$conf$get("agent.observ_stack_len")
       # object
       memname = self$conf$get("replay.memname")
       self$mem = makeReplayMem(memname, agent = self, conf = self$conf)

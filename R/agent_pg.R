@@ -57,7 +57,7 @@ AgentPG = R6::R6Class("AgentPG",
     replay = function(batchsize) {
         self$getXY(batchsize)
         self$replay.x = array_reshape(self$replay.x, c(batchsize, self$stateDim))
-        self$replay.y = self$replay.y * self$advantage * (+1)
+        self$replay.y = self$replay.y * self$advantage * (+1)  # elementwise multiplication
         self$brain$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
     },
 
@@ -78,7 +78,7 @@ AgentPG = R6::R6Class("AgentPG",
     },
 
     afterEpisode = function(interact) {
-        self$getAdv(interact)
+        self$getAdv(interact)  # total.step is calculated here
         self$replay(self$interact$perf$total.step)   # key difference here
         self$policy$afterEpisode()
         if (self$flag_rescue) self$interact$perf$rescue()
@@ -104,14 +104,15 @@ rlR.AgentPG.conf = function() {
 
 AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
   conf = rlR.AgentPG.conf()
+  conf$static$render = render
   env = makeGymEnv(sname)
-  agent = makeAgent("AgentPG", env)
+  agent = makeAgent("AgentPG", env, conf)
   agent$learn(iter)
 }
 
 AgentPG$testCNN = function(iter = 1000L, sname = "Pong-v0", render = FALSE, console = FALSE) {
   conf = rlR.AgentPG.conf()
-  env = makeGymEnv(sname)
+  env = makeGymEnv(sname, repeat_n_act = 4L, act_cheat = c(2L, 3L))
   agent = makeAgent("AgentPG", env)
   agent$updatePara(console = console, render = render, replay.memname = "Online")
   agent$learn(iter)

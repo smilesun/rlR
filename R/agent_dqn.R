@@ -126,7 +126,7 @@ AgentDQN$test4 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
 }
 
 AgentDQN$testcnn = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  env = makeGymEnv("Pong-v0", act_cheat = c(3, 4))
+  env = makeGymEnv("Pong-v0", act_cheat = c(2, 3), repeat_n_act = 4)
   agent = makeAgent("AgentDQN", env)
   agent$updatePara(replay.batchsize = 32, render = TRUE, replay.freq = 4L)
   agent$learn(1)

@@ -6,24 +6,26 @@ EnvGym = R6::R6Class("EnvGym",
     env = NULL,
     ok_reward = NULL,
     ok_step = NULL,
-    state_cheat = NULL,
+    state_preprocess = NULL,
     act_cheat = NULL,
     old_state = NULL,  # for video
-    video_history_len = NULL, # number of identical actions to excert
+    repeat_n_act = NULL,  # number of frames to escape
     flag_video = NULL,
-    #act_cheat should be
-    initialize = function(genv, name, state_cheat = identity, act_cheat = NULL, ok_reward = NULL, ok_step = NULL) {
+    # act_cheat is a vector like c(5,7) which maps arm 1 to action 5 and arm 2 to action 7.
+    # rendering the Pong-v0 in a ipy-notebook shows that the ball needs 20 frames to travel
+    initialize = function(genv, name, state_preprocess = identity, act_cheat = NULL, ok_reward = NULL, ok_step = NULL, repeat_n_act = 1L) {
       self$env = genv
       self$flag_continous = ifelse(grepl("float", toString(genv$action_space$dtype)), TRUE, FALSE)
       self$name = name
       self$ok_reward = ok_reward
       self$ok_step = ok_step
-      self$state_cheat = state_cheat
+      self$state_preprocess = state_preprocess
       self$act_cheat = act_cheat
+      self$repeat_n_act = repeat_n_act
       if (!"n" %in% names(genv$action_space)) {
         # if "n" is not in the names of the list, i.e. genv$action_space$n does not exist
         flag_multiple_shape = length(genv$action_space$shape) > 1L
-        if (flag_multiple_shape) stop("currently we do not action space that have multiple shapes!")
+        if (flag_multiple_shape) stop("currently no support for action space that have multiple shapes!")
         self$act_cnt = genv$action_space$shape[[1]]
       } else {
         self$act_cnt = genv$action_space$n   # get the number of actions/control bits
@@ -31,45 +33,45 @@ EnvGym = R6::R6Class("EnvGym",
       if (!is.null(self$act_cheat)) self$act_cnt = length(self$act_cheat)
       self$state_dim = unlist(genv$observation_space$shape)
       state = genv$reset()  # in gym, only state is returned!
-      state = self$state_cheat(state)
+      state = self$state_preprocess(state)
       self$old_state = state  # for video
       self$flag_video = length(self$state_dim) > 1L
-      self$video_history_len = 4
     },
 
     render = function(...) {
       self$env$render(...)
     },
 
-    step = function(action) {
-      if (!is.null(self$act_cheat)) action = self$act_cheat[action]
+    step = function(action_input) {
+      action = action_input
+      if (!is.null(self$act_cheat)) {
+        # act_cheat must be applied before minus 1 operation below since R has no 0 index!
+        action = as.integer(self$act_cheat[action] + 1L)  # gym convention here
+      }
       if (!self$flag_continous) {
-        action = action - 1L
+        action = action - 1L  # The class in which the current code lies is Gym Specific
         action = as.integer(action)
       }
-      s_r_d_info = self$env$step(action)
-      names(s_r_d_info) = c("state", "reward", "done", "info")
-      # for "CartPole-v0" etc, the state return is vector instead of state
-      cur = self$state_cheat(s_r_d_info[["state"]])
-      if (grepl("Box", toString(self$env$action_space))) cur = t(cur)  # for continous action, transpose the state space, for "Pendulum-v0" etc, the state return is 3*1 instead of 1*3
-      if (self$flag_video) {
+      s_r_d_info = NULL
+      for (i in 1:(self$repeat_n_act)) {
         s_r_d_info = self$env$step(action)
-        s_r_d_info = self$env$step(action)
-        s_r_d_info = self$env$step(action)
-        names(s_r_d_info) = c("state", "reward", "done", "info")
-        cur = self$state_cheat(s_r_d_info[["state"]])
-        s_r_d_info[["state"]] = cur - self$old_state
-        self$old_state = cur
-      } else {
-        s_r_d_info[["state"]] = cur
       }
-      sl = length(s_r_d_info[["state"]])
+      names(s_r_d_info) = c("state", "reward", "done", "info")
+      s_r_d_info[["state"]] = self$state_preprocess(s_r_d_info[["state"]])  # preprocessing
+      # if (self$flag_diff_video) {
+      #   cur = self$state_preprocess(s_r_d_info[["state"]])
+      #   s_r_d_info[["state"]] = cur - self$old_state
+      #   self$old_state = cur   # How to initialize self$old_state?
+      # } else {
+      # }
+      #FIXME: might be buggy if continous space get preprocessed
+      if (grepl("Box", toString(self$env$action_space))) s_r_d_info[["state"]] = t(s_r_d_info[["state"]])  # for continous action, transpose the state space, for "Pendulum-v0" etc, the state return is 3*1 instead of 1*3
       s_r_d_info
     },
 
     reset = function() {
       s = self$env$reset()
-      s = self$state_cheat(s)
+      s = self$state_preprocess(s)
       r = NULL
       return(list(s, r, FALSE, ""))
     },

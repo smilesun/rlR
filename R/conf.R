@@ -25,7 +25,7 @@ RLConf = R6::R6Class("Conf",
       #dns = setdiff(names(par.list), rlR.conf.default)
       #list.default = setNames(lapply(dns, function(x) self$static[[x]]), dns)
       self$set(...)
-      self$ps()
+      #self$ps()
     },
 
     get = function(name) {
