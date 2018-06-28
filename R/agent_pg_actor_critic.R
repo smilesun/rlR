@@ -1,3 +1,4 @@
+
 #' @title AgentActorCritic
 #'
 #' @format \code{\link{R6Class}} object
@@ -98,4 +99,11 @@ AgentActorCritic$test = function(iter = 500L, sname = "CartPole-v0", render = FA
   interact = makeGymExperiment(sname = sname, "AgentActorCritic", conf, ok_step = 101, ok_reward = 195)
   perf = interact$run(iter)
   return(perf)
+}
+
+AgentActorCritic$testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", render = TRUE, console = TRUE) {
+  env = makeGymEnv("KungFuMaster-ram-v0", repeat_n_act = 4)
+  agent = makeAgent("AgentActorCritic", env)
+  agent$updatePara(render = TRUE)
+  agent$learn(iter)
 }

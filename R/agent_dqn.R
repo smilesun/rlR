@@ -137,3 +137,10 @@ AgentDQN$testpongram = function(iter = 1000L, sname = "CartPole-v0", render = FA
   agent = makeAgent("AgentDQN", env)
   agent$learn(1)
 }
+
+AgentDQN$testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", render = TRUE, console = TRUE) {
+  env = makeGymEnv("KungFuMaster-ram-v0", repeat_n_act = 4)
+  agent = makeAgent("AgentDQN", env)
+  agent$updatePara(render = TRUE)
+  agent$learn(iter)
+}
