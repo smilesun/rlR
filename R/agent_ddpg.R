@@ -68,7 +68,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     # policy_action is generated from the target policy network
     extractCriticTarget = function(i) {
       y = self$list.rewards[[i]] + self$gamma * self$p.next[i, ]
-      return(y)
+      return(as.array(y))
     },
 
     # input: (state, action)
@@ -144,9 +144,9 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$unpack(size)
       self$trainCritic()
       if (dim(self$tb.targets) != 1) {
-      self$trainActorPrepare()
-      self$trainActorSess(self$tb.state, self$grad2a)
-      self$updateModel()
+        self$trainActorPrepare()
+        self$trainActorSess(self$tb.state, self$grad2a)
+        self$updateModel()
       }
     },
 
