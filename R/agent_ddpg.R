@@ -1,6 +1,3 @@
-#tfe = reticulate::import("tensorflow.contrib.eager")
-#tfe$python$tfe$enable_eager_execution()
-
 #' @title Deep Deterministic Policy Gradient
 #'
 #' @format \code{\link{R6Class}} object
@@ -17,6 +14,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     tau = NULL,  # bilinear combination of target and update network
     optimize = NULL,
     grad2a = NULL,
+    ph_critic2act = NULL,
     actor_pred = NULL,
     model = NULL,
     list.states.next = NULL,
@@ -96,10 +94,10 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       return(target)
     },
 
-    trainActorSess = function(state_input, input_criticQ2act) {
-      ph_critic2act = tf$placeholder(dtype = tf$float32, shape = shape(NULL, self$act_cnt), name = "criticQ2a")  # place holder for action
+    trainActorSessInit = function(state_input, input_criticQ2act) {
+      self$ph_critic2act = tf$placeholder(dtype = tf$float32, shape = shape(NULL, self$act_cnt), name = "criticQ2a")  # place holder for action
       # chain rule: set initial value of the gradient to be -ph_critic2act
-      tensor_grad_policy2theta = tf$gradients(ys = self$brain_actor_update$model$output, xs = self$brain_actor_update$model$weights, grad_ys = tf$negative(ph_critic2act))
+      tensor_grad_policy2theta = tf$gradients(ys = self$brain_actor_update$model$output, xs = self$brain_actor_update$model$weights, grad_ys = tf$negative(self$ph_critic2act))
       # The final gradients are Q(s_t,a = \mu(s_t)) with respect to \theta^{\mu}(actor network weights), the graph is \theta^{mu}(weights of actor network) - action(a = \mu(s)) - Q(s, a)
       # grad is gradient, vars are the variable to be applied the gradients
       grad_and_vars = reticulate::tuple(tensor_grad_policy2theta, self$brain_actor_target$model$weights)
@@ -112,8 +110,12 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       #######
       opt = tf$train$AdamOptimizer(0.001)
       self$optimize = opt$apply_gradients(grad_and_vars)
+    },
+
+    trainActorSess = function(state_input, input_criticQ2act) {
+      self$trainActorSessInit()
       sname = self$brain_actor_update$model$input$name
-      aname = ph_critic2act$name
+      aname = self$ph_critic2act$name
       np = reticulate::import("numpy", convert = FALSE)
       sstate = np$array(state_input)
       scritic2act = np$array(input_criticQ2act)

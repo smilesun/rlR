@@ -27,7 +27,6 @@ Interaction = R6::R6Class("Interaction",
       if (self$consoleFlag) self$printf = function(str, ...) cat(sprintf(str, ...))
       else self$printf = function(str, ...) {
       }
-      self$maxiter = self$conf$get("interact.maxiter")
       self$idx.episode = 0
       self$idx.step = 0
       self$continue.flag = TRUE
@@ -62,7 +61,7 @@ Interaction = R6::R6Class("Interaction",
     },
 
     checkEpisodeOver = function() {
-        if (self$s_r_done_info[[3L]]) {
+          if (self$s_r_done_info[[3L]]) {
           self$rl.env$reset()
           self$perf$afterEpisode()
           self$idx.step = 0L
@@ -85,11 +84,11 @@ Interaction = R6::R6Class("Interaction",
          do.call(obslist[[method]], args = list())
       }},
 
-    run = function(maxiter = NULL) {
+    run = function(maxiter) {
       self$idx.step = 0L
       self$idx.episode = 0L
       self$continue.flag = TRUE
-      if (!is.null(maxiter)) self$maxiter = maxiter
+      self$maxiter = maxiter
       self$s_r_done_info = self$rl.env$reset()
       tryCatch({
         while (self$continue.flag) {

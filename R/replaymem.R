@@ -10,7 +10,7 @@ ReplayMem = R6::R6Class("ReplayMem",
     conf = NULL,
     agent = NULL,
     initialize = function(agent, conf) {
-      self$capacity = conf$get("replaymem.size")
+      self$capacity = conf$get("replay.mem.size")
       self$conf = conf
       self$agent = agent
       self$reset()
