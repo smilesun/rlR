@@ -52,11 +52,11 @@ EnvGym = R6::R6Class("EnvGym",
         action = action - 1L  # The class in which the current code lies is Gym Specific
         action = as.integer(action)
       }
-      s_r_d_info = NULL
-      for (i in 1:(self$repeat_n_act)) {
-        s_r_d_info = self$env$step(action)
-      }
+      list_s_r_d_info = lapply(1:self$repeat_n_act, function(i) self$env$step(action))
+      rewards = sapply(list_s_r_d_info, function(x) x[[2L]])
+      s_r_d_info = list_s_r_d_info[[self$repeat_n_act]]
       names(s_r_d_info) = c("state", "reward", "done", "info")
+      s_r_d_info[["reward"]] = sum(rewards)
       s_r_d_info[["state"]] = self$state_preprocess(s_r_d_info[["state"]])  # preprocessing
       # if (self$flag_diff_video) {
       #   cur = self$state_preprocess(s_r_d_info[["state"]])
