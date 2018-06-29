@@ -7,7 +7,6 @@ agent.gamma = 0.99,
 agent.flag.reset.net = TRUE,
 agent.lr.decay = exp(-0.001),
 agent.lr = 1e-3,
-agent.network.build.funs = NULL,  # user specific function to create surrogate model
 agent.store.model = FALSE,
 policy.maxEpsilon = 0.01,
 policy.minEpsilon = 0.01,

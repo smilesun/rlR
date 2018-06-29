@@ -8,7 +8,6 @@
 AgentPGBaseline = R6::R6Class("AgentPGBaseline",
   inherit = AgentPG,
   public = list(
-    task = NULL,
     brain_actor = NULL,  # cross entropy loss
     brain_critic = NULL, # mse loss
     critic_yhat = NULL,
@@ -27,9 +26,9 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
     setBrain = function() {
       # FIXME: do we really need to call super$setBrain?
       # super$setBrain()
-      self$task = "actor"
+      self$task = "policy_fun"
       self$brain_actor = SurroNN$new(self, arch_list_name = "agent.nn.arch.actor")
-      self$task = "critic"
+      self$task = "value_fun"
       self$brain_critic = SurroNN$new(self, arch_list_name = "agent.nn.arch.critic", act_cnt = 1L)
       self$model = self$brain_critic
     },

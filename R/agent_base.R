@@ -28,6 +28,7 @@
 AgentArmed = R6::R6Class("AgentArmed",
   public = list(
     # constructor init
+    task = NULL,  # string either critic or actor
     replay_delta = NULL,
     lr_decay = NULL,
     interact = NULL,
@@ -56,9 +57,12 @@ AgentArmed = R6::R6Class("AgentArmed",
     env = NULL,
     sess = NULL,
     replay.freq = NULL,
+    network_build_funs = NULL,  # user specific function to create surrogate model
     # member function
     # constructor
     initialize = function(env, conf) {
+      self$network_build_funs = vector(mode = "list", length = 2)
+      names(self$network_build_funs) = c("policy_fun", "value_fun")
       self$sess = tensorflow::tf$Session()
       self$initializeEnv(env)
       self$initializeConf(conf = conf)
@@ -72,8 +76,9 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     # user creation of brain from outside
-    customizeBrain = function(...) {
-      stop("The current agent does not allow customized Brain!")
+    customizeBrain = function(policy_fun = NULL, value_fun = NULL) {
+       if (!is.null(policy_fun)) self$network_build_funs[["policy_fun"]] = policy_fun
+       if (!is.null(value_fun)) self$network_build_funs[["value_fun"]] = value_fun
     },
 
     # seperate initializeConf allow for reconfiguration

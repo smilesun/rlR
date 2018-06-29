@@ -19,6 +19,7 @@ AgentDQN = R6::R6Class("AgentDQN",
     },
 
     setBrain = function() {
+       self$task = "value_fun"
        self$brain = SurroNN$new(self)
        self$model = self$brain
     },
@@ -132,10 +133,11 @@ AgentDQN$testcnn = function(iter = 1000L, sname = "CartPole-v0", render = FALSE,
   agent$learn(1)
 }
 
-AgentDQN$testpongram = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  env = makeGymEnv("Pong-ram-v0", act_cheat = c(2, 3))
-  agent = makeAgent("AgentDQN", env)
-  agent$learn(1)
+AgentDQN$testpongram = function(iter = 1000L, sname = "Bowling-ram-v0", render = FALSE, console = FALSE) {
+  #env = makeGymEnv(sname, act_cheat = c(2, 3))
+  env = makeGymEnv(sname)
+  agent = makeAgent("AgentFDQN", env, rlR.conf.DQN.kungfu())
+  agent$learn(iter)
 }
 
 AgentDQN$testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", render = TRUE, console = TRUE) {
@@ -145,8 +147,8 @@ AgentDQN$testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", render = 
   agent$learn(iter)
 }
 
-AgentDQN$testPong = function(iter = 20L, sname = "Kungfu-Master-v0", render = TRUE, console = TRUE) {
-  env = makeGymEnv("KungFuMaster-ram-v0")
+AgentDQN$testPong = function(iter = 20L, sname = "Breakout-ram-v0", render = TRUE, console = TRUE) {
+  env = makeGymEnv(sname)
   agent = makeAgent("AgentFDQN", env, rlR.conf.DQN.kungfu())
   agent$updatePara(render = TRUE)
   agent$learn(iter)
@@ -155,8 +157,8 @@ AgentDQN$testPong = function(iter = 20L, sname = "Kungfu-Master-v0", render = TR
 
 rlR.conf.DQN.kungfu = function() {
   RLConf$new(
-          render = FALSE,
-          console = FALSE,
+          render = TRUE,
+          console =TRUE,
           log = FALSE,
           policy.maxEpsilon = 1,
           policy.minEpsilon = 0.01,

@@ -26,6 +26,7 @@ AgentPG = R6::R6Class("AgentPG",
 
     setBrain = function() {
       super$setBrain()
+      self$task = "policy_fun"
       self$brain = SurroNN$new(self, arch_list_name = "agent.nn.arch")
       self$model = self$brain
     },
@@ -102,7 +103,7 @@ rlR.AgentPG.conf = function() {
           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
 }
 
-AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE) {
+AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE) {
   conf = rlR.AgentPG.conf()
   conf$static$render = render
   env = makeGymEnv(sname)
