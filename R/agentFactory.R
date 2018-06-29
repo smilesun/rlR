@@ -9,5 +9,6 @@
 makeAgent = function(name, env, conf = NULL) {
   ee = parse(text = sprintf("%s$new(env = env, conf = conf)", name))
   agent = eval(ee)  # the text is with respect to the passed arguments
+  env$setAgent(agent)  # so env has hook to all objects in agent
   agent
 }

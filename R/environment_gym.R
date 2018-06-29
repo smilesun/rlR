@@ -10,10 +10,15 @@ EnvGym = R6::R6Class("EnvGym",
     act_cheat = NULL,
     old_state = NULL,  # for video
     repeat_n_act = NULL,  # number of frames to escape
-    flag_video = NULL,
+    state_cache = NULL,   # store adjacent states to stack into short history
     # act_cheat is a vector like c(5,7) which maps arm 1 to action 5 and arm 2 to action 7.
     # rendering the Pong-v0 in a ipy-notebook shows that the ball needs 20 frames to travel
-    initialize = function(genv, name, state_preprocess = identity, act_cheat = NULL, ok_reward = NULL, ok_step = NULL, repeat_n_act = 1L) {
+    # observ_stack_len is the number of observations one should stack
+    # observ_stack_len is set here since the Env should return the same dimension to the agent.
+    # replaymem$sample.fun has to be changed if observ_stack is to be used.
+    initialize = function(genv, name, state_preprocess = identity, act_cheat = NULL, ok_reward = NULL, ok_step = NULL, repeat_n_act = 1L, observ_stack_len =1L) {
+      self$state_cache = vector(mode = "list", observ_stack_len)
+      self$observ_stack_len = observ_stack_len
       self$env = genv
       self$flag_continous = ifelse(grepl("float", toString(genv$action_space$dtype)), TRUE, FALSE)
       self$name = name
@@ -35,7 +40,11 @@ EnvGym = R6::R6Class("EnvGym",
       state = genv$reset()  # in gym, only state is returned!
       state = self$state_preprocess(state)
       self$old_state = state  # for video
-      self$flag_video = length(self$state_dim) > 1L
+      self$flag_cnn = length(self$state_dim) > 1L
+      old_dim = self$state_dim
+      # increase the order rather than keep the array order(only change the dimension)
+      # since two frames should not be considered the same
+      if (self$observ_stack_len > 1L) self$state_dim = c(self$observ_stack_len, old_dim)
     },
 
     render = function(...) {

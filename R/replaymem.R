@@ -9,10 +9,12 @@ ReplayMem = R6::R6Class("ReplayMem",
     replayed.idx = NULL,
     conf = NULL,
     agent = NULL,
+    observ_stack_len = NULL,
     initialize = function(agent, conf) {
       self$capacity = conf$get("replay.mem.size")
       self$conf = conf
       self$agent = agent
+      # observ_stack_len is set via the Environment::setAgent() function
       self$reset()
     },
 
@@ -59,6 +61,45 @@ ReplayMemUniform = R6::R6Class("ReplayMemUniform",
     }
     )
 )
+
+ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
+  inherit = ReplayMemUniform,
+  public = list(
+    stackArray = function(temp) {
+      arr = simplify2array(temp)
+      mdim = dim(arr)
+      norder = length(mdim)
+      aperm(arr, c(norder, 1:(norder - 1)))
+    },
+    sample.fun = function(k) {
+      k = min(k, self$size)
+      #FIXME: the replayed.idx are not natural index, but just the position in the replay memory
+      self$replayed.idx = sample(self$size)[1L:k]
+      list.res = lapply(self$replayed.idx, function(x) {
+        look_back = self$observ_stack_len
+        res = self$samples[[x]]
+        vor = (x - look_back)
+        adj = list()
+        if (vor <= 0) {
+          adj = lapply(1:self$observ_stack_len, function(x) res)
+        }
+        else adj = self$samples[vor:x]
+        list_state_new = lapply(adj, function(x) {
+          x$state.new
+        })
+        list_state_old = lapply(adj, function(x) {
+          x$state.old
+        })
+        # ideally we want to extend the order of the tensor, but keras dense only works with 1d data and conv layer only works with 2d, so an alternative is to stack the array
+        res$state.new = self$stackArray(list_state_new)
+        res$state.old = self$stackArray(list_state_old)
+        res
+      })
+      return(list.res)
+    }
+    )
+)
+
 
 ReplayMemLatest = R6::R6Class("ReplayMemLatest",
   inherit = ReplayMem,

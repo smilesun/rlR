@@ -7,7 +7,6 @@ agent.gamma = 0.99,
 agent.flag.reset.net = TRUE,
 agent.lr.decay = exp(-0.001),
 agent.lr = 1e-3,
-agent.observ_stack_len = 1L,
 agent.network.build.funs = NULL,  # user specific function to create surrogate model
 agent.store.model = FALSE,
 policy.maxEpsilon = 0.01,
@@ -21,7 +20,13 @@ replay.epochs = 1L,
 replay.freq = 1L
 )
 
-rlR.conf.avail = names(rlR.conf.default)
+#' @title listAvailConf
+#' @description List defaults hyper-parameters names
+#' @export
+listAvailConf = function() {
+  rlR_conf_avail = names(rlR.conf.default)
+  return(rlR_conf_avail)
+}
 
 #' @title getDefaultConf
 #' @description List defaults hyper-parameters

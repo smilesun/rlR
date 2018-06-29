@@ -139,8 +139,29 @@ AgentDQN$testpongram = function(iter = 1000L, sname = "CartPole-v0", render = FA
 }
 
 AgentDQN$testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", render = TRUE, console = TRUE) {
-  env = makeGymEnv("KungFuMaster-ram-v0", repeat_n_act = 4)
-  agent = makeAgent("AgentDQN", env)
+  env = makeGymEnv("KungFuMaster-ram-v0")
+  agent = makeAgent("AgentDQN", env, rlR.conf.DQN.kungfu())
   agent$updatePara(render = TRUE)
   agent$learn(iter)
+}
+
+AgentDQN$testPong = function(iter = 20L, sname = "Kungfu-Master-v0", render = TRUE, console = TRUE) {
+  env = makeGymEnv("KungFuMaster-ram-v0")
+  agent = makeAgent("AgentFDQN", env, rlR.conf.DQN.kungfu())
+  agent$updatePara(render = TRUE)
+  agent$learn(iter)
+}
+
+
+rlR.conf.DQN.kungfu = function() {
+  RLConf$new(
+          render = FALSE,
+          console = FALSE,
+          log = FALSE,
+          policy.maxEpsilon = 1,
+          policy.minEpsilon = 0.01,
+          policy.decay = exp(-0.001),
+          policy.name = "ProbEpsilon",
+          replay.batchsize = 64L,
+          agent.nn.arch = list(nhidden = 640, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
 }

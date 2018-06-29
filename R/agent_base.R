@@ -56,8 +56,6 @@ AgentArmed = R6::R6Class("AgentArmed",
     env = NULL,
     sess = NULL,
     replay.freq = NULL,
-    observ_stack_len = NULL,
-    # observ_stack_len is the number of observations one should stack
     # member function
     # constructor
     initialize = function(env, conf) {
@@ -94,6 +92,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     updatePara = function(...) {
       self$conf$set(...)
       self$buildConf()
+      self$env$setAgent(self)   # update the observ_stack_len parameter
       self$setBrain()  # if the updated parameter ever changed the nn structure
     },
 
@@ -111,7 +110,6 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$epochs = self$conf$get("replay.epochs")
       self$lr_decay = self$conf$get("agent.lr.decay")
       self$replay.freq = self$conf$get("replay.freq")
-      self$observ_stack_len = self$conf$get("agent.observ_stack_len")
       # object
       memname = self$conf$get("replay.memname")
       self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
@@ -193,6 +191,7 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     act = function(state) {
       checkmate::assert_array(state)
+      # in video, state could be stacked together with previous frame
       self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
       act = self$policy$act(state)  # returning the chosen action
       return(act)

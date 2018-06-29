@@ -41,11 +41,21 @@ Environment = R6::R6Class("Environment",
     state_dim = NULL,
     name = NULL,
     flag_continous = NULL,
+    flag_cnn = NULL,
+    observ_stack_len = 1L,
+    agent = NULL,  # used to get access to replaymem
     initialize = function(...) {
       self$act_cnt = c(2)
       self$state_dim = c(4)
       self$name = "rlR.base.env"
       self$flag_continous = FALSE
+      self$flag_cnn = FALSE
+    },
+
+    # environment get a hook to agent so it can access the replay memory 
+    setAgent = function(agent) {
+      self$agent = agent
+      self$agent$mem$observ_stack_len = self$observ_stack_len
     },
 
     render = function(...) {

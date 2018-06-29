@@ -30,10 +30,11 @@ SurroNN = R6::R6Class("SurroNN",
         model = self$agent$createBrain()  # the agent itself is responsible for creating the brain
         return(model)
       }
-      if (length(self$stateDim) > 1L) {
+      if (self$agent$env$flag_cnn) {
         model = self$agent$makeCnn()
         return(model)
       } else {
+        # FIXME: currently if there are order of 2 tensor, the dense network has problem?
         model = makeKerasModel(input_shape = self$stateDim, output_shape = self$act_cnt, arch.list = self$arch.list)
         return(model)
       }
