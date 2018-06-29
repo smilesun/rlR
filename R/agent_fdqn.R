@@ -54,9 +54,12 @@ AgentFDQN = R6::R6Class("AgentFDQN",
   )
 )
 
+rlR.conf.FDQN = function() {
+rlR.conf.DQN()
+}
 
 AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.DQN()
+  conf = rlR.conf.FDQN()
   conf$updatePara("console", console)
   conf$updatePara("render", render)
   interact = makeGymExperiment(sname = sname, aname = "AgentFDQN", conf = conf)

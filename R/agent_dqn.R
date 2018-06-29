@@ -12,8 +12,7 @@
 AgentDQN = R6::R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
-    initialize = function(env, conf = NULL) {
-       if (is.null(conf)) conf = rlR.conf.DQN()
+    initialize = function(env, conf) {
        super$initialize(env, conf)
        self$setBrain()
     },
@@ -22,16 +21,6 @@ AgentDQN = R6::R6Class("AgentDQN",
        self$task = "value_fun"
        self$brain = SurroNN$new(self)
        self$model = self$brain
-    },
-
-    # user creation of brain from outside
-    customizeBrain = function(obj) {
-       self$brain$setModel(obj)
-       self$model = self$brain
-    },
-
-    makeCnn = function()  {
-      return(makeCnnCritic(input_shape = self$stateDim, act_cnt = self$act_cnt))
     },
 
     extractTarget = function(i) {
@@ -66,11 +55,8 @@ AgentDQN = R6::R6Class("AgentDQN",
           self$brain$lr =  self$brain$lr * self$lr_decay
           self$brain$afterEpisode()
     }
-    ), # public
-  private = list(),
-  active = list(
-    )
-  )
+    ) # public
+)
 
 rlR.conf.DQN = function() {
   RLConf$new(
@@ -86,9 +72,10 @@ rlR.conf.DQN = function() {
 }
 
 AgentDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
+  conf = rlR.conf.DQN()
+  conf$set(console = console, render = render)
   env = makeGymEnv(sname)
-  agent = makeAgent("AgentDQN", env)
-  agent$updatePara(console = console, render = render)
+  agent = makeAgent("AgentDQN", env, conf)
   agent$learn(iter)
 }
 
@@ -103,13 +90,15 @@ AgentDQN$test2 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
 AgentDQN$test3 = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
   env = makeGymEnv("MountainCar-v0")
   agent = makeAgent("AgentDQN", env)
-  model = keras_model_sequential()
-  model %>% layer_dense(units = 10, activation = 'relu', input_shape = c(2)) %>%
-    layer_dropout(rate = 0.25) %>%
-    layer_dense(units = 3, activation = 'linear');model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 9e-4))
-  model
-  agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.05, policy.decay = exp(-0.001), replay.batchsize = 10, replay.epochs = 4, agent.lr.decay = exp(-0.001), agent.gamma = 0.95)
-  agent$customizeBrain(model)
+  mfun = function(stateDim, act_cnt) {
+    model = keras_model_sequential()
+      model %>% layer_dense(units = 10, activation = 'relu', input_shape = c(2)) %>%
+        layer_dropout(rate = 0.25) %>%
+        layer_dense(units = 3, activation = 'linear');model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 9e-4))
+      model
+  }
+    agent$updatePara(console = TRUE, render = TRUE,  log = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0.05, policy.decay = exp(-0.001), replay.batchsize = 10, replay.epochs = 4, agent.lr.decay = exp(-0.001), agent.gamma = 0.95)
+  agent$customizeBrain(value_fun = mfun)
   agent$learn(1000)
 }
 

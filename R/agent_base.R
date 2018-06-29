@@ -125,9 +125,9 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$setBrain()
     },
 
-    setBrain = function() {
-      # do nothing
-    },
+    # setBrain = function() {
+    ## do nothing
+    # },
 
     # transform observation to  the replay memory
     observe = function(interact) {

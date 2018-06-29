@@ -95,13 +95,14 @@
 <p>If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment which must inherit the <code><a href="../reference/Environment.html">rlR::Environment</a></code> Class. You could define other public and private members as you like which do not collide with the names in <code><a href="../reference/Environment.html">rlR::Environment</a></code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
 <span class="kw">library</span>(R6)
-?rlR<span class="op">::</span>Environment
+<span class="kw">help</span>(<span class="dt">topic=</span><span class="st">"Environment"</span>, <span class="dt">package =</span> <span class="st">"rlR"</span>)
 MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/R6/topics/R6Class">R6Class</a></span>(<span class="st">"MyEnv"</span>,
   <span class="dt">inherit =</span> rlR<span class="op">::</span>Environment,
   <span class="dt">public =</span> <span class="kw">list</span>(
     <span class="dt">step_cnt =</span> <span class="ot">NULL</span>,  <span class="co"># a variable that base class does not have</span>
     <span class="dt">s_r_d_info =</span> <span class="ot">NULL</span>,
     <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">state_dim =</span> <span class="dv">4</span>, <span class="dt">act_cnt =</span> <span class="dv">2</span>) {
+      super<span class="op">$</span><span class="kw">initialize</span>()
       self<span class="op">$</span>flag_continous =<span class="st"> </span><span class="ot">FALSE</span>  <span class="co"># non-continuous action</span>
       self<span class="op">$</span>state_dim =<span class="st"> </span>state_dim
       self<span class="op">$</span>act_cnt =<span class="st"> </span>act_cnt
@@ -120,10 +121,11 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 
     <span class="co"># this function will be called at each step of the learning</span>
     <span class="dt">step =</span> <span class="cf">function</span>(action) {
-      <span class="kw">print</span>(<span class="st">"calling step"</span>)
+      <span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">"calling step %s"</span>, self<span class="op">$</span>step_cnt))
       self<span class="op">$</span>step_cnt =<span class="st"> </span>self<span class="op">$</span>step_cnt <span class="op">+</span><span class="st"> </span>1L
       <span class="cf">if</span>(self<span class="op">$</span>step_cnt <span class="op">&gt;</span><span class="st"> </span>5L) {
         self<span class="op">$</span>s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">TRUE</span>
+        <span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">"</span><span class="ch">\n</span><span class="st"> Episode Over </span><span class="ch">\n</span><span class="st">"</span>))
         <span class="kw">return</span>(self<span class="op">$</span>s_r_d_info)
       }
       <span class="kw">return</span>(self<span class="op">$</span>s_r_d_info)
@@ -131,14 +133,13 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 
     <span class="co"># this function will be called at the beginning of the learning and at the end of each episode</span>
     <span class="dt">reset =</span> <span class="cf">function</span>() {
-      <span class="kw">print</span>(<span class="st">"calling reset"</span>)
       self<span class="op">$</span>step_cnt =<span class="st"> </span><span class="dv">0</span>
       self<span class="op">$</span>s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">FALSE</span>
       self<span class="op">$</span>s_r_d_info
     },
 
     <span class="dt">afterAll =</span> <span class="cf">function</span>() {
-      <span class="kw">print</span>(<span class="st">"calling afterAll"</span>)
+      <span class="kw">print</span>(<span class="st">"interaction finished!"</span>)
       <span class="co"># what to do after the whole learning is finished?  could be left empty</span>
     }
   )
@@ -153,31 +154,16 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 ## [5] "AgentPGBaseline: Policy Gradient with Baseline"                    
 ## [6] "AgentActorCritic: Actor Critic Method"                             
 ## [7] "AgentDDPG: Deep Deterministic Policy Gradient for Continous Action"
-agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env)
+conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"DQN"</span>)
+agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
 perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">learn</span>(<span class="dv">3</span>)
-## [1] "calling reset"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling reset"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling reset"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling step"
-## [1] "calling reset"
-## [1] "calling afterAll"</code></pre></div>
+## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
+##  Episode Over 
+## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
+##  Episode Over 
+## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
+##  Episode Over 
+## [1] "interaction finished!"</code></pre></div>
 </div>
 </div>
   </div>

@@ -66,6 +66,18 @@ installDep = function(gpu = FALSE) {
   }
 }
 
+#' @title  Test if keras works
+#' @description Test if keras is installed
+#' @return TRUE if success
+#' @export 
+rlr_test_if_keras_works = function() {
+  res <- try({
+      makeAnyModel(input = 4, output = 1, list.arch = list.arch)
+  }, silent = FALSE)
+  if (class(res)[1L] == "try-error") return(FALSE)
+  return(TRUE)
+}
+
 #' @title listAvailAgent
 #' @description List all implemented Agents
 #' @export
@@ -75,10 +87,12 @@ listAvailAgent = function() {
 
 #' @title listAvailEnvs
 #' @description List all environments
+#' @param check Whether to check if each environment works or not, default FALSE
 #' @export
-listAvailEnvs = function() {
+listAvailEnvs = function(check = FALSE) {
   envs = import("gym.envs")
   all_spec = envs$registry$env_specs
+  if (!check) return(all_spec)
   idx = lapply(all_spec, function(spec) {
     env = try({env = spec$make()})
     if (class(env) == "try-error") return(FALSE)

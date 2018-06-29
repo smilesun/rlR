@@ -33,13 +33,14 @@ If you want to use this package for your self defined task, you need to implemen
 ```{r}
 library(rlR)
 library(R6)
-?rlR::Environment
+help(topic="Environment", package = "rlR")
 MyEnv = R6::R6Class("MyEnv",
   inherit = rlR::Environment,
   public = list(
     step_cnt = NULL,  # a variable that base class does not have
     s_r_d_info = NULL,
     initialize = function(state_dim = 4, act_cnt = 2) {
+      super$initialize()
       self$flag_continous = FALSE  # non-continuous action
       self$state_dim = state_dim
       self$act_cnt = act_cnt
@@ -58,10 +59,11 @@ MyEnv = R6::R6Class("MyEnv",
 
     # this function will be called at each step of the learning
     step = function(action) {
-      print("calling step")
+      cat(sprintf("calling step %s", self$step_cnt))
       self$step_cnt = self$step_cnt + 1L
       if(self$step_cnt > 5L) {
         self$s_r_d_info[["done"]] = TRUE
+        cat(sprintf("\n Episode Over \n"))
         return(self$s_r_d_info)
       }
       return(self$s_r_d_info)
@@ -69,14 +71,13 @@ MyEnv = R6::R6Class("MyEnv",
 
     # this function will be called at the beginning of the learning and at the end of each episode
     reset = function() {
-      print("calling reset")
       self$step_cnt = 0
       self$s_r_d_info[["done"]] = FALSE
       self$s_r_d_info
     },
 
     afterAll = function() {
-      print("calling afterAll")
+      print("interaction finished!")
       # what to do after the whole learning is finished?  could be left empty
     }
   )
@@ -87,7 +88,8 @@ Afterwards you could choose one of the available  Agents to learn on this newly 
 ```{r}
 env = MyEnv$new()
 listAvailAgent()
-agent = makeAgent("AgentDQN", env)
+conf = getDefaultConf("DQN")
+agent = makeAgent("AgentDQN", env, conf)
 perf = agent$learn(3)
 ```
 

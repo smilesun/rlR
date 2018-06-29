@@ -94,7 +94,7 @@
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
-<span class="kw"><a href="reference/getDefaultConf.html">getDefaultConf</a></span>()</code></pre>
+<span class="kw"><a href="reference/showDefaultConf.html">showDefaultConf</a></span>()</code></pre>
 <pre><code>##                                         
 ## render                             FALSE
 ## log                                FALSE
@@ -103,7 +103,6 @@
 ## agent.flag.reset.net                TRUE
 ## agent.lr.decay         0.999000499833375
 ## agent.lr                           0.001
-## agent.observ_stack_len                 1
 ## agent.store.model                  FALSE
 ## policy.maxEpsilon                   0.01
 ## policy.minEpsilon                   0.01
@@ -123,7 +122,9 @@
 ## [5] "AgentPGBaseline: Policy Gradient with Baseline"                    
 ## [6] "AgentActorCritic: Actor Critic Method"                             
 ## [7] "AgentDDPG: Deep Deterministic Policy Gradient for Continous Action"</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env)
+<pre class="sourceCode r"><code class="sourceCode r">conf =<span class="st"> </span><span class="kw"><a href="reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentDQN"</span>)
+conf$<span class="kw">set</span>(<span class="dt">render =</span> <span class="ot">FALSE</span>, <span class="dt">console =</span> <span class="ot">FALSE</span>)
+agent =<span class="st"> </span><span class="kw"><a href="reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
 <span class="kw">system.time</span>({
  perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">150</span>)
 })

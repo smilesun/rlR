@@ -13,8 +13,7 @@
 AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
-    initialize = function(env, conf = NULL) {
-      if (is.null(conf)) conf = rlR.conf.AC()
+    initialize = function(env, conf) {
       super$initialize(env, conf = conf)
     },
 
@@ -96,9 +95,9 @@ AgentActorCritic$test = function(iter = 500L, sname = "CartPole-v0", render = FA
   conf = rlR.conf.AC()
   conf$updatePara("console", console)
   conf$updatePara("render", render)
-  interact = makeGymExperiment(sname = sname, "AgentActorCritic", conf, ok_step = 101, ok_reward = 195)
-  perf = interact$run(iter)
-  return(perf)
+  env = makeGymEnv(sname)
+  agent = makeAgent("AgentActorCritic", env, conf)
+  agent$learn(iter)
 }
 
 AgentActorCritic$testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", render = TRUE, console = TRUE) {
@@ -107,3 +106,5 @@ AgentActorCritic$testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", r
   agent$updatePara(render = TRUE)
   agent$learn(iter)
 }
+
+

@@ -153,39 +153,37 @@
 #&gt;     brain: SurroNN, Surrogate, R6
 #&gt;     buildConf: function () 
 #&gt;     clone: function (deep = FALSE) 
-#&gt;     conf: Conf, R6
-#&gt;     continue: function (new_env, iter) 
+#&gt;     conf: NULL
 #&gt;     createInteract: function (rl.env) 
-#&gt;     customizeBrain: function (obj) 
+#&gt;     customizeBrain: function (policy_fun = NULL, value_fun = NULL) 
 #&gt;     env: EnvGym, Environment, R6
-#&gt;     epochs: 1
+#&gt;     epochs: NULL
 #&gt;     evaluateArm: function (state) 
 #&gt;     extractTarget: function (i) 
-#&gt;     gamma: 0.99
+#&gt;     gamma: NULL
 #&gt;     getXY: function (batchsize) 
 #&gt;     getYhat: function (list.states.old) 
-#&gt;     glogger: RLLog, R6
-#&gt;     initialize: function (env, conf = NULL) 
+#&gt;     glogger: NULL
+#&gt;     initialize: function (env, conf) 
 #&gt;     initializeConf: function (conf = NULL) 
 #&gt;     initializeEnv: function (env) 
-#&gt;     interact: Interaction, InteractionBase, R6
+#&gt;     interact: NULL
 #&gt;     learn: function (iter) 
 #&gt;     list.acts: NULL
 #&gt;     list.replay: NULL
 #&gt;     loginfo: function (str, ...) 
-#&gt;     lr_decay: 0.999000499833375
-#&gt;     makeCnn: function () 
-#&gt;     mem: ReplayMemUniform, ReplayMem, R6
+#&gt;     lr_decay: NULL
+#&gt;     mem: list
 #&gt;     model: SurroNN, Surrogate, R6
+#&gt;     network_build_funs: list
 #&gt;     observe: function (interact) 
-#&gt;     observ_stack_len: 1
 #&gt;     p.next: NULL
 #&gt;     p.old: NULL
-#&gt;     policy: PolicyProbEpsilon, PolicyEpsilonGreedy, Policy, R6
+#&gt;     policy: NULL
 #&gt;     replay: function (batchsize) 
 #&gt;     replay_delta: NULL
-#&gt;     replay.freq: 1
-#&gt;     replay.size: 64
+#&gt;     replay.freq: NULL
+#&gt;     replay.size: NULL
 #&gt;     replay.x: NULL
 #&gt;     replay.y: NULL
 #&gt;     sess: tensorflow.python.client.session.Session, tensorflow.python.client.session.BaseSession, tensorflow.python.client.session.SessionInterface, python.builtin.object
@@ -193,6 +191,7 @@
 #&gt;     setBrain: function () 
 #&gt;     setConf: function (conf) 
 #&gt;     stateDim: 4
+#&gt;     task: value_fun
 #&gt;     updatePara: function (...) 
 #&gt;     vec.arm.q: 0 0
 #&gt;     yhat: NULL</div></pre>

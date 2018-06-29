@@ -25,7 +25,7 @@ AgentPG = R6::R6Class("AgentPG",
     },
 
     setBrain = function() {
-      super$setBrain()
+      #super$setBrain()
       self$task = "policy_fun"
       self$brain = SurroNN$new(self, arch_list_name = "agent.nn.arch")
       self$model = self$brain
@@ -36,8 +36,7 @@ AgentPG = R6::R6Class("AgentPG",
         temp.act = rep(0.0, self$act_cnt)
         temp.act[act] =  1.0
         return(temp.act)
-    },
-
+    }, 
     getXY = function(batchsize) {
         self$list.replay = self$mem$sample.fun(batchsize)
         len = length(self$list.replay)
@@ -90,7 +89,7 @@ AgentPG = R6::R6Class("AgentPG",
     )
   )
 
-rlR.AgentPG.conf = function() {
+rlR.conf.PG = function() {
   RLConf$new(
           render = FALSE,
           console = FALSE,
@@ -104,7 +103,7 @@ rlR.AgentPG.conf = function() {
 }
 
 AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE) {
-  conf = rlR.AgentPG.conf()
+  conf = rlR.conf.PG()
   conf$static$render = render
   env = makeGymEnv(sname)
   agent = makeAgent("AgentPG", env, conf)
@@ -112,9 +111,9 @@ AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE) {
 }
 
 AgentPG$testCNN = function(iter = 1000L, sname = "Pong-v0", render = FALSE, console = FALSE) {
-  conf = rlR.AgentPG.conf()
+  conf = rlR.conf.PG()
+  conf$set(console = console, render = render, replay.memname = "Online")
   env = makeGymEnv(sname, repeat_n_act = 4L, act_cheat = c(2L, 3L))
-  agent = makeAgent("AgentPG", env)
-  agent$updatePara(console = console, render = render, replay.memname = "Online")
+  agent = makeAgent("AgentPG", env, conf)
   agent$learn(iter)
 }

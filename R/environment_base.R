@@ -97,6 +97,7 @@ Environment = R6::R6Class("Environment",
 testEnv = function() {
   env = rlR::Environment$new()
   env$overview()
-  agent = makeAgent("AgentDQN", env)
+  conf = getDefaultConf("AgentDQN")
+  agent = makeAgent("AgentDQN", env, conf)
   agent$learn(10)
 }
