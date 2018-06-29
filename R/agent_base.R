@@ -21,7 +21,6 @@
 #' @section Methods:
 #' \describe{
 #'   \item{updatePara(name, val)}{[\code{function}] \cr Function to update parameter setting.}
-#'   \item{continue(new_env, iter)}{[\code{function}] \cr Continue with a new environment new_env for iter number of episodes}
 #'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes}
 #' }
 #' @return [\code{\link{AgentArmed}}].
@@ -210,14 +209,13 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     learn = function(iter) {
       self$interact$run(iter)
-    },
-
-    continue = function(new_env, iter) {
-      self$mem$reset()  ##clean memory
-      self$interact = Interaction$new(rl.env = new_env, rl.agent = self)
-      self$interact$run(maxiter = iter)
     }
-    ), # public
-  private = list(),
-  active = list()
-  )
+  ) # public
+)
+    #'   \item{continue(new_env, iter)}{[\code{function}] \cr Continue with a new environment new_env for iter number of episodes}
+    # continue = function(new_env, iter) {
+    #   self$mem$reset()  ##clean memory
+    #   self$interact = Interaction$new(rl.env = new_env, rl.agent = self)
+    #   self$interact$run(maxiter = iter)
+    # }
+

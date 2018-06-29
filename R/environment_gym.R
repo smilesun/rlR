@@ -79,7 +79,5 @@ EnvGym = R6::R6Class("EnvGym",
     afterAll = function() {
       self$env$close()
     }
-    ),
-  private = list(),
-  active = list()
-  )
+    )
+)

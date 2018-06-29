@@ -52,6 +52,12 @@ Environment = R6::R6Class("Environment",
       # you could leave this field empty
     },
 
+    overview = function() {
+      cat(sprintf("\naction cnt: %s \n", toString(self$act_cnt)))
+      cat(sprintf("state dim: %s \n", toString(self$state_dim)))
+      cat(sprintf("%s\n", ifelse(self$flag_continous, "continous action", "discrete action")))
+    },
+
     reset = function() {
       return(list(
           state = array(rnorm(self$state_dim), dim = self$state_dim),
@@ -80,6 +86,7 @@ Environment = R6::R6Class("Environment",
 
 testEnv = function() {
   env = rlR::Environment$new()
+  env$overview()
   agent = makeAgent("AgentDQN", env)
   agent$learn(10)
 }
