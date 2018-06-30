@@ -22,7 +22,5 @@ Surrogate = R6::R6Class("Surrogate",
     pred = function(X) {
       stop("not implemented")
     }
-    ),
-  private = list(),
-  active = list()
-  )
+    )
+)

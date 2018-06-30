@@ -8,6 +8,7 @@
 #' @import openssl
 #' @import ggplot2
 #' @import tensorflow
+
 NULL
 
 
@@ -72,7 +73,13 @@ installDep = function(gpu = FALSE) {
 #' @export 
 rlr_test_if_keras_works = function() {
   res <- try({
-      makeAnyModel(input = 4, output = 1, list.arch = list.arch)
+model <- keras_model_sequential()
+model %>% 
+  layer_dense(units = 256, activation = 'relu', input_shape = c(784)) %>% 
+  layer_dropout(rate = 0.4) %>% 
+  layer_dense(units = 128, activation = 'relu') %>%
+  layer_dropout(rate = 0.3) %>%
+  layer_dense(units = 10, activation = 'softmax')
   }, silent = FALSE)
   if (class(res)[1L] == "try-error") return(FALSE)
   return(TRUE)
@@ -105,29 +112,26 @@ listAvailEnvs = function(check = FALSE) {
   })
   lapply(all_spec[which(unlist(idx))], function(x) x$id)
 }
-rlR.xd = function() reticulate::use_python("~/anaconda3/bin/python")
+#rlR.xd = function() reticulate::use_python("~/anaconda3/bin/python")
 
 #'@title snapshot
 #'@description Show snapshot of the video
 #'@param sname the name of the environment
 #'@export
 snapshot = function(sname = "Pong-v0") {
-  library(reticulate)
-  library(imager)
-  library(magrittr)
   gym = import("gym")
   env = gym$make(sname)
   ss = env$reset()
-  for(i in 1:25) {
+  for (i in 1:25) {
     a = env$action_space$sample()
     r = env$step(a)
   }
   img = env$render(mode='rgb_array')
-  img = img/255.
+  img = img / 255.
   env$close()
   img %>%
-  as.cimg() %>% # to image
-  mirror("y") %>% # mirror at y axis
-  imrotate(90L) %>% # rotate by 90 degree
-  plot(axes=FALSE)
+  imager::as.cimg() %>% # to image
+  imager::mirror("y") %>% # mirror at y axis
+  imager::imrotate(90L) %>% # rotate by 90 degree
+  graphics::plot(axes = FALSE)
 }

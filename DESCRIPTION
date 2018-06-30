@@ -20,7 +20,9 @@ Imports:
     tensorflow,
     logging,
     ggplot2,
-    openssl
+    openssl,
+    imager,
+    magrittr
 LazyData: true
 RoxygenNote: 6.0.1
 BugReports: https://github.com/smilesun/rlR/issues

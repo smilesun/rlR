@@ -8,8 +8,8 @@ test_that("test replay_mem works", {
   expect_true(TRUE)
 })
 
-context("custom_environment")
-test_that("test inherit_Environment Works", {
-  perf = rlR_env_example()
-  expect_class(perf, "Performance")
+context("interact")
+test_that("test interact base works", {
+  inter = InteractionBase$new()
+  expect_error(inter$run())
 })

@@ -4,7 +4,7 @@
 #' @param env The environment to initialize the Agent
 #' @param conf The configuration
 #' @return [\code{\link{AgentArmed}}].
-#' @examples makeAgent("AgentDQN", makeGymEnv(name ="CartPole-v0"))
+#' @examples makeAgent("AgentDQN", makeGymEnv(name ="CartPole-v0"), getDefaultConf("AgentDQN"))
 #' @export
 makeAgent = function(name, env, conf = NULL) {
   ee = parse(text = sprintf("%s$new(env = env, conf = conf)", name))
