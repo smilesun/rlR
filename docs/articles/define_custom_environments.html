@@ -121,8 +121,6 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 
     <span class="co"># this function will be called at each step of the learning</span>
     <span class="dt">step =</span> <span class="cf">function</span>(action) {
-
-      <span class="kw">browser</span>()
       <span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">"calling step %s"</span>, self<span class="op">$</span>step_cnt))
       self<span class="op">$</span>step_cnt =<span class="st"> </span>self<span class="op">$</span>step_cnt <span class="op">+</span><span class="st"> </span>1L
       <span class="cf">if</span>(self<span class="op">$</span>step_cnt <span class="op">&gt;</span><span class="st"> </span>5L) {
@@ -135,7 +133,6 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 
     <span class="co"># this function will be called at the beginning of the learning and at the end of each episode</span>
     <span class="dt">reset =</span> <span class="cf">function</span>() {
-      <span class="kw">browser</span>()
       self<span class="op">$</span>step_cnt =<span class="st"> </span><span class="dv">0</span>
       self<span class="op">$</span>s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">FALSE</span>
       self<span class="op">$</span>s_r_d_info
