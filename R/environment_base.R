@@ -50,6 +50,7 @@ Environment = R6::R6Class("Environment",
       self$name = "rlR.base.env"
       self$flag_continous = FALSE
       self$flag_cnn = FALSE
+      self$observ_stack_len = 1L
     },
 
     # environment get a hook to agent so it can access the replay memory 
@@ -101,3 +102,60 @@ testEnv = function() {
   agent = makeAgent("AgentDQN", env, conf)
   agent$learn(10)
 }
+
+rlR_env_example = function() {
+MyEnv = R6::R6Class("MyEnv",
+  inherit = rlR::Environment,
+  public = list(
+    step_cnt = NULL,  # a variable that base class does not have
+    s_r_d_info = NULL,
+    initialize = function(state_dim = 4, act_cnt = 2) {
+      super$initialize()
+      self$flag_continous = FALSE  # non-continuous action
+      self$state_dim = state_dim
+      self$act_cnt = act_cnt
+      self$step_cnt = 0L
+      self$s_r_d_info = list(
+            state = array(rnorm(self$state_dim), dim = self$state_dim),
+            reward = 1.0,
+            done = FALSE,
+            info = list()
+      )
+    },
+
+    render = function(...) {
+      # you could leave this field empty. 
+    },
+
+    # this function will be called at each step of the learning
+    step = function(action) {
+      cat(sprintf("calling step %s", self$step_cnt))
+      self$step_cnt = self$step_cnt + 1L
+      if(self$step_cnt > 5L) {
+        self$s_r_d_info[["done"]] = TRUE
+        cat(sprintf("\n Episode Over \n"))
+        return(self$s_r_d_info)
+      }
+      return(self$s_r_d_info)
+    },
+
+    # this function will be called at the beginning of the learning and at the end of each episode
+    reset = function() {
+      self$step_cnt = 0
+      self$s_r_d_info[["done"]] = FALSE
+      self$s_r_d_info
+    },
+
+    afterAll = function() {
+      print("interaction finished!")
+      # what to do after the whole learning is finished?  could be left empty
+    }
+  )
+)
+env = MyEnv$new()
+conf = getDefaultConf("AgentDQN")
+agent = makeAgent("AgentDQN", env, conf)
+perf = agent$learn(3)
+return(perf)
+}
+

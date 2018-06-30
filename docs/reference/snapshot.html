@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make Agent — makeAgent • rlR</title>
+<title>snapshot — snapshot • rlR</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Make Agent — makeAgent" />
+<meta property="og:title" content="snapshot — snapshot" />
 
-<meta property="og:description" content="Make Agent" />
+<meta property="og:description" content="Show snapshot of the video" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -106,53 +106,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make Agent</h1>
-    <small class="dont-index">Source: <a href='https://github.com/smilesun/rlR/blob/master/R/agentFactory.R'><code>R/agentFactory.R</code></a></small>
-    <div class="hidden name"><code>makeAgent.Rd</code></div>
+    <h1>snapshot</h1>
+    <small class="dont-index">Source: <a href='https://github.com/smilesun/rlR/blob/master/R/zzz.R'><code>R/zzz.R</code></a></small>
+    <div class="hidden name"><code>snapshot.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Make Agent</p>
+    <p>Show snapshot of the video</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>makeAgent</span>(<span class='no'>name</span>, <span class='no'>env</span>, <span class='kw'>conf</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>snapshot</span>(<span class='kw'>sname</span> <span class='kw'>=</span> <span class='st'>"Pong-v0"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>name</th>
-      <td><p>The name of the Agent</p></td>
-    </tr>
-    <tr>
-      <th>env</th>
-      <td><p>The environment to initialize the Agent</p></td>
-    </tr>
-    <tr>
-      <th>conf</th>
-      <td><p>The configuration</p></td>
+      <th>sname</th>
+      <td><p>the name of the environment</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>[<code><a href='AgentArmed.html'>AgentArmed</a></code>].</p>
-    
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>makeAgent</span>(<span class='st'>"AgentDQN"</span>, <span class='fu'><a href='makeGymEnv.html'>makeGymEnv</a></span>(<span class='kw'>name</span> <span class='kw'>=</span><span class='st'>"CartPole-v0"</span>))</div><div class='output co'>#&gt; <span class='error'>Error in self$buildConf(): attempt to apply non-function</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+                </ul>
 
   </div>
 </div>

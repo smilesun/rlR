@@ -66,19 +66,3 @@ system.time({
 })
  perf$plot()
 ```
--```
--
--```
--##    user  system elapsed 
--## 632.296   5.828 631.660
--```
--
--```r
-  perf$plot()
- ```
--
--```
--## `geom_smooth()` using method = 'loess'
--```
--
--![plot of chunk unnamed-chunk-3](inst/figures/dqn.png)

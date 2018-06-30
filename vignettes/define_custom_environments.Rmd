@@ -59,6 +59,8 @@ MyEnv = R6::R6Class("MyEnv",
 
     # this function will be called at each step of the learning
     step = function(action) {
+
+      browser()
       cat(sprintf("calling step %s", self$step_cnt))
       self$step_cnt = self$step_cnt + 1L
       if(self$step_cnt > 5L) {
@@ -71,6 +73,7 @@ MyEnv = R6::R6Class("MyEnv",
 
     # this function will be called at the beginning of the learning and at the end of each episode
     reset = function() {
+      browser()
       self$step_cnt = 0
       self$s_r_d_info[["done"]] = FALSE
       self$s_r_d_info
@@ -88,7 +91,7 @@ Afterwards you could choose one of the available  Agents to learn on this newly 
 ```{r}
 env = MyEnv$new()
 listAvailAgent()
-conf = getDefaultConf("DQN")
+conf = getDefaultConf("AgentDQN")
 agent = makeAgent("AgentDQN", env, conf)
 perf = agent$learn(3)
 ```

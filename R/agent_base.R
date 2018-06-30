@@ -82,11 +82,9 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     # seperate initializeConf allow for reconfiguration
-    initializeConf = function(conf = NULL) {
+    initializeConf = function(conf) {
       self$conf = conf
-      if (!is.null(self$conf)) {
-        self$buildConf()
-      }
+      self$buildConf()
     },
 
     setConf = function(conf) {

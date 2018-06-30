@@ -121,6 +121,8 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 
     <span class="co"># this function will be called at each step of the learning</span>
     <span class="dt">step =</span> <span class="cf">function</span>(action) {
+
+      <span class="kw">browser</span>()
       <span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">"calling step %s"</span>, self<span class="op">$</span>step_cnt))
       self<span class="op">$</span>step_cnt =<span class="st"> </span>self<span class="op">$</span>step_cnt <span class="op">+</span><span class="st"> </span>1L
       <span class="cf">if</span>(self<span class="op">$</span>step_cnt <span class="op">&gt;</span><span class="st"> </span>5L) {
@@ -133,6 +135,7 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 
     <span class="co"># this function will be called at the beginning of the learning and at the end of each episode</span>
     <span class="dt">reset =</span> <span class="cf">function</span>() {
+      <span class="kw">browser</span>()
       self<span class="op">$</span>step_cnt =<span class="st"> </span><span class="dv">0</span>
       self<span class="op">$</span>s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">FALSE</span>
       self<span class="op">$</span>s_r_d_info
@@ -154,15 +157,199 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 ## [5] "AgentPGBaseline: Policy Gradient with Baseline"                    
 ## [6] "AgentActorCritic: Actor Critic Method"                             
 ## [7] "AgentDDPG: Deep Deterministic Policy Gradient for Continous Action"
-conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"DQN"</span>)
+conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentDQN"</span>)
 agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
 perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">learn</span>(<span class="dv">3</span>)
-## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
+## Called from: self$rl.env$reset()
+## debug at &lt;text&gt;#44: self$step_cnt = 0
+## debug at &lt;text&gt;#45: self$s_r_d_info[["done"]] = FALSE
+## debug at &lt;text&gt;#46: self$s_r_d_info
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 0debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 1debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 2debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 3debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 4debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 5debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#34: self$s_r_d_info[["done"]] = TRUE
+## debug at &lt;text&gt;#35: cat(sprintf("\n Episode Over \n"))
+## 
 ##  Episode Over 
-## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
+## debug at &lt;text&gt;#36: return(self$s_r_d_info)
+## Called from: self$rl.env$reset()
+## debug at &lt;text&gt;#44: self$step_cnt = 0
+## debug at &lt;text&gt;#45: self$s_r_d_info[["done"]] = FALSE
+## debug at &lt;text&gt;#46: self$s_r_d_info
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 0debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 1debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 2debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 3debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 4debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 5debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#34: self$s_r_d_info[["done"]] = TRUE
+## debug at &lt;text&gt;#35: cat(sprintf("\n Episode Over \n"))
+## 
 ##  Episode Over 
-## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
+## debug at &lt;text&gt;#36: return(self$s_r_d_info)
+## Called from: self$rl.env$reset()
+## debug at &lt;text&gt;#44: self$step_cnt = 0
+## debug at &lt;text&gt;#45: self$s_r_d_info[["done"]] = FALSE
+## debug at &lt;text&gt;#46: self$s_r_d_info
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 0debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 1debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 2debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 3debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 4debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#38: return(self$s_r_d_info)
+## Called from: self$rl.env$step(self$action)
+## debug at &lt;text&gt;#31: cat(sprintf("calling step %s", self$step_cnt))
+## calling step 5debug at &lt;text&gt;#32: self$step_cnt = self$step_cnt + 1L
+## debug at &lt;text&gt;#33: if (self$step_cnt &gt; 5L) {
+##     self$s_r_d_info[["done"]] = TRUE
+##     cat(sprintf("\n Episode Over \n"))
+##     return(self$s_r_d_info)
+## }
+## debug at &lt;text&gt;#34: self$s_r_d_info[["done"]] = TRUE
+## debug at &lt;text&gt;#35: cat(sprintf("\n Episode Over \n"))
+## 
 ##  Episode Over 
+## debug at &lt;text&gt;#36: return(self$s_r_d_info)
+## Called from: self$rl.env$reset()
+## debug at &lt;text&gt;#44: self$step_cnt = 0
+## debug at &lt;text&gt;#45: self$s_r_d_info[["done"]] = FALSE
+## debug at &lt;text&gt;#46: self$s_r_d_info
 ## [1] "interaction finished!"</code></pre></div>
 </div>
 </div>

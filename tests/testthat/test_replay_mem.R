@@ -7,3 +7,9 @@ test_that("test replay_mem works", {
   env$overview()
   expect_true(TRUE)
 })
+
+context("custom_environment")
+test_that("test inherit_Environment Works", {
+  perf = rlR_env_example()
+  expect_class(perf, "Performance")
+})
