@@ -106,3 +106,28 @@ listAvailEnvs = function(check = FALSE) {
   lapply(all_spec[which(unlist(idx))], function(x) x$id)
 }
 rlR.xd = function() reticulate::use_python("~/anaconda3/bin/python")
+
+#'@title snapshot
+#'@description Show snapshot of the video
+#'@param sname the name of the environment
+#'@export
+snapshot = function(sname = "Pong-v0") {
+  library(reticulate)
+  library(imager)
+  library(magrittr)
+  gym = import("gym")
+  env = gym$make(sname)
+  ss = env$reset()
+  for(i in 1:25) {
+    a = env$action_space$sample()
+    r = env$step(a)
+  }
+  img = env$render(mode='rgb_array')
+  img = img/255.
+  env$close()
+  img %>%
+  as.cimg() %>% # to image
+  mirror("y") %>% # mirror at y axis
+  imrotate(90L) %>% # rotate by 90 degree
+  plot(axes=FALSE)
+}
