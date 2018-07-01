@@ -1,5 +1,5 @@
 # The reason that there exist a Configuration object which is throughout the experiment is that we want to look at the effect of those configuration parameters.
-RLConf = R6::R6Class("Conf",
+RLConf = R6::R6Class("RLConf",
   public = list(
     static = NULL,
     conf.log.perf = NULL,   # seperate configuration for output like logging, RData, etc

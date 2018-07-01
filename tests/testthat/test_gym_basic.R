@@ -16,9 +16,11 @@ test_that("test makeAgent works", {
   agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
   env = makeGymEnv("CartPole-v0")
   lapply(agent.names, function(name) makeAgent(name, env, conf = getDefaultConf(name)))
+  expect_true(TRUE)
 })
 
 context("conf")
 test_that("test conf", {
-  RLConf$new()
+  conf = RLConf$new()
+  expect_class(conf, "RLConf")
 })

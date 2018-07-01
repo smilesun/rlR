@@ -14,10 +14,15 @@ Interaction = R6::R6Class("Interaction",
     render = NULL,
     consoleFlag = NULL,
     printf = NULL,
+    begin_learn = NULL,
+    global_step_len = NULL,
     initialize = function(rl.env, rl.agent) {
+      self$global_step_len = 0L
       self$rl.env = rl.env
       self$rl.agent = rl.agent
       self$conf = self$rl.agent$conf
+      self$begin_learn = ifelse(is.null(self$conf$get("agent.start.learn")), self$conf$get("replay.batchsize"), self$conf$get("agent.start.learn"))
+      checkmate::assert_int(self$begin_learn)
       self$render = self$conf$get("render")
       render_cmd = NULL
       if (self$render) render_cmd = "render"
@@ -43,7 +48,8 @@ Interaction = R6::R6Class("Interaction",
           self$rl.agent$observe(self)
           self$perf$r.vec.epi[self$idx.step + 1L] = self$s_r_done_info[[2L]]
           self$idx.step = self$idx.step + 1L
-          self$rl.agent$afterStep()
+          # FIXME: does it help to have complete random action at the beginning of each episode or this is a stupic idea since epsilon should always decrease?
+          if (self$idx.step > self$global_step_len) self$rl.agent$afterStep()
           self$checkEpisodeOver()
         })
       self$list.observers = list(
@@ -96,6 +102,7 @@ Interaction = R6::R6Class("Interaction",
           self$action = self$rl.agent$act(self$s.old)
           self$glogger$log.nn$info("action taken:%s \n", self$action)
           self$s_r_done_info = self$rl.env$step(self$action)
+          self$global_step_len = self$global_step_len + 1L
           self$notify("afterStep")
         }
         self$perf$extractInfo()

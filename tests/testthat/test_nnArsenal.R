@@ -13,6 +13,7 @@ test_that("check custom network", {
     model
   }
   checkCustomNetwork(fun, 3, 3)
+  expect_true(TRUE)
 })
 
 test_that("default network works", {
@@ -22,4 +23,5 @@ test_that("default network works", {
   makeCnnCritic(c(32, 32, 3), 10L)
   createActorNetwork(3, 2)
   createCriticNetwork(3, 2)
+  expect_true(TRUE)
 })
