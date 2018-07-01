@@ -75,9 +75,10 @@ AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
 
 }
 
-AgentFDQN$testCnn = function(iter = 1000, render = FALSE) {
-  env = makeGymEnv("Pong-v0", act_cheat = c(2, 3), repeat_n_act = 4)
-  agent = makeAgent("AgentFDQN", env, getDefaultConf("AgentFDQN"))
-  agent$updatePara(replay.batchsize = 32, render = render, replay.freq = 4L)
+AgentFDQN$testCnn = function(iter = 5000, render = TRUE) {
+  conf = getDefaultConf("AgentFDQN")
+  conf$set(replay.batchsize = 32, render = render, replay.freq = 4L, policy.minEpsilon = 0.1, policy.decay = exp(-0.0001), console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025)
+  env = makeGymEnv("Pong-v0", act_cheat = c(2, 3), repeat_n_act = 4, flag_diff_video = TRUE)
+  agent = makeAgent("AgentFDQN", env, conf)
   agent$learn(iter)
 }

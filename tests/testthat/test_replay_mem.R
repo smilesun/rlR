@@ -5,7 +5,9 @@ test_that("test replay_mem works", {
   conf$updatePara("replay.memname", "UniformStack")
   env = makeGymEnv("Pong-v0", repeat_n_act = 400, observ_stack_len = 2)
   env$overview()
-  expect_true(TRUE)
+  agent = makeAgent("AgentFDQN", env, conf)
+  #agent$learn(2)
+  #expect_true(TRUE)
 })
 
 context("interact")
