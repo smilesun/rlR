@@ -41,15 +41,32 @@ Environment = R6::R6Class("Environment",
     state_dim = NULL,
     name = NULL,
     flag_continous = NULL,
+    flag_cnn = NULL,
+    observ_stack_len = 1L,
+    agent = NULL,  # used to get access to replaymem
     initialize = function(...) {
       self$act_cnt = c(2)
       self$state_dim = c(4)
       self$name = "rlR.base.env"
       self$flag_continous = FALSE
+      self$flag_cnn = FALSE
+      self$observ_stack_len = 1L
+    },
+
+    # environment get a hook to agent so it can access the replay memory
+    setAgent = function(agent) {
+      self$agent = agent
+      self$agent$mem$observ_stack_len = self$observ_stack_len
     },
 
     render = function(...) {
       # you could leave this field empty
+    },
+
+    overview = function() {
+      cat(sprintf("\naction cnt: %s \n", toString(self$act_cnt)))
+      cat(sprintf("state dim: %s \n", toString(self$state_dim)))
+      cat(sprintf("%s\n", ifelse(self$flag_continous, "continous action", "discrete action")))
     },
 
     reset = function() {
@@ -80,6 +97,8 @@ Environment = R6::R6Class("Environment",
 
 testEnv = function() {
   env = rlR::Environment$new()
-  agent = makeAgent("AgentDQN", env)
-  agent$learn(10)
+  env$overview()
+  conf = getDefaultConf("AgentDQN")
+  agent = makeAgent("AgentDQN", env, conf)
+  agent$learn(12)
 }

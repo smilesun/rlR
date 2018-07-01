@@ -21,7 +21,6 @@
 #' @section Methods:
 #' \describe{
 #'   \item{updatePara(name, val)}{[\code{function}] \cr Function to update parameter setting.}
-#'   \item{continue(new_env, iter)}{[\code{function}] \cr Continue with a new environment new_env for iter number of episodes}
 #'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes}
 #' }
 #' @return [\code{\link{AgentArmed}}].
@@ -29,6 +28,7 @@
 AgentArmed = R6::R6Class("AgentArmed",
   public = list(
     # constructor init
+    task = NULL,  # string either critic or actor
     replay_delta = NULL,
     lr_decay = NULL,
     interact = NULL,
@@ -57,11 +57,12 @@ AgentArmed = R6::R6Class("AgentArmed",
     env = NULL,
     sess = NULL,
     replay.freq = NULL,
-    observ_stack_len = NULL,
-    # observ_stack_len is the number of observations one should stack
+    network_build_funs = NULL,  # user specific function to create surrogate model
     # member function
     # constructor
     initialize = function(env, conf) {
+      self$network_build_funs = vector(mode = "list", length = 2)
+      names(self$network_build_funs) = c("policy_fun", "value_fun")
       self$sess = tensorflow::tf$Session()
       self$initializeEnv(env)
       self$initializeConf(conf = conf)
@@ -75,16 +76,21 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     # user creation of brain from outside
-    customizeBrain = function(...) {
-      stop("The current agent does not allow customized Brain!")
+    customizeBrain = function(policy_fun = NULL, value_fun = NULL) {
+       if (!is.null(policy_fun)) {
+          checkCustomNetwork(policy_fun, self$stateDim, self$act_cnt)
+          self$network_build_funs[["policy_fun"]] = policy_fun
+       }
+       if (!is.null(value_fun)) {
+          checkCustomNetwork(value_fun, self$stateDim, self$act_cnt)
+          self$network_build_funs[["value_fun"]] = value_fun
+       }
     },
 
     # seperate initializeConf allow for reconfiguration
-    initializeConf = function(conf = NULL) {
+    initializeConf = function(conf) {
       self$conf = conf
-      if (!is.null(self$conf)) {
-        self$buildConf()
-      }
+      self$buildConf()
     },
 
     setConf = function(conf) {
@@ -95,6 +101,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     updatePara = function(...) {
       self$conf$set(...)
       self$buildConf()
+      self$env$setAgent(self)   # update the observ_stack_len parameter
       self$setBrain()  # if the updated parameter ever changed the nn structure
     },
 
@@ -112,7 +119,6 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$epochs = self$conf$get("replay.epochs")
       self$lr_decay = self$conf$get("agent.lr.decay")
       self$replay.freq = self$conf$get("replay.freq")
-      self$observ_stack_len = self$conf$get("agent.observ_stack_len")
       # object
       memname = self$conf$get("replay.memname")
       self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
@@ -123,9 +129,9 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$setBrain()
     },
 
-    setBrain = function() {
-      # do nothing
-    },
+    # setBrain = function() {
+    ## do nothing
+    # },
 
     # transform observation to  the replay memory
     observe = function(interact) {
@@ -194,6 +200,7 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     act = function(state) {
       checkmate::assert_array(state)
+      # in video, state could be stacked together with previous frame
       self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
       act = self$policy$act(state)  # returning the chosen action
       return(act)
@@ -210,14 +217,13 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     learn = function(iter) {
       self$interact$run(iter)
-    },
-
-    continue = function(new_env, iter) {
-      self$mem$reset()  ##clean memory
-      self$interact = Interaction$new(rl.env = new_env, rl.agent = self)
-      self$interact$run(maxiter = iter)
     }
-    ), # public
-  private = list(),
-  active = list()
-  )
+  ) # public
+)
+    #'   \item{continue(new_env, iter)}{[\code{function}] \cr Continue with a new environment new_env for iter number of episodes}
+    # continue = function(new_env, iter) {
+    #   self$mem$reset()  ##clean memory
+    #   self$interact = Interaction$new(rl.env = new_env, rl.agent = self)
+    #   self$interact$run(maxiter = iter)
+    # }
+

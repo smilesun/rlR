@@ -7,8 +7,6 @@ agent.gamma = 0.99,
 agent.flag.reset.net = TRUE,
 agent.lr.decay = exp(-0.001),
 agent.lr = 1e-3,
-agent.observ_stack_len = 1L,
-agent.network.build.funs = NULL,  # user specific function to create surrogate model
 agent.store.model = FALSE,
 policy.maxEpsilon = 0.01,
 policy.minEpsilon = 0.01,
@@ -21,16 +19,42 @@ replay.epochs = 1L,
 replay.freq = 1L
 )
 
-rlR.conf.avail = names(rlR.conf.default)
+#' @title listAvailConf
+#' @description List defaults hyper-parameters names
+#' @export
+listAvailConf = function() {
+  rlR_conf_avail = names(rlR.conf.default)
+  return(rlR_conf_avail)
+}
 
 #' @title getDefaultConf
 #' @description List defaults hyper-parameters
+#' @param agent_name The name for Agent
 #' @export
-getDefaultConf = function() {
+#' @examples
+#' conf = rlR::getDefaultConf("AgentDQN")
+getDefaultConf = function(agent_name) {
+    list.conf = list()
+    list.conf[["AgentActorCritic"]] = rlR.conf.AC()
+    list.conf[["AgentDQN"]] = rlR.conf.DQN()
+    list.conf[["AgentFDQN"]] = rlR.conf.FDQN()
+    list.conf[["AgentDDQN"]] = rlR.conf.DDQN()
+    list.conf[["AgentPG"]] = rlR.conf.PG()
+    list.conf[["AgentPGBaseline"]] = rlR.conf.PGBaseline()
+    return(list.conf[[agent_name]])
+}
+
+#' @title showDefaultConf
+#' @description List defaults hyper-parameters in dataframe
+#' @export
+#' @examples
+#' df = rlR::showDefaultConf()
+showDefaultConf = function() {
   rlR.conf.df = data.frame(unlist(rlR.conf.default))
   colnames(rlR.conf.df) = NULL
   rlR.conf.df
 }
+
 
 rlR.conf4log = list(
 policy.epi_wait_ini = 5L,  # initially the performance should increase

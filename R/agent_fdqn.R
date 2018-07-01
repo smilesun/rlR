@@ -23,6 +23,9 @@ AgentFDQN = R6::R6Class("AgentFDQN",
       super$setBrain()
       self$brain_update = SurroNN$new(self)
       self$brain_target = self$brain
+    },
+
+    showBrain = function() {
       print("control network:")
       print(self$brain_update$model)
       print("target network:")
@@ -53,10 +56,12 @@ AgentFDQN = R6::R6Class("AgentFDQN",
     }
   )
 )
-
+rlR.conf.FDQN = function() {
+  rlR.conf.DQN()
+}
 
 AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.DQN()
+  conf = rlR.conf.FDQN()
   conf$updatePara("console", console)
   conf$updatePara("render", render)
   interact = makeGymExperiment(sname = sname, aname = "AgentFDQN", conf = conf)
@@ -68,4 +73,11 @@ AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
   agent$updatePara(console = console, render = render)
   agent$learn(iter)
 
+}
+
+AgentFDQN$testCnn = function(iter = 1000, render = FALSE) {
+  env = makeGymEnv("Pong-v0", act_cheat = c(2, 3), repeat_n_act = 4)
+  agent = makeAgent("AgentFDQN", env, getDefaultConf("AgentFDQN"))
+  agent$updatePara(replay.batchsize = 32, render = render, replay.freq = 4L)
+  agent$learn(iter)
 }

@@ -80,7 +80,5 @@ RLConf = R6::R6Class("Conf",
       if (is.null(self$static[[namespace]])) stop("configuration namespace empty!")
       return(self$static[[namespace]])
     }
-  ),
-  private = list(),
-  active = list()
   )
+)

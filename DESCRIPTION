@@ -27,12 +27,13 @@ Imports:
     RSQLite,
     png,
     stringr,
-    magrittr,
     DT,
     plotly,
     crosstalk,
     shiny,
     shinythemes
+    imager,
+    magrittr
 LazyData: true
 RoxygenNote: 5.0.1
 BugReports: https://github.com/smilesun/rlR/issues

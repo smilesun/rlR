@@ -12,4 +12,3 @@ InteractionBase = R6::R6Class("InteractionBase",
   private = list(),
   active = list()
   )
-

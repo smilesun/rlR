@@ -107,9 +107,7 @@ Interaction = R6::R6Class("Interaction",
       self$rl.env$afterAll()
       rlR.global.perf <<- self$perf
       rlR.global.perf$agent$conf$updatePara("render", FALSE)
-    }) # try catch
-    } # function
-    ), # public
-  private = list(),
-  active = list()
-  )
+       }) # try catch
+    } # function run
+  ) # public
+)

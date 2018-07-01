@@ -15,13 +15,15 @@ devtools::install_github("smilesun/rlR", dependencies = TRUE)
 ## Usage
 ```{r}
 library(rlR)
-getDefaultConf()
+showDefaultConf()
 env = makeGymEnv("CartPole-v0")
 listAvailAgent()
 ```
 
-```{r fig.path="inst/figures"}
-agent = makeAgent("AgentDQN", env)
+```{r eval=FALSE, fig.path="inst/figures"}
+conf = getDefaultConf("AgentDQN")
+conf$set(render = FALSE, console = FALSE)
+agent = makeAgent("AgentDQN", env, conf)
 system.time({
  perf = agent$learn(150)
 })

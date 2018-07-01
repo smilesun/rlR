@@ -41,12 +41,12 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     },
 
     createBrain = function() {
-      if (self$task == "critic.update") {
+      if (self$task == "value_fun") {
         tuple = createCriticNetwork(state_dim = self$stateDim, action_dim = 1L)
         self$input_action_update = tuple$input_action
         self$input_state_update = tuple$input_state
         return(tuple$model)
-      } else if (self$task == "actor.update"){
+      } else if (self$task == "policy_fun"){
         tuple = createActorNetwork(state_dim = self$stateDim, action_dim = 1L)
         self$input_state_actor_update = tuple$input_state
         self$input_actor_update_weights = tuple$weights
@@ -54,11 +54,15 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       }
     },
 
+    customizeBrain = function() {
+      stop("not supported!")
+    },
+
     setBrain = function() {
-      self$task = "critic.update"
+      self$task = "value_fun"
       self$brain_critic_update = SurroNN$new(self)
       self$brain_critic_target = SurroNN$new(self)
-      self$task = "actor.update"
+      self$task = "policy_fun"
       self$brain_actor_update = SurroNN$new(self)
       self$brain_actor_target = SurroNN$new(self)
       self$model = self$brain_critic_update
@@ -68,7 +72,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     # policy_action is generated from the target policy network
     extractCriticTarget = function(i) {
       y = self$list.rewards[[i]] + self$gamma * self$p.next[i, ]
-      return(y)
+      return(as.array(y))
     },
 
     # input: (state, action)
@@ -144,9 +148,9 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$unpack(size)
       self$trainCritic()
       if (dim(self$tb.targets) != 1) {
-      self$trainActorPrepare()
-      self$trainActorSess(self$tb.state, self$grad2a)
-      self$updateModel()
+        self$trainActorPrepare()
+        self$trainActorSess(self$tb.state, self$grad2a)
+        self$updateModel()
       }
     },
 
@@ -224,11 +228,11 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
 ))
 
-AgentDDPG$test = function(iter = 30, sname = "Pendulum-v0", render = FALSE, console = TRUE) {
+AgentDDPG$test = function(iter = 40, sname = "Pendulum-v0", render = FALSE, console = TRUE) {
   # MountainCarContinuous-v0
   conf = rlR.conf.DQN()
   env = makeGymEnv(sname)
+  conf$set(render = render, console = console)
   agent = makeAgent("AgentDDPG", env, conf)
-  agent$updatePara(render = render, console = console)
   agent$learn(iter)
 }

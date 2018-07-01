@@ -8,7 +8,6 @@
 AgentPGBaseline = R6::R6Class("AgentPGBaseline",
   inherit = AgentPG,
   public = list(
-    task = NULL,
     brain_actor = NULL,  # cross entropy loss
     brain_critic = NULL, # mse loss
     critic_yhat = NULL,
@@ -19,17 +18,16 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
     delta = NULL,
     list.rewards = NULL,
     initialize = function(env, conf) {
-      if (is.null(conf)) conf = rlR.AgentPGBaseline.conf()
       super$initialize(env, conf = conf)
       self$setBrain()
-      },
+    },
 
     setBrain = function() {
       # FIXME: do we really need to call super$setBrain?
       # super$setBrain()
-      self$task = "actor"
+      self$task = "policy_fun"
       self$brain_actor = SurroNN$new(self, arch_list_name = "agent.nn.arch.actor")
-      self$task = "critic"
+      self$task = "value_fun"
       self$brain_critic = SurroNN$new(self, arch_list_name = "agent.nn.arch.critic", act_cnt = 1L)
       self$model = self$brain_critic
     },
@@ -112,13 +110,10 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
       self$vec.arm.q = self$brain_actor$pred(state)
       self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
     }
-    ), # public
-  private = list(),
-  active = list(
-    )
-  )
+    ) # public
+)
 
-rlR.AgentPGBaseline.conf = function() {
+rlR.conf.PGBaseline = function() {
   RLConf$new(
            render = FALSE,
            policy.name = "ProbEpsilon",
@@ -132,9 +127,10 @@ rlR.AgentPGBaseline.conf = function() {
 }
 
 AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  conf = rlR.AgentPGBaseline.conf()
+  conf = rlR.conf.PGBaseline()
   conf$updatePara("console", console)
-  interact = makeGymExperiment(sname = "CartPole-v0", "AgentPGBaseline", conf = conf)
-  perf = interact$run(iter)
-  return(perf)
+  env = makeGymEnv(sname)
+  agent = makeAgent("AgentPGBaseline", env, conf)
+  perf = agent$learn(iter)
+  perf
 }

@@ -43,8 +43,7 @@ makeCnnCritic = function(input_shape = c(32, 32, 3), act_cnt = 1L) {
   text = paste("model <- keras_model_sequential();",
   'model %>%',
   ' layer_conv_2d(filter = 1, kernel_size = c(3,3), padding = "same", input_shape = input_shape) %>%',
-    'layer_activation("relu") %>%',
-    'layer_conv_2d(filter = 1, kernel_size = c(3,3)) %>%',
+    'layer_activation("relu") %>%', 'layer_conv_2d(filter = 1, kernel_size = c(3,3)) %>%',
     'layer_activation("relu") %>%',
     'layer_max_pooling_2d(pool_size = c(2,2)) %>%',
     'layer_dropout(0.25) %>%',
@@ -106,20 +105,10 @@ createCriticNetwork = function(state_dim, action_dim) {
   return(list(model = model, input_action = input_action, input_state = input_state))
 }
 
-fun = function() {
-model <- keras_model_sequential()
-model %>% 
-  layer_dense(units = 256, activation = 'relu', input_shape = c(784)) %>% 
-  layer_dropout(rate = 0.4) %>% 
-  layer_dense(units = 128, activation = 'relu') %>%
-  layer_dropout(rate = 0.3) %>%
-  layer_dense(units = 10, activation = 'softmax')
-}
-
-makeCustomNetwork = function(fun) {
+checkCustomNetwork = function(fun, input_dim, output_dim) {
   checkmate::assertFunction(fun)
   res = try({
-    do.call(fun, args = list())
+    do.call(fun, args = list(stateDim = input_dim, act_cnt = output_dim))
   })
   checkmate::assertFALSE(class(res)[1L] == "try-error")
   return(fun)
