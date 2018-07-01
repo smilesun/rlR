@@ -54,6 +54,10 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       }
     },
 
+    customizeBrain = function() {
+      stop("not supported!")
+    },
+
     setBrain = function() {
       self$task = "value_fun"
       self$brain_critic_update = SurroNN$new(self)

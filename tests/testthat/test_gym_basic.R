@@ -9,3 +9,16 @@ test_that("test Cart-Pole works for each Agent", {
   })
   expect_true(TRUE)
 })
+
+
+context("agent")
+test_that("test makeAgent works", {
+  agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
+  env = makeGymEnv("CartPole-v0")
+  lapply(agent.names, function(name) makeAgent(name, env, conf = getDefaultConf(name)))
+})
+
+context("conf")
+test_that("test conf", {
+  RLConf$new()
+})
