@@ -49,7 +49,7 @@ Interaction = R6::R6Class("Interaction",
           self$perf$r.vec.epi[self$idx.step + 1L] = self$s_r_done_info[[2L]]
           self$idx.step = self$idx.step + 1L
           # FIXME: does it help to have complete random action at the beginning of each episode or this is a stupic idea since epsilon should always decrease?
-          if (self$idx.step > self$global_step_len) self$rl.agent$afterStep()
+          if (self$global_step_len > self$begin_learn) self$rl.agent$afterStep()
           self$checkEpisodeOver()
         })
       self$list.observers = list(
