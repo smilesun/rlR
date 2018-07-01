@@ -8,6 +8,7 @@
 #' @import openssl
 #' @import ggplot2
 #' @import tensorflow
+#' @import abind
 
 NULL
 
