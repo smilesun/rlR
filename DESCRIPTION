@@ -22,7 +22,8 @@ Imports:
     ggplot2,
     openssl,
     imager,
-    magrittr
+    magrittr,
+    abind
 LazyData: true
 RoxygenNote: 6.0.1
 BugReports: https://github.com/smilesun/rlR/issues
