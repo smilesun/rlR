@@ -50,6 +50,9 @@ AgentFDQN = R6::R6Class("AgentFDQN",
       self$brain_target$setWeights(uw)
     },
 
+    shouldUpdateModel = function() {
+    },
+
     afterEpisode = function(interact) {
       super$afterEpisode(interact)
       self$updateModel()

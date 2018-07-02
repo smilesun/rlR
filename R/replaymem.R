@@ -90,9 +90,15 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
         res = self$samples[[x]]
         step_idx = ReplayMem$extractStep(res)
         ss = step_idx - sidx
+        # if at the beginning of an episode
         if (ss <= 0) {
-          res = self$samples[[x - ss]]
-          x = x - ss
+          goforward = x - ss
+          # if at the begin of the episode but at the end of the replay memory
+          if (goforward > self$size) {
+            goforward = xx - step_idx - 1L
+          }
+          res = self$samples[[goforward]]
+          x = goforward
         }
         vor = (x - look_back + 1L)
         adj = self$samples[vor:x]
