@@ -88,6 +88,12 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
       list.res = lapply(self$replayed.idx, function(x) {
         look_back = self$observ_stack_len
         res = self$samples[[x]]
+        step_idx = ReplayMem$extractStep(res)
+        ss = step_idx - sidx
+        if (ss <= 0) {
+          res = self$samples[[x - ss]]
+          x = x - ss
+        }
         vor = (x - look_back + 1L)
         adj = self$samples[vor:x]
         list_state_new = lapply(adj, function(x) {

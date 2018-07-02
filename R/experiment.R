@@ -5,8 +5,8 @@
 #' @return The wrapped environment
 #' @export
 makeGymEnv = function(name ="CartPole-v0", ...) {
+  gspace = reticulate::import("gym.spaces")
   gym = reticulate::import("gym")
-  reticulate::import("gym.spaces")
   gym$logger$set_level(40)  # supress warning
   gym$logger$setLevel(40)
   genv = gym$make(name)
