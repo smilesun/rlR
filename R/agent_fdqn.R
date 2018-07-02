@@ -16,6 +16,7 @@ AgentFDQN = R6::R6Class("AgentFDQN",
     brain_update = NULL,
     initialize = function(env, conf) {
       super$initialize(env, conf)
+      self$updateFreq = self$conf$get("agent.update.target.freq")
       self$setBrain()
     },
 
@@ -51,11 +52,23 @@ AgentFDQN = R6::R6Class("AgentFDQN",
     },
 
     shouldUpdateModel = function() {
+      self$interact$global_step_len %% self$updateFreq == 0
+    },
+
+    afterStep = function() {
+      super$afterStep()
+      if (!is.null(self$updateFreq)) {
+        if (self$shouldUpdateModel()) {
+          self$updateModel()
+        }
+      }
     },
 
     afterEpisode = function(interact) {
       super$afterEpisode(interact)
-      self$updateModel()
+      if (is.null(self$updateFreq)) {
+        self$updateModel()
+      }
     }
   )
 )
@@ -81,7 +94,7 @@ AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
 AgentFDQN$testCnn = function(iter = 5000, render = TRUE) {
   conf = getDefaultConf("AgentFDQN")
   #@Note: one episode of pong is around 300 steps
-  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-2.2 / 1e6), policy.minEpsilon = 0.1, agent.start.learn = 50L, replay.mem.size = 1e6, log = FALSE)
+  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-2.2 / 1e6), policy.minEpsilon = 0.1, agent.start.learn = 50L, replay.mem.size = 1e6, log = FALSE, agent.update.target.freq = 10000L)
   env = makeGymEnv("Pong-v0", act_cheat = c(2, 3), repeat_n_act = 4, observ_stack_len = 2L)
   agent = makeAgent("AgentFDQN", env, conf)
   perf = agent$learn(iter)

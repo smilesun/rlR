@@ -8,6 +8,7 @@ agent.flag.reset.net = TRUE,
 agent.lr.decay = exp(-0.001),
 agent.lr = 1e-3,
 agent.store.model = FALSE,
+agent.update.target.freq = NULL,
 agent.start.learn = NULL,  # default after replay mem has enough sample
 policy.maxEpsilon = 0.01,
 policy.minEpsilon = 0.01,
