@@ -30,6 +30,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     # constructor init
     task = NULL,  # string either critic or actor
     replay_delta = NULL,
+    updateFreq = NULL,  # how often you should update the model
     lr_decay = NULL,
     interact = NULL,
     mem = NULL,  # replay memory
