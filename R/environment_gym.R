@@ -10,6 +10,7 @@ EnvGym = R6::R6Class("EnvGym",
     state_preprocess = NULL,
     act_cheat = NULL,
     old_state = NULL,  # for video
+    old_states_cache = NULL,
     repeat_n_act = NULL,  # number of frames to escape
     state_cache = NULL,   # store adjacent states to stack into short history
     flag_stack_frame = NULL,
@@ -98,11 +99,21 @@ EnvGym = R6::R6Class("EnvGym",
       return(arr_stack)
     },
 
+    stackLatestFrame1 = function(cur_state) {
+      list.state = c(cur_state, self$old_states_cache)
+      arr_stack = abind::abind(list.state)
+      # s_r_d_info[["state"]] = cur - self$old_state
+      #self$old_state = cur_state
+      #FIXME: How to initialize self$old_state?
+      return(arr_stack)
+    },
+
+
     reset = function() {
       s = self$env$reset()
       s = self$state_preprocess(s)
-      #FIXME: is this the right way to initialize old_state?
-      self$old_state = s
+      #FIXME: is this the right way to initialize old_state? reset is called at episode start?
+      if (self$agent$interact$global_step_len == 0) self$old_state = s
       if (self$flag_stack_frame) {
         s = self$stackLatestFrame(s)
       }
