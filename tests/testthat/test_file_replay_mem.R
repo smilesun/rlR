@@ -8,6 +8,8 @@ test_that("test replay_mem works", {
   agent = makeAgent("AgentFDQN", env, conf)
   mem = ReplayMem$new(agent, conf)
   mem$reset()
+  ins = mem$mkInst(state.old = array(3), action = 1, reward = 1, state.new = array(4), done = TRUE, info = list())
+  mem$add(ins)
   expect_class(mem, "ReplayMem")
 })
 

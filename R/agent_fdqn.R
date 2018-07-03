@@ -67,6 +67,7 @@ AgentFDQN = R6::R6Class("AgentFDQN",
     afterEpisode = function(interact) {
       super$afterEpisode(interact)
       if (is.null(self$updateFreq)) {
+        # ("\nupdating model\n"))
         self$updateModel()
       }
     }
