@@ -42,6 +42,7 @@ EnvGym = R6::R6Class("EnvGym",
       }
       if (!is.null(self$act_cheat)) self$act_cnt = length(self$act_cheat)
       self$state_dim = unlist(genv$observation_space$shape)
+      if (is.null(self$state_dim)) stop("Compund state space Enviroment not supported!")
       self$flag_cnn = length(self$state_dim) > 1L  # judge if video input before change state_dim
       # FIXME: this should be set by user
       if (self$flag_cnn) self$flag_stack_frame = TRUE
@@ -59,7 +60,8 @@ EnvGym = R6::R6Class("EnvGym",
     },
 
     pong_cheat = function(state) {
-      I = state[seq(1L, 210L, 3L), seq(1L, 160L, 2L), 1L]
+      I = state[seq(1L, 210L, 3L), seq(1L, 160L, 2L), ]
+      I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]
       res = array_reshape(I, c(dim(I), 1L))
       return(res)
     },
@@ -88,14 +90,6 @@ EnvGym = R6::R6Class("EnvGym",
       #FIXME: might be buggy if continous space get preprocessed
       if (grepl("Box", toString(self$env$action_space))) s_r_d_info[["state"]] = t(s_r_d_info[["state"]])  # for continous action, transpose the state space, for "Pendulum-v0" etc, the state return is 3*1 instead of 1*3
       s_r_d_info
-    },
-
-    stackLatestFrame0 = function(cur_state) {
-      arr_stack = abind::abind(cur_state, self$old_state)
-      # s_r_d_info[["state"]] = cur - self$old_state
-      self$old_state = cur_state
-      #FIXME: How to initialize self$old_state?
-      return(arr_stack)
     },
 
     stackLatestFrame = function(cur_state) {
@@ -141,9 +135,18 @@ EnvGym = R6::R6Class("EnvGym",
       env
     },
 
+    showImage = function(img) {
+      img %>%
+          imager::as.cimg() %>% # to image
+          imager::mirror("y") %>% # mirror at y axis
+          imager::imrotate(90L) %>% # rotate by 90 degree
+          graphics::plot(axes = FALSE)
+    },
+
     snapshot = function(steps = 25L) {
       checkmate::assert_int(steps)
       ss = self$env$reset()
+      if (is.null(env$action_space$sample)) return("no support for snapshot for this environment")
       for (i in 1:steps) {
         a = env$action_space$sample()
         r = env$step(a)
@@ -151,11 +154,7 @@ EnvGym = R6::R6Class("EnvGym",
       img = env$render(mode = "rgb_array")
       img = img / 255.
       env$close()
-      img %>%
-      imager::as.cimg() %>% # to image
-      imager::mirror("y") %>% # mirror at y axis
-      imager::imrotate(90L) %>% # rotate by 90 degree
-      graphics::plot(axes = FALSE)
+      self$showImage(img)
     }
     )
 )
