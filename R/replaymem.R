@@ -95,7 +95,7 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
           goforward = x - ss
           # if at the begin of the episode but at the end of the replay memory
           if (goforward > self$size) {
-            goforward = xx - step_idx - 1L
+            goforward = x - step_idx - 1L
           }
           res = self$samples[[goforward]]
           x = goforward
