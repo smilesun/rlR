@@ -1,11 +1,11 @@
 context("nnArsenal")
 test_that("check custom network", {
-  fun = function(stateDim, act_cnt) {
+  fun = function(state_dim, act_cnt) {
     requireNamespace("keras")
     require("keras")
     model = keras_model_sequential()
     model %>%
-      layer_dense(units = 256, activation = 'relu', input_shape = c(stateDim)) %>%
+      layer_dense(units = 256, activation = 'relu', input_shape = c(state_dim)) %>%
       layer_dropout(rate = 0.4) %>%
       layer_dense(units = 128, activation = 'relu') %>%
       layer_dropout(rate = 0.3) %>%

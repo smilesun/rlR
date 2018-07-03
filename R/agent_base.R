@@ -37,7 +37,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     advantage = NULL,
     list.acts = NULL,
     act_cnt = NULL,
-    stateDim = NULL,
+    state_dim = NULL,
     conf = NULL,
     vec.arm.q = NULL,      # store Q value for each arm
     # built from conf
@@ -72,22 +72,22 @@ AgentArmed = R6::R6Class("AgentArmed",
     initializeEnv = function(env) {
       self$env = env
       self$act_cnt =  env$act_cnt
-      self$stateDim = env$state_dim
+      self$state_dim = env$state_dim
       self$vec.arm.q = vector(mode = "numeric", length = self$act_cnt)
     },
 
     # user creation of brain from outside
     customizeBrain = function(policy_fun = NULL, value_fun = NULL) {
        if (!is.null(policy_fun)) {
-          checkCustomNetwork(policy_fun, self$stateDim, self$act_cnt)
+          checkCustomNetwork(policy_fun, self$state_dim, self$act_cnt)
           self$network_build_funs[["policy_fun"]] = policy_fun
        }
        if (!is.null(value_fun)) {
-          checkCustomNetwork(value_fun, self$stateDim, self$act_cnt)
+          checkCustomNetwork(value_fun, self$state_dim, self$act_cnt)
           self$network_build_funs[["value_fun"]] = value_fun
        }
        #NOTE: setBrain does not exist in base class!!
-       self$setBrain() 
+       self$setBrain()
     },
 
     # seperate initializeConf allow for reconfiguration
@@ -101,12 +101,6 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$buildConf()
     },
 
-    #     updatePara = function(...) {
-    #       self$conf$set(...)
-    #       self$buildConf()
-    #       self$env$setAgent(self)   # update the observ_stack_len parameter
-    #       self$setBrain()  # if the updated parameter ever changed the nn structure
-    #     },
     loginfo = function(str, ...) {  # nocov start
       self$glogger$log.nn$info(str, ...)
     }, # nocov end

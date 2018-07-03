@@ -46,16 +46,11 @@ makeCnnCritic = function(input_shape = c(32, 32, 3), act_cnt = 1L) {
     'layer_activation("relu") %>%',
     'layer_conv_2d(filter = 64, kernel_size = c(4,4), strides = c(2, 2)) %>%',
     'layer_activation("relu") %>%',
-#    'layer_max_pooling_2d(pool_size = c(2,2)) %>%',
-#    'layer_dropout(0.25) %>%',
-    'layer_conv_2d(filter = 32, kernel_size = c(3,3), strides = c(1,1), padding = "same") %>%',
+    'layer_conv_2d(filter = 64, kernel_size = c(3,3), strides = c(1,1), padding = "same") %>%',
     'layer_activation("relu") %>%',
-#    'layer_max_pooling_2d(pool_size = c(2,2)) %>%',
-#    'layer_dropout(0.25) %>%',
     'layer_flatten() %>%',
     'layer_dense(512) %>%',
     'layer_activation("relu") %>%',
-#    'layer_dropout(0.5) %>%',
     'layer_dense(act_cnt) %>%',
     'layer_activation("linear");',
     'opt <- optimizer_rmsprop(lr = 0.00025);',
@@ -109,7 +104,7 @@ createCriticNetwork = function(state_dim, action_dim) {
 checkCustomNetwork = function(fun, input_dim, output_dim) {
   checkmate::assertFunction(fun)
   res = try({
-    do.call(fun, args = list(stateDim = input_dim, act_cnt = output_dim))
+    do.call(fun, args = list(state_dim = input_dim, act_cnt = output_dim))
   })
   checkmate::assertFALSE(class(res)[1L] == "try-error")
   return(fun)

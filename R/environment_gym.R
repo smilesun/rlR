@@ -53,14 +53,15 @@ EnvGym = R6::R6Class("EnvGym",
       #FIXME: by default, rlR handles up to order 3 tensor: RGB IMAGE. Might need to change in future
       if (self$flag_stack_frame) {
         self$state_preprocess = self$pong_cheat
-        self$preprocess_dim  = c(70L, 80L, 1L)
+        #self$preprocess_dim  = c(70L, 80L, 1L)
+        self$preprocess_dim  = c(61L, 80L, 1L)
       }
       if (self$observ_stack_len > 1L) self$state_dim = c(self$preprocess_dim[1L:2L], self$observ_stack_len)
       else self$state_dim = self$preprocess_dim
     },
 
     pong_cheat = function(state) {
-      I = state[seq(1L, 210L, 3L), seq(1L, 160L, 2L), ]
+      I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
       I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]
       res = array_reshape(I, c(dim(I), 1L))
       return(res)
@@ -146,14 +147,14 @@ EnvGym = R6::R6Class("EnvGym",
     snapshot = function(steps = 25L) {
       checkmate::assert_int(steps)
       ss = self$env$reset()
-      if (is.null(env$genv$action_space$sample)) return("no support for snapshot for this environment")
+      if (is.null(self$env$action_space$sample)) return("no support for snapshot for this environment")
       for (i in 1:steps) {
-        a = env$action_space$sample()
-        r = env$step(a)
+        a = self$env$action_space$sample()
+        r = self$env$step(a)
       }
-      img = env$render(mode = "rgb_array")
+      img = self$env$render(mode = "rgb_array")
       img = img / 255.
-      env$close()
+      self$env$close()
       self$showImage(img)
     }
     )

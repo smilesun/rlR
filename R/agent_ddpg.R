@@ -42,12 +42,12 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
     createBrain = function() {
       if (self$task == "value_fun") {
-        tuple = createCriticNetwork(state_dim = self$stateDim, action_dim = 1L)
+        tuple = createCriticNetwork(state_dim = self$state_dim, action_dim = 1L)
         self$input_action_update = tuple$input_action
         self$input_state_update = tuple$input_state
         return(tuple$model)
       } else if (self$task == "policy_fun"){
-        tuple = createActorNetwork(state_dim = self$stateDim, action_dim = 1L)
+        tuple = createActorNetwork(state_dim = self$state_dim, action_dim = 1L)
         self$input_state_actor_update = tuple$input_state
         self$input_actor_update_weights = tuple$weights
         return(tuple$model)
@@ -161,7 +161,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
     act = function(state) {
       checkmate::assert_array(state)
-      state = array_reshape(state, c(1, self$stateDim))
+      state = array_reshape(state, c(1, self$state_dim))
       self$evaluateArm(state)
       return(self$vec.arm.q)  # gym need an array as action
     },

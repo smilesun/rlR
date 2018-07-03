@@ -33,8 +33,8 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
     },
 
     makeCnn = function()  {
-      if (self$task == "critic") return(makeCnnCritic(input_shape = self$stateDim, act_cnt = 1))
-      if (self$task == "actor")  return(makeCnnActor(input_shape = self$stateDim, act_cnt = self$act_cnt))
+      if (self$task == "critic") return(makeCnnCritic(input_shape = self$state_dim, act_cnt = 1))
+      if (self$task == "actor")  return(makeCnnActor(input_shape = self$state_dim, act_cnt = self$act_cnt))
     },
 
      getReplayYhat = function(batchsize) {

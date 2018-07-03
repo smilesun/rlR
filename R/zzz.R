@@ -120,10 +120,11 @@ listAvailAgent = function(env) {
 #' @description List all Gym Environments without testing them
 #' @export
 listGymEnvs = function() {
-  cat(sprintf("The following gym envs are simply listed without being tested"))
   envs = reticulate::import("gym.envs")
   all_spec = envs$registry$env_specs
-  sapply(all_spec, function(x) x$id)
+  res = sapply(all_spec, function(x) x$id)
+  names(res) = NULL
+  res[7:length(res)]
 }
 #rlR.xd = function() reticulate::use_python("~/anaconda3/bin/python")
 rlR.debug = FALSE  # nocov

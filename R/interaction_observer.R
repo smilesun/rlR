@@ -40,7 +40,7 @@ Interaction = R6::R6Class("Interaction",
       self$list.cmd = list(
         "render" = self$rl.env$render,
         "before.act" = function() {
-          self$glogger$log.nn$info("in episode %d, step %d", self$idx.episode, self$idx.step)
+          self$glogger$log.nn$info("in episode %d, step %d, global step %d", self$idx.episode, self$idx.step, self$global_step_len)
           self$s.old = self$s_r_done_info[[1L]]
         },
         "after.step" = function() {

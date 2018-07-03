@@ -97,10 +97,6 @@ conf$show()
 ```
 
 ```
-## parameters:
-```
-
-```
 ##                                    value
 ## render                             FALSE
 ## log                                FALSE
@@ -126,11 +122,9 @@ conf$show()
 conf$set(render = FALSE, console = FALSE)
 ```
 
-```r
-agent = makeAgent("AgentFDQN", env, conf)
-```
 
 ```r
+agent = makeAgent("AgentFDQN", env, conf)
 perf = agent$learn(200L)
 ```
 
@@ -138,3 +132,5 @@ perf = agent$learn(200L)
 ```r
 perf$plot()
 ```
+
+![plot of chunk mplot](inst/figures/mplot-1.png)
