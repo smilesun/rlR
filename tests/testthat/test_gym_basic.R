@@ -1,4 +1,17 @@
 context("gym_basic")
+
+test_that("test Cart-Pole works for each Agent", {
+  skip_on_cran()
+  agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
+  lapply(agent.names, function(agent.name) {
+    conf = getDefaultConf(agent.name)
+    env = makeGymEnv("CartPole-v0")
+    agent = makeAgent(agent.name, env, conf)
+    agent$learn(2)
+  })
+  expect_true(TRUE)
+})
+
 test_that("test Cart-Pole works for each Agent", {
   skip_on_cran()
   testEnv()  # test Base Environment class works
