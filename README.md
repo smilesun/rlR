@@ -92,7 +92,7 @@ listAvailAgent(env)
 
 
 ```r
-conf = getDefaultConf("AgentFDQN")
+conf = getDefaultConf("AgentDQN")
 conf$show()
 ```
 
@@ -124,8 +124,8 @@ conf$set(render = FALSE, console = FALSE)
 
 
 ```r
-agent = makeAgent("AgentFDQN", env, conf)
-perf = agent$learn(200L)
+agent = makeAgent("AgentDQN", env, conf)
+perf = agent$learn(150L)
 ```
 
 
@@ -133,4 +133,4 @@ perf = agent$learn(200L)
 perf$plot()
 ```
 
-![plot of chunk mplot](inst/figures/mplot-1.png)
+![plot of chunk mplot](inst/figures/dqn.png)

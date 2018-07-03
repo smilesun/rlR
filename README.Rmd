@@ -43,11 +43,11 @@ conf$show()
 conf$set(render = FALSE, console = FALSE)
 ```
 
-```{r learn}
+```{r learn, eval=FALSE}
 agent = makeAgent("AgentFDQN", env, conf)
 perf = agent$learn(200L)
 ```
 
-```{r mplot, fig.path="inst/figures/", warning=FALSE, message=FALSE}
+```{r mplot, eval=FALSE,fig.path="inst/figures/", warning=FALSE, message=FALSE}
 perf$plot()
 ```
