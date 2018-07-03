@@ -20,12 +20,7 @@ AgentPG = R6::R6Class("AgentPG",
       self$setBrain()
     },
 
-    makeCnn = function()  {
-      return(makeCnnActor(input_shape = self$stateDim, act_cnt = self$act_cnt))
-    },
-
     setBrain = function() {
-      #super$setBrain()
       self$task = "policy_fun"
       self$brain = SurroNN$new(self, arch_list_name = "agent.nn.arch")
       self$model = self$brain
@@ -36,7 +31,8 @@ AgentPG = R6::R6Class("AgentPG",
         temp.act = rep(0.0, self$act_cnt)
         temp.act[act] =  1.0
         return(temp.act)
-    }, 
+    },
+
     getXY = function(batchsize) {
         self$list.replay = self$mem$sample.fun(batchsize)
         len = length(self$list.replay)
@@ -83,11 +79,8 @@ AgentPG = R6::R6Class("AgentPG",
         self$policy$afterEpisode()
         if (self$flag_rescue) self$interact$perf$rescue()
     }
-    ), # public
-  private = list(),
-  active = list(
-    )
-  )
+    ) # public
+)
 
 rlR.conf.PG = function() {
   RLConf$new(

@@ -1,4 +1,3 @@
-
 #' @title AgentActorCritic
 #'
 #' @format \code{\link{R6Class}} object

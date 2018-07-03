@@ -113,4 +113,5 @@ rlR.conf.DDQN = function() {
     policy.name = "EpsilonGreedy",
     replay.batchsize = 64L,
     agent.nn.arch = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+
 }

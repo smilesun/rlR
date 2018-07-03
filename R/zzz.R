@@ -12,7 +12,6 @@
 
 NULL
 
-
 #' @title Test if tensorflow works from R session
 #'
 #' @description Test if tensorflow works from R session
