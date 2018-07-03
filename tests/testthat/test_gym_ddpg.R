@@ -5,6 +5,6 @@ test_that("test ddpg works", {
   conf = getDefaultConf("AgentDQN")
   conf$set(replay.memname = "Online")
   agent = makeAgent("AgentDDPG", env, conf)
-  #agent$learn(1)
+  # agent$learn(1)
   expect_true(TRUE)
 })
