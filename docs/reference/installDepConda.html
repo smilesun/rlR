@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make Agent — makeAgent • rlR</title>
+<title>Install dependencies into a conda virtual environment called r-tensorflow — installDepConda • rlR</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,9 +28,9 @@
 
 
 
-<meta property="og:title" content="Make Agent — makeAgent" />
+<meta property="og:title" content="Install dependencies into a conda virtual environment called r-tensorflow — installDepConda" />
 
-<meta property="og:description" content="Make Agent" />
+<meta property="og:description" content="Install Keras dependencies into a conda virtual environment called r-tensorflow" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -106,106 +106,39 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make Agent</h1>
-    <small class="dont-index">Source: <a href='https://github.com/smilesun/rlR/blob/master/R/agentFactory.R'><code>R/agentFactory.R</code></a></small>
-    <div class="hidden name"><code>makeAgent.Rd</code></div>
+    <h1>Install dependencies into a conda virtual environment called r-tensorflow</h1>
+    <small class="dont-index">Source: <a href='https://github.com/smilesun/rlR/blob/master/R/zzz.R'><code>R/zzz.R</code></a></small>
+    <div class="hidden name"><code>installDepConda.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Make Agent</p>
+    <p>Install Keras dependencies into a conda virtual environment called r-tensorflow</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>makeAgent</span>(<span class='no'>name</span>, <span class='no'>env</span>, <span class='kw'>conf</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>installDepConda</span>(<span class='kw'>conda_path</span> <span class='kw'>=</span> <span class='st'>"auto"</span>, <span class='kw'>gpu</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>name</th>
-      <td><p>The name of the Agent</p></td>
+      <th>conda_path</th>
+      <td><p>The conda path in your system, default "auto" will search in system path</p></td>
     </tr>
     <tr>
-      <th>env</th>
-      <td><p>The environment to initialize the Agent</p></td>
-    </tr>
-    <tr>
-      <th>conf</th>
-      <td><p>The configuration</p></td>
+      <th>gpu</th>
+      <td><p>If TRUE, will install gpu version of tensorflow. By default, FALSE</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>[<code><a href='AgentArmed.html'>AgentArmed</a></code>].</p>
-    
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>makeAgent</span>(<span class='st'>"AgentDQN"</span>, <span class='fu'><a href='makeGymEnv.html'>makeGymEnv</a></span>(<span class='kw'>name</span> <span class='kw'>=</span><span class='st'>"CartPole-v0"</span>), <span class='fu'><a href='getDefaultConf.html'>getDefaultConf</a></span>(<span class='st'>"AgentDQN"</span>))</div><div class='output co'>#&gt; &lt;AgentDQN&gt;
-#&gt;   Inherits from: &lt;AgentArmed&gt;
-#&gt;   Public:
-#&gt;     act: function (state) 
-#&gt;     act_cnt: 2
-#&gt;     advantage: NULL
-#&gt;     afterEpisode: function (interact) 
-#&gt;     afterStep: function () 
-#&gt;     brain: SurroNN, Surrogate, R6
-#&gt;     buildConf: function () 
-#&gt;     clone: function (deep = FALSE) 
-#&gt;     conf: RLConf, R6
-#&gt;     createInteract: function (rl.env) 
-#&gt;     customizeBrain: function (policy_fun = NULL, value_fun = NULL) 
-#&gt;     env: EnvGym, Environment, R6
-#&gt;     epochs: 1
-#&gt;     evaluateArm: function (state) 
-#&gt;     extractTarget: function (i) 
-#&gt;     gamma: 0.99
-#&gt;     getXY: function (batchsize) 
-#&gt;     getYhat: function (list.states.old) 
-#&gt;     glogger: RLLog, R6
-#&gt;     initialize: function (env, conf) 
-#&gt;     initializeConf: function (conf) 
-#&gt;     initializeEnv: function (env) 
-#&gt;     interact: Interaction, InteractionBase, R6
-#&gt;     learn: function (iter) 
-#&gt;     list.acts: NULL
-#&gt;     list.replay: NULL
-#&gt;     loginfo: function (str, ...) 
-#&gt;     lr_decay: 0.999000499833375
-#&gt;     mem: ReplayMemUniform, ReplayMem, R6
-#&gt;     model: SurroNN, Surrogate, R6
-#&gt;     network_build_funs: list
-#&gt;     observe: function (interact) 
-#&gt;     p.next: NULL
-#&gt;     p.old: NULL
-#&gt;     policy: PolicyProbEpsilon, PolicyEpsilonGreedy, Policy, R6
-#&gt;     replay: function (batchsize) 
-#&gt;     replay_delta: NULL
-#&gt;     replay.freq: 1
-#&gt;     replay.size: 64
-#&gt;     replay.x: NULL
-#&gt;     replay.y: NULL
-#&gt;     sess: tensorflow.python.client.session.Session, tensorflow.python.client.session.BaseSession, tensorflow.python.client.session.SessionInterface, python.builtin.object
-#&gt;     setAdvantage: function (adv) 
-#&gt;     setBrain: function () 
-#&gt;     setConf: function (conf) 
-#&gt;     stateDim: 4
-#&gt;     task: value_fun
-#&gt;     updateFreq: NULL
-#&gt;     updatePara: function (...) 
-#&gt;     vec.arm.q: 0 0
-#&gt;     yhat: NULL</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-      
-      <li><a href="#examples">Examples</a></li>
-    </ul>
+                </ul>
 
   </div>
 </div>
