@@ -4,6 +4,7 @@ test_that("Conf object", {
   conf$get("agent.lr")
   conf$updatePara("agent.lr", 0.1)
   conf$set(agent.lr = 0.1)
+  conf$ps()
 })
 
 context("ddqn")

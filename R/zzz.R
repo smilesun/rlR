@@ -37,6 +37,7 @@ rlr_test_if_tensorflow_works = function() {
 rlr_test_if_gym_works = function() {
   res <- try({
     gym = reticulate::import("gym")
+    gym.sp = reticulate::import("gym.spaces")
     gym$logger$set_level(40)  # supress warning
     gym$logger$setLevel(40)
     genv = gym$make("CartPole-v0")
@@ -118,7 +119,7 @@ listAvailAgent = function() {
 #' @param check Whether to check if each environment works or not, default FALSE
 #' @export
 listAvailEnvs = function(check = FALSE) {
-  envs = import("gym.envs")
+  envs = reticulate::import("gym.envs")
   all_spec = envs$registry$env_specs
   if (!check) return(all_spec)
   idx = lapply(all_spec, function(spec) {
@@ -134,3 +135,4 @@ listAvailEnvs = function(check = FALSE) {
   lapply(all_spec[which(unlist(idx))], function(x) x$id)
 }
 #rlR.xd = function() reticulate::use_python("~/anaconda3/bin/python")
+rlR.debug = FALSE

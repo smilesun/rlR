@@ -125,12 +125,3 @@ rlR.conf.PGBaseline = function() {
           agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)
           )
 }
-
-AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.PGBaseline()
-  conf$updatePara("console", console)
-  env = makeGymEnv(sname)
-  agent = makeAgent("AgentPGBaseline", env, conf)
-  perf = agent$learn(iter)
-  perf
-}

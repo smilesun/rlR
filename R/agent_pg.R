@@ -101,19 +101,3 @@ rlR.conf.PG = function() {
           replay.epochs = 1L,
           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
 }
-
-AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE) {
-  conf = rlR.conf.PG()
-  conf$static$render = render
-  env = makeGymEnv(sname)
-  agent = makeAgent("AgentPG", env, conf)
-  agent$learn(iter)
-}
-
-AgentPG$testCNN = function(iter = 1000L, sname = "Pong-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.PG()
-  conf$set(console = console, render = render, replay.memname = "Online")
-  env = makeGymEnv(sname, repeat_n_act = 4L, act_cheat = c(2L, 3L))
-  agent = makeAgent("AgentPG", env, conf)
-  agent$learn(iter)
-}
