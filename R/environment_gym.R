@@ -146,7 +146,7 @@ EnvGym = R6::R6Class("EnvGym",
     snapshot = function(steps = 25L) {
       checkmate::assert_int(steps)
       ss = self$env$reset()
-      if (is.null(env$action_space$sample)) return("no support for snapshot for this environment")
+      if (is.null(env$genv$action_space$sample)) return("no support for snapshot for this environment")
       for (i in 1:steps) {
         a = env$action_space$sample()
         r = env$step(a)
