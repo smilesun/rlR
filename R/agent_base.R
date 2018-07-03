@@ -33,6 +33,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     updateFreq = NULL,  # how often you should update the model
     lr_decay = NULL,
     interact = NULL,
+    clip_td_err = NULL,
     mem = NULL,  # replay memory
     advantage = NULL,
     list.acts = NULL,
@@ -115,6 +116,7 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$epochs = self$conf$get("replay.epochs")
       self$lr_decay = self$conf$get("agent.lr.decay")
       self$replay.freq = self$conf$get("replay.freq")
+      self$clip_td_err = self$conf$get("agent.clip.td")
       memname = self$conf$get("replay.memname")
       self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
       policy_name = self$conf$get("policy.name")

@@ -10,6 +10,7 @@ agent.lr = 1e-3,
 agent.store.model = FALSE,
 agent.update.target.freq = NULL,
 agent.start.learn = NULL,  # default after replay mem has enough sample
+agent.clip.td = FALSE,
 policy.maxEpsilon = 0.01,
 policy.minEpsilon = 0.01,
 policy.decay = 1, # exp(-1.0 / 10),

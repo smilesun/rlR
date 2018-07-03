@@ -7,8 +7,7 @@ AgentDQN_test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, co
 }
 
 AgentDQN_test_MountainCar = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  #env = makeGymEnv("MountainCar-v0", act_cheat = c(0, 2))
-  env = makeGymEnv("MountainCar-v0")
+  env = makeGymEnv("MountainCar-v0", act_cheat = c(0, 2))
   conf = getDefaultConf("AgentDQN")
   conf$set(console = TRUE, render = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0, policy.decay = 1.0 / 1.01, replay.batchsize = 10, replay.epochs = 4, agent.lr.decay = 1, agent.gamma = 0.95)
   agent = makeAgent("AgentDQN", env, conf)
@@ -83,7 +82,7 @@ AgentFDQN_test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
 AgentFDQN$longRunCnn = function(sname = "KungFuMaster-v0", iter = 5000, render = TRUE) {
   conf = getDefaultConf("AgentFDQN")
   #@Note: one episode of pong is around 300 steps
-  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-2.2 / 1e6), policy.minEpsilon = 0.1, agent.start.learn = 5000L, replay.mem.size = 1e6, log = FALSE, agent.update.target.freq = 10000L)
+  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-2.2 / 1e6), policy.minEpsilon = 0.1, agent.start.learn = 5000L, replay.mem.size = 1e6, log = FALSE, agent.update.target.freq = 10000L, agent.clip.td = TRUE)
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 4L)
   agent = makeAgent("AgentFDQN", env, conf)
   perf = agent$learn(iter)

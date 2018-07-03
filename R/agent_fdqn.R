@@ -35,7 +35,7 @@ AgentFDQN = R6::R6Class("AgentFDQN",
 
     replay = function(batchsize) {
       self$model = self$brain_target  # use target network to generate target
-      self$getXY(batchsize)
+      self$getXY(batchsize)  # from base class
       self$brain_update$train(self$replay.x, self$replay.y)  # update the policy model
     },
 

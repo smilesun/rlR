@@ -36,6 +36,11 @@ AgentDQN = R6::R6Class("AgentDQN",
           vec.next.Q = self$p.next[i, ]
           a_1 = which.max(vec.next.Q)  # action index start from 1L
           target = r + self$gamma * max(vec.next.Q)
+          # equivalent to huber loss
+          if (self$clip_td_err) {
+            target = max(target, p.old[act2update] - 1L)
+            target = min(target, p.old[act2update] + 1L)
+          }
         }
         mt = p.old
         mt[act2update] = target  # the not active action arm's Q will not be updated
