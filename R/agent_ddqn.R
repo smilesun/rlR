@@ -99,12 +99,8 @@ AgentDDQN = R6::R6Class("AgentDDQN",
       self$evaluateArm(state)
       self$policy$act(state)
     }
-    ), # public
-  private = list(),
-  active = list(
-    )
-  )
-
+  ) # public
+)
 
 rlR.conf.DDQN = function() {
   RLConf$new(
@@ -118,9 +114,6 @@ rlR.conf.DDQN = function() {
     replay.batchsize = 64L,
     agent.nn.arch = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
 }
-
-
-
 
 AgentDDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE, console = FALSE) {
   conf = rlR.conf.DDQN()

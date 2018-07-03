@@ -59,26 +59,5 @@ RLConf = R6::R6Class("RLConf",
             if (is.null(ns)) ns = ""
             ns
         }, self$static[[x]])))
-    },
-
-    register = function(namespace) {
-      # register namespace
-      if (namespace %in% names(self$static)) return(FALSE)
-      self$static[[namespace]] = list()
-      return(TRUE)
-    },
-
-    attachname = function(namespace, list.input) {
-      # attach a new subspace of parameters
-      if (namespace %in% names(self$static)) return(FALSE)
-      self$static[[namespace]] = list.input
-      return(TRUE)
-    },
-
-    fetchConf = function(namespace) {
-      if (namespace %nin% names(self$static))  stop("configuration namespace does not exist")
-      if (is.null(self$static[[namespace]])) stop("configuration namespace empty!")
-      return(self$static[[namespace]])
-    }
-  )
+    })
 )

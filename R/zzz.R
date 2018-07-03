@@ -23,7 +23,7 @@ rlr_test_if_tensorflow_works = function() {
   res <- try({
     tf = reticulate::import("tensorflow")
     sess = tf$Session()
-    hello = tf$constant('Hello, TensorFlow!')
+    hello = tf$constant("Hello, TensorFlow!")
     sess$run(hello)
   }, silent = FALSE)
   if (class(res)[1L] == "try-error") return(FALSE)
@@ -46,33 +46,53 @@ rlr_test_if_gym_works = function() {
   return(TRUE)
 }
 
-#' @title  Install dependencies
-#' @param gpu Wehter to use gpu tensorflow or not
-#' @description Install Keras dependencies, if dependencies already installed, will not re-install
-#' @return NULL
+#' @title  Check if python dependencies work
+#' @description Check if python dependencies work
+#' @return TRUE if all python dependencies work
 #' @export
-installDep = function(gpu = FALSE) {
+checkPyDep = function() {
+  flag_tensorflow = rlr_test_if_tensorflow_works()
   flag_keras = rlr_test_if_keras_works()
   flag_gym = rlr_test_if_gym_works()
-  if (gpu) {
-    if (!flag_keras) {
-      if (flag_gym) keras::install_keras(tensorflow = '1.8-gpu')
-      else keras::install_keras(tensorflow = "1.8-gpu", extra_packages = c("gym"))
-    }
-  }
-  else {
-  if (!flag_keras) {
-    if (flag_gym) keras::install_keras(tensorflow = "1.8.0")
-    else keras::install_keras(tensorflow = "1.8.0", extra_packages = c("gym"))
-  }
-  }
+  cat(sprintf("\n tensorlfow: %s, keras: %s, gym:%s\n", flag_tensorflow, flag_keras, flag_gym))
+  return(flag_tensorflow && flag_keras && flag_gym)
 }
+
+#' @title  Install dependencies into system virtual environment called r-tensorflow
+#' @param gpu If TRUE, will install gpu version of tensorflow. By default, FALSE
+#' @description Install Keras dependencies into system virtual environment called r-tensorflow
+#' @return NULL
+#' @export
+installDep2SysVirtualEnv = function(gpu = FALSE) {
+  cat(sprintf("\ninstalling dependencies using %s \n",  Sys.which("virtualenv")))
+  # install_keras will install tensorflow along into the virtual environment called "r-tensorflow"
+  if (gpu) keras::install_keras(method = "virtualenv", tensorflow = "1.8.0-gpu", extra_packages = c("gym"))
+  else keras::install_keras(method = "virtualenv", tensorflow = "1.8.0", extra_packages = c("gym"))
+  #reticulate::py_install()
+  # sudo pip instlal uwsgi
+  # sudo apt-get install python3-pip
+}
+
+#' @title  Install dependencies into a conda virtual environment called r-tensorflow
+#' @param gpu If TRUE, will install gpu version of tensorflow. By default, FALSE
+#' @param conda_path The conda path in your system, default "auto" will search in system path
+#' @description Install Keras dependencies into a conda virtual environment called r-tensorflow
+#' @return NULL
+#' @export
+installDepConda = function(conda_path = "auto", gpu = FALSE) {
+  if (conda_path == "auto") cat(sprintf("\ninstalling dependencies using %s \n", Sys.which("conda")))
+  # install_keras will install tensorflow along into the virtual environment called "r-tensorflow"
+  if (gpu) keras::install_keras(method = "conda", conda = conda_path, tensorflow = "1.8.0-gpu", extra_packages = c("gym"))
+  else keras::install_keras(method = "conda", conda = conda_path, tensorflow = "1.8.0", extra_packages = c("gym"))
+}
+
 
 #' @title  Test if keras works
 #' @description Test if keras is installed
 #' @return TRUE if success
-#' @export 
+#' @export
 rlr_test_if_keras_works = function() {
+  requireNamespace("keras")
   res <- try({
 model <- keras_model_sequential()
 model %>% 
