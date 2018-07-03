@@ -20,12 +20,7 @@ AgentPG = R6::R6Class("AgentPG",
       self$setBrain()
     },
 
-    makeCnn = function()  {
-      return(makeCnnActor(input_shape = self$stateDim, act_cnt = self$act_cnt))
-    },
-
     setBrain = function() {
-      #super$setBrain()
       self$task = "policy_fun"
       self$brain = SurroNN$new(self, arch_list_name = "agent.nn.arch")
       self$model = self$brain
@@ -36,7 +31,8 @@ AgentPG = R6::R6Class("AgentPG",
         temp.act = rep(0.0, self$act_cnt)
         temp.act[act] =  1.0
         return(temp.act)
-    }, 
+    },
+
     getXY = function(batchsize) {
         self$list.replay = self$mem$sample.fun(batchsize)
         len = length(self$list.replay)
@@ -83,11 +79,8 @@ AgentPG = R6::R6Class("AgentPG",
         self$policy$afterEpisode()
         if (self$flag_rescue) self$interact$perf$rescue()
     }
-    ), # public
-  private = list(),
-  active = list(
-    )
-  )
+    ) # public
+)
 
 rlR.conf.PG = function() {
   RLConf$new(
@@ -100,20 +93,4 @@ rlR.conf.PG = function() {
           replay.memname = "Latest",
           replay.epochs = 1L,
           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
-}
-
-AgentPG$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE) {
-  conf = rlR.conf.PG()
-  conf$static$render = render
-  env = makeGymEnv(sname)
-  agent = makeAgent("AgentPG", env, conf)
-  agent$learn(iter)
-}
-
-AgentPG$testCNN = function(iter = 1000L, sname = "Pong-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.PG()
-  conf$set(console = console, render = render, replay.memname = "Online")
-  env = makeGymEnv(sname, repeat_n_act = 4L, act_cheat = c(2L, 3L))
-  agent = makeAgent("AgentPG", env, conf)
-  agent$learn(iter)
 }

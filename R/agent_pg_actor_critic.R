@@ -1,4 +1,3 @@
-
 #' @title AgentActorCritic
 #'
 #' @format \code{\link{R6Class}} object
@@ -89,22 +88,3 @@ rlR.conf.AC = function() {
     agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr =1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
     )
 }
-
-AgentActorCritic$test = function(iter = 500L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  set.seed(0)
-  conf = rlR.conf.AC()
-  conf$updatePara("console", console)
-  conf$updatePara("render", render)
-  env = makeGymEnv(sname)
-  agent = makeAgent("AgentActorCritic", env, conf)
-  agent$learn(iter)
-}
-
-AgentActorCritic$testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", render = TRUE, console = TRUE) {
-  env = makeGymEnv("KungFuMaster-ram-v0", repeat_n_act = 4)
-  agent = makeAgent("AgentActorCritic", env)
-  agent$updatePara(render = TRUE)
-  agent$learn(iter)
-}
-
-
