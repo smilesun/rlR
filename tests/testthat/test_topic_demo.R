@@ -138,12 +138,47 @@ AgentPGBaseline_test = function(iter = 1000L, sname = "CartPole-v0", render = FA
   perf
 }
 
+custom = function() {
+#conf$set(policy.decay = exp(-0.005), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1e6, policy.decay.type = "linear")
+}
+
 
 rlR.demo = function() {
+mfun_val = function(state_dim, act_cnt) {
+requireNamespace("keras")
+    model = keras::keras_model_sequential()
+      model %>% 
+        layer_dense(units = 512, activation = "relu", 
+          input_shape = c(state_dim)) %>%
+        layer_dropout(rate = 0.25) %>%
+        layer_dense(units = act_cnt,
+          activation = "linear")
+      model$compile(loss = "mse",
+        optimizer = optimizer_rmsprop(lr = 0.001))
+      model
+  }
+
+mfun_policy = function(state_dim, act_cnt) {
+    requireNamespace("keras")
+    model = keras::keras_model_sequential()
+      model %>% 
+        layer_dense(units = 512, activation = "relu",
+          input_shape = c(state_dim)) %>%
+        layer_dropout(rate = 0.25) %>%
+        layer_dense(units = act_cnt,
+          activation = "softmax")
+      model$compile(loss = "categorical_crossentropy",
+        optimizer = optimizer_rmsprop(lr = 0.001))
+      model
+}
+
+
   library(rlR)
+  library(keras)
   conf = getDefaultConf("AgentActorCritic")
   conf$set(render = TRUE, console = TRUE)
   env = makeGymEnv("KungFuMaster-ram-v0", repeat_n_act = 4)
   agent = makeAgent("AgentActorCritic", env, conf)
+  agent$customizeBrain(value_fun = mfun_val, policy_fun = mfun_policy)
   agent$learn(10L)
 }
