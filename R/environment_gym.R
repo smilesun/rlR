@@ -136,6 +136,13 @@ EnvGym = R6::R6Class("EnvGym",
       env
     },
 
+    overview = function() {
+      cat(sprintf("\naction cnt: %s \n", toString(self$act_cnt)))
+      cat(sprintf("state dim: %s \n", toString(self$old_dim)))
+      cat(sprintf("%s\n", ifelse(self$flag_continous, "continous action", "discrete action")))
+    },
+
+
     showImage = function(img) {
       img %>%
           imager::as.cimg() %>% # to image

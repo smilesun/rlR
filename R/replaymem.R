@@ -66,13 +66,13 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
   inherit = ReplayMemUniform,
   public = list(
 
-    stackArray = function(temp) {
-      arr = simplify2array(temp)
-      mdim = dim(arr)
-      norder = length(mdim)
-      aperm(arr, c(norder, 1:(norder - 1)))
-    },
-
+    #     stackArray = function(temp) {
+    #       arr = simplify2array(temp)
+    #       mdim = dim(arr)
+    #       norder = length(mdim)
+    #       aperm(arr, c(norder, 1:(norder - 1)))
+    #     },
+    # 
     add = function(ins) {
       mdim = self$agent$env$state_dim[1L:2L]
       ins$state.old = array_reshape(ins$state.old[, , 1L], c(mdim, 1L))
@@ -109,9 +109,7 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
           x$state.old
         })
         #NOTE: ideally we want to extend the order of the tensor, but keras dense only works with 1d data and conv layer only works with 2d, so an alternative is to stack the array
-        #res$state.new = self$stackArray(list_state_new)
         res$state.new = abind::abind(list_state_new)
-        #res$state.old = self$stackArray(list_state_old)
         res$state.old = abind::abind(list_state_old)
         res
       })

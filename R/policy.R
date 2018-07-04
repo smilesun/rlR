@@ -26,7 +26,7 @@ Policy = R6::R6Class("Policy",
       self$total_aneal_step = self$host$conf$get("policy.aneal.steps")
       if (self$decay_type == "geometric1") self$decayEpsilon = self$decayEpsilonGeo1
       else if (self$decay_type == "geometric2") self$decayEpsilon = self$decayEpsilonGeo2
-      else self$decayEpsilon = self$decayEpsilonArith
+      else self$decayEpsilon = self$decayEpsilonLinear
       self$epsilon = self$maxEpsilon
       self$gstep.idx = 1
       self$softmax_magnify = self$host$conf$get("policy.softmax.magnify")
@@ -59,7 +59,7 @@ Policy = R6::R6Class("Policy",
         self$gstep.idx = self$gstep.idx + 1L
     },
 
-    decayEpsilonArith = function() {
+    decayEpsilonLinear = function() {
         self$epsilon =  self$maxEpsilon - (self$gstep.idx / self$total_aneal_step) * (self$maxEpsilon - self$minEpsilon)
         self$gstep.idx = self$gstep.idx + 1L
     },
