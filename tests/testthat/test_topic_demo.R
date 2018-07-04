@@ -27,9 +27,8 @@ AgentDQN_test_MountainCar = function(iter = 1000L, sname = "CartPole-v0", render
 }
 
 
-AgentDQN_testpongram = function(iter = 1000L, sname = "Bowling-ram-v0", render = FALSE, console = FALSE) {
-  #env = makeGymEnv(sname, act_cheat = c(2, 3))
-  env = makeGymEnv(sname)
+AgentDQN_test_Pong_ram = function(iter = 1000L, sname = "Bowling-ram-v0", render = FALSE, console = FALSE) {
+  env = makeGymEnv(sname, act_cheat = c(2, 3))
   agent = makeAgent("AgentFDQN", env, rlR.conf.DQN.kungfu())
   agent$learn(iter)
 }
@@ -71,9 +70,8 @@ AgentDDQN_test = function(iter = 1000L, sname = "CartPole-v0", render = TRUE, co
 
 
 AgentFDQN_test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.FDQN()
-  conf$updatePara("console", console)
-  conf$updatePara("render", render)
+  conf = getDefaultConf("AgentFDQN")
+  conf$set(console =console, render = render)
   env = makeGymEnv(sname)
   agent = makeAgent("AgentFDQN", env, conf)
   perf = agent$learn(iter)
@@ -99,43 +97,53 @@ AgentFDQN_testCnn = function(sname = "KungFuMaster-v0", iter = 5000, render = TR
 }
 
 AgentPG_test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE) {
-  conf = rlR.conf.PG()
-  conf$static$render = render
+  conf = getDefaultConf("AgentPG")
+  conf$set(render = render, console = TRUE)
   env = makeGymEnv(sname)
   agent = makeAgent("AgentPG", env, conf)
   agent$learn(iter)
 }
 
-AgentPG_testCNN = function(iter = 1000L, sname = "Pong-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.PG()
+AgentPG_testCNN = function(iter = 1000L, sname = "Pong-v0", render = TRUE, console = TRUE) {
+  conf = getDefaultConf("AgentPG")
   conf$set(console = console, render = render, replay.memname = "Online")
-  env = makeGymEnv(sname, repeat_n_act = 40L, act_cheat = c(2L, 3L))
+  env = makeGymEnv(sname, repeat_n_act = 2L, act_cheat = c(2L, 3L))
   agent = makeAgent("AgentPG", env, conf)
   agent$learn(iter)
 }
 
 AgentActorCritic_test = function(iter = 500L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
   set.seed(0)
-  conf = rlR.conf.AC()
-  conf$updatePara("console", console)
-  conf$updatePara("render", render)
+  conf = getDefaultConf("AgentActorCritic")
+  conf$set(console = console, render = render)
   env = makeGymEnv(sname)
   agent = makeAgent("AgentActorCritic", env, conf)
   agent$learn(iter)
 }
 
 AgentActorCritic_testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", render = TRUE, console = TRUE) {
+  conf = getDefaultConf("AgentActorCritic")
+  conf$set(render = TRUE, console = console)
   env = makeGymEnv("KungFuMaster-ram-v0", repeat_n_act = 4)
-  agent = makeAgent("AgentActorCritic", env)
-  agent$updatePara(render = TRUE)
+  agent = makeAgent("AgentActorCritic", env, conf)
   agent$learn(iter)
 }
 
 AgentPGBaseline_test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.PGBaseline()
-  conf$updatePara("console", console)
-  env = makeGymEnv(sname)
+  conf = getDefaultConf("AgentPGBaseline")
+  conf$set(console = console, render = render)
+  env = makeGymEnv(sname, act_cheat = c(2,3))
   agent = makeAgent("AgentPGBaseline", env, conf)
   perf = agent$learn(iter)
   perf
+}
+
+
+rlR.demo = function() {
+  library(rlR)
+  conf = getDefaultConf("AgentActorCritic")
+  conf$set(render = TRUE, console = TRUE)
+  env = makeGymEnv("KungFuMaster-ram-v0", repeat_n_act = 4)
+  agent = makeAgent("AgentActorCritic", env, conf)
+  agent$learn(10L)
 }

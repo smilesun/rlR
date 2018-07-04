@@ -13,7 +13,7 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
     initialize = function(env, conf) {
-      super$initialize(env, conf = conf)
+      super$initialize(env, conf)
     },
 
     replay = function(batchsize) {

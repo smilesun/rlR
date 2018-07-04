@@ -18,13 +18,11 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
     delta = NULL,
     list.rewards = NULL,
     initialize = function(env, conf) {
-      super$initialize(env, conf = conf)
+      super$initialize(env, conf)
       self$setBrain()
     },
 
     setBrain = function() {
-      # FIXME: do we really need to call super$setBrain?
-      # super$setBrain()
       self$task = "policy_fun"
       self$brain_actor = SurroNN$new(self, arch_list_name = "agent.nn.arch.actor")
       self$task = "value_fun"

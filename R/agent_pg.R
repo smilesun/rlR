@@ -14,7 +14,6 @@ AgentPG = R6::R6Class("AgentPG",
   public = list(
     flag_rescue = NULL,
     initialize = function(env, conf) {
-      if (is.null(conf)) conf = rlR.AgentPG.conf()
       self$flag_rescue = conf$get("agent.flag.reset.net")
       super$initialize(env, conf = conf)
       self$setBrain()
