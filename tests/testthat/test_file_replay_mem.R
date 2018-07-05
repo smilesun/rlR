@@ -1,11 +1,11 @@
 context("replay_mem")
 test_that("test basic replay_mem works", {
   conf = rlR.conf.DQN()
-  mem = ReplayMem$new(agent, conf)
-  mem$reset()
   env = rlR::Environment$new()
   env$overview()
   agent = makeAgent("AgentFDQN", env, conf)
+  mem = ReplayMem$new(agent, conf)
+  mem$reset()
   ins = mem$mkInst(state.old = array(rep(1, 4)), action = c(1, 2), reward = 1, state.new = array(rep(2, 4)), done = TRUE, info = list())
   mem$add(ins)
   expect_class(mem, "ReplayMem")
