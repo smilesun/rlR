@@ -1,3 +1,11 @@
+AgentDDPG_test = function(iter = 40, sname = "Pendulum-v0", render = TRUE, console = TRUE) {
+  # MountainCarContinuous-v0
+  conf = rlR.conf.DQN()
+  env = makeGymEnv(sname)
+  conf$set(render = render, console = console)
+  agent = makeAgent("AgentDDPG", env, conf)
+  agent$learn(iter)
+}
 AgentDQN_test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
   conf = rlR.conf.DQN()
   conf$set(console = console, render = render)
