@@ -97,11 +97,6 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$buildConf()
     },
 
-    setConf = function(conf) {
-      self$conf = conf
-      self$buildConf()
-    },
-
     loginfo = function(str, ...) {  # nocov start
       self$glogger$log.nn$info(str, ...)
     }, # nocov end
@@ -140,9 +135,10 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$mem$add(ins)
     },
 
-    extractTarget = function(ins) {
-      stop("not implemented")
-    },
+    #     extractTarget = function(ins) {
+    #       stop("not implemented")
+    #     },
+    # 
 
     setAdvantage = function(adv) {
       self$advantage = adv
