@@ -1,4 +1,4 @@
-AgentDDPG_test = function(iter = 40, sname = "Pendulum-v0", render = TRUE, console = TRUE) {
+AgentDDPG_test = function(iter = 4000, sname = "Pendulum-v0", render = TRUE, console = TRUE) {
   # MountainCarContinuous-v0
   conf = rlR.conf.DQN()
   env = makeGymEnv(sname)

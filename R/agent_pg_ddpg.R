@@ -159,9 +159,25 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       }
     },
 
+    # Ornstein–Uhlenbeck process: c(Gaussian Process, Markov Process, Temporirily Homogeneous)
+    # random walk in continous time (Wiener Process) Continous time AR(1)
+    # Over time, the process tends to drift towards its long-term mean: such a process is called mean-reverting. (Going back and forth around the mean). properties of the process have been changed so that there is a tendency of the walk to move back towards a central location, with a greater attraction when the process is further away from the center.
+    # $dx_t = \theta(\mu - x_t)dt + \sigma dWt$ where $W_t$ is the Wiener Process
+    # the probability density follows the Fokker-Planck equation with the infinite time solution $f(x) = \sqrt(\theta / (\pi \sigma^2))e^{-\theta(x-\mu)^2/\sigma^2}$
+    # stationary distribution is gaussian with var(x) = \sigma^2/(2 * theta)
+    ou = function(act) {
+      mu = 0  # going back and forth around 0
+      theta = 0.60  # exponential shoulder factor
+      sigma = 0.30
+      # one step differential equation change, since action_new = action_old + ou(action_old)
+      # so d(action) = action_new - action_old = ou(action_old) = \theta(\mu - x_t)dt + \sigma dWt
+      # where the difference of Wiener process dWt is white noise
+      theta * (mu - act) + sigma * rnorm(1)
+    },
+
     evaluateArm = function(state) {
-      #FIXME: plus noise here
-      self$vec.arm.q = self$brain_actor_update$pred(state)
+      act_cc_nn = self$brain_actor_update$pred(state)
+      self$vec.arm.q = act_cc_nn + self$policy$epsilon * self$ou(act_cc_nn)  # continous action
     },
 
     act = function(state) {
