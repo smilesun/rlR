@@ -1,4 +1,12 @@
 context("custom_environment")
+test_that("basic environment works", {
+  env = rlR::Environment$new()
+  env$overview()
+  conf = getDefaultConf("AgentDQN")
+  agent = makeAgent("AgentDQN", env, conf)
+  perf = agent$learn(12)
+  expect_class(perf, "Performance")
+})
 test_that("Gym constructor Works", {
   env = Environment$new("Pong-v0")
   env$reset()
