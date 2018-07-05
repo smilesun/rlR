@@ -21,14 +21,14 @@ If not, install the above three python packages or:
 
 For Unix user
 - Ensure that you have **either** of the following available
-  - Python3 Virtual Environment: `{python eval=F}pip install virtualenv`
+  - Python3 Virtual Environment: `pip install virtualenv`
   - Anaconda
-- Install dependencies through `{r eval=F} rlR::installDep2SysVirtualEnv(gpu = FALSE)` if you have python virtualenv available or `{r eval=FALSE} rlR::installDepConda(gpu = FALSE)` if you have anaconda available.
+- Install dependencies through `rlR::installDep2SysVirtualEnv(gpu = FALSE)` if you have python virtualenv available or `rlR::installDepConda(gpu = FALSE)` if you have anaconda available.
 
 
 For Windows user
 - Ensure that you have Anaconda available.
-- Install dependencies through `{r eval=FALSE} rlR::installDepConda(gpu = FALSE)` 
+- Install dependencies through `rlR::installDepConda(gpu = FALSE)` 
 
 ## Usage
 
