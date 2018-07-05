@@ -28,7 +28,7 @@ r:
 - devel
 - release
 r_github_packages:
-- jimhester/covr
+- r-lib/covr
 - hadley/pkgdown
 - rstudio/keras
 before_script:
@@ -36,6 +36,7 @@ before_script:
 - R --no-save <<< 'library("tensorflow"); install_tensorflow()'
 - R --no-save <<< 'library("keras"); install_keras()'
 after_success:
+- Rscript -e 'covr::codecov()'
 - 'if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_R_VERSION_STRING" == "release" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
     R --no-save <<< "devtools::install(); pkgdown::build_site()";
     git checkout master;
