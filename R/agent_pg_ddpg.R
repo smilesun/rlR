@@ -5,7 +5,7 @@
 #' Inherited from \code{AgentActorCritic}:
 #' @section Methods:
 #' @inheritSection AgentArmed Methods
-#'
+#' @reference Lillicrap, T. P., Hunt, J. J., Pritzel, A., Heess, N., Erez, T., Tassa, Y., … Wierstra, D. (2016). Continuous control with deep reinforcement learning. In ICLR.
 #' @return [\code{\link{AgentDDPG}}].
 #' @export
 AgentDDPG = R6::R6Class("AgentDDPG",
@@ -62,11 +62,11 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
     setBrain = function() {
       self$task = "value_fun"
-      self$brain_critic_update = SurroNN$new(self)
       self$brain_critic_target = SurroNN$new(self)
+      self$brain_critic_update = SurroNN$new(self)
       self$task = "policy_fun"
-      self$brain_actor_update = SurroNN$new(self)
       self$brain_actor_target = SurroNN$new(self)
+      self$brain_actor_update = SurroNN$new(self)
       self$model = self$brain_critic_update
       self$trainActorSessInit()
       self$sess$run(tf$initialize_all_variables())
@@ -219,11 +219,11 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     },
 
     afterStep = function() {
-      self$replay(self$replay.size)
-      # self$policy$afterStep()
+      self$policy$afterStep()
     },
 
     afterEpisode = function(interact) {
+      self$replay(self$replay.size)
       self$policy$afterEpisode()
       self$mem$afterEpisode()
     }
@@ -274,4 +274,3 @@ createCriticNetwork = function(state_dim, action_dim) {
     )
   return(list(model = model, input_action = input_action, input_state = input_state))
 }
-
