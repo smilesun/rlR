@@ -27,7 +27,11 @@ env:
 r:
 - devel
 - release
+r_packages:
+  - covr
+  - devtools
 r_github_packages:
+- codecov/example-r
 - r-lib/covr
 - hadley/pkgdown
 - rstudio/keras
