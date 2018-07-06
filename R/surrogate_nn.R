@@ -13,7 +13,9 @@ SurroNN = R6::R6Class("SurroNN",
       self$agent = agent
       self$act_cnt = self$agent$act_cnt
       self$custom_flag = FALSE
-      if ("act_cnt" %in% names(par_list)) self$act_cnt = par_list[["act_cnt"]]
+      if ("act_cnt" %in% names(par_list)) {
+        self$act_cnt = par_list[["act_cnt"]]
+      }
       self$state_dim = self$agent$state_dim
       self$conf = self$agent$conf
       if (!is.null(self$conf)) {
