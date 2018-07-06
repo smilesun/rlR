@@ -65,4 +65,5 @@ test_that("custom policy network works", {
   agent$learn(1L)
   agent$customizeBrain(value_fun = mfun_val)
   agent$learn(1L)
+  expect_true(TRUE)
 })

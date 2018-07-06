@@ -10,7 +10,7 @@
 #' @import tensorflow
 #' @import abind
 
-NULL # nocov start
+NULL # nocov
 
 #' @title Test if tensorflow works from R session
 #'
