@@ -97,9 +97,9 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$buildConf()
     },
 
-    loginfo = function(str, ...) {  # nocov start
-      self$glogger$log.nn$info(str, ...)
-    }, # nocov end
+    loginfo = function(str, ...) {
+      self$glogger$log.nn$info(str, ...)  # nocov
+    },
 
     createInteract = function(rl.env) {
       self$interact = Interaction$new(rl.env = rl.env, rl.agent = self)

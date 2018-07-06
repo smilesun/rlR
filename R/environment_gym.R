@@ -35,17 +35,25 @@ EnvGym = R6::R6Class("EnvGym",
       if (!"n" %in% names(genv$action_space)) {
         # if "n" is not in the names of the list, i.e. genv$action_space$n does not exist
         flag_multiple_shape = length(genv$action_space$shape) > 1L
-        if (flag_multiple_shape) stop("currently no support for action space that have multiple shapes!")
+        if (flag_multiple_shape) {
+          stop("currently no support for action space that have multiple shapes!")
+        }
         self$act_cnt = genv$action_space$shape[[1L]]
       } else {
         self$act_cnt = genv$action_space$n   # get the number of actions/control bits
       }
-      if (!is.null(self$act_cheat)) self$act_cnt = length(self$act_cheat)
+      if (!is.null(self$act_cheat)) {
+        self$act_cnt = length(self$act_cheat)
+      }
       self$state_dim = unlist(genv$observation_space$shape)
-      if (is.null(self$state_dim)) stop("Compund state space Enviroment not supported!")
+      if (is.null(self$state_dim)) {
+        stop("Compund state space Enviroment not supported!")
+      }
       self$flag_cnn = length(self$state_dim) > 1L  # judge if video input before change state_dim
       # FIXME: this should be set by user
-      if (self$flag_cnn) self$flag_stack_frame = TRUE
+      if (self$flag_cnn) {
+        self$flag_stack_frame = TRUE
+      }
       self$old_dim = self$state_dim
       self$preprocess_dim  = ifelse(is.null(state_preprocess$dim), self$old_dim, state_preprocess$dim)
       # keep the array order(only change the dimension) rather than increase the order
@@ -56,8 +64,11 @@ EnvGym = R6::R6Class("EnvGym",
         #self$preprocess_dim  = c(70L, 80L, 1L)
         self$preprocess_dim  = c(61L, 80L, 1L)
       }
-      if (self$observ_stack_len > 1L) self$state_dim = c(self$preprocess_dim[1L:2L], self$observ_stack_len)
-      else self$state_dim = self$preprocess_dim
+      if (self$observ_stack_len > 1L) {
+        self$state_dim = c(self$preprocess_dim[1L:2L], self$observ_stack_len)
+      } else {
+        self$state_dim = self$preprocess_dim
+      }
     },
 
     pong_cheat = function(state) {
@@ -154,7 +165,9 @@ EnvGym = R6::R6Class("EnvGym",
     snapshot = function(steps = 25L) {
       checkmate::assert_int(steps)
       ss = self$env$reset()
-      if (is.null(self$env$action_space$sample)) return("no support for snapshot for this environment")
+      if (is.null(self$env$action_space$sample)) {
+        stop("no support for snapshot for this environment")
+      }
       for (i in 1:steps) {
         a = self$env$action_space$sample()
         r = self$env$step(a)
