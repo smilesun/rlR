@@ -22,7 +22,6 @@ before_install:
   - sudo pip install gym[atari]
   - sudo pip install tensorflow
 env:
-_R_CHECK_CRAN_INCOMING_=FALSE
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
 r:
