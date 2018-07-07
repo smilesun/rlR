@@ -10,7 +10,6 @@ EnvGym = R6::R6Class("EnvGym",
     state_preprocess = NULL,
     act_cheat = NULL,
     old_state = NULL,  # for video
-    old_states_cache = NULL,
     repeat_n_act = NULL,  # number of frames to escape
     state_cache = NULL,   # store adjacent states to stack into short history
     flag_stack_frame = NULL,
@@ -36,16 +35,25 @@ EnvGym = R6::R6Class("EnvGym",
       if (!"n" %in% names(genv$action_space)) {
         # if "n" is not in the names of the list, i.e. genv$action_space$n does not exist
         flag_multiple_shape = length(genv$action_space$shape) > 1L
-        if (flag_multiple_shape) stop("currently no support for action space that have multiple shapes!")
+        if (flag_multiple_shape) {
+          stop("currently no support for action space that have multiple shapes!")
+        }
         self$act_cnt = genv$action_space$shape[[1L]]
       } else {
         self$act_cnt = genv$action_space$n   # get the number of actions/control bits
       }
-      if (!is.null(self$act_cheat)) self$act_cnt = length(self$act_cheat)
+      if (!is.null(self$act_cheat)) {
+        self$act_cnt = length(self$act_cheat)
+      }
       self$state_dim = unlist(genv$observation_space$shape)
+      if (is.null(self$state_dim)) {
+        stop("Compund state space Enviroment not supported!")
+      }
       self$flag_cnn = length(self$state_dim) > 1L  # judge if video input before change state_dim
       # FIXME: this should be set by user
-      if (self$flag_cnn) self$flag_stack_frame = TRUE
+      if (self$flag_cnn) {
+        self$flag_stack_frame = TRUE
+      }
       self$old_dim = self$state_dim
       self$preprocess_dim  = ifelse(is.null(state_preprocess$dim), self$old_dim, state_preprocess$dim)
       # keep the array order(only change the dimension) rather than increase the order
@@ -53,14 +61,19 @@ EnvGym = R6::R6Class("EnvGym",
       #FIXME: by default, rlR handles up to order 3 tensor: RGB IMAGE. Might need to change in future
       if (self$flag_stack_frame) {
         self$state_preprocess = self$pong_cheat
-        self$preprocess_dim  = c(70L, 80L, 1L)
+        #self$preprocess_dim  = c(70L, 80L, 1L)
+        self$preprocess_dim  = c(61L, 80L, 1L)
       }
-      if (self$observ_stack_len > 1L) self$state_dim = c(self$preprocess_dim[1L:2L], self$observ_stack_len)
-      else self$state_dim = self$preprocess_dim
+      if (self$observ_stack_len > 1L) {
+        self$state_dim = c(self$preprocess_dim[1L:2L], self$observ_stack_len)
+      } else {
+        self$state_dim = self$preprocess_dim
+      }
     },
 
     pong_cheat = function(state) {
-      I = state[seq(1L, 210L, 3L), seq(1L, 160L, 2L), 1L]
+      I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
+      I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]
       res = array_reshape(I, c(dim(I), 1L))
       return(res)
     },
@@ -92,19 +105,13 @@ EnvGym = R6::R6Class("EnvGym",
     },
 
     stackLatestFrame = function(cur_state) {
-      arr_stack = abind::abind(cur_state, self$old_state)
-      # s_r_d_info[["state"]] = cur - self$old_state
-      self$old_state = cur_state
-      #FIXME: How to initialize self$old_state?
-      return(arr_stack)
-    },
-
-    stackLatestFrame1 = function(cur_state) {
-      list.state = c(cur_state, self$old_states_cache)
-      arr_stack = abind::abind(list.state)
-      # s_r_d_info[["state"]] = cur - self$old_state
-      #self$old_state = cur_state
-      #FIXME: How to initialize self$old_state?
+      if (self$observ_stack_len >= 2L) {
+        for (i in self$observ_stack_len:2L) {
+          self$state_cache[[i]] =  self$state_cache[[i - 1L]]
+        }}
+      self$state_cache[[1L]] = cur_state
+      arr_stack = abind::abind(self$state_cache)
+      #FIXME: How to initialize self$state_cache?
       return(arr_stack)
     },
 
@@ -113,7 +120,10 @@ EnvGym = R6::R6Class("EnvGym",
       s = self$env$reset()
       s = self$state_preprocess(s)
       #FIXME: is this the right way to initialize old_state? reset is called at episode start?
-      if (self$agent$interact$global_step_len == 0) self$old_state = s
+      if (self$agent$interact$global_step_len == 0) {
+        self$old_state = s
+        self$state_cache = lapply(1L:self$observ_stack_len, function(x) s)
+      }
       if (self$flag_stack_frame) {
         s = self$stackLatestFrame(s)
       }
@@ -137,21 +147,35 @@ EnvGym = R6::R6Class("EnvGym",
       env
     },
 
+    overview = function() {
+      cat(sprintf("\naction cnt: %s \n", toString(self$act_cnt)))
+      cat(sprintf("state dim: %s \n", toString(self$old_dim)))
+      cat(sprintf("%s\n", ifelse(self$flag_continous, "continous action", "discrete action")))
+    },
+
+
+    showImage = function(img) {
+      img %>%
+          imager::as.cimg() %>% # to image
+          imager::mirror("y") %>% # mirror at y axis
+          imager::imrotate(90L) %>% # rotate by 90 degree
+          graphics::plot(axes = FALSE)
+    },
+
     snapshot = function(steps = 25L) {
       checkmate::assert_int(steps)
       ss = self$env$reset()
-      for (i in 1:steps) {
-        a = env$action_space$sample()
-        r = env$step(a)
+      if (is.null(self$env$action_space$sample)) {
+        stop("no support for snapshot for this environment")
       }
-      img = env$render(mode = "rgb_array")
+      for (i in 1:steps) {
+        a = self$env$action_space$sample()
+        r = self$env$step(a)
+      }
+      img = self$env$render(mode = "rgb_array")
       img = img / 255.
-      env$close()
-      img %>%
-      imager::as.cimg() %>% # to image
-      imager::mirror("y") %>% # mirror at y axis
-      imager::imrotate(90L) %>% # rotate by 90 degree
-      graphics::plot(axes = FALSE)
+      self$env$close()
+      self$showImage(img)
     }
     )
 )

@@ -10,8 +10,7 @@
 #' @import tensorflow
 #' @import abind
 
-NULL
-
+NULL # nocov
 
 #' @title Test if tensorflow works from R session
 #'
@@ -23,7 +22,7 @@ rlr_test_if_tensorflow_works = function() {
   res <- try({
     tf = reticulate::import("tensorflow")
     sess = tf$Session()
-    hello = tf$constant('Hello, TensorFlow!')
+    hello = tf$constant("Hello, TensorFlow!")
     sess$run(hello)
   }, silent = FALSE)
   if (class(res)[1L] == "try-error") return(FALSE)
@@ -37,6 +36,7 @@ rlr_test_if_tensorflow_works = function() {
 rlr_test_if_gym_works = function() {
   res <- try({
     gym = reticulate::import("gym")
+    gym.sp = reticulate::import("gym.spaces")
     gym$logger$set_level(40)  # supress warning
     gym$logger$setLevel(40)
     genv = gym$make("CartPole-v0")
@@ -46,33 +46,53 @@ rlr_test_if_gym_works = function() {
   return(TRUE)
 }
 
-#' @title  Install dependencies
-#' @param gpu Wehter to use gpu tensorflow or not
-#' @description Install Keras dependencies, if dependencies already installed, will not re-install
-#' @return NULL
+#' @title  Check if python dependencies work
+#' @description Check if python dependencies work
+#' @return TRUE if all python dependencies work
 #' @export
-installDep = function(gpu = FALSE) {
+checkPyDep = function() {
+  flag_tensorflow = rlr_test_if_tensorflow_works()
   flag_keras = rlr_test_if_keras_works()
   flag_gym = rlr_test_if_gym_works()
-  if (gpu) {
-    if (!flag_keras) {
-      if (flag_gym) keras::install_keras(tensorflow = '1.8-gpu')
-      else keras::install_keras(tensorflow = "1.8-gpu", extra_packages = c("gym"))
-    }
-  }
-  else {
-  if (!flag_keras) {
-    if (flag_gym) keras::install_keras(tensorflow = "1.8.0")
-    else keras::install_keras(tensorflow = "1.8.0", extra_packages = c("gym"))
-  }
-  }
+  cat(sprintf("\n tensorlfow: %s, keras: %s, gym:%s\n", flag_tensorflow, flag_keras, flag_gym))
+  return(flag_tensorflow && flag_keras && flag_gym)
 }
+
+#' @title  Install dependencies into system virtual environment called r-tensorflow
+#' @param gpu If TRUE, will install gpu version of tensorflow. By default, FALSE
+#' @description Install Keras dependencies into system virtual environment called r-tensorflow
+#' @return NULL
+#' @export
+installDep2SysVirtualEnv = function(gpu = FALSE) {  # nocov start
+  cat(sprintf("\ninstalling dependencies using %s \n",  Sys.which("virtualenv")))
+  # install_keras will install tensorflow along into the virtual environment called "r-tensorflow"
+  if (gpu) keras::install_keras(method = "virtualenv", tensorflow = "1.8.0-gpu", extra_packages = c("gym"))
+  else keras::install_keras(method = "virtualenv", tensorflow = "1.8.0", extra_packages = c("gym"))
+  #reticulate::py_install()
+  # sudo pip instlal uwsgi
+  # sudo apt-get install python3-pip
+} # nocov end
+
+#' @title  Install dependencies into a conda virtual environment called r-tensorflow
+#' @param gpu If TRUE, will install gpu version of tensorflow. By default, FALSE
+#' @param conda_path The conda path in your system, default "auto" will search in system path
+#' @description Install Keras dependencies into a conda virtual environment called r-tensorflow
+#' @return NULL
+#' @export
+installDepConda = function(conda_path = "auto", gpu = FALSE) { # nocov start
+  if (conda_path == "auto") cat(sprintf("\ninstalling dependencies using %s \n", Sys.which("conda")))
+  # install_keras will install tensorflow along into the virtual environment called "r-tensorflow"
+  if (gpu) keras::install_keras(method = "conda", conda = conda_path, tensorflow = "1.8.0-gpu", extra_packages = c("gym"))
+  else keras::install_keras(method = "conda", conda = conda_path, tensorflow = "1.8.0", extra_packages = c("gym"))
+} # nocov end
+
 
 #' @title  Test if keras works
 #' @description Test if keras is installed
 #' @return TRUE if success
-#' @export 
+#' @export
 rlr_test_if_keras_works = function() {
+  requireNamespace("keras")
   res <- try({
 model <- keras_model_sequential()
 model %>% 
@@ -88,29 +108,23 @@ model %>%
 
 #' @title listAvailAgent
 #' @description List all implemented Agents
+#' @param env Environment to run the agent on.
 #' @export
-listAvailAgent = function() {
-  c("AgentDQN:Deep Q learning", "AgentFDQN:Frozen Target Deep Q Learning", "AgentDDQN: Double Deep QLearning", "AgentPG: Policy Gradient Monte Carlo", "AgentPGBaseline: Policy Gradient with Baseline", "AgentActorCritic: Actor Critic Method", "AgentDDPG: Deep Deterministic Policy Gradient for Continous Action")
+listAvailAgent = function(env) {
+  tb = list(AgentDQN = "Deep Q learning", AgentFDQN =  "Frozen Target Deep Q Learning", AgentDDQN = "Double Deep QLearning", AgentPG = "Policy Gradient Monte Carlo", AgentPGBaseline = "Policy Gradient with Baseline", AgentActorCritic = "Actor Critic Method", AgentDDPG = "Deep Deterministic Policy Gradient for Continous Action")
+  if (env$flag_continous) return(tb[7L])
+  else return(tb[1:6L])
 }
 
-#' @title listAvailEnvs
-#' @description List all environments
-#' @param check Whether to check if each environment works or not, default FALSE
+#' @title listGymEnvs
+#' @description List all Gym Environments without testing them
 #' @export
-listAvailEnvs = function(check = FALSE) {
-  envs = import("gym.envs")
+listGymEnvs = function() {
+  envs = reticulate::import("gym.envs")
   all_spec = envs$registry$env_specs
-  if (!check) return(all_spec)
-  idx = lapply(all_spec, function(spec) {
-    env = try({env = spec$make()})
-    if (class(env) == "try-error") return(FALSE)
-    flag_discrete = "n" %in% names(env$action_space)
-    flag_nonarray = FALSE
-    if ("shape" %in% names(env$action_space)) {
-      flag_nonarray = length(env$action_space$shape) == 1L
-    }
-    return(flag_discrete || flag_nonarray)
-  })
-  lapply(all_spec[which(unlist(idx))], function(x) x$id)
+  res = sapply(all_spec, function(x) x$id)
+  names(res) = NULL
+  res[7:length(res)]
 }
 #rlR.xd = function() reticulate::use_python("~/anaconda3/bin/python")
+rlR.debug = FALSE  # nocov

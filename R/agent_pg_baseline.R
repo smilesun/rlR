@@ -18,13 +18,11 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
     delta = NULL,
     list.rewards = NULL,
     initialize = function(env, conf) {
-      super$initialize(env, conf = conf)
+      super$initialize(env, conf)
       self$setBrain()
     },
 
     setBrain = function() {
-      # FIXME: do we really need to call super$setBrain?
-      # super$setBrain()
       self$task = "policy_fun"
       self$brain_actor = SurroNN$new(self, arch_list_name = "agent.nn.arch.actor")
       self$task = "value_fun"
@@ -33,8 +31,8 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
     },
 
     makeCnn = function()  {
-      if (self$task == "critic") return(makeCnnCritic(input_shape = self$stateDim, act_cnt = 1))
-      if (self$task == "actor")  return(makeCnnActor(input_shape = self$stateDim, act_cnt = self$act_cnt))
+      if (self$task == "critic") return(makeCnnCritic(input_shape = self$state_dim, act_cnt = 1))
+      if (self$task == "actor")  return(makeCnnActor(input_shape = self$state_dim, act_cnt = self$act_cnt))
     },
 
      getReplayYhat = function(batchsize) {
@@ -124,13 +122,4 @@ rlR.conf.PGBaseline = function() {
            agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.0001)", decay = 0.9, clipnorm = 5),
           agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)
           )
-}
-
-AgentPGBaseline$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.PGBaseline()
-  conf$updatePara("console", console)
-  env = makeGymEnv(sname)
-  agent = makeAgent("AgentPGBaseline", env, conf)
-  perf = agent$learn(iter)
-  perf
 }

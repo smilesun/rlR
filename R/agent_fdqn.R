@@ -16,6 +16,7 @@ AgentFDQN = R6::R6Class("AgentFDQN",
     brain_update = NULL,
     initialize = function(env, conf) {
       super$initialize(env, conf)
+      self$updateFreq = self$conf$get("agent.update.target.freq")
       self$setBrain()
     },
 
@@ -34,7 +35,7 @@ AgentFDQN = R6::R6Class("AgentFDQN",
 
     replay = function(batchsize) {
       self$model = self$brain_target  # use target network to generate target
-      self$getXY(batchsize)
+      self$getXY(batchsize)  # from base class
       self$brain_update$train(self$replay.x, self$replay.y)  # update the policy model
     },
 
@@ -50,36 +51,28 @@ AgentFDQN = R6::R6Class("AgentFDQN",
       self$brain_target$setWeights(uw)
     },
 
+    shouldUpdateModel = function() {
+      self$interact$global_step_len %% self$updateFreq == 0
+    },
+
+    afterStep = function() {
+      super$afterStep()
+      if (!is.null(self$updateFreq)) {
+        if (self$shouldUpdateModel()) {
+          self$updateModel()
+        }
+      }
+    },
+
     afterEpisode = function(interact) {
       super$afterEpisode(interact)
-      self$updateModel()
+      if (is.null(self$updateFreq)) {
+        # ("\nupdating model\n"))
+        self$updateModel()
+      }
     }
   )
 )
 rlR.conf.FDQN = function() {
   rlR.conf.DQN()
-}
-
-AgentFDQN$test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
-  conf = rlR.conf.FDQN()
-  conf$updatePara("console", console)
-  conf$updatePara("render", render)
-  interact = makeGymExperiment(sname = sname, aname = "AgentFDQN", conf = conf)
-  perf = interact$run(iter)
-  return(perf)
-  #
-  env = makeGymEnv(sname)
-  agent = makeAgent("AgentFDQN", env)
-  agent$updatePara(console = console, render = render)
-  agent$learn(iter)
-
-}
-
-AgentFDQN$testCnn = function(iter = 5000, render = TRUE) {
-  conf = getDefaultConf("AgentFDQN")
-  #@Note: one episode of pong is around 300 steps
-  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-2.2 / 1e6), policy.minEpsilon = 0.1, agent.start.learn = 50L, replay.mem.size = 1e6, log = FALSE)
-  env = makeGymEnv("Pong-v0", act_cheat = c(2, 3), repeat_n_act = 4, observ_stack_len = 2L)
-  agent = makeAgent("AgentFDQN", env, conf)
-  perf = agent$learn(iter)
 }

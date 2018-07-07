@@ -32,15 +32,15 @@ ReplayMem = R6::R6Class("ReplayMem",
     },
 
     add = function(ins) {
-      pos = (self$len + 1L) %% self$capacity
-      if (pos == 0) pos = self$capacity
-      self$samples[[pos]] = ins
+      pos = (self$len + 1L) %% self$capacity   # self$len can be bigger than capacity
+      if (pos == 0) pos = self$capacity  # boundary case if modulo is zero, put new entry at last position
+      self$samples[[pos]] = ins  # add samples
       self$len = self$len + 1L  # can be bigger than capacity
       self$size = length(self$samples)
     },
 
     afterEpisode = function(interact) {
-      # do nothing
+      cat(sprintf("replaymem size GB:%s \n", as.numeric(object.size(self$samples)) / (1024^3)))
     },
 
     afterStep = function() {
@@ -65,12 +65,17 @@ ReplayMemUniform = R6::R6Class("ReplayMemUniform",
 ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
   inherit = ReplayMemUniform,
   public = list(
-
-    stackArray = function(temp) {
-      arr = simplify2array(temp)
-      mdim = dim(arr)
-      norder = length(mdim)
-      aperm(arr, c(norder, 1:(norder - 1)))
+    getIdxMap = function (x) {
+      if (self$len <= self$capacity) {
+        return(1L:self$len)
+      }
+      pos = self$len %% self$capacity
+      if (pos == 0L) {
+        return(1L:self$len)
+      }
+      istart = pos + 1L
+      iend = pos
+      return(c(istart:self$capacity, 1L:iend))
     },
 
     add = function(ins) {
@@ -84,18 +89,28 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
       k = min(k, self$size)
       #FIXME: the replayed.idx are not natural index, but just the position in the replay memory
       sidx = self$observ_stack_len + 1L
+      if (length(sidx:self$size) < k) {
+        stop("not enough samples in memory")
+      }
+      idx_map = self$getIdxMap()
       self$replayed.idx = sample(sidx:self$size)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) {
         look_back = self$observ_stack_len
-        res = self$samples[[x]]
+        res = self$samples[[idx_map[x]]]
         step_idx = ReplayMem$extractStep(res)
         ss = step_idx - sidx
+        newpos = x
+        # if at the beginning of an episode, either go forward or go backward to the last episode
         if (ss <= 0) {
-          res = self$samples[[x - ss]]
-          x = x - ss
+          newpos = x - ss   # first try to go forward to later steps
+          # if at the begin of the episode but at the end of the replay memory
+          if (newpos > self$size) {
+            newpos = x - step_idx - 1L
+          }
+          res = self$samples[[idx_map[newpos]]]
         }
-        vor = (x - look_back + 1L)
-        adj = self$samples[vor:x]
+        vor = (newpos - look_back + 1L)
+        adj = self$samples[idx_map[vor:newpos]]
         list_state_new = lapply(adj, function(x) {
           x$state.new
         })
@@ -103,9 +118,7 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
           x$state.old
         })
         #NOTE: ideally we want to extend the order of the tensor, but keras dense only works with 1d data and conv layer only works with 2d, so an alternative is to stack the array
-        #res$state.new = self$stackArray(list_state_new)
         res$state.new = abind::abind(list_state_new)
-        #res$state.old = self$stackArray(list_state_old)
         res$state.old = abind::abind(list_state_old)
         res
       })
@@ -152,7 +165,7 @@ ReplayMemOnline = R6::R6Class("ReplayMemOnline",
 makeReplayMem = function(name, agent, conf) {
   all = getNamespaceExports("rlR")
   mem.idx = which(sapply(all, function(x) grepl("ReplayMem", x)))
-  #assert(paste0("ReplayMem", name) %in% all[mem.idx])
+  # assert(paste0("ReplayMem", name) %in% all[mem.idx])
   tex = sprintf("ReplayMem%s$new(agent = agent, conf = conf)", name)
   mem = eval(parse(text = tex))
   return(mem)

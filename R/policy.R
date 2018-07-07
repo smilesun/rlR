@@ -12,6 +12,9 @@ Policy = R6::R6Class("Policy",
     random.action = NULL,
     flag_epsilon_decay_perStep = NULL,
     softmax_magnify = NULL,
+    decay_type = NULL,
+    decayEpsilon = NULL,
+    total_aneal_step = NULL,
     initialize = function(host) {
       self$random_cnt = 0L
       self$host = host
@@ -19,6 +22,11 @@ Policy = R6::R6Class("Policy",
       self$logdecay = log(self$decay)
       self$minEpsilon = self$host$conf$get("policy.minEpsilon")
       self$maxEpsilon = self$host$conf$get("policy.maxEpsilon")
+      self$decay_type = self$host$conf$get("policy.decay.type")
+      self$total_aneal_step = self$host$conf$get("policy.aneal.steps")
+      if (self$decay_type == "geometric1") self$decayEpsilon = self$decayEpsilonGeo1
+      else if (self$decay_type == "geometric2") self$decayEpsilon = self$decayEpsilonGeo2
+      else self$decayEpsilon = self$decayEpsilonLinear
       self$epsilon = self$maxEpsilon
       self$gstep.idx = 1
       self$softmax_magnify = self$host$conf$get("policy.softmax.magnify")
@@ -41,16 +49,21 @@ Policy = R6::R6Class("Policy",
         self$random_cnt = 0L
     },
 
-    decayEpsilon = function() {
+    decayEpsilonGeo1 = function() {
         temp = self$epsilon * self$decay
         self$epsilon = max(temp, self$minEpsilon)
     },
 
-    # not using currently
-    decayEpsilon2 = function() {
+    decayEpsilonGeo2 = function() {
         self$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(self$logdecay * self$gstep.idx)
         self$gstep.idx = self$gstep.idx + 1L
     },
+
+    decayEpsilonLinear = function() {
+        self$epsilon =  self$maxEpsilon - (self$gstep.idx / self$total_aneal_step) * (self$maxEpsilon - self$minEpsilon)
+        self$gstep.idx = self$gstep.idx + 1L
+    },
+
 
     afterEpisode = function() {
     }

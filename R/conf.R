@@ -25,7 +25,6 @@ RLConf = R6::R6Class("RLConf",
       #dns = setdiff(names(par.list), rlR.conf.default)
       #list.default = setNames(lapply(dns, function(x) self$static[[x]]), dns)
       self$set(...)
-      #self$ps()
     },
 
     get = function(name) {
@@ -47,38 +46,16 @@ RLConf = R6::R6Class("RLConf",
       self$static[[str.para]] = val.value
     },
 
-    ps = function() {
-      cat("parameters: \n")
+    show = function() {
       list_param = self$static
       dns = names(list_param)
       ## remove agent.nn
       flag = sapply(dns, function(x) grepl("agent.nn", x))
       dns = dns[-which(flag)]
-      lapply(dns, function(x) cat(sprintf("-%s: %s- %s-\n", x, {
-            ns = names(self$static[[x]])
-            if (is.null(ns)) ns = ""
-            ns
-        }, self$static[[x]])))
-    },
-
-    register = function(namespace) {
-      # register namespace
-      if (namespace %in% names(self$static)) return(FALSE)
-      self$static[[namespace]] = list()
-      return(TRUE)
-    },
-
-    attachname = function(namespace, list.input) {
-      # attach a new subspace of parameters
-      if (namespace %in% names(self$static)) return(FALSE)
-      self$static[[namespace]] = list.input
-      return(TRUE)
-    },
-
-    fetchConf = function(namespace) {
-      if (namespace %nin% names(self$static))  stop("configuration namespace does not exist")
-      if (is.null(self$static[[namespace]])) stop("configuration namespace empty!")
-      return(self$static[[namespace]])
-    }
-  )
+      list_conf = lapply(dns, function(x) self$static[[x]])
+      names(list_conf) = dns
+      df = as.data.frame(unlist(list_conf))
+      colnames(df) = "value"
+      df
+    })
 )

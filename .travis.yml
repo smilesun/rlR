@@ -25,18 +25,24 @@ env:
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
 r:
-- devel
-- release
+  - devel
+  - release
+r_packages:
+  - covr
+  - devtools
 r_github_packages:
-- jimhester/covr
-- hadley/pkgdown
-- rstudio/keras
+  - codecov/example-r
+  - r-lib/covr
+  - hadley/pkgdown
+  - rstudio/keras
 before_script:
-- R --no-save <<< 'library("devtools"); document()'
-- R --no-save <<< 'library("tensorflow"); install_tensorflow()'
-- R --no-save <<< 'library("keras"); install_keras()'
+  - R --no-save <<< 'library("devtools"); document()'
+  - R --no-save <<< 'library("tensorflow"); install_tensorflow()'
+  - R --no-save <<< 'library("keras"); install_keras()'
 after_success:
-- 'if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_R_VERSION_STRING" == "release" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
+  - Rscript -e 'covr::codecov()'
+  - Rscript -e "covr::coveralls()"
+  - 'if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_R_VERSION_STRING" == "release" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
     R --no-save <<< "devtools::install(); pkgdown::build_site()";
     git checkout master;
     export TRAVIS_COMMIT_MSG="$(git log --format=%B --no-merges -n 1)";
@@ -52,6 +58,6 @@ after_success:
     git commit man DESCRIPTION NAMESPACE README.md docs -m "update auto-generated documentation [ci skip]" -m "$TRAVIS_COMMIT_MSG" || true;
     git push;
   fi;'
-- 'if [[ "$TRAVIS_R_VERSION_STRING" == "devel" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
+  - 'if [[ "$TRAVIS_R_VERSION_STRING" == "devel" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
     Rscript -e "covr::coveralls()";
   fi;'

@@ -194,7 +194,8 @@ Performance = R6::R6Class("Performance",
     afterEpisode = function() {
       self$agent$interact$idx.episode = self$agent$interact$idx.episode + 1L
       self$agent$interact$glogger$log.nn$info("Episode: %i, steps:%i\n", self$agent$interact$idx.episode, self$agent$interact$idx.step)
-      self$agent$interact$toConsole("Episode: %i finished with steps:%i \n", self$agent$interact$idx.episode, self$agent$interact$idx.step)
+      rewards = sum(self$r.vec.epi[1L:self$agent$interact$idx.step])
+      self$agent$interact$toConsole("Episode: %i finished with steps:%i, rewards:%f global step %i \n", self$agent$interact$idx.episode, self$agent$interact$idx.step, rewards, self$agent$interact$global_step_len)
       self$epi.idx = self$epi.idx + 1L
       self$list.reward.epi[[self$epi.idx]] = vector(mode = "list")
       self$list.reward.epi[[self$epi.idx]] = self$r.vec.epi[1L:self$agent$interact$idx.step]   # the reward vector
@@ -207,6 +208,5 @@ Performance = R6::R6Class("Performance",
         self$list_models[[len + 1L]] = self$agent$model$clone(deep = TRUE)
       }
     }
-    ),
-  private = list(),
-  active = list())
+    )
+)

@@ -2,30 +2,52 @@
 [![Coverage Status](https://coveralls.io/repos/github/smilesun/rlR/badge.svg?branch=master)](https://coveralls.io/github/smilesun/rlR?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/d0oyb358bh3e8r7r?svg=true)](https://ci.appveyor.com/project/smilesun/rlr)
 
-
-
-
-# rlR: Reinforcement learning in R
+# rlR: Deep Reinforcement learning in R
 
 ## Installation
 ```{r eval = FALSE}
+devtools::install_github("smilesun/rlR")
+```
+or 
+
+```{r eval = FALSE}
 devtools::install_github("smilesun/rlR", dependencies = TRUE)
 ```
+To run the examples,  you need to have Python3 Package `tensorflow-1.8.0`, `keras-2.1.6`, `gym-0.10.5` installed in the **same** python package path. Other versions might also work but not tested.
+
+If not, install the above three python packages or:
+
+For Unix user
+- Ensure that you have **either** of the following available
+  - Python3 Virtual Environment: `{python eval=F}pip install virtualenv`
+  - Anaconda
+- Install dependencies through `{r eval=F} rlR::installDep2SysVirtualEnv(gpu = FALSE)` if you have python virtualenv available or `{r eval=FALSE} rlR::installDepConda(gpu = FALSE)` if you have anaconda available.
+
+
+For Windows user
+- Ensure that you have Anaconda available.
+- Install dependencies through `{r eval=FALSE} rlR::installDepConda(gpu = FALSE)` 
 
 ## Usage
 ```{r}
 library(rlR)
-showDefaultConf()
-env = makeGymEnv("CartPole-v0")
-listAvailAgent()
+listGymEnvs()[1L:10L]
+env = makeGymEnv("CartPole-v1")
+env$overview()
+listAvailAgent(env)
 ```
 
-```{r eval=FALSE, fig.path="inst/figures"}
-conf = getDefaultConf("AgentDQN")
+```{r eval=TRUE}
+conf = getDefaultConf("AgentFDQN")
+conf$show()
 conf$set(render = FALSE, console = FALSE)
-agent = makeAgent("AgentDQN", env, conf)
-system.time({
- perf = agent$learn(150)
-})
- perf$plot()
+```
+
+```{r learn, eval=FALSE}
+agent = makeAgent("AgentFDQN", env, conf)
+perf = agent$learn(200L)
+```
+
+```{r mplot, eval=FALSE,fig.path="inst/figures/", warning=FALSE, message=FALSE}
+perf$plot()
 ```

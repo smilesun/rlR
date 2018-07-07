@@ -13,8 +13,10 @@ SurroNN = R6::R6Class("SurroNN",
       self$agent = agent
       self$act_cnt = self$agent$act_cnt
       self$custom_flag = FALSE
-      if ("act_cnt" %in% names(par_list)) self$act_cnt = par_list[["act_cnt"]]
-      self$stateDim = self$agent$stateDim
+      if ("act_cnt" %in% names(par_list)) {
+        self$act_cnt = par_list[["act_cnt"]]
+      }
+      self$state_dim = self$agent$state_dim
       self$conf = self$agent$conf
       if (!is.null(self$conf)) {
         self$arch.list = self$conf$get(arch_list_name)
@@ -27,23 +29,18 @@ SurroNN = R6::R6Class("SurroNN",
 
     initNetworkCreator = function() {
       if (self$agent$env$flag_cnn) {
-        #model = self$agent$makeCnn()
-        #return(model)
-        self$agent$network_build_funs[["policy_fun"]]  = function(stateDim, act_cnt) {
-          makeCnnActor(input_shape = stateDim, act_cnt = act_cnt)
+        self$agent$network_build_funs[["policy_fun"]]  = function(state_dim, act_cnt) {
+          makeCnnActor(input_shape = state_dim, act_cnt = act_cnt)
         }
-        self$agent$network_build_funs[["value_fun"]] = function(stateDim, act_cnt) {
-          makeCnnCritic(input_shape = stateDim, act_cnt = act_cnt)
+        self$agent$network_build_funs[["value_fun"]] = function(state_dim, act_cnt) {
+          makeCnnCritic(input_shape = state_dim, act_cnt = act_cnt)
         }
       } else {
-        # FIXME: currently if there are order of 2 tensor, the dense network has problem?
-        # model = makeKerasModel(input_shape = self$stateDim, output_shape = self$act_cnt, arch.list = self$arch.list)
-        # return(model)
-        self$agent$network_build_funs[["value_fun"]] = function(stateDim, act_cnt) {
-          makeKerasModel(input_shape = stateDim, output_shape = act_cnt, arch.list = self$arch.list)
+        self$agent$network_build_funs[["value_fun"]] = function(state_dim, act_cnt) {
+          makeKerasModel(input_shape = state_dim, output_shape = act_cnt, arch.list = self$arch.list)
         }
-        self$agent$network_build_funs[["policy_fun"]] = function(stateDim, act_cnt) {
-          makeKerasModel(input_shape = stateDim, output_shape = act_cnt, arch.list = self$arch.list)
+        self$agent$network_build_funs[["policy_fun"]] = function(state_dim, act_cnt) {
+          makeKerasModel(input_shape = state_dim, output_shape = act_cnt, arch.list = self$arch.list)
         }
       }
 
@@ -55,7 +52,7 @@ SurroNN = R6::R6Class("SurroNN",
         return(model)
       }
       self$initNetworkCreator()
-      do.call(self$agent$network_build_funs[[self$agent$task]], args = list(stateDim = self$stateDim, act_cnt = self$act_cnt))
+      do.call(self$agent$network_build_funs[[self$agent$task]], args = list(state_dim = self$state_dim, act_cnt = self$act_cnt))
     },
 
     # calculate gradients with respect to input arm instead of weights

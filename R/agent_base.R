@@ -30,13 +30,15 @@ AgentArmed = R6::R6Class("AgentArmed",
     # constructor init
     task = NULL,  # string either critic or actor
     replay_delta = NULL,
+    updateFreq = NULL,  # how often you should update the model
     lr_decay = NULL,
     interact = NULL,
+    clip_td_err = NULL,
     mem = NULL,  # replay memory
     advantage = NULL,
     list.acts = NULL,
     act_cnt = NULL,
-    stateDim = NULL,
+    state_dim = NULL,
     conf = NULL,
     vec.arm.q = NULL,      # store Q value for each arm
     # built from conf
@@ -71,20 +73,22 @@ AgentArmed = R6::R6Class("AgentArmed",
     initializeEnv = function(env) {
       self$env = env
       self$act_cnt =  env$act_cnt
-      self$stateDim = env$state_dim
+      self$state_dim = env$state_dim
       self$vec.arm.q = vector(mode = "numeric", length = self$act_cnt)
     },
 
     # user creation of brain from outside
     customizeBrain = function(policy_fun = NULL, value_fun = NULL) {
        if (!is.null(policy_fun)) {
-          checkCustomNetwork(policy_fun, self$stateDim, self$act_cnt)
+          checkCustomNetwork(policy_fun, self$state_dim, self$act_cnt)
           self$network_build_funs[["policy_fun"]] = policy_fun
        }
        if (!is.null(value_fun)) {
-          checkCustomNetwork(value_fun, self$stateDim, self$act_cnt)
+          checkCustomNetwork(value_fun, self$state_dim, self$act_cnt)
           self$network_build_funs[["value_fun"]] = value_fun
        }
+       #NOTE: setBrain does not exist in base class!!
+       self$setBrain()
     },
 
     # seperate initializeConf allow for reconfiguration
@@ -93,20 +97,8 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$buildConf()
     },
 
-    setConf = function(conf) {
-      self$conf = conf
-      self$buildConf()
-    },
-
-    updatePara = function(...) {
-      self$conf$set(...)
-      self$buildConf()
-      self$env$setAgent(self)   # update the observ_stack_len parameter
-      self$setBrain()  # if the updated parameter ever changed the nn structure
-    },
-
     loginfo = function(str, ...) {
-      self$glogger$log.nn$info(str, ...)
+      self$glogger$log.nn$info(str, ...)  # nocov
     },
 
     createInteract = function(rl.env) {
@@ -119,19 +111,15 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$epochs = self$conf$get("replay.epochs")
       self$lr_decay = self$conf$get("agent.lr.decay")
       self$replay.freq = self$conf$get("replay.freq")
-      # object
+      self$clip_td_err = self$conf$get("agent.clip.td")
       memname = self$conf$get("replay.memname")
       self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
       policy_name = self$conf$get("policy.name")
       self$policy = makePolicy(policy_name, self)
       self$glogger = RLLog$new(self$conf)
       self$createInteract(self$env)  # initialize after all other members are initialized!!
-      self$setBrain()
+      self$setBrain()  #NOTE: setBrain does not exist for base class!
     },
-
-    # setBrain = function() {
-    ## do nothing
-    # },
 
     # transform observation to  the replay memory
     observe = function(interact) {
@@ -147,9 +135,10 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$mem$add(ins)
     },
 
-    extractTarget = function(ins) {
-      stop("not implemented")
-    },
+    #     extractTarget = function(ins) {
+    #       stop("not implemented")
+    #     },
+    # 
 
     setAdvantage = function(adv) {
       self$advantage = adv
@@ -198,11 +187,11 @@ AgentArmed = R6::R6Class("AgentArmed",
         self$replay_delta = apply(diff_table, 1, mean)
     },
 
+    # in video, states are stacked together with previous frame in Env implementation, so replay-mem becomes indepedent
     act = function(state) {
       checkmate::assert_array(state)
-      # in video, state could be stacked together with previous frame
-      self$evaluateArm(state)  # calculation will be used for the policy to decide which arm to use
-      act = self$policy$act(state)  # returning the chosen action
+      self$evaluateArm(state)
+      act = self$policy$act(state)
       return(act)
     },
 
@@ -220,10 +209,3 @@ AgentArmed = R6::R6Class("AgentArmed",
     }
   ) # public
 )
-    #'   \item{continue(new_env, iter)}{[\code{function}] \cr Continue with a new environment new_env for iter number of episodes}
-    # continue = function(new_env, iter) {
-    #   self$mem$reset()  ##clean memory
-    #   self$interact = Interaction$new(rl.env = new_env, rl.agent = self)
-    #   self$interact$run(maxiter = iter)
-    # }
-
