@@ -32,9 +32,9 @@ ReplayMem = R6::R6Class("ReplayMem",
     },
 
     add = function(ins) {
-      pos = (self$len + 1L) %% self$capacity
-      if (pos == 0) pos = self$capacity
-      self$samples[[pos]] = ins
+      pos = (self$len + 1L) %% self$capacity   # self$len can be bigger than capacity
+      if (pos == 0) pos = self$capacity  # boundary case if modulo is zero, put new entry at last position
+      self$samples[[pos]] = ins  # add samples
       self$len = self$len + 1L  # can be bigger than capacity
       self$size = length(self$samples)
     },
@@ -65,14 +65,19 @@ ReplayMemUniform = R6::R6Class("ReplayMemUniform",
 ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
   inherit = ReplayMemUniform,
   public = list(
+    getIdxMap = function (x) {
+      if (self$len <= self$capacity) {
+        return(1L:self$len)
+      }
+      pos = self$len %% self$capacity
+      if (pos == 0L) {
+        return(1L:self$len)
+      }
+      istart = pos + 1L
+      iend = pos
+      return(c(istart:self$capacity, 1L:iend))
+    },
 
-    #     stackArray = function(temp) {
-    #       arr = simplify2array(temp)
-    #       mdim = dim(arr)
-    #       norder = length(mdim)
-    #       aperm(arr, c(norder, 1:(norder - 1)))
-    #     },
-    # 
     add = function(ins) {
       mdim = self$agent$env$state_dim[1L:2L]
       ins$state.old = array_reshape(ins$state.old[, , 1L], c(mdim, 1L))
@@ -84,24 +89,28 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
       k = min(k, self$size)
       #FIXME: the replayed.idx are not natural index, but just the position in the replay memory
       sidx = self$observ_stack_len + 1L
+      if (length(sidx:self$size) < k) {
+        stop("not enough samples in memory")
+      }
+      idx_map = self$getIdxMap()
       self$replayed.idx = sample(sidx:self$size)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) {
         look_back = self$observ_stack_len
-        res = self$samples[[x]]
+        res = self$samples[[idx_map[x]]]
         step_idx = ReplayMem$extractStep(res)
         ss = step_idx - sidx
-        # if at the beginning of an episode
+        newpos = x
+        # if at the beginning of an episode, either go forward or go backward to the last episode
         if (ss <= 0) {
-          goforward = x - ss
+          newpos = x - ss   # first try to go forward to later steps
           # if at the begin of the episode but at the end of the replay memory
-          if (goforward > self$size) {
-            goforward = x - step_idx - 1L
+          if (newpos > self$size) {
+            newpos = x - step_idx - 1L
           }
-          res = self$samples[[goforward]]
-          x = goforward
+          res = self$samples[[idx_map[newpos]]]
         }
-        vor = (x - look_back + 1L)
-        adj = self$samples[vor:x]
+        vor = (newpos - look_back + 1L)
+        adj = self$samples[idx_map[vor:newpos]]
         list_state_new = lapply(adj, function(x) {
           x$state.new
         })
