@@ -27,12 +27,12 @@ env:
 r:
   - devel
   - release
+install:
+  - Rscript -e "devtools::install_version('covr', '3.0.1')"
 r_packages:
-  - covr
   - devtools
 r_github_packages:
   - codecov/example-r
-  - r-lib/covr
   - hadley/pkgdown
   - rstudio/keras
 before_script:
