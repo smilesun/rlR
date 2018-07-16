@@ -31,7 +31,7 @@ Imports:
     plotly,
     crosstalk,
     shiny,
-    shinythemes
+    shinythemes,
     imager,
     magrittr,
     abind

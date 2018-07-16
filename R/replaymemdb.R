@@ -52,7 +52,7 @@ ReplayMemDB = R6::R6Class(
 
     mkInst = function(state.old, action, reward, state.new, done, info) {
       # transform/compress states into single string for DB entry
-      if (length(self$agent$stateDim) == 1) {
+      if (length(self$agent$state_dim) == 1) {
         state.old %<>% paste(collapse = "_")
         state.new %<>% paste(collapse = "_")
       } else {
@@ -111,11 +111,11 @@ ReplayMemDB = R6::R6Class(
 
       str_to_array = function(string) {
 
-        if (length(self$agent$stateDim) == 1) {
+        if (length(self$agent$state_dim) == 1) {
           strsplit(string, "_")[[1]] %>%
             as.numeric() %>%
             array()
-        } else if (length(self$agent$stateDim) %in% 2:4) {
+        } else if (length(self$agent$state_dim) %in% 2:4) {
           change_storage = function(y) {storage.mode(y) <- "integer"; y}
           (
             string %>%
@@ -157,7 +157,7 @@ ReplayMemDB = R6::R6Class(
     # mp4 file is compressed -> information loss -> only makes sense for human eyes
     createReplayVideo = function(name, start_state_id = 1, end_state_id, framerate = 25) {
       # check if the mp4 file doesn't exist - otherwise ffmpeg will make issues
-      if (length(self$agent$stateDim) == 1) {
+      if (length(self$agent$state_dim) == 1) {
         stop("State data format is not suitable for video creation")
 
       } else if (!file.exists( paste0(getwd(), "/replay_", name, ".mp4")) ) {
