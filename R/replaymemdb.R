@@ -126,7 +126,8 @@ ReplayMemDB = R6::R6Class(
               as.raw %>%       # make it readable as PNG
               (png::readPNG) * 255
           ) %>%
-          change_storage
+          change_storage %>%
+          array(dim = self$agent$state_dim) # this is necessary if state_dim has shape x1 x2 1
         }
       }
 
