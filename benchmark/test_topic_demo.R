@@ -23,7 +23,7 @@ AgentDQN_test_MountainCar = function(iter = 1000L, sname = "CartPole-v0", render
   mfun = function(state_dim, act_cnt) {
     requireNamespace("keras")
     model = keras::keras_model_sequential()
-      model %>% 
+      model %>%
         layer_dense(units = 10, activation = "relu", input_shape = c(state_dim)) %>%
         layer_dropout(rate = 0.25) %>%
         layer_dense(units = act_cnt, activation = "linear")
@@ -127,8 +127,8 @@ AgentFDQN_testReplayEfficientCnn = function() {
   sname = "KungFuMaster-v0"
   conf = getDefaultConf("AgentFDQN")
   #@Note: one episode of pong is around 300 steps
-  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "Efficient", render = TRUE, policy.decay = exp(-0.005), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1e6, log = FALSE, agent.update.target.freq = 10000L, agent.clip.td = TRUE, policy.decay.type = "linear")
-  env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 4L)
+  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "Efficient", render = TRUE, policy.decay = exp(-0.01), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1e6, log = FALSE, agent.update.target.freq = 10000L, agent.clip.td = TRUE, policy.decay.type = "linear")
+  env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 1L)
   agent = makeAgent("AgentFDQN", env, conf)
   perf = agent$learn(5000L)
 }
@@ -186,8 +186,8 @@ rlR.demo = function() {
 mfun_val = function(state_dim, act_cnt) {
 requireNamespace("keras")
     model = keras::keras_model_sequential()
-      model %>% 
-        layer_dense(units = 512, activation = "relu", 
+      model %>%
+        layer_dense(units = 512, activation = "relu",
           input_shape = c(state_dim)) %>%
         layer_dropout(rate = 0.25) %>%
         layer_dense(units = act_cnt,
@@ -200,7 +200,7 @@ requireNamespace("keras")
 mfun_policy = function(state_dim, act_cnt) {
     requireNamespace("keras")
     model = keras::keras_model_sequential()
-      model %>% 
+      model %>%
         layer_dense(units = 512, activation = "relu",
           input_shape = c(state_dim)) %>%
         layer_dropout(rate = 0.25) %>%

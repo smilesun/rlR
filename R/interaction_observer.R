@@ -80,6 +80,7 @@ Interaction = R6::R6Class("Interaction",
             self$continue.flag = FALSE
           }
         }
+        gc()
     },
 
     notify = function(name) {

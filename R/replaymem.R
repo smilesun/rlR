@@ -42,6 +42,7 @@ ReplayMem = R6::R6Class("ReplayMem",
 
     afterEpisode = function(interact) {
       cat(sprintf("replaymem size GB:%s \n", as.numeric(object.size(self$samples)) / (1024^3)))
+      # cat(sprintf("%s\n", pryr::object_size(self$samples)))
     },
 
     afterStep = function() {
