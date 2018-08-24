@@ -20,7 +20,8 @@ EnvGym = R6::R6Class("EnvGym",
     # observ_stack_len is the number of observations one should stack
     # observ_stack_len is set here since the Env should return the same dimension to the agent.
     # replaymem$sample.fun has to be changed if observ_stack is to be used.
-    initialize = function(genv, name, state_preprocess = list(fun = identity, dim = NULL), act_cheat = NULL, ok_reward = NULL, ok_step = NULL, repeat_n_act = 1L, observ_stack_len = 1L) {
+    # subsample_dim: the size of image after subsampling
+    initialize = function(genv, name, state_preprocess = list(fun = identity, dim = NULL), act_cheat = NULL, ok_reward = NULL, ok_step = NULL, repeat_n_act = 1L, observ_stack_len = 1L, subsample_dim = c(61L, 80L, 1L)) {
       self$flag_stack_frame = FALSE
       self$state_cache = vector(mode = "list", observ_stack_len)
       self$observ_stack_len = observ_stack_len
@@ -53,6 +54,9 @@ EnvGym = R6::R6Class("EnvGym",
       # FIXME: this should be set by user
       if (self$flag_cnn) {
         self$flag_stack_frame = TRUE
+        # since which("NOOP" == env$env$unwrapped$get_action_meanings()) will always generate 1
+        self$act_cheat = 1L:(self$act_cnt - 1L)
+        self$act_cnt = self$act_cnt - 1L
       }
       self$old_dim = self$state_dim
       self$preprocess_dim  = ifelse(is.null(state_preprocess$dim), self$old_dim, state_preprocess$dim)
@@ -60,9 +64,9 @@ EnvGym = R6::R6Class("EnvGym",
       # since two frames can be taken difference automatically by DNN and DNN only handles order-3D array
       #FIXME: by default, rlR handles up to order 3 tensor: RGB IMAGE. Might need to change in future
       if (self$flag_stack_frame) {
-        self$state_preprocess = self$pong_cheat
+        self$state_preprocess = self$subsample
         #self$preprocess_dim  = c(70L, 80L, 1L)
-        self$preprocess_dim  = c(61L, 80L, 1L)
+        self$preprocess_dim  = subsample_dim
       }
       if (self$observ_stack_len > 1L) {
         self$state_dim = c(self$preprocess_dim[1L:2L], self$observ_stack_len)
@@ -71,10 +75,11 @@ EnvGym = R6::R6Class("EnvGym",
       }
     },
 
-    pong_cheat = function(state) {
+    subsample = function(state) {
       I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
-      I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]
+      I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
       res = array_reshape(I, c(dim(I), 1L))
+      res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
       return(res)
     },
 

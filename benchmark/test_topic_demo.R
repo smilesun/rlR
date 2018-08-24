@@ -144,7 +144,7 @@ AgentFDQN_testReplayEfficientCnn = function() {
     log = FALSE,
     agent.update.target.freq = 3e3L,
     agent.clip.td = TRUE,
-    policy.decay.type = "linear",
+    policy.decay.type = "decay_linear",
     policy.aneal.steps = 1e4)
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 1L)
   # state_preprocess = list(fun = identity, dim = NULL)
