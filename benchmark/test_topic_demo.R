@@ -124,19 +124,36 @@ AgentFDQN_testReplayCnn = function() {
 # target network update frequency: 1e4
 # discount factor: 0.99
 AgentFDQN_testReplayEfficientCnn = function() {
+  library(rlR)
   sname = "KungFuMaster-v0"
   conf = getDefaultConf("AgentFDQN")
   #@Note: one episode of pong is around 300 steps
-  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "Efficient", render = TRUE, policy.decay = exp(-0.01), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1e6, log = FALSE, agent.update.target.freq = 10000L, agent.clip.td = TRUE, policy.decay.type = "linear")
+  conf$set(
+    replay.batchsize = 32,
+    replay.freq = 4L,
+    console = TRUE,
+    agent.lr.decay = 1,
+    agent.lr = 0.00025,
+    replay.memname = "Efficient",
+    render = TRUE,
+    policy.decay = exp(-1),
+    policy.minEpsilon = 0.1,
+    policy.maxEpsilon = 1,
+    agent.start.learn = 3e3L,
+    replay.mem.size = 1e5,
+    log = FALSE,
+    agent.update.target.freq = 3e3L,
+    agent.clip.td = TRUE,
+    policy.decay.type = "linear",
+    policy.aneal.steps = 1e4)
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 1L)
+  # state_preprocess = list(fun = identity, dim = NULL)
   agent = makeAgent("AgentFDQN", env, conf)
   perf = agent$learn(5000L)
 }
 
-
-
-AgentPG_test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE) {
-  conf = getDefaultConf("AgentPG")
+hi = function()
+{ conf = getDefaultConf("AgentPG")
   conf$set(render = render, console = TRUE)
   env = makeGymEnv(sname)
   agent = makeAgent("AgentPG", env, conf)

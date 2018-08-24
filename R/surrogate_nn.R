@@ -122,6 +122,7 @@ SurroNN = R6::R6Class("SurroNN",
     },
 
     afterEpisode = function() {
+        self$lr =  self$lr * self$agent$lr_decay
         #FIXME: adjust learning rate with dataframe nrow?
         keras::k_set_value(self$model$optimizer$lr, self$lr)
         lr = keras::k_get_value(self$model$optimizer$lr)

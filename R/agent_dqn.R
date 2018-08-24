@@ -57,21 +57,8 @@ AgentDQN = R6::R6Class("AgentDQN",
     afterEpisode = function(interact) {
           self$policy$afterEpisode()
           self$mem$afterEpisode()
-          self$brain$lr =  self$brain$lr * self$lr_decay
+          # self$brain$lr =  self$brain$lr * self$lr_decay, has moved inside self$brain$afterEpisode
           self$brain$afterEpisode()
     }
     ) # public
 )
-
-rlR.conf.DQN = function() {
-  RLConf$new(
-          render = FALSE,
-          console = FALSE,
-          log = FALSE,
-          policy.maxEpsilon = 1,
-          policy.minEpsilon = 0.01,
-          policy.decay = exp(-0.001),
-          policy.name = "ProbEpsilon",
-          replay.batchsize = 64L,
-          agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
-}
