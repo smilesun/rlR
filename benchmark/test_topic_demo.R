@@ -147,13 +147,13 @@ AgentFDQN_testReplayEfficientCnn = function() {
     policy.decay = exp(-1),
     policy.minEpsilon = 0.1,
     policy.maxEpsilon = 1,
-    agent.start.learn = 1e3L,
-    replay.mem.size = 1e5,
+    agent.start.learn = 5e4L,  # same with nature
+    replay.mem.size = 5e5,
     log = FALSE,
-    agent.update.target.freq = 5e3L,
+    agent.update.target.freq = 1e4L,  # same with nature
     agent.clip.td = TRUE,
     policy.decay.type = "decay_linear",
-    policy.aneal.steps = 1e4)
+    policy.aneal.steps = 5e5) # same with replay size
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 1L)
   # state_preprocess = list(fun = identity, dim = NULL)
   agent = makeAgent("AgentFDQN", env, conf)
