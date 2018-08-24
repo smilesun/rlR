@@ -124,6 +124,14 @@ AgentFDQN_testReplayCnn = function() {
 # target network update frequency: 1e4
 # discount factor: 0.99
 AgentFDQN_testReplayEfficientCnn = function() {
+  subsample = function(state) {
+      I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
+      I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
+      res = array_reshape(I, c(dim(I), 1L))
+      res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
+      return(res)
+  }
+
   library(rlR)
   sname = "KungFuMaster-v0"
   conf = getDefaultConf("AgentFDQN")
@@ -139,10 +147,10 @@ AgentFDQN_testReplayEfficientCnn = function() {
     policy.decay = exp(-1),
     policy.minEpsilon = 0.1,
     policy.maxEpsilon = 1,
-    agent.start.learn = 3e3L,
+    agent.start.learn = 1e3L,
     replay.mem.size = 1e5,
     log = FALSE,
-    agent.update.target.freq = 3e3L,
+    agent.update.target.freq = 5e3L,
     agent.clip.td = TRUE,
     policy.decay.type = "decay_linear",
     policy.aneal.steps = 1e4)

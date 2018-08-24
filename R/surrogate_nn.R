@@ -28,7 +28,7 @@ SurroNN = R6::R6Class("SurroNN",
     },
 
     initNetworkCreator = function() {
-      if (self$agent$env$flag_cnn) {
+      if (self$agent$env$flag_tensor) {
         self$agent$network_build_funs[["policy_fun"]]  = function(state_dim, act_cnt) {
           makeCnnActor(input_shape = state_dim, act_cnt = act_cnt)
         }

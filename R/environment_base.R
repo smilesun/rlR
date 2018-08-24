@@ -41,7 +41,7 @@ Environment = R6::R6Class("Environment",
     state_dim = NULL,
     name = NULL,
     flag_continous = NULL,
-    flag_cnn = NULL,
+    flag_tensor = NULL,
     observ_stack_len = 1L,
     agent = NULL,  # used to get access to replaymem
     initialize = function(...) {
@@ -49,7 +49,7 @@ Environment = R6::R6Class("Environment",
       self$state_dim = c(4)
       self$name = "rlR.base.env"
       self$flag_continous = FALSE
-      self$flag_cnn = FALSE
+      self$flag_tensor = FALSE
       self$observ_stack_len = 1L
     },
 
