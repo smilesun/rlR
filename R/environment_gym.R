@@ -102,7 +102,7 @@ EnvGym = R6::R6Class("EnvGym",
 
     #FIXME: put this function as a user option
     subsample = function(state) {
-      I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]  
+      I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
       I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
       res = array_reshape(I, c(dim(I), 1L))
       res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
@@ -181,7 +181,8 @@ EnvGym = R6::R6Class("EnvGym",
     overview = function() {
       cat(sprintf("\naction cnt: %s \n", toString(self$act_cnt)))
       cat(sprintf("state original dim: %s \n", toString(private$old_dim)))
-      if (private$new_dim != private$old_dim) {
+      flag_vec = private$new_dim != private$old_dim
+      if (flag_vec[1L]) {
         cat(sprintf("state dim after preprocessing: %s \n", toString(private$new_dim)))
       }
       cat(sprintf("%s\n", ifelse(self$flag_continous, "continous action", "discrete action")))
