@@ -3,9 +3,9 @@ Policy = R6::R6Class("Policy",
     epsilon = NULL,
     decay_rate = NULL,
     host = NULL,
-    minEpsilon = NULL,
-    maxEpsilon = NULL,
-    gstep.idx = NULL,
+    min_epsilon = NULL,
+    max_epsilon = NULL,
+    gstep_idx = NULL,
     action = NULL,
     random_cnt = NULL,
     random_action = NULL,
@@ -17,16 +17,16 @@ Policy = R6::R6Class("Policy",
       self$random_cnt = 0L
       self$host = host
       self$decay_rate = self$host$conf$get("policy.decay.rate")
-      self$minEpsilon = self$host$conf$get("policy.minEpsilon")
-      self$maxEpsilon = self$host$conf$get("policy.maxEpsilon")
+      self$min_epsilon = self$host$conf$get("policy.minEpsilon")
+      self$max_epsilon = self$host$conf$get("policy.maxEpsilon")
       self$decay_type = self$host$conf$get("policy.decay.type")
       self$total_aneal_step = self$host$conf$get("policy.aneal.steps")
       if (self$decay_type == "decay_geo") self$decayEpsilon = self$decayGeo
       else if (self$decay_type == "decay_exp") self$decayEpsilon = self$decayExp
       else if (self$decay_type == "decay_linear") self$decayEpsilon = self$decayEpsilonLinear
       else stop("decay type can only be 'decay_geo' or 'decay_exp' or 'decay_linear'")
-      self$epsilon = self$maxEpsilon
-      self$gstep.idx = 1
+      self$epsilon = self$max_epsilon
+      self$gstep_idx = 1
       self$softmax_magnify = self$host$conf$get("policy.softmax.magnify")
     },
 
@@ -49,19 +49,19 @@ Policy = R6::R6Class("Policy",
 
     decayGeo = function() {
         temp = self$epsilon * self$decay_rate
-        self$epsilon = max(temp, self$minEpsilon)
+        self$epsilon = max(temp, self$min_epsilon)
     },
 
     decayExp = function() {
-        self$epsilon =  self$minEpsilon + (self$maxEpsilon - self$minEpsilon) * exp(self$decay_rate * self$gstep.idx)
-        self$gstep.idx = self$gstep.idx + 1L
+        self$epsilon =  self$min_epsilon + (self$max_epsilon - self$min_epsilon) * exp(self$decay_rate * self$gstep_idx)
+        self$gstep_idx = self$gstep_idx + 1L
     },
 
     decayEpsilonLinear = function() {
-        self$epsilon =  self$maxEpsilon - (self$gstep.idx / self$total_aneal_step) * (self$maxEpsilon - self$minEpsilon)
-        # if self$gstep.idx > self$total_aneal_step
-        self$epsilon = max(self$epsilon, self$minEpsilon)
-        self$gstep.idx = self$gstep.idx + 1L
+        self$epsilon =  self$max_epsilon - (self$gstep_idx / self$total_aneal_step) * (self$max_epsilon - self$min_epsilon)
+        # if self$gstep_idx > self$total_aneal_step
+        self$epsilon = max(self$epsilon, self$min_epsilon)
+        self$gstep_idx = self$gstep_idx + 1L
     },
 
     # empty method so child class could do nothing when afterEpisode being called

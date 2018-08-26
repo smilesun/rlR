@@ -48,16 +48,15 @@ AgentDQN = R6::R6Class("AgentDQN",
     },
 
     afterStep = function() {
-        if (self$interact$idx.step %% self$replay.freq == 0) {
+        if (self$interact$step_in_episode %% self$replay.freq == 4) {
           self$replay(self$replay.size)
-          self$policy$afterStep()
         }
+        self$policy$afterStep()
     },
 
     afterEpisode = function(interact) {
           self$policy$afterEpisode()
           self$mem$afterEpisode()
-          # self$brain$lr =  self$brain$lr * self$lr_decay, has moved inside self$brain$afterEpisode
           self$brain$afterEpisode()
     }
     ) # public

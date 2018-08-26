@@ -1,0 +1,4 @@
+--ignore-dir=.Rproj.user
+--ignore-dir=docs
+--ignore-dir=man
+--ignore-dir=.Rhistory
