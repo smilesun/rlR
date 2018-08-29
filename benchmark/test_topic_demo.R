@@ -111,7 +111,7 @@ AgentFDQN_testReplayCnn = function() {
   render = TRUE
   conf = getDefaultConf("AgentFDQN")
   #@Note: one episode of pong is around 300 steps
-  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-0.005), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1000, log = FALSE, agent.update.target.freq = 1000L, agent.clip.td = TRUE, policy.decay.type = "linear")
+  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-0.005), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1000, log = FALSE, agent.update.target.freq = 1000L, agent.clip.td = TRUE, policy.decay.type = "decay_linear")
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 4L)
   agent = makeAgent("AgentFDQN", env, conf)
   perf = agent$learn(iter)
@@ -153,7 +153,7 @@ AgentFDQN_testReplayEfficientCnn = function() {
     agent.update.target.freq = 1e4L,  # same with nature
     agent.clip.td = TRUE,
     policy.decay.type = "decay_linear",
-    policy.aneal.steps = 5e5) # same with replay size
+    policy.aneal.steps = 1e5) # same with replay size
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 1L)
   # state_preprocess = list(fun = identity, dim = NULL)
   agent = makeAgent("AgentFDQN", env, conf)

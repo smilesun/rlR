@@ -16,6 +16,7 @@ EnvGym = R6::R6Class("EnvGym",
     # more elements in private is more stable, but makes debug harder
     old_dim = NULL,  # orginal dimension
     new_dim = NULL,
+    old_state = NULL,  # for video to remove flickering
     getActCnt = function() {
       if (!"n" %in% names(self$env$action_space)) {
         # if "n" is not in the names of the list, i.e. genv$action_space$n does not exist
@@ -68,7 +69,6 @@ EnvGym = R6::R6Class("EnvGym",
     ok_step = NULL,
     state_preprocess = NULL,
     act_cheat = NULL,
-    old_state = NULL,  # for video
     repeat_n_act = NULL,  # number of frames to escape
     state_cache = NULL,   # store adjacent states to stack into short history
     flag_stack_frame = NULL,
@@ -128,6 +128,10 @@ EnvGym = R6::R6Class("EnvGym",
       s_r_d_info = list_s_r_d_info[[self$repeat_n_act]]
       names(s_r_d_info) = c("state", "reward", "done", "info")
       s_r_d_info[["reward"]] = sum(rewards)
+      if (private$flag_tensor) {
+        s_r_d_info[["state"]] = mapply(max, s_r_d_info[["state"]], private$old_state)  # remove flickering
+        private$old_state = s_r_d_info[["state"]]
+      }
       s_r_d_info[["state"]] = self$state_preprocess(s_r_d_info[["state"]])  # preprocessing
       if (self$flag_stack_frame) s_r_d_info[["state"]] = self$stackLatestFrame(s_r_d_info[["state"]])
       #FIXME: might be buggy if continous space get preprocessed
@@ -152,7 +156,7 @@ EnvGym = R6::R6Class("EnvGym",
       s = self$state_preprocess(s)
       #FIXME: is this the right way to initialize old_state? reset is called at episode start?
       if (self$agent$interact$global_step_len == 0) {
-        self$old_state = s
+        private$old_state = s
         self$state_cache = lapply(1L:self$observ_stack_len, function(x) s)
       }
       if (self$flag_stack_frame) {

@@ -98,7 +98,7 @@ PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
     },
 
     afterEpisode = function() {
-      self$decayEpsilon()  # FIXME: not necessary here since we always decrease by step?
+      # self$decayEpsilon()  # FIXME: not necessary here since we always decrease by step?
       self$info()
     }
     )
@@ -152,7 +152,7 @@ PolicyPG = R6::R6Class("PolicyPG",
     },
 
     afterEpisode = function() {
-      self$decayEpsilon()
+      # self$decayEpsilon()
     }
     )
   )
