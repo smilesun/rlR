@@ -106,6 +106,7 @@ AgentFDQN_testCnn = function(sname = "KungFuMaster-v0", iter = 5000, render = TR
 
 # Test if the replay memory size does not grow after memory is full
 AgentFDQN_testReplayCnn = function() {
+  library(rlR)
   sname = "KungFuMaster-v0"
   iter = 5000
   render = TRUE
