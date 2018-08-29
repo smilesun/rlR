@@ -17,7 +17,7 @@ EnvGym = R6::R6Class("EnvGym",
     old_dim = NULL,  # orginal dimension
     new_dim = NULL,
     old_state = NULL,  # for video to remove flickering
-    getActCnt = function() {
+    initActCnt = function() {
       if (!"n" %in% names(self$env$action_space)) {
         # if "n" is not in the names of the list, i.e. genv$action_space$n does not exist
         flag_multiple_shape = length(self$env$action_space$shape) > 1L
@@ -35,7 +35,7 @@ EnvGym = R6::R6Class("EnvGym",
 
     },
 
-    getStateDim = function() {
+    initStateDim = function() {
       self$state_dim = unlist(self$env$observation_space$shape)
       if (is.null(self$state_dim)) {
         stop("Compund state space Enviroment not supported!")
@@ -72,6 +72,7 @@ EnvGym = R6::R6Class("EnvGym",
     repeat_n_act = NULL,  # number of frames to escape
     state_cache = NULL,   # store adjacent states to stack into short history
     flag_stack_frame = NULL,
+    flag_tensor = NULL,
     # act_cheat is a vector like c(5,7) which maps arm 1 to action 5 and arm 2 to action 7.
     # rendering the Pong-v0 in a ipy-notebook shows that the ball needs 20 frames to travel
     # observ_stack_len is the number of observations one should stack, but will not change the order of the state tensor
@@ -90,8 +91,8 @@ EnvGym = R6::R6Class("EnvGym",
       self$state_preprocess = state_preprocess$fun
       self$act_cheat = act_cheat
       self$repeat_n_act = repeat_n_act
-      private$getActCnt()
-      private$getStateDim()
+      private$initActCnt()
+      private$initStateDim()
     },
 
     initSubsample = function() {
@@ -128,7 +129,7 @@ EnvGym = R6::R6Class("EnvGym",
       s_r_d_info = list_s_r_d_info[[self$repeat_n_act]]
       names(s_r_d_info) = c("state", "reward", "done", "info")
       s_r_d_info[["reward"]] = sum(rewards)
-      if (private$flag_tensor) {
+      if (self$flag_tensor) {
         s_r_d_info[["state"]] = mapply(max, s_r_d_info[["state"]], private$old_state)  # remove flickering
         private$old_state = s_r_d_info[["state"]]
       }

@@ -48,7 +48,7 @@ AgentDQN = R6::R6Class("AgentDQN",
     },
 
     afterStep = function() {
-        if (self$interact$step_in_episode %% self$replay.freq == 4) {
+        if (self$interact$step_in_episode %% self$replay.freq == 0L) {
           self$replay(self$replay.size)
         }
         self$policy$afterStep()

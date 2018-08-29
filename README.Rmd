@@ -15,12 +15,12 @@ devtools::install_github("smilesun/rlR", dependencies = TRUE)
 ```
 To run the examples,  you need to have Python3 Package `tensorflow-1.8.0`, `keras-2.1.6`, `gym-0.10.5` installed in the **same** python package path. Other versions might also work but not tested.
 
-To look at all python you have
+To look at all python paths you have
 ```{r}
 reticulate::py_config()
 ```
 
-Test which is your default python by typing:
+Check which is your system default python:
 ```{r}
 Sys.which("python")
 ```

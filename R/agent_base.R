@@ -206,6 +206,10 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     learn = function(iter) {
       self$interact$run(iter)
+    },
+
+    getPerf = function() {
+      self$interact$perf$plot()
     }
   ) # public
 )
