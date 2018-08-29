@@ -72,6 +72,10 @@ rlR.conf.DQN = function() {
           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
 }
 
+rlR.conf.FDQN = function() {
+  rlR.conf.DQN()
+}
+
 rlR.conf.PG = function() {
   RLConf$new(
           render = FALSE,
@@ -116,7 +120,9 @@ getDefaultConf = function(agent_name) {
     list.conf[["AgentDDQN"]] = rlR.conf.DDQN()
     list.conf[["AgentPG"]] = rlR.conf.PG()
     list.conf[["AgentPGBaseline"]] = rlR.conf.PGBaseline()
-    return(list.conf[[agent_name]])
+    res = list.conf[[agent_name]]
+    if(is.null(res)) stop("no such configuration")
+    return(res)
 }
 
 #' @title showDefaultConf

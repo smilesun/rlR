@@ -73,6 +73,3 @@ AgentFDQN = R6::R6Class("AgentFDQN",
     }
   )
 )
-rlR.conf.FDQN = function() {
-  rlR.conf.DQN()
-}
