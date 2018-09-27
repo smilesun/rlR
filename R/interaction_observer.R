@@ -83,7 +83,7 @@ Interaction = R6::R6Class("Interaction",
               private$continue_flag = FALSE
             }
         }
-        gc()
+        #gc()
     },
 
     notify = function(name) {

@@ -43,7 +43,7 @@ ReplayMem = R6::R6Class("ReplayMem",
     },
 
     afterEpisode = function(interact) {
-      gc()
+      #gc()
       self$agent$interact$toConsole("replaymem size GB:%s \n", as.numeric(object.size(self$samples) / (1024^3)))
       # cat(sprintf("%s\n", pryr::object_size(self$samples)))
     },
@@ -98,7 +98,7 @@ ReplayMemEfficient = R6::R6Class("ReplayMem",
     },
 
     afterEpisode = function(interact) {
-      gc()
+      #gc()
       self$agent$interact$toConsole("replaymem size GB:%s \n", as.numeric(object.size(self$state_list)) / (1024^3))
     }
     )
