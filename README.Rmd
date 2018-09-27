@@ -50,13 +50,13 @@ listAvailAgent(env)
 ```
 
 ```{r eval=TRUE}
-conf = getDefaultConf("AgentFDQN")
+conf = getDefaultConf("AgentDQN")
 conf$show()
 conf$set(render = FALSE, console = FALSE)
 ```
 
 ```{r learn, eval=FALSE}
-agent = makeAgent("AgentFDQN", env, conf)
+agent = makeAgent("AgentDQN", env, conf)
 perf = agent$learn(200L)
 ```
 
