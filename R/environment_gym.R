@@ -126,9 +126,11 @@ EnvGym = R6::R6Class("EnvGym",
       }
       list_s_r_d_info = lapply(1:self$repeat_n_act, function(i) self$env$step(action)) # repeat the same choice for self$repeat_n_act times. length(list_s_r_d_info) = self$repeat_n_act
       rewards = sapply(list_s_r_d_info, function(x) x[[2L]]) # extract reward for each action repeat: the second element of each s_r_d_info return is reward
+      dones = sapply(list_s_r_d_info, function(x) x[[3]])
       s_r_d_info = list_s_r_d_info[[self$repeat_n_act]]
       names(s_r_d_info) = c("state", "reward", "done", "info")
       s_r_d_info[["reward"]] = sum(rewards)
+      s_r_d_info[["done"]] = any(dones)
       s_r_d_info[["state"]] = self$state_preprocess(s_r_d_info[["state"]])  # preprocessing
       if (self$flag_tensor) {
         s_r_d_info[["state"]] = pmax(s_r_d_info[["state"]], private$old_state)  # remove flickering

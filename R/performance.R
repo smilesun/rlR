@@ -7,7 +7,7 @@ Performance = R6::R6Class("Performance",
     rewardPerStep = NULL,
     list.stepsPerEpisode = NULL,
     list.infos = NULL,
-    epi.idx = NULL,
+    epi_idx = NULL,
     glogger = NULL,
     agent = NULL,
     r.vec.epi = NULL,
@@ -44,7 +44,7 @@ Performance = R6::R6Class("Performance",
       self$list.reward.epi = list()
       self$list.infos = list()
       self$list.discount.reward.epi = list()
-      self$epi.idx = 0L
+      self$epi_idx = 0L
       self$list.rewardPerEpisode = list()
       self$list.discountedRPerEpisode = list()
       self$list.stepsPerEpisode = list()
@@ -86,10 +86,10 @@ Performance = R6::R6Class("Performance",
 
     getAccPerf = function(interval = 100L) {
       self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))
-      epi.idx = length(self$list.rewardPerEpisode)
-      winstart = max(1L, epi.idx - interval)
+      epi_idx = length(self$list.rewardPerEpisode)
+      winstart = max(1L, epi_idx - interval)
       vec = unlist(self$list.rewardPerEpisode)
-      mean(vec[winstart:epi.idx], na.rm = TRUE)
+      mean(vec[winstart:epi_idx], na.rm = TRUE)
     },
 
     isBad = function() {
@@ -196,11 +196,11 @@ Performance = R6::R6Class("Performance",
       self$agent$interact$glogger$log.nn$info("Episode: %i, steps:%i\n", self$agent$interact$idx_episode, self$agent$interact$step_in_episode)
       rewards = sum(self$r.vec.epi[1L:self$agent$interact$step_in_episode])
       self$agent$interact$toConsole("Episode: %i finished with steps:%i, rewards:%f global step %i \n", self$agent$interact$idx_episode, self$agent$interact$step_in_episode, rewards, self$agent$interact$global_step_len)
-      self$epi.idx = self$epi.idx + 1L
-      self$list.reward.epi[[self$epi.idx]] = vector(mode = "list")
-      self$list.reward.epi[[self$epi.idx]] = self$r.vec.epi[1L:self$agent$interact$step_in_episode]   # the reward vector
-      self$list.discount.reward.epi[[self$epi.idx]] = self$computeDiscount(self$r.vec.epi[1L:self$agent$interact$step_in_episode])
-      self$list.stepsPerEpisode[[self$epi.idx]] = self$agent$interact$step_in_episode  # the number of steps
+      self$epi_idx = self$epi_idx + 1L
+      self$list.reward.epi[[self$epi_idx]] = vector(mode = "list")
+      self$list.reward.epi[[self$epi_idx]] = self$r.vec.epi[1L:self$agent$interact$step_in_episode]   # the reward vector
+      self$list.discount.reward.epi[[self$epi_idx]] = self$computeDiscount(self$r.vec.epi[1L:self$agent$interact$step_in_episode])
+      self$list.stepsPerEpisode[[self$epi_idx]] = self$agent$interact$step_in_episode  # the number of steps
       rew = self$getAccPerf(self$epiLookBack)
       self$agent$interact$toConsole("Last %d episodes average reward %f \n", self$epiLookBack, rew)
       if (self$store_model_flag) {

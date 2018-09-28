@@ -19,7 +19,7 @@ devtools::install_github("smilesun/rlR", dependencies = TRUE)
 ```
 
 ### Configure to connect to python
-To run the examples,  you need to have the pythoN PACkages `numpy-1.14.5`, `tensorflow-1.8.0`, `keras-2.1.6`, `gym-0.10.5` installed in the **same** python path. 
+To run the examples,  you need to have the python packages `numpy-1.14.5`, `tensorflow-1.8.0`, `keras-2.1.6`, `gym-0.10.5` installed in the **same** python path. 
 
 This python path can be your system default python path or a virtual environment(either system python virtual environment or anaconda virtual environment).
 
@@ -170,7 +170,7 @@ proc.time() - ptmi
 
 ```
 ##     user   system  elapsed 
-## 1825.516   37.869 1758.872
+## 1123.364   18.988 1089.296
 ```
 
 

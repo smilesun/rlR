@@ -61,10 +61,6 @@ Interaction = R6::R6Class("Interaction",
         )
     },
 
-    isEpisodeOver = function() {
-      self$s_r_done_info[[3L]]
-    },
-
     toConsole = function(str, ...) {
       do.call(self$printf, args = c(list(str = str), list(...)))
     },

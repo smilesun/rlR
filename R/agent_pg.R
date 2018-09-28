@@ -57,7 +57,7 @@ AgentPG = R6::R6Class("AgentPG",
     },
 
     getAdv = function(interact) {
-        episode.idx = interact$perf$epi.idx
+        episode.idx = interact$perf$epi_idx
         total.reward = sum(interact$perf$list.reward.epi[[episode.idx]])
         self$interact$perf$total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
         adg = interact$perf$list.discount.reward.epi[[episode.idx]]

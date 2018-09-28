@@ -29,8 +29,7 @@ r:
   - release
 r_packages:
   - devtools
-install:
-  - Rscript -e "devtools::install_version('covr', '3.0.1')"
+  - covr
 r_github_packages:
   - codecov/example-r
   - hadley/pkgdown
