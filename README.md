@@ -80,11 +80,11 @@ listGymEnvs()[1L:10L]
 ```
 
 ```
-##  [1] "CartPole-v0"              "CartPole-v1"             
-##  [3] "MountainCar-v0"           "MountainCarContinuous-v0"
-##  [5] "Pendulum-v0"              "Acrobot-v1"              
-##  [7] "LunarLander-v2"           "LunarLanderContinuous-v2"
-##  [9] "BipedalWalker-v2"         "BipedalWalkerHardcore-v2"
+##  [1] "DoubleDunk-ramDeterministic-v4" "DoubleDunk-ramDeterministic-v0"
+##  [3] "Robotank-ram-v0"                "CartPole-v0"                   
+##  [5] "CartPole-v1"                    "Asteroids-ramDeterministic-v4" 
+##  [7] "Pooyan-ram-v4"                  "Gopher-ram-v0"                 
+##  [9] "HandManipulateBlock-v0"         "Pooyan-ram-v0"
 ```
 
 ```r
@@ -123,6 +123,38 @@ listAvailAgent(env)
 ## [1] "Actor Critic Method"
 ```
 
+
+```r
+options(width=1000)
+listAvailConf()[, .(name, note, name)]
+```
+
+```
+##                         name                                                                                                                      note                     name
+##  1:                   render                                                                                    Whether to show rendering video or not                   render
+##  2:                      log                                                                             Whether to log important information on drive                      log
+##  3:                  console                                                                            Whether to enable debug info output to console                  console
+##  4:              agent.gamma                                                                             The discount factor in reinforcement learning              agent.gamma
+##  5:     agent.flag.reset.net                                                                                      Whether to reset the neural network      agent.flag.reset.net
+##  6:           agent.lr.decay                                                                        The decay factor of the learning rate at each step           agent.lr.decay
+##  7:                 agent.lr                                                                                               learning rate for the agent                 agent.lr
+##  8:        agent.store.model                                                                            whether to store the model of the agent or not        agent.store.model
+##  9: agent.update.target.freq                                                                                How often should the target network be set agent.update.target.freq
+## 10:        agent.start.learn                                                                            after how many transitions should replay begin        agent.start.learn
+## 11:            agent.clip.td                                                                                                  whether to clip TD error            agent.clip.td
+## 12:        policy.maxEpsilon                                                                                      The maximum epsilon exploration rate        policy.maxEpsilon
+## 13:        policy.minEpsilon                                                                                      The minimum epsilon exploration rate        policy.minEpsilon
+## 14:        policy.decay.rate                                                                                                            the decay rate        policy.decay.rate
+## 15:        policy.decay.type                                                        the way to decay epsion, can be decay_geo, decay_exp, decay_linear        policy.decay.type
+## 16:       policy.aneal.steps how many steps needed to decay from maximum epsilon to minmum epsilon, only valid when policy.decay.type = 'decay_linear'       policy.aneal.steps
+## 17:   policy.softmax.magnify                                                                                                                      <NA>   policy.softmax.magnify
+## 18:         replay.batchsize                                                                                                                      <NA>         replay.batchsize
+## 19:           replay.memname                                                                                                 The type of replay memory           replay.memname
+## 20:          replay.mem.size                                                                                             The size of the replay memory          replay.mem.size
+## 21:            replay.epochs                                                               How many gradient decent epochs to carry out for one replay            replay.epochs
+## 22:              replay.freq                                                                                   how many steps to wait until one replay              replay.freq
+##                         name                                                                                                                      note                     name
+```
 
 ```r
 conf = getDefaultConf("AgentDQN")
@@ -166,11 +198,6 @@ agent = makeAgent("AgentDQN", env, conf)
 ptmi = proc.time()
 perf = agent$learn(200L)
 proc.time() - ptmi
-```
-
-```
-##     user   system  elapsed 
-## 1123.364   18.988 1089.296
 ```
 
 
