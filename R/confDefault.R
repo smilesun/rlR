@@ -1,61 +1,41 @@
 # hyper-parameters range
 rlR.conf.lod = list(
-render = list(note = "Whether to show rendering video or not"),
-log = list(note = "Whether to log important information on drive"),
-console = list(note = "Whether to enable debug info output to console"),
-agent.gamma = list(note = "The discount factor in reinforcement learning"),
-agent.flag.reset.net = list(note = "Whether to reset the neural network "),  #FIXME: should be set this?
-agent.lr.decay = list(note = "The decay factor of the learning rate at each step"),  # decaying with regard to step is better since some episode can be too long 
-agent.lr = list(note = "learning rate for the agent"),
-agent.store.model = list(note = "whether to store the model of the agent or not"),  #FIXME: exclude this
-agent.update.target.freq = list(note = "How often should the target network be set"),
-agent.start.learn = list(note = "after how many transitions should replay begin"),
-agent.clip.td = list(note = "whether to clip TD error"),
-policy.maxEpsilon = list(note = "The maximum epsilon exploration rate"),
-policy.minEpsilon = list(note = "The minimum epsilon exploration rate"),
-policy.decay.rate = list(note = "the decay rate"),
-policy.decay.type = list(note = "the way to decay epsion, can be decay_geo, decay_exp, decay_linear"),
-policy.aneal.steps = list(note = "how many steps needed to decay from maximum epsilon to minmum epsilon, only valid when policy.decay.type = 'decay_linear'"),
-policy.softmax.magnify = 1,
-replay.batchsize = 64,
-replay.memname = list(range = c("Uniform"), note = "The type of replay memory"),
-replay.mem.size = list(range = "integer", note = "The size of the replay memory"),
-replay.epochs = list(range = "integer", note = "How many gradient decent epochs to carry out for one replay"),
-replay.freq = list(note = "how many steps to wait until one replay")
+render = list(name = "render", note = "Whether to show rendering video or not", value = FALSE),
+log = list(name = "log", note = "Whether to log important information on drive", value = FALSE),
+console = list(name = "console", note = "Whether to enable debug info output to console", value = FALSE),
+agent.gamma = list(name = "agent.gamma", note = "The discount factor in reinforcement learning", value = 0.99),
+agent.flag.reset.net = list(name = "agent.flag.reset.net", note = "Whether to reset the neural network ", value = TRUE),  #FIXME: should be set this?
+agent.lr.decay = list(name = "agent.lr.decay", note = "The decay factor of the learning rate at each step", value = exp(-0.001)),  # decaying with regard to step is better since some episode can be too long 
+agent.lr = list(name = "agent.lr", note = "learning rate for the agent", value = 1e-3),
+agent.store.model = list(name = "agent.store.model", note = "whether to store the model of the agent or not", value = FALSE),  #FIXME: exclude this
+agent.update.target.freq = list(name = "agent.update.target.freq", note = "How often should the target network be set", value = 200L),
+agent.start.learn = list(name = "agent.start.learn", note = "after how many transitions should replay begin", value = 64L),
+agent.clip.td = list(name = "agent.clip.td", note = "whether to clip TD error", value = FALSE),
+policy.maxEpsilon = list(name = "policy.maxEpsilon", note = "The maximum epsilon exploration rate", value = 1.0),
+policy.minEpsilon = list(name = "policy.minEpsilon", note = "The minimum epsilon exploration rate", value = 0.01),
+policy.decay.rate = list(name = "policy.decay.rate", note = "the decay rate", value = 1.0),
+policy.decay.type = list(name = "policy.decay.type", note = "the way to decay epsion, can be decay_geo, decay_exp, decay_linear", value = "decay_geo"),
+policy.aneal.steps = list(name = "policy.aneal.steps", note = "how many steps needed to decay from maximum epsilon to minmum epsilon, only valid when policy.decay.type = 'decay_linear'", value = 1e6),
+policy.softmax.magnify = list(name = "policy.softmax.magnify", value = 1),
+replay.batchsize = list(name = "replay.batchsize", value = 64),
+replay.memname = list(name = "replay.memname", range = c("Uniform"), note = "The type of replay memory", value = "Uniform"),
+replay.mem.size = list(name = "replay.mem.size", note = "The size of the replay memory", value = 2e4),
+replay.epochs = list(name = "replay.epochs", note = "How many gradient decent epochs to carry out for one replay", value = 1L),
+replay.freq = list(name = "replay.freq", note = "how many steps to wait until one replay", value = 1L)
 )
 
+rlR.conf.dt = data.table::rbindlist(rlR.conf.lod, fill = TRUE)
+rlR.conf.df = as.data.frame(rlR.conf.dt)
+
+
 # define default hyper-parameters
-rlR.conf.default = list(
-render = FALSE,
-log = FALSE,
-console = FALSE,
-agent.gamma = 0.99,
-agent.flag.reset.net = TRUE,
-agent.lr.decay = exp(-0.001),
-agent.lr = 1e-3,
-agent.store.model = FALSE,
-agent.update.target.freq = 200L,
-agent.start.learn = 64L,  # default: after replay mem has enough sample for replay
-agent.clip.td = FALSE,
-policy.maxEpsilon = 1,
-policy.minEpsilon = 0.01,
-policy.decay.rate = 1, # exp(-1.0 / 10),
-policy.decay.type = "decay_geo",
-policy.aneal.steps = 1e6,
-policy.softmax.magnify = 1,
-replay.batchsize = 64L,
-replay.memname = "Uniform",
-replay.mem.size = 20000,
-replay.epochs = 1L,
-replay.freq = 1L
-)
+rlR.conf.default = lapply(rlR.conf.lod, function(x) x$value)
 
 #' @title listAvailConf
 #' @description List defaults hyper-parameters names
 #' @export
 listAvailConf = function() {
-  rlR_conf_avail = names(rlR.conf.default)
-  return(rlR_conf_avail)
+  rlR.conf.dt
 }
 
 # default configuration for each agent which is adjacent to the definition so once definition is modified, it is easy to modify here as well.
