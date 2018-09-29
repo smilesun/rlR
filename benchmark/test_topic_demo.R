@@ -23,7 +23,7 @@ AgentDQN_test_MountainCar = function(iter = 1000L, sname = "CartPole-v0", render
   mfun = function(state_dim, act_cnt) {
     requireNamespace("keras")
     model = keras::keras_model_sequential()
-      model %>% 
+      model %>%
         layer_dense(units = 10, activation = "relu", input_shape = c(state_dim)) %>%
         layer_dropout(rate = 0.25) %>%
         layer_dense(units = act_cnt, activation = "linear")
@@ -104,8 +104,65 @@ AgentFDQN_testCnn = function(sname = "KungFuMaster-v0", iter = 5000, render = TR
   perf = agent$learn(iter)
 }
 
-AgentPG_test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE) {
-  conf = getDefaultConf("AgentPG")
+# Test if the replay memory size does not grow after memory is full
+AgentFDQN_testReplayCnn = function() {
+  library(rlR)
+  sname = "KungFuMaster-v0"
+  iter = 5000
+  render = TRUE
+  conf = getDefaultConf("AgentFDQN")
+  #@Note: one episode of pong is around 300 steps
+  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-0.005), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1000, log = FALSE, agent.update.target.freq = 1000L, agent.clip.td = TRUE, policy.decay.type = "decay_linear")
+  env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 4L)
+  agent = makeAgent("AgentFDQN", env, conf)
+  perf = agent$learn(iter)
+}
+
+# Test if the replay memory size does not grow after memory is full
+# minibatch size:32
+# replay memsize:1e6
+# agent history length:4
+# target network update frequency: 1e4
+# discount factor: 0.99
+AgentFDQN_testReplayEfficientCnn = function() {
+  subsample = function(state) {
+      I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
+      I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
+      res = array_reshape(I, c(dim(I), 1L))
+      res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
+      return(res)
+  }
+
+  library(rlR)
+  sname = "KungFuMaster-v0"
+  conf = getDefaultConf("AgentFDQN")
+  #@Note: one episode of pong is around 300 steps
+  conf$set(
+    replay.batchsize = 32,
+    replay.freq = 4L,
+    console = TRUE,
+    agent.lr.decay = 1,
+    agent.lr = 0.00025,
+    replay.memname = "Efficient",
+    render = TRUE,
+    policy.decay = exp(-1),
+    policy.minEpsilon = 0.1,
+    policy.maxEpsilon = 1,
+    agent.start.learn = 5e4L,  # same with nature
+    replay.mem.size = 5e5,
+    log = FALSE,
+    agent.update.target.freq = 1e4L,  # same with nature
+    agent.clip.td = TRUE,
+    policy.decay.type = "decay_linear",
+    policy.aneal.steps = 1e5) # same with replay size
+  env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 1L)
+  # state_preprocess = list(fun = identity, dim = NULL)
+  agent = makeAgent("AgentFDQN", env, conf)
+  perf = agent$learn(5000L)
+}
+
+hi = function()
+{ conf = getDefaultConf("AgentPG")
   conf$set(render = render, console = TRUE)
   env = makeGymEnv(sname)
   agent = makeAgent("AgentPG", env, conf)
@@ -155,8 +212,8 @@ rlR.demo = function() {
 mfun_val = function(state_dim, act_cnt) {
 requireNamespace("keras")
     model = keras::keras_model_sequential()
-      model %>% 
-        layer_dense(units = 512, activation = "relu", 
+      model %>%
+        layer_dense(units = 512, activation = "relu",
           input_shape = c(state_dim)) %>%
         layer_dropout(rate = 0.25) %>%
         layer_dense(units = act_cnt,
@@ -169,7 +226,7 @@ requireNamespace("keras")
 mfun_policy = function(state_dim, act_cnt) {
     requireNamespace("keras")
     model = keras::keras_model_sequential()
-      model %>% 
+      model %>%
         layer_dense(units = 512, activation = "relu",
           input_shape = c(state_dim)) %>%
         layer_dropout(rate = 0.25) %>%

@@ -1,0 +1,12 @@
+###### Requirements without Version Specifiers ######
+numpy
+#
+###### Requirements with Version Specifiers ######
+#   See https://www.python.org/dev/peps/pep-0440/#version-specifiers
+tensorflow == 1.8.0             # Version Matching. Must be version 0.6.1
+keras == 2.1.6
+gym >= 0.10.5           
+# overage != 3.5             # Version Exclusion. Anything except version 3.5
+#Mopidy-Dirble ~= 1.1        # Compatible release. Same as >= 1.1, == 1.efer to other requirements files ######
+###### Refer to other requirements files ######
+#-r other-requirements.txt

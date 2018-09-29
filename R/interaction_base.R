@@ -1,7 +1,7 @@
 InteractionBase = R6::R6Class("InteractionBase",
   public = list(
-    rl.agent = NULL,
-    rl.env = NULL,
+    rl_agent = NULL,
+    rl_env = NULL,
     perf = NULL,
     maxiter = NULL,
     glogger = NULL,

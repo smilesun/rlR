@@ -28,7 +28,7 @@ SurroNN = R6::R6Class("SurroNN",
     },
 
     initNetworkCreator = function() {
-      if (self$agent$env$flag_cnn) {
+      if (self$agent$env$flag_tensor) {
         self$agent$network_build_funs[["policy_fun"]]  = function(state_dim, act_cnt) {
           makeCnnActor(input_shape = state_dim, act_cnt = act_cnt)
         }
@@ -122,6 +122,7 @@ SurroNN = R6::R6Class("SurroNN",
     },
 
     afterEpisode = function() {
+        self$lr =  self$lr * self$agent$lr_decay
         #FIXME: adjust learning rate with dataframe nrow?
         keras::k_set_value(self$model$optimizer$lr, self$lr)
         lr = keras::k_get_value(self$model$optimizer$lr)

@@ -71,20 +71,3 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
 
     )
   )
-
-
-rlR.conf.AC = function() {
-  conf = RLConf$new(
-    render = FALSE,
-    log = FALSE,
-    console = FALSE,
-    policy.name = "EpsilonGreedy",
-    policy.maxEpsilon = 1,
-    policy.minEpsilon = 0.02,
-    policy.decay = exp(-0.001),
-    replay.epochs = 1L,
-    replay.memname = "Latest",
-    agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
-    agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr =1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
-    )
-}

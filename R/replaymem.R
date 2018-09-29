@@ -21,13 +21,13 @@ ReplayMem = R6::R6Class("ReplayMem",
     reset = function() {
       self$start_idx = 1L
       self$end_idx = 1L
+      # self$samples = vector(mode = "list", length = self$capacity)  # even without this, the memory won't grow
       self$samples = list()
       self$len = 0L
       self$size = 0L
     },
 
     mkInst = function(state.old, action, reward, state.new, done, info) {
-      #FIXME: benchmark if it saves time to seperately store sars
       list(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = info)
     },
 
@@ -37,10 +37,15 @@ ReplayMem = R6::R6Class("ReplayMem",
       self$samples[[pos]] = ins  # add samples
       self$len = self$len + 1L  # can be bigger than capacity
       self$size = length(self$samples)
+      # self$size = self$size + 1L
+      #temp_list = self$samples[-which(sapply(self$samples, is.null))] will be 0 at capacity length
+      #self$size = length(temp_list)
     },
 
     afterEpisode = function(interact) {
-      cat(sprintf("replaymem size GB:%s \n", as.numeric(object.size(self$samples)) / (1024^3)))
+      #gc()
+      self$agent$interact$toConsole("replaymem size GB:%s \n", as.numeric(object.size(self$samples) / (1024^3)))
+      # cat(sprintf("%s\n", pryr::object_size(self$samples)))
     },
 
     afterStep = function() {
@@ -48,6 +53,57 @@ ReplayMem = R6::R6Class("ReplayMem",
     }
     )
 )
+
+
+ReplayMemEfficient = R6::R6Class("ReplayMem",
+  inherit = ReplayMem,
+  public = list(
+    state_list = NULL,  # only store state
+    pos = NULL,
+    initialize = function(agent, conf) {
+      super$initialize(agent, conf)
+      # self$state_list = vector(mode = "list", length = self$capacity)
+      self$state_list = list()
+    },
+
+    mkInst = function(state.old, action, reward, state.new, done, info) {
+      self$pos = (self$len + 1L) %% self$capacity   # self$len can be bigger than capacity
+      if (self$pos == 0) self$pos = self$capacity  # boundary case if modulo is zero, put new entry at last position
+      self$state_list[[self$pos]] = state.old
+      self$state_list[[self$pos + 1L]] = state.new
+      list(state.old = self$pos, action = action, reward = reward, state.new = self$pos + 1L, done = done, info = info)
+    },
+
+    add = function(ins) {
+      self$samples[[self$pos]] = ins  # add samples
+      self$size = length(self$samples)  # size is transition size that does not grow
+      # self$size = (self$size + 1L)
+      #temp_list = self$samples[-which(sapply(self$samples, is.null))]
+      #self$size = length(temp_list)
+      self$len = self$len + 1L  # can be bigger than capacity
+    },
+
+    getState = function(x) {
+       x$state.old = self$state_list[[x$state.old]]
+       x$state.new = self$state_list[[x$state.new]]
+       return(x)
+    },
+
+    sample.fun = function(k) {
+      k = min(k, self$size)
+      #FIXME: the replayed.idx are not natural index, but just the position in the replay memory
+      self$replayed.idx = sample(self$size)[1L:k]
+      list.res = lapply(self$replayed.idx, function(x) self$getState(self$samples[[x]]))
+      return(list.res)
+    },
+
+    afterEpisode = function(interact) {
+      #gc()
+      self$agent$interact$toConsole("replaymem size GB:%s \n", as.numeric(object.size(self$state_list)) / (1024^3))
+    }
+    )
+)
+
 
 ReplayMemUniform = R6::R6Class("ReplayMemUniform",
   inherit = ReplayMem,

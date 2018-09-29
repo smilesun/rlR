@@ -57,7 +57,7 @@ AgentPG = R6::R6Class("AgentPG",
     },
 
     getAdv = function(interact) {
-        episode.idx = interact$perf$epi.idx
+        episode.idx = interact$perf$epi_idx
         total.reward = sum(interact$perf$list.reward.epi[[episode.idx]])
         self$interact$perf$total.step = unlist(interact$perf$list.stepsPerEpisode)[episode.idx]
         adg = interact$perf$list.discount.reward.epi[[episode.idx]]
@@ -80,16 +80,3 @@ AgentPG = R6::R6Class("AgentPG",
     }
     ) # public
 )
-
-rlR.conf.PG = function() {
-  RLConf$new(
-          render = FALSE,
-          console = FALSE,
-          policy.maxEpsilon = 1,
-          policy.decay = exp(-0.001),
-          policy.minEpsilon = 0.01,
-          policy.name = "ProbEpsilon",
-          replay.memname = "Latest",
-          replay.epochs = 1L,
-          agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
-}

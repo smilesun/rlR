@@ -8,3 +8,4 @@
 ^benchmark
 ^appveyor.yml
 ^codecov\.yml$
+^.ackrc

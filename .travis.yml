@@ -28,11 +28,10 @@ r:
   - devel
   - release
 r_packages:
-  - covr
   - devtools
+  - covr
 r_github_packages:
   - codecov/example-r
-  - r-lib/covr
   - hadley/pkgdown
   - rstudio/keras
 before_script:
