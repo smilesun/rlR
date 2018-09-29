@@ -126,6 +126,7 @@ EnvGym = R6::R6Class("EnvGym",
       }
       list_s_r_d_info = lapply(1:self$repeat_n_act, function(i) self$env$step(action)) # repeat the same choice for self$repeat_n_act times. length(list_s_r_d_info) = self$repeat_n_act
       rewards = sapply(list_s_r_d_info, function(x) x[[2L]]) # extract reward for each action repeat: the second element of each s_r_d_info return is reward
+      rewards = sapply(rewards, sign)  # reward clipping
       dones = sapply(list_s_r_d_info, function(x) x[[3]])
       s_r_d_info = list_s_r_d_info[[self$repeat_n_act]]
       names(s_r_d_info) = c("state", "reward", "done", "info")
@@ -204,7 +205,13 @@ EnvGym = R6::R6Class("EnvGym",
           graphics::plot(axes = FALSE)
     },
 
-    snapshot = function(steps = 25L) {
+    showPreprocess = function() {
+      s = self$env$reset()
+      s = self$state_preprocess(s)
+      self$showImage(s)
+    },
+
+    snapshot = function(steps = 25L, preprocess = TRUE) {
       checkmate::assert_int(steps)
       ss = self$env$reset()
       if (is.null(self$env$action_space$sample)) {
@@ -214,10 +221,15 @@ EnvGym = R6::R6Class("EnvGym",
         a = self$env$action_space$sample()
         r = self$env$step(a)
       }
-      img = self$env$render(mode = "rgb_array")
-      img = img / 255.
-      self$env$close()
-      self$showImage(img)
+      if (preprocess) {
+        pimg = self$state_preprocess(r[[1L]])
+        self$showImage(pimg)
+      } else {
+        img = self$env$render(mode = "rgb_array")
+        img = img / 255.
+        self$env$close()
+        self$showImage(img)
+      }
     }
     )
 )
