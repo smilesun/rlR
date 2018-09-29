@@ -105,14 +105,33 @@ AgentFDQN_testCnn = function(sname = "KungFuMaster-v0", iter = 5000, render = TR
 }
 
 # Test if the replay memory size does not grow after memory is full
-AgentFDQN_testReplayCnn = function() {
+
+AgentFDQN_testReplayCnn2 = function() {
   library(rlR)
   sname = "KungFuMaster-v0"
   iter = 5000
   render = TRUE
   conf = getDefaultConf("AgentFDQN")
   #@Note: one episode of pong is around 300 steps
-  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-0.005), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1000, log = FALSE, agent.update.target.freq = 1000L, agent.clip.td = TRUE, policy.decay.type = "decay_linear")
+  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-0.1), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1000, log = FALSE, agent.update.target.freq = 1000L, agent.clip.td = TRUE, policy.decay.type = "decay_linear", policy.aneal.steps = 1e5)
+  env = makeGymEnv(sname, repeat_n_act = 1, observ_stack_len = 1L, act_cheat = 1:13)  ## gym already repeated action
+  agent = makeAgent("AgentFDQN", env, conf)
+  perf = agent$learn(iter)
+}
+
+
+
+
+
+AgentFDQN_testReplayCnn = function() {
+  library(rlR)
+  sname = "KungFuMaster-v0"
+  sname = "Pong-v0"
+  iter = 100
+  render = TRUE
+  conf = getDefaultConf("AgentFDQN")
+  #@Note: one episode of pong is around 300 steps
+  conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-1), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1e5, log = FALSE, agent.update.target.freq = 1000L, agent.clip.td = TRUE, policy.decay.type = "decay_linear")
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 4L)
   agent = makeAgent("AgentFDQN", env, conf)
   perf = agent$learn(iter)

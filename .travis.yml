@@ -38,6 +38,7 @@ before_script:
   - R --no-save <<< 'library("devtools"); document()'
   - R --no-save <<< 'library("tensorflow"); install_tensorflow()'
   - R --no-save <<< 'library("keras"); install_keras()'
+install: travis_wait 60 mvn install
 after_success:
   - Rscript -e 'covr::codecov()'
   - Rscript -e "covr::coveralls()"
