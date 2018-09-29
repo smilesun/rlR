@@ -92,6 +92,6 @@ perf = agent$learn(200L)
 proc.time() - ptmi
 ```
 
-```{r mplot, eval=TRUE,fig.path="inst/figures/", warning=FALSE, message=FALSE}
+```{r mplot, eval=FALSE,fig.path="inst/figures/", warning=FALSE, message=FALSE}
 agent$plotPerf()
 ```

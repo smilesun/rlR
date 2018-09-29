@@ -1,6 +1,8 @@
-pandoc: 1.12.4.2
-pkgdown: 1.0.0
+pandoc: 1.19.2.4
+pkgdown: 1.1.0.9000
 pkgdown_sha: ~
 articles:
+  customized_brain_mountainCar: customized_brain_mountainCar.html
   define_custom_environments: define_custom_environments.html
+  play_atari_games: play_atari_games.html
 

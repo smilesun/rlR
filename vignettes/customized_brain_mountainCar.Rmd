@@ -1,5 +1,5 @@
 ---
-title: "Define custom environment for deep reinforcement learn"
+title: "Cutomized Neural Network for Mountain Car Problem"
 output:
   html_document:
     toc: true
