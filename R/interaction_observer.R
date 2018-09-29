@@ -1,65 +1,64 @@
 Interaction = R6::R6Class("Interaction",
   inherit = InteractionBase,
+  private = list(
+    list_observers = NULL,
+    list_cmd = NULL,
+    conf = NULL,
+    continue_flag = NULL
+  ),
   public = list(
-    s.old = NULL,
+    s_old = NULL,   # used in agent$observe
     action = NULL,
     s_r_done_info  = NULL,
-    list.observers = NULL,
-    idx.episode = NULL,
-    idx.step = NULL,
-    continue.flag = NULL,
-    conf = NULL,
-    list.cmd = NULL,
+    idx_episode = NULL,
+    step_in_episode = NULL,
     maxiter = NULL,
     render = NULL,
     consoleFlag = NULL,
     printf = NULL,
     begin_learn = NULL,
     global_step_len = NULL,
-    initialize = function(rl.env, rl.agent) {
+    initialize = function(rl_env, rl_agent) {
       self$global_step_len = 0L
-      self$rl.env = rl.env
-      self$rl.agent = rl.agent
-      self$conf = self$rl.agent$conf
-      self$begin_learn = ifelse(is.null(self$conf$get("agent.start.learn")), self$conf$get("replay.batchsize"), self$conf$get("agent.start.learn"))
+      self$rl_env = rl_env
+      self$rl_agent = rl_agent
+      private$conf = self$rl_agent$conf
+      self$begin_learn = ifelse(is.null(private$conf$get("agent.start.learn")), private$conf$get("replay.batchsize"), private$conf$get("agent.start.learn"))
       checkmate::assert_int(self$begin_learn)
-      self$render = self$conf$get("render")
+      self$render = private$conf$get("render")
       render_cmd = NULL
       if (self$render) render_cmd = "render"
-      console_cmd = self$rl.agent$conf$get("console")
+      console_cmd = self$rl_agent$conf$get("console")
       if (is.null(console_cmd)) self$consoleFlag = FALSE
       else  self$consoleFlag = console_cmd
       if (self$consoleFlag) self$printf = function(str, ...) cat(sprintf(str, ...))
       else self$printf = function(str, ...) {
       }
-      self$idx.episode = 0
-      self$idx.step = 0
-      self$continue.flag = TRUE
-      self$glogger = self$rl.agent$glogger
-      self$perf = PerformanceShiny$new(self$rl.agent)
-      self$list.cmd = list(
-        "render" = self$rl.env$render,
+      self$idx_episode = 0
+      self$step_in_episode = 0
+      private$continue_flag = TRUE
+      self$glogger = self$rl_agent$glogger
+      self$perf = Performance$new(self$rl_agent)
+      private$list_cmd = list(
+        "render" = self$rl_env$render,
         "before.act" = function() {
-          self$glogger$log.nn$info("in episode %d, step %d, global step %d", self$idx.episode, self$idx.step, self$global_step_len)
-          self$s.old = self$s_r_done_info[[1L]]
+          self$glogger$log.nn$info("in episode %d, step %d, global step %d", self$idx_episode, self$step_in_episode, self$global_step_len)
+          self$s_old = self$s_r_done_info[[1L]]
         },
         "after.step" = function() {
           self$glogger$log.nn$info("reward %f", self$s_r_done_info[[2L]])
-          self$rl.agent$observe(self)
-          self$perf$r.vec.epi[self$idx.step + 1L] = self$s_r_done_info[[2L]]
-          self$idx.step = self$idx.step + 1L
-          # FIXME: does it help to have complete random action at the beginning of each episode or this is a stupic idea since epsilon should always decrease?
-          if (self$global_step_len > self$begin_learn) self$rl.agent$afterStep()
+          self$rl_agent$observe(self)
+          self$perf$r.vec.epi[self$step_in_episode + 1L] = self$s_r_done_info[[2L]]
+          self$step_in_episode = self$step_in_episode + 1L
+          if (self$global_step_len > self$begin_learn) {
+            self$rl_agent$afterStep()
+          }
           self$checkEpisodeOver()
         })
-      self$list.observers = list(
-        "beforeAct" = self$list.cmd[c("before.act", render_cmd)],
-        "afterStep" = self$list.cmd["after.step"]
+      private$list_observers = list(
+        "beforeAct" = private$list_cmd[c("before.act", render_cmd)],
+        "afterStep" = private$list_cmd["after.step"]
         )
-    },
-
-    isEpisodeOver = function() {
-      self$s_r_done_info[[3L]]
     },
 
     toConsole = function(str, ...) {
@@ -68,50 +67,51 @@ Interaction = R6::R6Class("Interaction",
 
     checkEpisodeOver = function() {
           if (self$s_r_done_info[[3L]]) {
-          self$rl.env$reset()
-          self$perf$afterEpisode()
-          self$idx.step = 0L
-          if (self$idx.episode >= self$maxiter) {
-            self$continue.flag = FALSE
-          }
-          self$rl.agent$afterEpisode(self)
-          sucess_flag = self$perf$success()
-          if (sucess_flag) {
-            self$continue.flag = FALSE
-          }
+            self$rl_env$reset()
+            self$perf$afterEpisode()
+            self$step_in_episode = 0L
+            if (self$idx_episode >= self$maxiter) {
+              private$continue_flag = FALSE
+            }
+            self$rl_agent$afterEpisode(self)
+            sucess_flag = self$perf$success()
+            if (sucess_flag) {
+              private$continue_flag = FALSE
+            }
         }
+        #gc()
     },
 
     notify = function(name) {
-      flag = name %in% names(self$list.observers)
+      flag = name %in% names(private$list_observers)
       if (!flag) stop("not defined observer")
-      obslist = self$list.observers[[name]]
+      obslist = private$list_observers[[name]]
       for (method in names(obslist)) {
          do.call(obslist[[method]], args = list())
       }},
 
     run = function(maxiter) {
-      self$idx.step = 0L
-      self$idx.episode = 0L
-      self$continue.flag = TRUE
+      self$step_in_episode = 0L
+      self$idx_episode = 0L
+      private$continue_flag = TRUE
       self$maxiter = maxiter
-      self$s_r_done_info = self$rl.env$reset()
+      self$s_r_done_info = self$rl_env$reset()
       tryCatch({
-        while (self$continue.flag) {
+        while (private$continue_flag) {
           self$notify("beforeAct")
-          self$action = self$rl.agent$act(self$s.old)
+          self$action = self$rl_agent$act(self$s_old)
           self$glogger$log.nn$info("action taken:%s \n", self$action)
-          self$s_r_done_info = self$rl.env$step(self$action)
+          self$s_r_done_info = self$rl_env$step(self$action)
           self$global_step_len = self$global_step_len + 1L
           self$notify("afterStep")
         }
         self$perf$extractInfo()
         return(self$perf)
     }, finally = {
-      self$rl.agent$sess$close()
+      self$rl_agent$sess$close()
       self$perf$afterAll()
       self$glogger$afterAll()
-      self$rl.env$afterAll()
+      self$rl_env$afterAll()
       rlR.global.perf <<- self$perf
       rlR.global.perf$agent$conf$updatePara("render", FALSE)
        }) # try catch

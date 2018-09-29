@@ -2,10 +2,10 @@
 #'
 #' @format \code{\link{R6Class}} object
 #' @description Continous action agent
+#' reference Lillicrap, T. P., Hunt, J. J., Pritzel, A., Heess, N., Erez, T., Tassa, Y., … Wierstra, D. (2016). Continuous control with deep reinforcement learning. In ICLR.
 #' Inherited from \code{AgentActorCritic}:
 #' @section Methods:
 #' @inheritSection AgentArmed Methods
-#' @reference Lillicrap, T. P., Hunt, J. J., Pritzel, A., Heess, N., Erez, T., Tassa, Y., … Wierstra, D. (2016). Continuous control with deep reinforcement learning. In ICLR.
 #' @return [\code{\link{AgentDDPG}}].
 #' @export
 AgentDDPG = R6::R6Class("AgentDDPG",

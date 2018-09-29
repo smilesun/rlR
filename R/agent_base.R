@@ -101,8 +101,8 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$glogger$log.nn$info(str, ...)  # nocov
     },
 
-    createInteract = function(rl.env) {
-      self$interact = Interaction$new(rl.env = rl.env, rl.agent = self)
+    createInteract = function(rl_env) {
+      self$interact = Interaction$new(rl_env = rl_env, rl_agent = self)
     },
 
     buildConf = function() {
@@ -123,14 +123,14 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     # transform observation to  the replay memory
     observe = function(interact) {
-      state.old = interact$s.old
+      state.old = interact$s_old
       action = interact$action
       reward = interact$s_r_done_info[[2L]]
       state.new = interact$s_r_done_info[[1L]]
       done = interact$s_r_done_info[[3L]]
-      info = interact$s_r_done_info[[4]]
-      episode = interact$idx.episode + 1L
-      stepidx = interact$idx.step + 1L
+      info = interact$s_r_done_info[[4L]]
+      episode = interact$idx_episode + 1L
+      stepidx = interact$step_in_episode + 1L
       ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
       self$mem$add(ins)
     },
@@ -206,6 +206,10 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     learn = function(iter) {
       self$interact$run(iter)
+    },
+
+    plotPerf = function() {
+      self$interact$perf$plot()
     }
   ) # public
 )

@@ -1,0 +1,112 @@
+---
+title: "Play Atari Games"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+    dev: svg
+vignette: >
+  %\VignetteIndexEntry{Play Atari Games}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+library(rlR)
+set.seed(123)
+knitr::opts_chunk$set(cache = TRUE, collapse = FALSE, dev = "svg", fig.height = 3.5)
+knitr::knit_hooks$set(document = function(x){
+  gsub("```\n*```r*\n*", "", x)
+})
+library(reticulate)
+os = import("os")
+os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
+```
+
+# rlR: play Atari games
+
+## Convolutional Neural Network Structure
+
+## Atari Environment
+One episode of pong is around 300 steps.
+
+
+```{r}
+library(rlR)
+env = makeGymEnv("Seaquest-v0", repeat_n_act = 1, observ_stack_len = 4L)
+env$overview()
+```
+
+```{r eval=FALSE}
+env$snapshot()
+env$snapshot(preprocess = F)
+
+```
+
+
+```{r}
+env = makeGymEnv("Pong-v0", repeat_n_act = 1, observ_stack_len = 4L, act_cheat = 1:4)
+env$overview()
+```
+
+```{r eval=FALSE}
+env$snapshot()
+env$snapshot(preprocess = F)
+
+```
+
+
+
+```{r}
+conf = getDefaultConf("AgentFDQN")
+conf$set(replay.batchsize = 32, 
+  replay.freq = 4L, 
+  console = TRUE, 
+  agent.lr.decay = 1, 
+  agent.lr = 0.00025, 
+  replay.memname = "UniformStack", 
+  render = TRUE, 
+  policy.decay = exp(-1), 
+  policy.minEpsilon = 0.1, 
+  agent.start.learn = 350L, 
+  replay.mem.size = 1e5, 
+  log = FALSE, 
+  agent.update.target.freq = 1000L, 
+  agent.clip.td = TRUE, 
+  policy.decay.type = "decay_linear")
+```
+
+
+```{r}
+library(keras)
+makeCnnCritic = function(state_dim, act_cnt) {
+  requireNamespace("keras")
+  text = paste("model <- keras_model_sequential();",
+  'model %>%',
+  ' layer_conv_2d(filter = 16, kernel_size = c(8,8), strides = c(4, 4), 
+  padding = "same", input_shape = state_dim) %>%',
+    'layer_activation("relu") %>%',
+    'layer_conv_2d(filter = 32, kernel_size = c(4,4), strides = c(2, 2)) %>%',
+    'layer_activation("relu") %>%',
+    'layer_flatten() %>%',
+    'layer_dense(256) %>%',
+    'layer_activation("relu") %>%',
+    'layer_dense(act_cnt) %>%',
+    'layer_activation("linear");',
+    'opt <- optimizer_rmsprop(lr = 0.00025);',
+    'model %>% compile(loss = "mse", optimizer = opt, metrics = "accuracy")')
+  model = eval(parse(text = text))
+  return(model)
+}
+```
+
+```{r}
+agent = makeAgent("AgentFDQN", env, conf)
+agent$customizeBrain(value_fun = makeCnnCritic)
+```
+
+```{r eval=FALSE}
+perf = agent$learn(2L)
+```

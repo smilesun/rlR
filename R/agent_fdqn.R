@@ -57,22 +57,19 @@ AgentFDQN = R6::R6Class("AgentFDQN",
 
     afterStep = function() {
       super$afterStep()
-      if (!is.null(self$updateFreq)) {
+      #if (!is.null(self$updateFreq)) {
         if (self$shouldUpdateModel()) {
           self$updateModel()
         }
-      }
+      #}
     },
 
     afterEpisode = function(interact) {
       super$afterEpisode(interact)
-      if (is.null(self$updateFreq)) {
-        # ("\nupdating model\n"))
-        self$updateModel()
-      }
+      # by default, update model after each episode
+      #if (is.null(self$updateFreq)) {
+      #  self$updateModel()
+      #}
     }
   )
 )
-rlR.conf.FDQN = function() {
-  rlR.conf.DQN()
-}
