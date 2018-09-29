@@ -8,7 +8,7 @@ output:
       smooth_scroll: false
     dev: svg
 vignette: >
-  %\VignetteIndexEntry{Define custom environment for deep reinforcement learn}
+  %\VignetteIndexEntry{Play Atari Games}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
