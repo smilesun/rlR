@@ -1,0 +1,11 @@
+context("replay_mem")
+test_that("test basic replay_mem works", {
+env = makeGymEnv("Pong-v0")
+env$overview()
+conf = getDefaultConf("AgentDQN")
+conf$show()
+conf$set(render = T, console = T, replay.memname = "Png")
+agent = makeAgent("AgentDQN", env, conf)
+perf = agent$learn(1L)
+agent$plotPerf()
+})
