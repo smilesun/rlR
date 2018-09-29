@@ -7,8 +7,12 @@ navbar:
   - text: Topics
     icon: fa-file-text-o
     menu:
-      - text: Build Custom Environment
+      - text: Specify Custom Environment
         href: articles/define_custom_environments.html
+      - text: Customize Neural Network Functional Approximator
+        href: articles/customized_brain_mountainCar.html
+      - text: Play Atari Games 
+        href: articles/play_atari_games.html
   - text: Reference
     icon: fa-book
     href: reference/index.html
