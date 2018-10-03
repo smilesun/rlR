@@ -9,8 +9,7 @@ PerformanceShiny = R6::R6Class(
     startApp = function() {
       # give useful error messages
       if (is.null(self$list_models)) stop("Models during training not saved - set 'agent.store.model = TRUE'")
-      if ((self$agent$replay.x %>% dim %>% length) > 1) stop("App is not designed for image data (yet)")
-
+      if (self$agent$env$flag_tensor) stop("App is not designed for image data (yet)")
       # catching the observed data points plus their predictions of the last replay memory batch
       data = cbind( self$agent$replay.x, self$agent$replay.y ) %>%
         data.frame()
@@ -32,11 +31,13 @@ PerformanceShiny = R6::R6Class(
       layer_index = as.list(1:(length(weights)/2))
       # list of state dimension
       variable_selection = variable_selection_null =
-        data %>% names %>% .[1:ncol(self$agent$replay.x)] %>% as.list
+        data %>% names %>% .[1:ncol(self$agent$replay.x)] %>% as.list  # select colums from the state matrix
       # append empty option
-      variable_selection_null[[length(variable_selection) + 1]] = "-"
+      # extra dim is not possible to be displayed spacially, so we use color and dot size to represent them, default is "-" which means that we do not use these two facility to represent the 3rd and 4th dimension of the state space. The user need to choose which 2 dimension they want to visualize. 
+      variable_selection_null[[length(variable_selection) + 1]] = "-"   # null = "-"
       # list of action value dimension
-      value_selection =
+      # ActionVal_Dim
+      action_selection =
         data %>% names %>% .[ncol(self$agent$replay.x) + 1:ncol(self$agent$replay.y)] %>% as.list
 
       # this is the main ui - some dynamic parts of it are defined further down
@@ -100,7 +101,7 @@ PerformanceShiny = R6::R6Class(
                   uiOutput(paste0('b', i))
                 }),
                 tags$hr(),
-                selectInput("y_axis_2d", "Y axis", value_selection, selected = value_selection[[1]]),
+                selectInput("y_axis_2d", "Y axis", action_selection, selected = action_selection[[1]]),
                 width = 3
               ),
 
@@ -121,7 +122,7 @@ PerformanceShiny = R6::R6Class(
               sidebarPanel(
                 selectInput("x_axis_3d", "X axis",    variable_selection,      selected = variable_selection[[1]]),
                 selectInput("y_axis_3d", "Y axis",    variable_selection,      selected = variable_selection[[2]]),
-                selectInput("z_axis",    "Z axis",    value_selection,         selected = value_selection[[1]]),
+                selectInput("z_axis",    "Z axis",    action_selection,         selected = action_selection[[1]]),
                 selectInput("color",     "Dot Color", variable_selection_null, selected = "-"),
                 selectInput("size",      "Dot Size",  variable_selection_null, selected = "-"),
                 tags$hr(),
@@ -140,7 +141,7 @@ PerformanceShiny = R6::R6Class(
 
               # Show Interactive Graphic
               mainPanel(
-                plotly::plotlyOutput("x2", width = "100%", height = "900px")
+                plotly::plotlyOutput("plot_3d", width = "100%", height = "900px")
               )
             )
           )
@@ -150,12 +151,13 @@ PerformanceShiny = R6::R6Class(
       # define the server function for all the background calculations required by the app
       server = function(input, output) {
         # define usable objects for the reactive parts and dynamic ui elements
-        s_space_maxs = crosstalk::SharedData$new(space_maxs)
+        s_space_maxs = crosstalk::SharedData$new(space_maxs)  # better than global variable, aims at removing flikering
         s_space_mins = crosstalk::SharedData$new(space_mins)
-        s_data       = crosstalk::SharedData$new(data)
+        s_data       = crosstalk::SharedData$new(data)  # data is defined at the begining of startApp() as a global function
         s_weights    = self$agent$brain$getWeights()
 
         # ui element with dynamic amount of sliders for 2D action value panel
+        # we only display two state dimensions, the rest we select their value with sliders 
         lapply(1:ncol(self$agent$replay.x), function(i) {
           output[[paste0('b', i)]] <- renderUI({
             req(input$x_axis_2d)
@@ -191,7 +193,7 @@ PerformanceShiny = R6::R6Class(
         output$plot_weights_2d = plotly::renderPlotly({
 
           # some data manipulation for successful plotting
-          weight_index = as.integer(input$layer) * 2 + as.integer(input$weights)
+          weight_index = as.integer(input$layer) * 2 + as.integer(input$weights)  # input$weights are from widgets input
           dim_weights  = dim(s_weights[[weight_index]])
           weights_data = {
             if (length(dim_weights) == 2)
@@ -330,8 +332,8 @@ PerformanceShiny = R6::R6Class(
             )
         })
 
-        # interactive plot embedded into the ui for the 2d action value panel
-        output$x2 <- plotly::renderPlotly({
+        # interactive plot embedded into the ui for the 3d action value panel
+        output$plot_3d <- plotly::renderPlotly({
           # wait until the parameters are loaded
           req(input$x_axis_3d)
           req(input$y_axis_3d)

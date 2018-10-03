@@ -36,11 +36,7 @@ Imports:
     magrittr,
     abind
 LazyData: true
-<<<<<<< HEAD
-RoxygenNote: 5.0.1
-=======
 RoxygenNote: 6.1.0
->>>>>>> master
 BugReports: https://github.com/smilesun/rlR/issues
 URL: https://github.com/smilesun/rlR
 SystemRequirements: The following python package are needed to use the gym openAI environment. gym >= 0.10.5; At least one deep learning backend which keras requires(tensorflow, cntk, theano) should be installed on your computer, for example tensorflow >= 1.1.0 (tested on Ubuntu 14.04); The backend keras requires could be installed by keras::install_keras(); Both dependencies can also be installed by rlR::installDep() function. It is important to note that the user should run 'reticulate::use_python("/usr/local/bin/python")' to specify the python path and 'reticulate::use_virtualenv("myenv")' to specify which virtual environment to use. By default, the package is using "~/anaconda3/bin/python"  as its python version. For detail, please refer to https://rstudio.github.io/reticulate/articles/versions.html
