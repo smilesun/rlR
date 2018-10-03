@@ -2,7 +2,10 @@ Package: rlR
 Type: Package
 Title: Reinforcement Learning in R
 Version: 0.1.0
-Authors@R: person("Xudong", "Sun", email = {"smilesun.east@gmail.com"}, role = c("aut", "cre"))
+Authors@R: c(
+    person("Xudong", "Sun", email = {"smilesun.east@gmail.com"}, role = c("aut", "cre")),
+    person("Sebastian", "Gruber", email = {"gruber_sebastian@t-online.de"}, role = c("ctb"))
+    )
 Maintainer: Xudong Sun <smilesun.east@gmail.com>
 Description: Reinforcement Learning with deep Q learning, double deep Q
     learning, frozen target deep Q learning, policy gradient deep learning, policy
@@ -21,6 +24,14 @@ Imports:
     logging,
     ggplot2,
     openssl,
+    RSQLite,
+    png,
+    stringr,
+    DT,
+    plotly,
+    crosstalk,
+    shiny,
+    shinythemes,
     imager,
     magrittr,
     abind

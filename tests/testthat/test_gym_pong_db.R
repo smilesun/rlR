@@ -1,0 +1,5 @@
+env = makeGymEnv("Pong-v0")
+agent = makeAgent("AgentPG", env)
+agent$updatePara(render = TRUE, replay.memname = "UniformDB")
+#agent$mem$reset()
+agent$learn(1)
