@@ -133,10 +133,10 @@ EnvGym = R6::R6Class("EnvGym",
       s_r_d_info[["reward"]] = sum(rewards)
       s_r_d_info[["done"]] = any(dones)
       s_r_d_info[["state"]] = self$state_preprocess(s_r_d_info[["state"]])  # preprocessing
-      if (self$flag_tensor) {
-        s_r_d_info[["state"]] = pmax(s_r_d_info[["state"]], private$old_state)  # remove flickering
-        private$old_state = s_r_d_info[["state"]]
-      }
+      # if (self$flag_tensor) {
+      #   s_r_d_info[["state"]] = pmax(s_r_d_info[["state"]], private$old_state)  # remove flickering
+      #   private$old_state = s_r_d_info[["state"]]
+      # }
       if (self$flag_stack_frame) s_r_d_info[["state"]] = self$stackLatestFrame(s_r_d_info[["state"]])
       #FIXME: might be buggy if continous space get preprocessed
       if (grepl("Box", toString(self$env$action_space))) s_r_d_info[["state"]] = t(s_r_d_info[["state"]])  # for continous action, transpose the state space, for "Pendulum-v0" etc, the state return is 3*1 instead of 1*3
