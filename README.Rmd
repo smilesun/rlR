@@ -85,6 +85,7 @@ pip install gym
 pip install cmake
 pip install gym[atari]
 ```
+where 'cmake' is required to build atari environments.
 
 ### Independencies for visualization of environments
 The R package imager is required if you want to visualize different environments but the other functionality of rlR is not affected by this R package. For ubuntu, the R package imager depends on libraries which could be installed
