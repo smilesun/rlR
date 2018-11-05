@@ -30,12 +30,21 @@ os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
 ## Convolutional Neural Network Structure
 
 ## Atari Environment
-One episode of pong is around 300 steps.
+Since the input state space is RGB image, we would like to down sample the state space by the following function
+```{r}
+subsample = function(state) {
+  I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
+  I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
+  res = array_reshape(I, c(dim(I), 1L))
+  res = res/128.0 - 1.0   # normalize to -1 till +1
+  return(res)
+}
+```
 
 
 ```{r}
 library(rlR)
-env = makeGymEnv("Seaquest-v0", repeat_n_act = 1, observ_stack_len = 4L)
+env = makeGymEnv("Seaquest-v0", repeat_n_act = 1, observ_stack_len = 3L, state_preprocess = list(fun = subsample))
 env$overview()
 ```
 

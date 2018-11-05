@@ -141,6 +141,16 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
       super$add(ins)
     },
 
+    arr2iarr = function(res) {
+      array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
+      #storage.mode(res) = "int"
+      #res
+    },
+
+   mkInst = function(state.old, action, reward, state.new, done, info) {
+      list(state.old = self$arr2iarr(state.old), action = action, reward = reward, state.new = self$arr2iarr(state.new), done = done, info = info)
+    },
+
     sample.fun = function(k) {
       k = min(k, self$size)
       #FIXME: the replayed.idx are not natural index, but just the position in the replay memory

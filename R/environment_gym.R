@@ -1,15 +1,15 @@
 # The Discrete space allows a fixed range of non-negative numbers, so in this case valid actions are either 0 or 1
 # The Box space represents an n-dimensional box, so valid observations will be an array of 4 numbers
 # @note all processing to image should be consistent in EnvGym::reset, EnvGym::step and replaymem
-#     subsample = function(state) {
-#      I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
-#      I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
-#      res = array_reshape(I, c(dim(I), 1L))
-#      res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
-#      return(res)
-#    }
+#'    subsample = function(state) {
+#'     I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
+#'     I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
+#'     res = array_reshape(I, c(dim(I), 1L))
+#'     res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
+#'     return(res)
+#'   }
 
-
+#'@export
 EnvGym = R6::R6Class("EnvGym",
   inherit = Environment,
   private = list(
@@ -29,6 +29,12 @@ EnvGym = R6::R6Class("EnvGym",
         self$act_cnt = self$env$action_space$n   # get the number of actions/control bits
       }
 
+      # FIXME: this should be set by user
+      if (self$flag_tensor) {
+        # since which("NOOP" == env$env$unwrapped$get_action_meanings()) will always generate 1
+        self$act_cheat = 1L:(self$act_cnt - 1L)  # do not allow NO-OP operation
+      }
+
       if (!is.null(self$act_cheat)) {
         self$act_cnt = length(self$act_cheat)
       }
@@ -41,13 +47,6 @@ EnvGym = R6::R6Class("EnvGym",
         stop("Compund state space Enviroment not supported!")
       }
       self$flag_tensor = length(self$state_dim) > 1L  # judge if video input before change state_dim
-      # FIXME: this should be set by user
-      if (self$flag_tensor) {
-        # since which("NOOP" == env$env$unwrapped$get_action_meanings()) will always generate 1
-        self$act_cheat = 1L:(self$act_cnt - 1L)
-        self$act_cnt = self$act_cnt - 1L
-        self$state_preprocess = self$subsample
-      }
       private$old_dim = self$state_dim
       # keep the array order(only change the dimension) rather than increase the order
       # since two frames can be taken difference automatically by DNN and DNN only handles order-3D array
@@ -91,23 +90,14 @@ EnvGym = R6::R6Class("EnvGym",
       self$state_preprocess = state_preprocess$fun
       self$act_cheat = act_cheat
       self$repeat_n_act = repeat_n_act
-      private$initActCnt()
       private$initStateDim()
+      private$initActCnt()
     },
 
     initSubsample = function() {
       state = self$env$reset()  #FIXME: only return state when reset is called
       hstate = self$state_preprocess(state)
       return(dim(hstate))
-    },
-
-    #FIXME: put this function as a user option
-    subsample = function(state) {
-      I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
-      I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
-      res = array_reshape(I, c(dim(I), 1L))
-      res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
-      return(res)
     },
 
     render = function(...) {
