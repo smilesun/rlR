@@ -121,7 +121,8 @@ ReplayMemUniform = R6::R6Class("ReplayMemUniform",
 ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
   inherit = ReplayMemUniform,
   public = list(
-    getIdxMap = function (x) {
+    # get chronological sample index
+    getIdxMap = function(x) {
       if (self$len <= self$capacity) {
         return(1L:self$len)
       }
@@ -158,7 +159,8 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
       if (length(sidx:self$size) < k) {
         stop("not enough samples in memory")
       }
-      idx_map = self$getIdxMap()
+      idx_map = self$getIdxMap()  # chronological index for samples 
+      #ex: 8901234567 is the replay memory where number represent the chronological order
       self$replayed.idx = sample(sidx:self$size)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) {
         look_back = self$observ_stack_len
@@ -166,7 +168,7 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
         step_idx = ReplayMem$extractStep(res)
         ss = step_idx - sidx
         newpos = x
-        # if at the beginning of an episode, either go forward or go backward to the last episode
+        # if at the beginning of an episode, either go forward to later step of the episode or go backward to the last episode ending steps
         if (ss <= 0) {
           newpos = x - ss   # first try to go forward to later steps
           # if at the begin of the episode but at the end of the replay memory

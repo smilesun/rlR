@@ -75,9 +75,8 @@ conf$set(replay.batchsize = 32,
 
 
 ```{r}
-library(keras)
 makeCnnCritic = function(state_dim, act_cnt) {
-  requireNamespace("keras")
+  require("keras")
   text = paste("model <- keras_model_sequential();",
   'model %>%',
   ' layer_conv_2d(filter = 16, kernel_size = c(8,8), strides = c(4, 4), 
