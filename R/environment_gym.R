@@ -1,13 +1,13 @@
 # The Discrete space allows a fixed range of non-negative numbers, so in this case valid actions are either 0 or 1
 # The Box space represents an n-dimensional box, so valid observations will be an array of 4 numbers
 # @note all processing to image should be consistent in EnvGym::reset, EnvGym::step and replaymem
-#'    subsample = function(state) {
-#'     I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
-#'     I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
-#'     res = array_reshape(I, c(dim(I), 1L))
-#'     res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
-#'     return(res)
-#'   }
+subsample = function(state) {
+  I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
+  I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
+  res = array_reshape(I, c(dim(I), 1L))
+  res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
+  return(res)
+}
 
 #'@export
 EnvGym = R6::R6Class("EnvGym",
@@ -222,4 +222,4 @@ EnvGym = R6::R6Class("EnvGym",
       }
     }
     )
-)
+   )

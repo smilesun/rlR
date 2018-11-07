@@ -11,6 +11,8 @@ test_that("test cnn stack input works for each value based agent", {
   })
 })
 
+#FIXME:Valueexpected conv2d_46_input to have shape (210, 160, 4) but got array with shape (210, 160, 12)
+
 test_that("test cnn works for each policy based agent", {
   agent.names = c("AgentPG", "AgentPGBaseline", "AgentActorCritic")
   lapply(agent.names, function(agent.name) {
