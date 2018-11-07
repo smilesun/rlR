@@ -192,6 +192,7 @@ EnvGym = R6::R6Class("EnvGym",
       flag_vec = private$new_dim != private$old_dim
       if (flag_vec[1L]) {
         cat(sprintf("state dim after preprocessing: %s \n", toString(private$new_dim)))
+        cat(sprintf("with stacking: %s \n", toString(self$state_dim)))
       }
       cat(sprintf("%s\n", ifelse(self$flag_continous, "continous action", "discrete action")))
     },
