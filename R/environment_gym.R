@@ -29,12 +29,12 @@ EnvGym = R6::R6Class("EnvGym",
         self$act_cnt = self$env$action_space$n   # get the number of actions/control bits
       }
 
-      # FIXME: this should be set by user
-      if (self$flag_tensor) {
-        # since which("NOOP" == env$env$unwrapped$get_action_meanings()) will always generate 1
-        self$act_cheat = 1L:(self$act_cnt - 1L)  # do not allow NO-OP operation
-      }
-
+      ## FIXME: this should be set by user
+      #       if (self$flag_tensor) {
+      ## since which("NOOP" == env$env$unwrapped$get_action_meanings()) will always generate 1
+      #         self$act_cheat = 1L:(self$act_cnt - 1L)  # do not allow NO-OP operation
+      #       }
+      # 
       if (!is.null(self$act_cheat)) {
         self$act_cnt = length(self$act_cheat)
       }
