@@ -118,9 +118,16 @@ ReplayMemUniform = R6::R6Class("ReplayMemUniform",
     )
 )
 
+
+
+
+#' States are stored sequencially, s_1,s_2,....s_N where N is the capacity The replay memory size is always even number since transitions s_i to s_{i+1} contain 2 states. For Uniform Stack, since s_i,s_i+1 are stacked to form a new state which introduces another level of complexity
+#' States should be stored in unit form 0-128 to represent enough information and converted back to float again
+#' Note that normalized float can not be converted to int since they reduces either to -1 or +1, which is binarize the image!!!
 ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
   inherit = ReplayMemUniform,
   public = list(
+    idx_map = NULL,
     # get chronological sample index
     getIdxMap = function(x) {
       if (self$len <= self$capacity) {
@@ -144,27 +151,29 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
 
     arr2iarr = function(res) {
       array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
-      #storage.mode(res) = "int"
-      #res
+      # storage.mode(res) = "int"
+      # res
     },
 
+    #  in agent_base.R
+    #' ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
+    #' self$mem$add(ins)
    mkInst = function(state.old, action, reward, state.new, done, info) {
       list(state.old = self$arr2iarr(state.old), action = action, reward = reward, state.new = self$arr2iarr(state.new), done = done, info = info)
     },
 
     sample.fun = function(k) {
       k = min(k, self$size)
-      #FIXME: the replayed.idx are not natural index, but just the position in the replay memory
       sidx = self$observ_stack_len + 1L
       if (length(sidx:self$size) < k) {
         stop("not enough samples in memory")
       }
-      idx_map = self$getIdxMap()  # chronological index for samples 
-      #ex: 8901234567 is the replay memory where number represent the chronological order
+      #ex: 8-9-1-2-3-4-5-6-7 is the replay memory where number represent the chronological order
+      self$idx_map = self$getIdxMap()  # chronological index for samples
       self$replayed.idx = sample(sidx:self$size)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) {
         look_back = self$observ_stack_len
-        res = self$samples[[idx_map[x]]]
+        res = self$samples[[self$idx_map[x]]]
         step_idx = ReplayMem$extractStep(res)
         ss = step_idx - sidx
         newpos = x
@@ -175,10 +184,10 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
           if (newpos > self$size) {
             newpos = x - step_idx - 1L
           }
-          res = self$samples[[idx_map[newpos]]]
+          res = self$samples[[self$idx_map[newpos]]]
         }
         vor = (newpos - look_back + 1L)
-        adj = self$samples[idx_map[vor:newpos]]
+        adj = self$samples[self$idx_map[vor:newpos]]
         list_state_new = lapply(adj, function(x) {
           x$state.new
         })
