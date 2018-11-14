@@ -118,6 +118,12 @@ ReplayMemUniform = R6::R6Class("ReplayMemUniform",
     )
 )
 
+
+
+
+#' States are stored sequencially, s_1,s_2,....s_N where N is the capacity The replay memory size is always even number since transitions s_i to s_{i+1} contain 2 states. For Uniform Stack, since s_i,s_i+1 are stacked to form a new state which introduces another level of complexity
+#' States should be stored in unit form 0-128 to represent enough information and converted back to float again
+#' Note that normalized float can not be converted to int since they reduces either to -1 or +1, which is binarize the image!!!
 ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
   inherit = ReplayMemUniform,
   public = list(
@@ -144,10 +150,13 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
 
     arr2iarr = function(res) {
       array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
-      #storage.mode(res) = "int"
-      #res
+      # storage.mode(res) = "int"
+      # res
     },
 
+    #  in agent_base.R
+    #' ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
+    #' self$mem$add(ins)
    mkInst = function(state.old, action, reward, state.new, done, info) {
       list(state.old = self$arr2iarr(state.old), action = action, reward = reward, state.new = self$arr2iarr(state.new), done = done, info = info)
     },
