@@ -168,7 +168,7 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
       if (length(sidx:self$size) < k) {
         stop("not enough samples in memory")
       }
-      #ex: 8-9-1-2-3-4-5-6-7 is the replay memory where number represent the chronological order
+      #ex: 8-9-1-2(old episode last step)-3(new episode step 1)-4(new episode step 2)-5-6-7 is the replay memory where number represent the chronological order
       self$idx_map = self$getIdxMap()  # chronological index for samples
       self$replayed.idx = sample(sidx:self$size)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) {
