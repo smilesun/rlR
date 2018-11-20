@@ -9,7 +9,6 @@ subsample = function(state) {
   return(res)
 }
 
-#'@export
 EnvGym = R6::R6Class("EnvGym",
   inherit = Environment,
   private = list(

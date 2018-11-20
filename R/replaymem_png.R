@@ -63,7 +63,7 @@ str_to_array_h = function(string) {
     # magittr  require ()
     string %>%
       strsplit("") %>%     # ABEF39 SPLIT into c("A", "B", "E", ...)
-      .[[1]] %>%    # return of split is a list
+      (function(x) x[[1]])  %>%    # return of split is a list
         (function(x) paste0(x[c(TRUE, FALSE)], x[c(FALSE, TRUE)])) %>% #combine to pairs, equivalent to zip:    x[c(TRUE, FALSE)] takes the 1st,3st,5st  and x[c(FALSE, TRUE)] take the 2st, 4st
           as.hexmode %>%   # necessary for correct as.raw. For R to understand this is hexcode other than String.
             as.raw %>%       # make it readable as PNG
