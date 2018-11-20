@@ -42,22 +42,7 @@ env$overview()
 ```{r eval=FALSE}
 env$snapshot()
 env$snapshot(preprocess = F)
-
 ```
-
-
-```{r}
-env = makeGymEnv("Pong-v0", repeat_n_act = 1, observ_stack_len = 4L, act_cheat = 1:4)
-env$overview()
-```
-
-```{r eval=FALSE}
-env$snapshot()
-env$snapshot(preprocess = F)
-
-```
-
-
 
 ```{r}
 conf = getDefaultConf("AgentFDQN")
@@ -66,12 +51,13 @@ conf$set(replay.batchsize = 32,
   console = TRUE, 
   agent.lr.decay = 1, 
   agent.lr = 0.00025, 
+  agent.update.target.freq = 1e4,
   replay.memname = "UniformStack", 
   render = TRUE, 
-  policy.decay = exp(-1), 
   policy.minEpsilon = 0.1, 
-  agent.start.learn = 350L, 
-  replay.mem.size = 1e5, 
+  agent.start.learn = 1e4L, 
+  policy.aneal.steps = 3e5,
+  replay.mem.size = 3e5, 
   log = FALSE, 
   agent.update.target.freq = 1000L, 
   agent.clip.td = TRUE, 
@@ -108,5 +94,5 @@ agent$customizeBrain(value_fun = makeCnnCritic)
 ```
 
 ```{r eval=FALSE}
-perf = agent$learn(2L)
+perf = agent$learn(5000L)
 ```

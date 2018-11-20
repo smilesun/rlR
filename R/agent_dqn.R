@@ -44,6 +44,8 @@ AgentDQN = R6::R6Class("AgentDQN",
         }
         mt = p.old
         mt[act2update] = target  # the not active action arm's Q will not be updated
+        #FIXME: shall here be 0?
+        # mt[-act2update] = 0.0  # the not active action arm will be set to be zero
         return(mt)
     },
 
