@@ -21,7 +21,8 @@ ReplayMem = R6::R6Class("ReplayMem",
     },
 
     reset = function() {
-      self$samples = vector(mode = "list", length = self$capacity)  # even without this, the memory won't grow
+      # self$samples = vector(mode = "list", length = self$capacity)  # even without this, the memory won't grow
+      self$samples = list()  # can not be fixed size since other replay depends on it.
       self$len = 0L
       self$size = 0L
     },

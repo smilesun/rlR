@@ -54,7 +54,7 @@ EnvGym = R6::R6Class("EnvGym",
       private$new_dim  = self$initSubsample()
       if (self$observ_stack_len > 1L) {
         self$flag_stack_frame = TRUE
-        self$state_dim = c(private$new_dim[1L:2L], self$observ_stack_len)
+        self$state_dim = c(private$new_dim[1L:2L],  private$new_dim[3] * self$observ_stack_len)
       } else {
         self$state_dim = private$new_dim  # no stacking
       }
@@ -92,6 +92,11 @@ EnvGym = R6::R6Class("EnvGym",
       self$repeat_n_act = repeat_n_act
       private$initStateDim()
       private$initActCnt()
+    },
+
+    setActCheat = function(act_cheat) {
+      self$act_cheat = act_cheat
+      self$act_cnt = length(self$act_cheat)
     },
 
     initSubsample = function() {
@@ -182,6 +187,7 @@ EnvGym = R6::R6Class("EnvGym",
       flag_vec = private$new_dim != private$old_dim
       if (flag_vec[1L]) {
         cat(sprintf("state dim after preprocessing: %s \n", toString(private$new_dim)))
+        cat(sprintf("with stacking: %s \n", toString(self$state_dim)))
       }
       cat(sprintf("%s\n", ifelse(self$flag_continous, "continous action", "discrete action")))
     },
