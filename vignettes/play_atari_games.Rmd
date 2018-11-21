@@ -36,7 +36,6 @@ subsample = function(state) {
   I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
   I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
   res = reticulate::array_reshape(I, c(dim(I), 1L))
-  res = res/128.0 - 1.0   # normalize to -1 till +1
   return(res)
 }
 ```
@@ -62,7 +61,7 @@ conf$set(replay.batchsize = 32,
   agent.lr = 0.00025, 
   agent.update.target.freq = 1e4,
   replay.memname = "Png", 
-  render = TRUE, 
+  render = F, 
   policy.minEpsilon = 0.1, 
   agent.start.learn = 1e4L, 
   policy.aneal.steps = 3e5,

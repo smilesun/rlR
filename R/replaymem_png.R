@@ -2,11 +2,6 @@ ReplayMemPng = R6::R6Class(
   "ReplayMemPng",
   inherit = ReplayMemUniform,
   public = list(
-    len = NULL,
-    replayed.idx = NULL,
-    conf = NULL,
-    agent = NULL,
-    table.name = NULL,
     initialize = function(agent, conf) {
       super$initialize(agent, conf)
     },
@@ -25,12 +20,9 @@ ReplayMemPng = R6::R6Class(
 
     sample.fun = function(k) {
       k = min(k, self$size)
-      #FIXME: the replayed.idx are not natural index, but just the position in the replay memory
-      self$replayed.idx = sample(self$len)[5L:k]
-      list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
-      replay.samples = list.res
-      # replay.samples now are the results from the query
-
+      self$replayed.idx = sample(self$size)[1L:k]
+      # replay.samples = lapply(self$replayed.idx, function(x) self$samples[[x]])
+      replay.samples = self$samples[self$replayed.idx]
       #FIXME: IS THE Orientation of the array right! Critically Important
       list.replay = lapply(replay.samples, function(x) list(
         state.old = x$state.old %>% str_to_array_h %>% array(dim = self$agent$state_dim),
@@ -45,10 +37,15 @@ ReplayMemPng = R6::R6Class(
         )
       ))
       list.replay    # DEBUG: self$agent$env$showImage(list.replay[[64]][["state.new"]]) make sense
+      #DEBUG from ctrl+c: only agent is available
+      #' indx = agent$mem$replayed.idx
+      #' replay.samples = agent$mem$samples[indx]
+      #' x = replay.samples[[28]]
+      #' image = x$state.old %>% str_to_array_h %>% array(dim = agent$state_dim)
+      #' image = x$state.new %>% str_to_array_h %>% array(dim = agent$state_dim)
+      #' agent$env$showImage(image)
     }
-    ),
-  private = list(),
-  active = list()
+    )
 )
 
 

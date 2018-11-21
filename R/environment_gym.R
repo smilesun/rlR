@@ -2,10 +2,11 @@
 # The Box space represents an n-dimensional box, so valid observations will be an array of 4 numbers
 # @note all processing to image should be consistent in EnvGym::reset, EnvGym::step and replaymem
 subsample = function(state) {
-  I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
+  I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]  # subsample
   I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
-  res = array_reshape(I, c(dim(I), 1L))
-  res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
+  res = array_reshape(I, c(dim(I), 1L))  # append an extra dim
+  #' res = array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
+  #' res = res/128.0 - 1.0   # normalize to -1 till +1
   return(res)
 }
 
