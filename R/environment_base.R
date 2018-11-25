@@ -43,6 +43,7 @@ Environment = R6::R6Class("Environment",
     flag_continous = NULL,
     flag_tensor = NULL,
     observ_stack_len = 1L,
+    maxStepPerEpisode = 1e4L,
     agent = NULL,  # used to get access to replaymem
     initialize = function(...) {
       self$act_cnt = c(2)

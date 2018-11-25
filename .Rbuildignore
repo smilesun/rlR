@@ -11,3 +11,4 @@
 ^appveyor.yml
 ^codecov\.yml$
 ^.ackrc
+^requirement.txt

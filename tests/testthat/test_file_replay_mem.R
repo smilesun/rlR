@@ -16,7 +16,7 @@ test_that("test stack replay_mem works", {
   conf$set(replay.memname = "UniformStack", replay.mem.size = 70L)  # bigger than batchsize
   env = rlR::Environment$new()
   env$overview()
-  env = makeGymEnv("Pong-v0", observ_stack_len = 4L)
+  env = makeGymEnv("Pong-v0", observ_stack_len = 4L, state_preprocess = list(fun = subsample))
   agent = makeAgent("AgentFDQN", env, conf)
   makeArray = function(i) array(rep(i, 61*80*4), dim = c(61,80,4))
   mem = agent$mem
@@ -42,7 +42,7 @@ test_that("test uniformStack_mem works", {
   skip_on_cran()
   conf = rlR.conf.DQN()
   conf$set(replay.memname = "UniformStack", replay.mem.size = 70L)  # bigger than batchsize
-  env = makeGymEnv("Pong-v0", repeat_n_act = 400, observ_stack_len = 2)
+  env = makeGymEnv("Pong-v0", repeat_n_act = 400, observ_stack_len = 2, state_preprocess = list(fun = subsample))
   env$overview()
   agent = makeAgent("AgentFDQN", env, conf)
   agent$learn(3)

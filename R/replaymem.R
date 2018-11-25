@@ -1,11 +1,12 @@
+#' Base class should only implement the interface
+#' Difference between different child class is what is stored in samples(the transition index only or the pair of state)
+#' Number of Transitions must be even
 ReplayMem = R6::R6Class("ReplayMem",
   public = list(
     samples = NULL,
     capacity = NULL,
     size = NULL,
     len = NULL,
-    start_idx = NULL,
-    end_idx = NULL,
     replayed.idx = NULL,
     conf = NULL,
     agent = NULL,
@@ -15,31 +16,31 @@ ReplayMem = R6::R6Class("ReplayMem",
       self$conf = conf
       self$agent = agent
       # observ_stack_len is set via the Environment::setAgent() function
+      #' agent = makeAgent("AgentFDQN", env, conf) has incorporated environment into Agent.
       self$reset()
     },
 
     reset = function() {
-      self$start_idx = 1L
-      self$end_idx = 1L
       # self$samples = vector(mode = "list", length = self$capacity)  # even without this, the memory won't grow
-      self$samples = list()
+      self$samples = list()  # can not be fixed size since other replay depends on it.
       self$len = 0L
       self$size = 0L
     },
 
+    #' mkInst can be modified to do preprocessing to state.old
     mkInst = function(state.old, action, reward, state.new, done, info) {
       list(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = info)
     },
 
+    #' usage: AgentBase:Observe()
+    #'ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
+    #'  self$mem$add(ins)
     add = function(ins) {
       pos = (self$len + 1L) %% self$capacity   # self$len can be bigger than capacity
       if (pos == 0) pos = self$capacity  # boundary case if modulo is zero, put new entry at last position
       self$samples[[pos]] = ins  # add samples
-      self$len = self$len + 1L  # can be bigger than capacity
+      self$len = self$len + 1L  # can be bigger than capacity, len can be converted to float automatically
       self$size = length(self$samples)
-      # self$size = self$size + 1L
-      #temp_list = self$samples[-which(sapply(self$samples, is.null))] will be 0 at capacity length
-      #self$size = length(temp_list)
     },
 
     afterEpisode = function(interact) {
@@ -54,63 +55,12 @@ ReplayMem = R6::R6Class("ReplayMem",
     )
 )
 
-
-ReplayMemEfficient = R6::R6Class("ReplayMem",
-  inherit = ReplayMem,
-  public = list(
-    state_list = NULL,  # only store state
-    pos = NULL,
-    initialize = function(agent, conf) {
-      super$initialize(agent, conf)
-      # self$state_list = vector(mode = "list", length = self$capacity)
-      self$state_list = list()
-    },
-
-    mkInst = function(state.old, action, reward, state.new, done, info) {
-      self$pos = (self$len + 1L) %% self$capacity   # self$len can be bigger than capacity
-      if (self$pos == 0) self$pos = self$capacity  # boundary case if modulo is zero, put new entry at last position
-      self$state_list[[self$pos]] = state.old
-      self$state_list[[self$pos + 1L]] = state.new
-      list(state.old = self$pos, action = action, reward = reward, state.new = self$pos + 1L, done = done, info = info)
-    },
-
-    add = function(ins) {
-      self$samples[[self$pos]] = ins  # add samples
-      self$size = length(self$samples)  # size is transition size that does not grow
-      # self$size = (self$size + 1L)
-      #temp_list = self$samples[-which(sapply(self$samples, is.null))]
-      #self$size = length(temp_list)
-      self$len = self$len + 1L  # can be bigger than capacity
-    },
-
-    getState = function(x) {
-       x$state.old = self$state_list[[x$state.old]]
-       x$state.new = self$state_list[[x$state.new]]
-       return(x)
-    },
-
-    sample.fun = function(k) {
-      k = min(k, self$size)
-      #FIXME: the replayed.idx are not natural index, but just the position in the replay memory
-      self$replayed.idx = sample(self$size)[1L:k]
-      list.res = lapply(self$replayed.idx, function(x) self$getState(self$samples[[x]]))
-      return(list.res)
-    },
-
-    afterEpisode = function(interact) {
-      #gc()
-      self$agent$interact$toConsole("replaymem size GB:%s \n", as.numeric(object.size(self$state_list)) / (1024^3))
-    }
-    )
-)
-
-
 ReplayMemUniform = R6::R6Class("ReplayMemUniform",
   inherit = ReplayMem,
   public = list(
     sample.fun = function(k) {
       k = min(k, self$size)
-      #FIXME: the replayed.idx are not natural index, but just the position in the replay memory
+      # the replayed.idx are not natural index, but just the position in the replay memory, but since we store only transition here, the relative order does not matter.
       self$replayed.idx = sample(self$size)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) self$samples[[x]])
       return(list.res)
@@ -118,10 +68,54 @@ ReplayMemUniform = R6::R6Class("ReplayMemUniform",
     )
 )
 
+# still store transition, but only the store the index in the state_list
+ReplayMemIndex = R6::R6Class("ReplayMemIndex",
+  inherit = ReplayMem,
+  public = list(
+    state_list = NULL,  # only store state
+    pos_state_list = NULL,
+    state_list_cap = NULL,
+    initialize = function(agent, conf) {
+      self$pos_state_list = 1L
+      super$initialize(agent, conf)
+      self$state_list_cap = self$capacity + 1L  # number of states is bigger than number of transitions by 1L
+      self$state_list = vector(mode = "list", length = self$state_list_cap)
+    },
+
+    # even in case of stacking frame (like pong game), only one new frame is returned by the environment!
+    mkInst = function(state.old, action, reward, state.new, done, info) {
+      self$state_list[[self$pos_state_list]] = state.old
+      self$pos_state_list =  (self$pos_state_list + 1L)  %% self$state_list_cap + 1L
+      self$state_list[[(self$pos_state_list + 1L) %% (self$state_list_cap)]] = state.new
+      list(state.old = self$pos_state_list, action = action, reward = reward, state.new = (self$pos_state_list + 1L) %% (self$capacity + 1L), done = done, info = info)
+    },
+
+    getState = function(x) {
+       x$state.old = self$state_list[[x$state.old]]  # x$state.old is now only index!!!
+       x$state.new = self$state_list[[x$state.new]]
+       return(x)
+    },
+
+    sample.fun = function(k) {
+      k = min(k, self$size)
+      #' no need to remap the replayed.idx since 
+      self$replayed.idx = sample(self$size)[1L:k]
+      list.res = lapply(self$replayed.idx, function(x) self$getState(self$samples[[x]]))
+      return(list.res)
+    }
+    )
+)
+
+
+#' States are stored sequencially, s_1,s_2,....s_N where N is the capacity The replay memory size is always even number since transitions s_i to s_{i+1} contain 2 states. For Uniform Stack, since s_i,s_i+1 are stacked to form a new state which introduces another level of complexity
+#' States should be stored in unit form 0-128 to represent enough information and converted back to float again
+#' Note that normalized float can not be converted to int since they reduces either to -1 or +1, which is binarize the image!!!
 ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
   inherit = ReplayMemUniform,
   public = list(
-    getIdxMap = function (x) {
+    idx_map = NULL,
+    # get chronological sample index
+    getIdxMap = function(x) {
       if (self$len <= self$capacity) {
         return(1L:self$len)
       }
@@ -141,39 +135,52 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
       super$add(ins)
     },
 
+    arr2iarr = function(res) {
+      array(as.integer(res), dim = dim(res))  # store integer is less memory hungry
+      # storage.mode(res) = "int"
+      # res
+    },
+
+    #  in agent_base.R
+    #' ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
+    #' self$mem$add(ins)
+   mkInst = function(state.old, action, reward, state.new, done, info) {
+      list(state.old = self$arr2iarr(state.old), action = action, reward = reward, state.new = self$arr2iarr(state.new), done = done, info = info)
+    },
+
     sample.fun = function(k) {
       k = min(k, self$size)
-      #FIXME: the replayed.idx are not natural index, but just the position in the replay memory
       sidx = self$observ_stack_len + 1L
       if (length(sidx:self$size) < k) {
         stop("not enough samples in memory")
       }
-      idx_map = self$getIdxMap()
+      #ex: 8-9-1-2(old episode last step)-3(new episode step 1)-4(new episode step 2)-5-6-7 is the replay memory where number represent the chronological order
+      self$idx_map = self$getIdxMap()  # chronological index for samples
       self$replayed.idx = sample(sidx:self$size)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) {
-        look_back = self$observ_stack_len
-        res = self$samples[[idx_map[x]]]
+        look_back = self$observ_stack_len  # must be able to stack in the same episode 'self$observ_stack_len' number of frames
+        res = self$samples[[self$idx_map[x]]]
         step_idx = ReplayMem$extractStep(res)
-        ss = step_idx - sidx
-        newpos = x
-        # if at the beginning of an episode, either go forward or go backward to the last episode
+        ss = step_idx - sidx  # check if step_idx is not smaller than  self$observ_stack_len
+        newpos = x  # move the relative sampling position to  new position
+        # if at the beginning of an episode, either go forward to later step of the episode or go backward to the last episode ending steps
         if (ss <= 0) {
           newpos = x - ss   # first try to go forward to later steps
           # if at the begin of the episode but at the end of the replay memory
           if (newpos > self$size) {
             newpos = x - step_idx - 1L
           }
-          res = self$samples[[idx_map[newpos]]]
+          res = self$samples[[self$idx_map[newpos]]]
         }
         vor = (newpos - look_back + 1L)
-        adj = self$samples[idx_map[vor:newpos]]
+        adj = self$samples[self$idx_map[vor:newpos]]
         list_state_new = lapply(adj, function(x) {
           x$state.new
         })
         list_state_old = lapply(adj, function(x) {
           x$state.old
         })
-        #NOTE: ideally we want to extend the order of the tensor, but keras dense only works with 1d data and conv layer only works with 2d, so an alternative is to stack the array
+        #NOTE: ideally we want to extend the order of the tensor, but keras dense only works with 1d data and conv layer only works with 2d, so an alternative is to stack the array in the 3rd dimension
         res$state.new = abind::abind(list_state_new)
         res$state.old = abind::abind(list_state_old)
         res
