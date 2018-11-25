@@ -64,8 +64,6 @@ EnvGym = R6::R6Class("EnvGym",
   public = list(
     # some fields are defined in father class
     env = NULL,
-    ok_reward = NULL,
-    ok_step = NULL,
     state_preprocess = NULL,
     act_cheat = NULL,
     repeat_n_act = NULL,  # number of frames to escape
@@ -78,15 +76,13 @@ EnvGym = R6::R6Class("EnvGym",
     # observ_stack_len is set here since the Env should return the same dimension to the agent.
     # replaymem$sample.fun has to be changed if observ_stack is to be used.
     # subsample_dim: the size of image after subsampling
-    initialize = function(genv, name, state_preprocess = list(fun = identity, par = NULL), act_cheat = NULL, ok_reward = NULL, ok_step = NULL, repeat_n_act = 1L, observ_stack_len = 1L) {
+    initialize = function(genv, name, state_preprocess = list(fun = identity, par = NULL), act_cheat = NULL, repeat_n_act = 1L, observ_stack_len = 1L) {
       self$flag_stack_frame = FALSE
       self$state_cache = vector(mode = "list", observ_stack_len)
       self$observ_stack_len = observ_stack_len
       self$env = genv
       self$flag_continous = ifelse(grepl("float", toString(genv$action_space$dtype)), TRUE, FALSE)  # if action is in continous space
       self$name = name
-      self$ok_reward = ok_reward
-      self$ok_step = ok_step
       self$state_preprocess = state_preprocess$fun
       self$act_cheat = act_cheat
       self$repeat_n_act = repeat_n_act
@@ -122,7 +118,7 @@ EnvGym = R6::R6Class("EnvGym",
       list_s_r_d_info = lapply(1:self$repeat_n_act, function(i) self$env$step(action)) # repeat the same choice for self$repeat_n_act times. length(list_s_r_d_info) = self$repeat_n_act
       rewards = sapply(list_s_r_d_info, function(x) x[[2L]]) # extract reward for each action repeat: the second element of each s_r_d_info return is reward
       rewards = sapply(rewards, sign)  # reward clipping
-      dones = sapply(list_s_r_d_info, function(x) x[[3]])
+      dones = sapply(list_s_r_d_info, function(x) x[[3L]])
       s_r_d_info = list_s_r_d_info[[self$repeat_n_act]]
       names(s_r_d_info) = c("state", "reward", "done", "info")
       s_r_d_info[["reward"]] = sum(rewards)
@@ -138,6 +134,7 @@ EnvGym = R6::R6Class("EnvGym",
       s_r_d_info
     },
 
+    #FIXME: self$state_cache is initiliazed in reset by stacking the same frame self$observ_stack_len times
     stackLatestFrame = function(cur_state) {
       if (self$observ_stack_len >= 2L) {
         for (i in self$observ_stack_len:2L) {
@@ -145,7 +142,6 @@ EnvGym = R6::R6Class("EnvGym",
         }}
       self$state_cache[[1L]] = cur_state
       arr_stack = abind::abind(self$state_cache)
-      #FIXME: How to initialize self$state_cache?
       return(arr_stack)
     },
 
