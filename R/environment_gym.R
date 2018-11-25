@@ -88,6 +88,9 @@ EnvGym = R6::R6Class("EnvGym",
       self$repeat_n_act = repeat_n_act
       private$initStateDim()
       private$initActCnt()
+      temp = self$env$spec$max_episode_steps
+      if (!is.null(temp)) self$maxStepPerEpisode =  temp
+      else self$maxStepPerEpisode = 1e4
     },
 
     setActCheat = function(act_cheat) {

@@ -48,7 +48,7 @@ Performance = R6::R6Class("Performance",
       self$list.rewardPerEpisode = list()
       self$list.discountedRPerEpisode = list()
       self$list.stepsPerEpisode = list()
-      self$r.vec.epi = vector(mode = "numeric", length = 2000L)  # FIXME: how to set a reasonble number here?
+      self$r.vec.epi = vector(mode = "numeric", length = self$agent$env$maxStepPerEpisode)
       self$store_model_flag = self$agent$conf$get("agent.store.model")
       if (is.null(self$store_model_flag)) self$store_model_flag = FALSE
       if (self$store_model_flag) self$list_models = list()
