@@ -1,5 +1,5 @@
-#' @title Make Agent
-#' @description Make Agent
+#' @title Create Agent R6 class
+#' @description A factory method for creating different learning agent
 #' @param name The name of the Agent
 #' @param env The environment to initialize the Agent
 #' @param conf The configuration

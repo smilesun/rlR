@@ -1,12 +1,12 @@
-#' @title Deep Deterministic Policy Gradient
-#'
-#' @format \code{\link{R6Class}} object
-#' @description Continous action agent
-#' reference Lillicrap, T. P., Hunt, J. J., Pritzel, A., Heess, N., Erez, T., Tassa, Y., … Wierstra, D. (2016). Continuous control with deep reinforcement learning. In ICLR.
-#' Inherited from \code{AgentActorCritic}:
-#' @section Methods:
-#' @inheritSection AgentArmed Methods
-#' @return [\code{\link{AgentDDPG}}].
+# @title Deep Deterministic Policy Gradient
+#
+# @format \code{\link{R6Class}} object
+# @description Continous action agent
+# reference Lillicrap, T. P., Hunt, J. J., Pritzel, A., Heess, N., Erez, T., Tassa, Y., … Wierstra, D. (2016). Continuous control with deep reinforcement learning. In ICLR.
+# Inherited from \code{AgentActorCritic}:
+# @section Methods:
+# @inheritSection AgentArmed Methods
+# @return [\code{\link{AgentDDPG}}].
 AgentDDPG = R6::R6Class("AgentDDPG",
   inherit = AgentActorCritic,
   public = list(

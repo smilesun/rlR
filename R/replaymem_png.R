@@ -38,13 +38,13 @@ ReplayMemPng = R6::R6Class(
       ))
       list.replay    # DEBUG: self$agent$env$showImage(list.replay[[64]][["state.new"]]) make sense
       #DEBUG from ctrl+c: only agent is available
-      #' indx = agent$mem$replayed.idx
-      #' replay.samples = agent$mem$samples[indx]
-      #' x = replay.samples[[2]]
-      #' image = x$state.old %>% str_to_array_h %>% array(dim = agent$state_dim)
-      #' image = x$state.new %>% str_to_array_h %>% array(dim = agent$state_dim)
-      #' agent$env$showImage(image[,,1])
-      #' agent$env$showImage(image[,,2])
+      # indx = agent$mem$replayed.idx
+      # replay.samples = agent$mem$samples[indx]
+      # x = replay.samples[[2]]
+      # image = x$state.old %>% str_to_array_h %>% array(dim = agent$state_dim)
+      # image = x$state.new %>% str_to_array_h %>% array(dim = agent$state_dim)
+      # agent$env$showImage(image[,,1])
+      # agent$env$showImage(image[,,2])
     }
     )
 )

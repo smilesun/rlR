@@ -1,15 +1,15 @@
-#' @title Double Q learning
-#'
-#' @format \code{\link{R6Class}} object
-#' @description
-#' A \code{\link{R6Class}} to represent Double Deep Q learning Armed Agent
-#' %$Q_u(S, a; \theta_1) = r + Q_u(S', argmax_a' Q_h(S',a'), \theta_1) + delta$
-#' target action = argmax Q_h
-#' @section Methods:
-#' Inherited from \code{AgentArmed}:
-#' @inheritSection AgentArmed Methods
-#'
-#' @return [\code{\link{AgentDDQN}}].
+# @title Double Q learning
+#
+# @format \code{\link{R6Class}} object
+# @description
+# A \code{\link{R6Class}} to represent Double Deep Q learning Armed Agent
+# %$Q_u(S, a; \theta_1) = r + Q_u(S', argmax_a' Q_h(S',a'), \theta_1) + delta$
+# target action = argmax Q_h
+# @section Methods:
+# Inherited from \code{AgentArmed}:
+# @inheritSection AgentArmed Methods
+#
+# @return [\code{\link{AgentDDQN}}].
 AgentDDQN = R6::R6Class("AgentDDQN",
   inherit = AgentDQN,
   public = list(

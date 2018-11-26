@@ -1,13 +1,13 @@
-#' @title Policy Gradient
-#'
-#' @format \code{\link{R6Class}} object
-#' @description Policy Gradient
-#'
-#' @section Methods:
-#' Inherited from \code{AgentArmed}:
-#' @inheritSection AgentArmed Methods
-#'
-#' @return [\code{\link{AgentPG}}].
+# @title Policy Gradient
+#
+# @format \code{\link{R6Class}} object
+# @description Policy Gradient
+#
+# @section Methods:
+# Inherited from \code{AgentArmed}:
+# @inheritSection AgentArmed Methods
+#
+# @return [\code{\link{AgentPG}}].
 AgentPG = R6::R6Class("AgentPG",
   inherit = AgentArmed,
   public = list(

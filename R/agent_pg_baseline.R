@@ -1,9 +1,9 @@
-#' @title ReinforceWithBaseline
-#'
-#' @format \code{\link{R6Class}} object
-#' @description ReinforceWithBaseline
-#'
-#' @return [\code{\link{AgentPGBaseline}}].
+# @title ReinforceWithBaseline
+#
+# @format \code{\link{R6Class}} object
+# @description ReinforceWithBaseline
+#
+# @return [\code{\link{AgentPGBaseline}}].
 AgentPGBaseline = R6::R6Class("AgentPGBaseline",
   inherit = AgentPG,
   public = list(

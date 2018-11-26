@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Define custom environment for deep reinforcement learn • rlR</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Define custom environment for deep reinforcement learn">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+<!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rlR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -100,59 +100,59 @@
 <h2 class="hasAnchor">
 <a href="#environment-class" class="anchor"></a>Environment class</h2>
 <p>If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment which must inherit the <code><a href="../reference/Environment.html">rlR::Environment</a></code> Class. You could define other public and private members as you like which do not collide with the names in <code><a href="../reference/Environment.html">rlR::Environment</a></code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rlR)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(R6)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/help">help</a></span>(<span class="dt">topic=</span><span class="st">"Environment"</span>, <span class="dt">package =</span> <span class="st">"rlR"</span>)
-MyEnv =<span class="st"> </span>R6::<span class="kw"><a href="https://www.rdocumentation.org/packages/R6/topics/R6Class">R6Class</a></span>(<span class="st">"MyEnv"</span>,
-  <span class="dt">inherit =</span> rlR::Environment,
-  <span class="dt">public =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
+<span class="kw">library</span>(R6)
+<span class="kw">help</span>(<span class="dt">topic=</span><span class="st">"Environment"</span>, <span class="dt">package =</span> <span class="st">"rlR"</span>)
+MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/R6/topics/R6Class">R6Class</a></span>(<span class="st">"MyEnv"</span>,
+  <span class="dt">inherit =</span> rlR<span class="op">::</span>Environment,
+  <span class="dt">public =</span> <span class="kw">list</span>(
     <span class="dt">step_cnt =</span> <span class="ot">NULL</span>,  <span class="co"># a variable that base class does not have</span>
     <span class="dt">s_r_d_info =</span> <span class="ot">NULL</span>,
-    <span class="dt">initialize =</span> function(<span class="dt">state_dim =</span> <span class="dv">4</span>, <span class="dt">act_cnt =</span> <span class="dv">2</span>) {
-      super$<span class="kw">initialize</span>()
-      self$flag_continous =<span class="st"> </span><span class="ot">FALSE</span>  <span class="co"># non-continuous action</span>
-      self$state_dim =<span class="st"> </span>state_dim
-      self$act_cnt =<span class="st"> </span>act_cnt
-      self$step_cnt =<span class="st"> </span>0L
-      self$s_r_d_info =<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(
-            <span class="dt">state =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/array">array</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">rnorm</a></span>(self$state_dim), <span class="dt">dim =</span> self$state_dim),
+    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">state_dim =</span> <span class="dv">4</span>, <span class="dt">act_cnt =</span> <span class="dv">2</span>) {
+      super<span class="op">$</span><span class="kw">initialize</span>()
+      self<span class="op">$</span>flag_continous =<span class="st"> </span><span class="ot">FALSE</span>  <span class="co"># non-continuous action</span>
+      self<span class="op">$</span>state_dim =<span class="st"> </span>state_dim
+      self<span class="op">$</span>act_cnt =<span class="st"> </span>act_cnt
+      self<span class="op">$</span>step_cnt =<span class="st"> </span>0L
+      self<span class="op">$</span>s_r_d_info =<span class="st"> </span><span class="kw">list</span>(
+            <span class="dt">state =</span> <span class="kw">array</span>(<span class="kw">rnorm</span>(self<span class="op">$</span>state_dim), <span class="dt">dim =</span> self<span class="op">$</span>state_dim),
             <span class="dt">reward =</span> <span class="fl">1.0</span>,
             <span class="dt">done =</span> <span class="ot">FALSE</span>,
-            <span class="dt">info =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
+            <span class="dt">info =</span> <span class="kw">list</span>()
       )
     },
 
-    <span class="dt">render =</span> function(...) {
+    <span class="dt">render =</span> <span class="cf">function</span>(...) {
       <span class="co"># you could leave this field empty. </span>
     },
 
     <span class="co"># this function will be called at each step of the learning</span>
-    <span class="dt">step =</span> function(action) {
-      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sprintf">sprintf</a></span>(<span class="st">"calling step %s"</span>, self$step_cnt))
-      self$step_cnt =<span class="st"> </span>self$step_cnt +<span class="st"> </span>1L
-      if(self$step_cnt &gt;<span class="st"> </span>5L) {
-        self$s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">TRUE</span>
-        <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cat">cat</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sprintf">sprintf</a></span>(<span class="st">"</span><span class="ch">\n</span><span class="st"> Episode Over </span><span class="ch">\n</span><span class="st">"</span>))
-        <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(self$s_r_d_info)
+    <span class="dt">step =</span> <span class="cf">function</span>(action) {
+      <span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">"calling step %s"</span>, self<span class="op">$</span>step_cnt))
+      self<span class="op">$</span>step_cnt =<span class="st"> </span>self<span class="op">$</span>step_cnt <span class="op">+</span><span class="st"> </span>1L
+      <span class="cf">if</span>(self<span class="op">$</span>step_cnt <span class="op">&gt;</span><span class="st"> </span>5L) {
+        self<span class="op">$</span>s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">TRUE</span>
+        <span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">"</span><span class="ch">\n</span><span class="st"> Episode Over </span><span class="ch">\n</span><span class="st">"</span>))
+        <span class="kw">return</span>(self<span class="op">$</span>s_r_d_info)
       }
-      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(self$s_r_d_info)
+      <span class="kw">return</span>(self<span class="op">$</span>s_r_d_info)
     },
 
     <span class="co"># this function will be called at the beginning of the learning and at the end of each episode</span>
-    <span class="dt">reset =</span> function() {
-      self$step_cnt =<span class="st"> </span><span class="dv">0</span>
-      self$s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">FALSE</span>
-      self$s_r_d_info
+    <span class="dt">reset =</span> <span class="cf">function</span>() {
+      self<span class="op">$</span>step_cnt =<span class="st"> </span><span class="dv">0</span>
+      self<span class="op">$</span>s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">FALSE</span>
+      self<span class="op">$</span>s_r_d_info
     },
 
-    <span class="dt">afterAll =</span> function() {
-      <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/print">print</a></span>(<span class="st">"interaction finished!"</span>)
+    <span class="dt">afterAll =</span> <span class="cf">function</span>() {
+      <span class="kw">print</span>(<span class="st">"interaction finished!"</span>)
       <span class="co"># what to do after the whole learning is finished?  could be left empty</span>
     }
   )
 )</code></pre></div>
 <p>Afterwards you could choose one of the available Agents to learn on this newly defined environments.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span>MyEnv$<span class="kw">new</span>()
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span>MyEnv<span class="op">$</span><span class="kw">new</span>()
 <span class="kw"><a href="../reference/listAvailAgent.html">listAvailAgent</a></span>(env)
 ## $AgentDQN
 ## [1] "Deep Q learning"
@@ -173,7 +173,7 @@ MyEnv =<span class="st"> </span>R6::<span class="kw"><a href="https://www.rdocum
 ## [1] "Actor Critic Method"
 conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentDQN"</span>)
 agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
-perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="dv">3</span>)
+perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">learn</span>(<span class="dv">3</span>)
 ## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
 ##  Episode Over 
 ## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
@@ -207,8 +207,9 @@ perf =<span class="st"> </span>agent$<span class="kw">learn</span>(<span class="
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.2.0.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
+
       </footer>
 </div>
 

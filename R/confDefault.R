@@ -86,7 +86,7 @@ rlR.conf.AC = function() {
 }
 
 
-#' @title getDefaultConf
+#' @title get Default Configuration according to agent name
 #' @description List defaults hyper-parameters
 #' @param agent_name The name for Agent
 #' @export
@@ -105,7 +105,7 @@ getDefaultConf = function(agent_name) {
     return(res)
 }
 
-#' @title showDefaultConf
+#' @title show Default Configuration
 #' @description List defaults hyper-parameters in dataframe
 #' @export
 #' @examples

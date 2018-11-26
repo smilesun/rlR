@@ -1,6 +1,6 @@
-#' Base class should only implement the interface
-#' Difference between different child class is what is stored in samples(the transition index only or the pair of state)
-#' Number of Transitions must be even
+# Base class should only implement the interface
+# Difference between different child class is what is stored in samples(the transition index only or the pair of state)
+# Number of Transitions must be even
 ReplayMem = R6::R6Class("ReplayMem",
   public = list(
     samples = NULL,
@@ -16,7 +16,7 @@ ReplayMem = R6::R6Class("ReplayMem",
       self$conf = conf
       self$agent = agent
       # observ_stack_len is set via the Environment::setAgent() function
-      #' agent = makeAgent("AgentFDQN", env, conf) has incorporated environment into Agent.
+      # agent = makeAgent("AgentFDQN", env, conf) has incorporated environment into Agent.
       self$reset()
     },
 
@@ -27,14 +27,14 @@ ReplayMem = R6::R6Class("ReplayMem",
       self$size = 0L
     },
 
-    #' mkInst can be modified to do preprocessing to state.old
+    # mkInst can be modified to do preprocessing to state.old
     mkInst = function(state.old, action, reward, state.new, done, info) {
       list(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = info)
     },
 
-    #' usage: AgentBase:Observe()
-    #'ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
-    #'  self$mem$add(ins)
+    # usage: AgentBase:Observe()
+    #ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
+    #  self$mem$add(ins)
     add = function(ins) {
       pos = (self$len + 1L) %% self$capacity   # self$len can be bigger than capacity
       if (pos == 0) pos = self$capacity  # boundary case if modulo is zero, put new entry at last position
@@ -98,7 +98,7 @@ ReplayMemIndex = R6::R6Class("ReplayMemIndex",
 
     sample.fun = function(k) {
       k = min(k, self$size)
-      #' no need to remap the replayed.idx since 
+      # no need to remap the replayed.idx since 
       self$replayed.idx = sample(self$size)[1L:k]
       list.res = lapply(self$replayed.idx, function(x) self$getState(self$samples[[x]]))
       return(list.res)
@@ -107,9 +107,9 @@ ReplayMemIndex = R6::R6Class("ReplayMemIndex",
 )
 
 
-#' States are stored sequencially, s_1,s_2,....s_N where N is the capacity The replay memory size is always even number since transitions s_i to s_{i+1} contain 2 states. For Uniform Stack, since s_i,s_i+1 are stacked to form a new state which introduces another level of complexity
-#' States should be stored in unit form 0-128 to represent enough information and converted back to float again
-#' Note that normalized float can not be converted to int since they reduces either to -1 or +1, which is binarize the image!!!
+# States are stored sequencially, s_1,s_2,....s_N where N is the capacity The replay memory size is always even number since transitions s_i to s_{i+1} contain 2 states. For Uniform Stack, since s_i,s_i+1 are stacked to form a new state which introduces another level of complexity
+# States should be stored in unit form 0-128 to represent enough information and converted back to float again
+# Note that normalized float can not be converted to int since they reduces either to -1 or +1, which is binarize the image!!!
 ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
   inherit = ReplayMemUniform,
   public = list(
@@ -142,8 +142,8 @@ ReplayMemUniformStack = R6::R6Class("ReplayMemUniformStack",
     },
 
     #  in agent_base.R
-    #' ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
-    #' self$mem$add(ins)
+    # ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
+    # self$mem$add(ins)
    mkInst = function(state.old, action, reward, state.new, done, info) {
       list(state.old = self$arr2iarr(state.old), action = action, reward = reward, state.new = self$arr2iarr(state.new), done = done, info = info)
     },

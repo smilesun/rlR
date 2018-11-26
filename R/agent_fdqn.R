@@ -1,13 +1,13 @@
-#' @title Frozen target Q learning
-#'
-#' @format \code{\link{R6Class}} object
-#' @description Frozen target Q learning
-#'
-#' @section Methods:
-#' Inherited from \code{AgentArmed}:
-#' @inheritSection AgentArmed Methods
-#'
-#' @return [\code{\link{AgentFDQN}}].
+# @title Frozen target Q learning
+#
+# @format \code{\link{R6Class}} object
+# @description Frozen target Q learning
+#
+# @section Methods:
+# Inherited from \code{AgentArmed}:
+# @inheritSection AgentArmed Methods
+#
+# @return [\code{\link{AgentFDQN}}].
 AgentFDQN = R6::R6Class("AgentFDQN",
   inherit = AgentDQN,
   public = list(

@@ -1,13 +1,13 @@
-#' @title  DQN
-#'
-#' @format \code{\link{R6Class}} object
-#' @description Deep Q Network
-#'
-#' @section Methods:
-#' Inherited from \code{AgentArmed}:
-#' @inheritSection AgentArmed Methods
-#'
-#' @return [\code{\link{AgentDQN}}].
+# @title  DQN
+#
+# @format \code{\link{R6Class}} object
+# @description Deep Q Network
+#
+# @section Methods:
+# Inherited from \code{AgentArmed}:
+# @inheritSection AgentArmed Methods
+#
+# @return [\code{\link{AgentDQN}}].
 AgentDQN = R6::R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(

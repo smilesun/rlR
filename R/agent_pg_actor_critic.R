@@ -1,13 +1,13 @@
-#' @title AgentActorCritic
-#'
-#' @format \code{\link{R6Class}} object
-#' @description ActorCritic Agent
-#'
-#' @section Methods:
-#' Inherited from \code{AgentArmed}:
-#' @inheritSection AgentArmed Methods
-#'
-#' @return [\code{\link{AgentActorCritic}}].
+# @title AgentActorCritic
+#
+# @format \code{\link{R6Class}} object
+# @description ActorCritic Agent
+#
+# @section Methods:
+# Inherited from \code{AgentArmed}:
+# @inheritSection AgentArmed Methods
+#
+# @return [\code{\link{AgentActorCritic}}].
 AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(

@@ -114,7 +114,7 @@ model %>%
   return(TRUE)
 }
 
-#' @title listAvailAgent
+#' @title List implemented Agents
 #' @description List all implemented Agents
 #' @param env Environment to run the agent on.
 #' @export
@@ -124,7 +124,7 @@ listAvailAgent = function(env) {
   else return(tb[1:6L])
 }
 
-#' @title listGymEnvs
+#' @title list environments from OPENAI gym
 #' @description List all Gym Environments without testing them
 #' @export
 listGymEnvs = function() {
