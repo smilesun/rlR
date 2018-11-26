@@ -42,6 +42,7 @@ subsample = function(state) {
 
 
 ```{r}
+library(rlR)
 env = makeGymEnv("Seaquest-v0", observ_stack_len = 2L, state_preprocess = list(fun = subsample))
 env$overview()
 ```
