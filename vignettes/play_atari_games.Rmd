@@ -30,48 +30,41 @@ os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
 ## Convolutional Neural Network Structure
 
 ## Atari Environment
-One episode of pong is around 300 steps.
+Since the input state space is RGB image, we would like to down sample the state space by the following function
+```{r}
+subsample = function(state) {
+  I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
+  I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 3L]  # RGB to gray formula
+  res = reticulate::array_reshape(I, c(dim(I), 1L))
+  return(res)
+}
+```
 
 
 ```{r}
-library(rlR)
-env = makeGymEnv("Seaquest-v0", repeat_n_act = 1, observ_stack_len = 4L)
+env = makeGymEnv("Seaquest-v0", observ_stack_len = 2L, state_preprocess = list(fun = subsample))
 env$overview()
 ```
 
 ```{r eval=FALSE}
 env$snapshot()
 env$snapshot(preprocess = F)
-
 ```
-
-
-```{r}
-env = makeGymEnv("Pong-v0", repeat_n_act = 1, observ_stack_len = 4L, act_cheat = 1:4)
-env$overview()
-```
-
-```{r eval=FALSE}
-env$snapshot()
-env$snapshot(preprocess = F)
-
-```
-
-
 
 ```{r}
 conf = getDefaultConf("AgentFDQN")
 conf$set(replay.batchsize = 32, 
-  replay.freq = 4L, 
+  replay.freq = 1L, 
   console = TRUE, 
   agent.lr.decay = 1, 
   agent.lr = 0.00025, 
-  replay.memname = "UniformStack", 
-  render = TRUE, 
-  policy.decay = exp(-1), 
+  agent.update.target.freq = 1e4,
+  replay.memname = "Png", 
+  render = T, 
   policy.minEpsilon = 0.1, 
-  agent.start.learn = 350L, 
-  replay.mem.size = 1e5, 
+  agent.start.learn = 1e4L, 
+  policy.aneal.steps = 3e5,
+  replay.mem.size = 3e5, 
   log = FALSE, 
   agent.update.target.freq = 1000L, 
   agent.clip.td = TRUE, 
@@ -80,9 +73,8 @@ conf$set(replay.batchsize = 32,
 
 
 ```{r}
-library(keras)
 makeCnnCritic = function(state_dim, act_cnt) {
-  requireNamespace("keras")
+  require("keras")
   text = paste("model <- keras_model_sequential();",
   'model %>%',
   ' layer_conv_2d(filter = 16, kernel_size = c(8,8), strides = c(4, 4), 
@@ -108,5 +100,5 @@ agent$customizeBrain(value_fun = makeCnnCritic)
 ```
 
 ```{r eval=FALSE}
-perf = agent$learn(2L)
+perf = agent$learn(5000L)
 ```
