@@ -158,11 +158,6 @@ conf$<span class="kw">set</span>(<span class="dt">replay.batchsize =</span> <spa
   <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/function">return</a></span>(model)
 }</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentFDQN"</span>, env, conf)
-## Called from: .subset2(public_bind_env, "initialize")(...)
-## debug: self$r.vec.epi = vector(mode = "numeric", length = self$agent$env$maxStepPerEpisode)
-## debug: self$store_model_flag = self$agent$conf$get("agent.store.model")
-## debug: if (is.null(self$store_model_flag)) self$store_model_flag = FALSE
-## debug: if (self$store_model_flag) self$list_models = list()
 agent$<span class="kw">customizeBrain</span>(<span class="dt">value_fun =</span> makeCnnCritic)
 ## Loading required package: keras</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">perf =<span class="st"> </span>agent$<span class="kw">learn</span>(5000L)</code></pre></div>

@@ -8,7 +8,6 @@
 #' @inheritSection AgentArmed Methods
 #'
 #' @return [\code{\link{AgentActorCritic}}].
-#' @export
 AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(

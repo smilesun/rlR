@@ -4,7 +4,6 @@
 #' @description ReinforceWithBaseline
 #'
 #' @return [\code{\link{AgentPGBaseline}}].
-#' @export
 AgentPGBaseline = R6::R6Class("AgentPGBaseline",
   inherit = AgentPG,
   public = list(
