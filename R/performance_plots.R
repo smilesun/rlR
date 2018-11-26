@@ -122,11 +122,14 @@ PerformancePlots = R6::R6Class(
       if (is.null(input))
         input = rep(0, ncol(self$agent$replay.x))
 
+      if (is.null(iteration))
+        iteration = length(self$list_models)
+
       # set up data point generation
       state_space_l = as.list(input)
 
-      min_s = min(self$agent$replay.x[[x_axis]])
-      max_s = max(self$agent$replay.x[[x_axis]])
+      min_s = min(self$agent$replay.x[, x_axis])
+      max_s = max(self$agent$replay.x[, x_axis])
       # create a sequence from min to max (of the chosen state dimension) with 10 steps
       state_space_l[[x_axis]] = seq(
         from = min_s,
@@ -146,8 +149,16 @@ PerformancePlots = R6::R6Class(
         paste0("ActionVal_Dim_", 1:ncol(self$agent$replay.y))
       )
 
+      minibatch = cbind(self$agent$replay.x, self$agent$replay.y) %>%
+        data.frame()
+
+      names(minibatch) = c(
+        paste0("State_Dim_",     1:ncol(self$agent$replay.x)),
+        paste0("ActionVal_Dim_", 1:ncol(self$agent$replay.y))
+      )
+
       # TODO: reimplement color and size argument
-      s_data %>%
+      minibatch %>%
         plotly::plot_ly(
           x = ~ get(paste0("State_Dim_",     x_axis)),
           y = ~ get(paste0("ActionVal_Dim_", y_axis)),
@@ -174,7 +185,14 @@ PerformancePlots = R6::R6Class(
     },
 
 
-    plot_3d_action_value = function(x_axis = 1L, y_axis = 2L, z_axis = 1L, input = NULL, iteration = NULL) {
+    plot_3d_action_value = function(
+      x_axis    = 1L,
+      y_axis    = 2L,
+      z_axis    = 1L,
+      input     = NULL,
+      iteration = NULL,
+      showscale = TRUE
+    ) {
 
       #' @description Interactive 3d plot of the action value function. The points are actual values of the last batch,
       #'   the line is the prediction based on the trained model.
@@ -192,13 +210,16 @@ PerformancePlots = R6::R6Class(
       if (is.null(input))
         input = rep(0, ncol(self$agent$replay.x))
 
+      if (is.null(iteration))
+        iteration = length(self$list_models)
+
       # set up data point generation
       state_space_l = as.list(input)
 
-      min_sx = min(self$agent$replay.x[[x_axis]])
-      max_sx = max(self$agent$replay.x[[x_axis]])
-      min_sy = min(self$agent$replay.x[[y_axis]])
-      max_sy = max(self$agent$replay.x[[y_axis]])
+      min_sx = min(self$agent$replay.x[, x_axis])
+      max_sx = max(self$agent$replay.x[, x_axis])
+      min_sy = min(self$agent$replay.x[, y_axis])
+      max_sy = max(self$agent$replay.x[, y_axis])
 
       # create a sequence from min to max (of the chosen state dimension) with 10 steps
       state_space_l[[x_axis]] = seq(
@@ -225,8 +246,31 @@ PerformancePlots = R6::R6Class(
         paste0("ActionVal_Dim_", 1:ncol(self$agent$replay.y))
       )
 
+      # create helper function for formatting the data points plus their predictions
+      helper = function(df) {
+        result = list(
+          x = unique(df[[x_axis]]),
+          y = unique(df[[y_axis]])
+        )
+
+        for (i in 1:ncol(self$agent$replay.y))
+          result[[paste0("ActionVal_Dim_", i)]] =
+            matrix(df[[length(df)-ncol(self$agent$replay.y)+i]], nrow = 100, ncol = 100, byrow = TRUE)
+
+        return(result)
+      }
+      state_space %<>% helper
+
+      minibatch = cbind(self$agent$replay.x, self$agent$replay.y) %>%
+        data.frame()
+
+      names(minibatch) = c(
+        paste0("State_Dim_",     1:ncol(self$agent$replay.x)),
+        paste0("ActionVal_Dim_", 1:ncol(self$agent$replay.y))
+      )
+
       # TODO: reimplement color and size argument
-      s_data %>%
+      minibatch %>%
         plotly::plot_ly(
           x = ~ get(paste0("State_Dim_",     x_axis)),
           y = ~ get(paste0("State_Dim_",     y_axis)),
@@ -234,23 +278,24 @@ PerformancePlots = R6::R6Class(
           mode = "markers",
           color = I("black"), #if (input$color == "-") I("black") else ~ get(input$color),
           size  = I(3), #if (input$size  == "-") I(3)       else ~ get(input$size),
+          showlegend = FALSE,
           type  = "scatter3d"
         ) %>%
         plotly::layout(
           dragmode = "turntable",
-          showlegend = TRUE,
           scene = list(
-            xaxis  = list(title = paste0("State_Dim_",     x_axis), titlefont = list(size = 25)),
-            yaxis  = list(title = paste0("State_Dim_",     y_axis), titlefont = list(size = 25)),
-            zaxis  = list(title = paste0("ActionVal_Dim_", z_axis), titlefont = list(size = 25), tickangle = 90)
+            xaxis  = list(title = paste0("State_Dim_",     x_axis), titlefont = list(size = 15)),
+            yaxis  = list(title = paste0("State_Dim_",     y_axis), titlefont = list(size = 15)),
+            zaxis  = list(title = paste0("ActionVal_Dim_", z_axis), titlefont = list(size = 15))#, tickangle = 90)
           )
         ) %>%
         plotly::add_surface(
           data = state_space,
-          x = ~ get(paste0("State_Dim_",     x_axis)),
-          y = ~ get(paste0("State_Dim_",     y_axis)),
+          x = ~ x,
+          y = ~ y,
           z = ~ get(paste0("ActionVal_Dim_", z_axis)),
           colorscale = "Viridis",
+          showscale = showscale,
           opacity = 0.95,
           autocolorscale = FALSE
         )
