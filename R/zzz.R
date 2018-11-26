@@ -66,8 +66,12 @@ checkPyDep = function() {
 installDep2SysVirtualEnv = function(gpu = FALSE) {  # nocov start
   cat(sprintf("\ninstalling dependencies using %s \n",  Sys.which("virtualenv")))
   # install_keras will install tensorflow along into the virtual environment called "r-tensorflow"
-  if (gpu) keras::install_keras(method = "virtualenv", tensorflow = "1.8.0-gpu", extra_packages = c("gym"))
-  else keras::install_keras(method = "virtualenv", tensorflow = "1.8.0", extra_packages = c("gym"))
+  if (gpu) {
+    version = paste0("1.8.0", "-gpu")
+  } else {
+    version = "1.8.0"
+  }
+  keras::install_keras(method = "virtualenv", tensorflow = version, extra_packages = c("gym==0.10.5", "cmake==3.12.0", "atari-py==0.1.6"))
   #reticulate::py_install()
   # sudo pip instlal uwsgi
   # sudo apt-get install python3-pip
@@ -82,8 +86,12 @@ installDep2SysVirtualEnv = function(gpu = FALSE) {  # nocov start
 installDepConda = function(conda_path = "auto", gpu = FALSE) { # nocov start
   if (conda_path == "auto") cat(sprintf("\ninstalling dependencies using %s \n", Sys.which("conda")))
   # install_keras will install tensorflow along into the virtual environment called "r-tensorflow"
-  if (gpu) keras::install_keras(method = "conda", conda = conda_path, tensorflow = "1.8.0-gpu", extra_packages = c("gym"))
-  else keras::install_keras(method = "conda", conda = conda_path, tensorflow = "1.8.0", extra_packages = c("gym"))
+  if (gpu) {
+    version = paste0("1.8.0", "-gpu")
+  } else {
+    version = "1.8.0"
+  }
+  keras::install_keras(method = "conda", conda = conda_path, tensorflow = version, extra_packages = c("gym==0.10.5",  "cmake==3.12.0","atari-py==0.1.6"))
 } # nocov end
 
 
