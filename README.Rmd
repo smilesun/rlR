@@ -111,7 +111,7 @@ env$overview()
 
 
 If you have R package "imager" installed, you could get a snapshot of the environment by
-```{r}
+```{r, eval=FALSE}
 env$snapshot()
 ```
 

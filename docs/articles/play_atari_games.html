@@ -160,7 +160,8 @@ conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">replay
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentFDQN"</span>, env, conf)
 agent<span class="op">$</span><span class="kw">customizeBrain</span>(<span class="dt">value_fun =</span> makeCnnCritic)
 ## Loading required package: keras</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">learn</span>(5000L)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent<span class="op">$</span><span class="kw">learn</span>(5000L)
+agent<span class="op">$</span><span class="kw">plotPerf</span>()</code></pre></div>
 </div>
 </div>
   </div>

@@ -193,12 +193,13 @@ pip install virtualenv
 ## 
 ## $AgentActorCritic
 ## [1] "Actor Critic Method"</code></pre>
-<p>If you have R package “imager” installed, you could get a snapshot of the environment by</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span><span class="kw">overview</span>()</code></pre></div>
 <pre><code>## 
 ## action cnt: 2 
 ## state original dim: 4 
 ## discrete action</code></pre>
+<p>If you have R package “imager” installed, you could get a snapshot of the environment by</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span><span class="kw">snapshot</span>()</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">width=</span><span class="dv">1000</span>)
 <span class="kw"><a href="reference/listAvailConf.html">listAvailConf</a></span>()[, .(name, note, name)]</code></pre></div>
 <pre><code>##                         name                                                                                                                      note                     name
@@ -283,6 +284,7 @@ perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">le
 <h2>Developers</h2>
 <ul class="list-unstyled">
 <li>Xudong Sun <br><small class="roles"> Author, maintainer </small>  </li>
+<li><a href="authors.html">All authors...</a></li>
 </ul>
 </div>
 
