@@ -101,5 +101,6 @@ agent$customizeBrain(value_fun = makeCnnCritic)
 ```
 
 ```{r eval=FALSE}
-perf = agent$learn(5000L)
+agent$learn(5000L)
+agent$plotPerf()
 ```
