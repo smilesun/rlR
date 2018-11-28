@@ -104,9 +104,15 @@ env = makeGymEnv("CartPole-v1")
 listAvailAgent(env)
 ```
 
-If you have R package "imager" installed, you could get a snapshot of the environment by
 ```{r}
 env$overview()
+```
+
+
+
+If you have R package "imager" installed, you could get a snapshot of the environment by
+```{r}
+env$snapshot()
 ```
 
 
