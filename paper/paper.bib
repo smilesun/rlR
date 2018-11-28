@@ -1,0 +1,77 @@
+@article{Mnih2015,
+abstract = {The theory of reinforcement learning provides a normative account 1 , deeply rooted in psychological 2 and neuroscientific 3 perspectives on animal behaviour, of how agents may optimize their control of an environment. To use reinforcement learning successfully in situations approaching real-world complexity, however, agents are confronted with a difficult task: they must derive efficient representations of the environment from high-dimensional sensory inputs, and use these to generalize past experience to new situations. Remarkably, humans and other animals seem to solve this problem through a harmonious combination of reinforcement learning and hierarchical sensory pro-cessing systems 4,5 , the former evidenced by a wealth of neural data revealing notable parallels between the phasic signals emitted by dopa-minergic neurons and temporal difference reinforcement learning algorithms 3 . While reinforcement learning agents have achieved some successes in a variety of domains 6–8 , their applicability has previously been limited to domains in which useful features can be handcrafted, or to domains with fully observed, low-dimensional state spaces. Here we use recent advances in training deep neural networks 9–11 to develop a novel artificial agent, termed a deep Q-network, that can learn successful policies directly from high-dimensional sensory inputs using end-to-end reinforcement learning. We tested this agent on the challenging domain of classic Atari 2600 games 12},
+annote = {privy
+ hidden from general view or use: 
+A privy place to rest and think.
+2. (followed by `to') informed about something secret or not generally known: 
+Privy to the details of the conspiracy.},
+archivePrefix = {arXiv},
+arxivId = {1312.5602},
+author = {Mnih, Volodymyr and Kavukcuoglu, Koray and Silver, David and Rusu, Andrei a and Veness, Joel and Bellemare, Marc G and Graves, Alex and Riedmiller, Martin and Fidjeland, Andreas K and Ostrovski, Georg and Petersen, Stig and Beattie, Charles and Sadik, Amir and Antonoglou, Ioannis and King, Helen and Kumaran, Dharshan and Wierstra, Daan and Legg, Shane and Hassabis, Demis},
+doi = {10.1038/nature14236},
+eprint = {1312.5602},
+isbn = {1476-4687 (Electronic) 0028-0836 (Linking)},
+issn = {0028-0836},
+journal = {Nature},
+mendeley-groups = {reinforcementLearningBiology/deep,reinforcementLearningBiology},
+number = {7540},
+pages = {529--533},
+pmid = {25719670},
+title = {{Human-level control through deep reinforcement learning}},
+url = {http://dx.doi.org/10.1038/nature14236},
+volume = {518},
+year = {2015}
+}
+@article{Silver2016a,
+abstract = {The game of Go has long been viewed as the most challenging of classic games for artificial intelligence owing to its enormous search space and the difficulty of evaluating board positions and moves. Here we introduce a new approach to computer Go that uses ‘value networks' to evaluate board positions and ‘policy networks' to select moves. These deep neural networks are trained by a novel combination of supervised learning from human expert games, and reinforcement learning from games of self-play. Without any lookahead search, the neural networks play Go at the level of state-of-the-art Monte Carlo tree search programs that simulate thousands of random games of self-play. We also introduce a new search algorithm that combines Monte Carlo simulation with value and policy networks. Using this search algorithm, our program AlphaGo achieved a 99.8{\%} winning rate against other Go programs, and defeated the human European Go champion by 5 games to 0. This is the first time that a computer program has defeated a human professional player in the full-sized game of Go, a feat previously thought to be at least a decade away.},
+annote = {the value function and policy function here is not updated using gradient descent of Bellman equation},
+author = {Silver, David and Huang, Aja and Maddison, Chris J. and Guez, Arthur and Sifre, Laurent and van den Driessche, George and Schrittwieser, Julian and Antonoglou, Ioannis and Panneershelvam, Veda and Lanctot, Marc and Dieleman, Sander and Grewe, Dominik and Nham, John and Kalchbrenner, Nal and Sutskever, Ilya and Lillicrap, Timothy and Leach, Madeleine and Kavukcuoglu, Koray and Graepel, Thore and Hassabis, Demis},
+doi = {10.1038/nature16961},
+isbn = {1476-4687 (Electronic)$\backslash$r0028-0836 (Linking)},
+issn = {0028-0836},
+journal = {Nature},
+mendeley-groups = {reinforcementLearningBiology/deep},
+number = {7587},
+pages = {484--489},
+pmid = {26819042},
+publisher = {Nature Publishing Group},
+title = {{Mastering the game of Go with deep neural networks and tree search}},
+url = {http://dx.doi.org/10.1038/nature16961},
+volume = {529},
+year = {2016}
+}
+@inproceedings{Lillicrap2016a,
+abstract = {We adapt the ideas underlying the success of Deep Q-Learning to the continuous action domain. We present an actor-critic, model-free algorithm based on the deterministic policy gradient that can operate over continuous action spaces. Using the same learning algorithm, network architecture and hyper-parameters, our algorithm robustly solves more than 20 simulated physics tasks, including classic problems such as cartpole swing-up, dexterous manipulation, legged locomotion and car driving. Our algorithm is able to find policies whose performance is competitive with those found by a planning algorithm with full access to the dynamics of the domain and its derivatives. We further demonstrate that for many of the tasks the algorithm can learn policies end-to-end: directly from raw pixel inputs.},
+annote = {batch normalization: each dimension to have unit mean and variance
+
+Ornstein-Uhlenbeck process},
+archivePrefix = {arXiv},
+arxivId = {1509.02971},
+author = {Lillicrap, Timothy P. and Hunt, Jonathan J. and Pritzel, Alexander and Heess, Nicolas and Erez, Tom and Tassa, Yuval and Silver, David and Wierstra, Daan},
+booktitle = {ICLR},
+doi = {10.1561/2200000006},
+eprint = {1509.02971},
+file = {:home/sunxd/.local/share/data/Mendeley Ltd./Mendeley Desktop/Downloaded/Lillicrap et al. - 2016 - Continuous control with deep reinforcement learning.pdf:pdf},
+isbn = {2200000006},
+issn = {1935-8237},
+mendeley-groups = {reinforcementLearningBiology/deep},
+pmid = {24966830},
+title = {{Continuous control with deep reinforcement learning}},
+url = {http://arxiv.org/abs/1509.02971},
+year = {2016}
+}
+
+@Manual{Dumke2018,
+  title = {reinforcelearn: Reinforcement Learning},
+  author = {Markus Dumke},
+  year = {2018},
+  note = {R package version 0.1.0},
+  url = {https://CRAN.R-project.org/package=reinforcelearn},
+}
+
+@misc{Nicolas2018,
+  Author = {Nicolas Pröllochs and Stefan Feuerriegel},
+  Title = {Reinforcement Learning in R},
+  Year = {2018},
+  Eprint = {arXiv:1810.00240},
+}

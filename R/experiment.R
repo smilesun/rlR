@@ -27,9 +27,11 @@ makeGymEnv = function(name ="CartPole-v0", ...) {
 #' @param ... Other Parameters to pass to GymEnv
 #' @return ggplot2 object
 #' @export
-# res = repExperiment(sname = "CartPole-v0", aname = "AgentFDQN", conf = getDefaultConf("AgentFDQN"), nrep = 5, nepi = 200)
+# library(doMC)
+# registerDoMC(4)
+# res = repExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = getDefaultConf("AgentDQN"), nrep = 5, nepi = 200)
 repExperiment = function(sname, aname, conf, nrep = 3L, nepi, ...) {
-  requireNamespace(foreach)
+  #requireNamespace(foreach)
   list.res = foreach::foreach(i = 1:nrep) %dopar% {
     env = makeGymEnv(sname, ...)
     rl.agent = makeAgent(aname, env, conf = conf)
