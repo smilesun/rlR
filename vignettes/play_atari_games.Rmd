@@ -67,7 +67,6 @@ conf$set(replay.batchsize = 32,
   policy.aneal.steps = 3e5,
   replay.mem.size = 3e5, 
   log = FALSE, 
-  agent.update.target.freq = 1000L, 
   agent.clip.td = TRUE, 
   policy.decay.type = "decay_linear")
 ```
