@@ -27,12 +27,11 @@ makeGymEnv = function(name ="CartPole-v0", ...) {
 #' @param ... Other Parameters to pass to GymEnv
 #' @return ggplot2 object
 #' @export
-# repExperiment(aname = "AgentFDQN", conf = getDefaultConf("AgentFDQN"), nepi = 100)
-repExperiment = function(sname ="CartPole-v0", aname, conf, nrep = 3L, nepi, ...) {
-  library(foreach)
+# res = repExperiment(sname = "CartPole-v0", aname = "AgentFDQN", conf = getDefaultConf("AgentFDQN"), nrep = 5, nepi = 200)
+repExperiment = function(sname, aname, conf, nrep = 3L, nepi, ...) {
+  require(foreach)
   list.res = foreach::foreach(i = 1:nrep) %do% {
-    #env = makeGymEnv(sname, ...)
-    env = makeGymEnv(sname)
+    env = makeGymEnv(sname, ...)
     rl.agent = makeAgent(aname, env, conf = conf)
     perf = rl.agent$learn(nepi)
     list(agent = rl.agent, perf = perf)
@@ -53,5 +52,5 @@ repExperiment = function(sname ="CartPole-v0", aname, conf, nrep = 3L, nepi, ...
   init = lapply(init, function(vec) vec/nrep)
   agent$interact$perf$list.reward.epi = init
   plot = agent$plotPerf()
-  return(plot)
+  return(list(plot = plot, list.r = list.r))
 }

@@ -9,6 +9,7 @@
 #' @import ggplot2
 #' @import tensorflow
 #' @import abind
+#' @import foreach
 
 NULL # nocov
 

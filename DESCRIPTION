@@ -25,7 +25,8 @@ Imports:
     ggplot2,
     openssl,
     magrittr,
-    abind
+    abind,
+    foreach
 LazyData: true
 RoxygenNote: 6.1.0
 BugReports: https://github.com/smilesun/rlR/issues
