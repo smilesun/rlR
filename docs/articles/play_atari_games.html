@@ -135,7 +135,6 @@ conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">replay
   <span class="dt">policy.aneal.steps =</span> <span class="fl">3e5</span>,
   <span class="dt">replay.mem.size =</span> <span class="fl">3e5</span>, 
   <span class="dt">log =</span> <span class="ot">FALSE</span>, 
-  <span class="dt">agent.update.target.freq =</span> 1000L, 
   <span class="dt">agent.clip.td =</span> <span class="ot">TRUE</span>, 
   <span class="dt">policy.decay.type =</span> <span class="st">"decay_linear"</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">makeCnnCritic =<span class="st"> </span><span class="cf">function</span>(state_dim, act_cnt) {
