@@ -24,6 +24,7 @@ makeGymEnv = function(name ="CartPole-v0", ...) {
 #' @param conf Configuration object
 #' @param nrep Number of repetitions
 #' @param nepi Number of episode to learn
+#' @param value_fun customized neural network as value function approximator, default NULL
 #' @param ... Other Parameters to pass to GymEnv
 #' @return list of ggplot2 object for performance and list of reward per experiment per episode
 #' @export
