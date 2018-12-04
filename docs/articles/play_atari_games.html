@@ -89,7 +89,7 @@
       <h1>Play Atari Games</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/play_atari_games.Rmd"><code>vignettes/play_atari_games.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/vignettes/play_atari_games.Rmd"><code>vignettes/vignettes/play_atari_games.Rmd</code></a></small>
       <div class="hidden name"><code>play_atari_games.Rmd</code></div>
 
     </div>
@@ -106,37 +106,43 @@
 <div id="atari-environment" class="section level2">
 <h2 class="hasAnchor">
 <a href="#atari-environment" class="anchor"></a>Atari Environment</h2>
-<p>Since the input state space is RGB image, we would like to down sample the state space by the following function</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">subsample =<span class="st"> </span><span class="cf">function</span>(state) {
-  I =<span class="st"> </span>state[<span class="kw">seq</span>(30L, 210L, 3L), <span class="kw">seq</span>(1L, 160L, 2L), ]
-  I =<span class="st"> </span><span class="fl">0.299</span> <span class="op">*</span><span class="st"> </span>I[, , 1L] <span class="op">+</span><span class="st"> </span><span class="fl">0.587</span> <span class="op">*</span><span class="st"> </span>I[, , 2L] <span class="op">+</span><span class="st"> </span><span class="fl">0.114</span> <span class="op">*</span><span class="st"> </span>I[, , 3L]  <span class="co"># RGB to gray formula</span>
-  res =<span class="st"> </span>reticulate<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/reticulate/topics/array_reshape">array_reshape</a></span>(I, <span class="kw">c</span>(<span class="kw">dim</span>(I), 1L))
-  <span class="kw">return</span>(res)
-}</code></pre></div>
+<p>For Atari Games, it makes more since to stack several recent frames since the agent need to know what is happening and with only one frame it is hard to judge the current situation. So we have the <code>observ_stack_len</code> parameter.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
-env =<span class="st"> </span><span class="kw"><a href="../reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"Seaquest-v0"</span>, <span class="dt">observ_stack_len =</span> 2L, <span class="dt">state_preprocess =</span> <span class="kw">list</span>(<span class="dt">fun =</span> subsample))
-env<span class="op">$</span><span class="kw">overview</span>()
+env =<span class="st"> </span><span class="kw"><a href="../reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"Seaquest-v0"</span>, <span class="dt">observ_stack_len =</span> 4L, <span class="dt">state_preprocess =</span> <span class="kw">list</span>(<span class="dt">fun =</span> rlR<span class="op">:::</span>subsample))</code></pre></div>
+<p>Since the input state space is RGB image, we would like to down sample the state space by the following function</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">rlR<span class="op">:::</span>subsample
+## function (state) 
+## {
+##     I = state[seq(30L, 210L, 3L), seq(1L, 160L, 2L), ]
+##     I = 0.299 * I[, , 1L] + 0.587 * I[, , 2L] + 0.114 * I[, , 
+##         3L]
+##     res = array_reshape(I, c(dim(I), 1L))
+##     return(res)
+## }
+## &lt;environment: namespace:rlR&gt;</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span><span class="kw">overview</span>()
 ## 
 ## action cnt: 18 
 ## state original dim: 210, 160, 3 
 ## state dim after preprocessing: 61, 80, 1 
-## with stacking: 61, 80, 2 
+## with stacking: 61, 80, 4 
 ## discrete action</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span><span class="kw">snapshot</span>()
 env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">preprocess =</span> F)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentFDQN"</span>)
-conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">replay.batchsize =</span> <span class="dv">32</span>, 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentFDQN"</span>)</code></pre></div>
+<p>The rlR package has been optimized to handle replay memory in a very efficient way, to ensure performance, you could also use the following parameters which has a bigger replay memory.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">replay.batchsize =</span> <span class="dv">32</span>, 
   <span class="dt">replay.freq =</span> 1L, 
   <span class="dt">console =</span> <span class="ot">TRUE</span>, 
   <span class="dt">agent.lr.decay =</span> <span class="dv">1</span>, 
   <span class="dt">agent.lr =</span> <span class="fl">0.00025</span>, 
   <span class="dt">agent.update.target.freq =</span> <span class="fl">1e4</span>,
   <span class="dt">replay.memname =</span> <span class="st">"Png"</span>, 
-  <span class="dt">render =</span> T, 
+  <span class="dt">render =</span> F, 
   <span class="dt">policy.minEpsilon =</span> <span class="fl">0.1</span>, 
-  <span class="dt">agent.start.learn =</span> <span class="fl">1e4</span>L, 
-  <span class="dt">policy.aneal.steps =</span> <span class="fl">3e5</span>,
-  <span class="dt">replay.mem.size =</span> <span class="fl">3e5</span>, 
+  <span class="dt">agent.start.learn =</span> 5e4L, 
+  <span class="dt">policy.aneal.steps =</span> <span class="fl">1e6</span>,
+  <span class="dt">replay.mem.size =</span> <span class="fl">1e6</span>, 
   <span class="dt">log =</span> <span class="ot">FALSE</span>, 
   <span class="dt">agent.clip.td =</span> <span class="ot">TRUE</span>, 
   <span class="dt">policy.decay.type =</span> <span class="st">"decay_linear"</span>)</code></pre></div>
@@ -162,7 +168,7 @@ conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">replay
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentFDQN"</span>, env, conf)
 agent<span class="op">$</span><span class="kw">customizeBrain</span>(<span class="dt">value_fun =</span> makeCnnCritic)
 ## Loading required package: keras</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent<span class="op">$</span><span class="kw">learn</span>(5000L)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent<span class="op">$</span><span class="kw">learn</span>(1000L)
 agent<span class="op">$</span><span class="kw">plotPerf</span>()</code></pre></div>
 </div>
 </div>
