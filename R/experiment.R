@@ -24,17 +24,19 @@ makeGymEnv = function(name ="CartPole-v0", ...) {
 #' @param conf Configuration object
 #' @param nrep Number of repetitions
 #' @param nepi Number of episode to learn
+#' @param value_fun customized neural network as value function approximator, default NULL
 #' @param ... Other Parameters to pass to GymEnv
-#' @return ggplot2 object
+#' @return list of ggplot2 object for performance and list of reward per experiment per episode
 #' @export
 # library(doMC)
 # registerDoMC(4)
 # res = repExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = getDefaultConf("AgentDQN"), nrep = 5, nepi = 200)
-repExperiment = function(sname, aname, conf, nrep = 3L, nepi, ...) {
+repExperiment = function(sname, aname, conf, nrep = 5L, nepi, value_fun = NULL, ...) {
   #requireNamespace(foreach)
   list.res = foreach::foreach(i = 1:nrep) %dopar% {
     env = makeGymEnv(sname, ...)
     rl.agent = makeAgent(aname, env, conf = conf)
+    if (is.function(value_fun)) rl.agent$customizeBrain(value_fun = value_fun)
     perf = rl.agent$learn(nepi)
     list(agent = rl.agent, perf = perf)
   }

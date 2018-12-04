@@ -51,6 +51,9 @@
       <a href="articles/define_custom_environments.html">Specify Custom Environment</a>
     </li>
     <li>
+      <a href="articles/repeated_experiment.html">Repeated Experiment</a>
+    </li>
+    <li>
       <a href="articles/customized_brain_mountainCar.html">Customize Neural Network Functional Approximator</a>
     </li>
     <li>
@@ -169,11 +172,11 @@ pip install virtualenv
 <a href="#usage" class="anchor"></a>Usage</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
 <span class="kw"><a href="reference/listGymEnvs.html">listGymEnvs</a></span>()[1L<span class="op">:</span>10L]</code></pre></div>
-<pre><code>##  [1] "CartPole-v0"              "CartPole-v1"             
-##  [3] "MountainCar-v0"           "MountainCarContinuous-v0"
-##  [5] "Pendulum-v0"              "Acrobot-v1"              
-##  [7] "LunarLander-v2"           "LunarLanderContinuous-v2"
-##  [9] "BipedalWalker-v2"         "BipedalWalkerHardcore-v2"</code></pre>
+<pre><code>##  [1] "DoubleDunk-ramDeterministic-v4" "DoubleDunk-ramDeterministic-v0"
+##  [3] "Robotank-ram-v0"                "CartPole-v0"                   
+##  [5] "CartPole-v1"                    "Asteroids-ramDeterministic-v4" 
+##  [7] "Pooyan-ram-v4"                  "Gopher-ram-v0"                 
+##  [9] "HandManipulateBlock-v0"         "Pooyan-ram-v0"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v1"</span>)
 <span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>(env)</code></pre></div>
 <pre><code>## $AgentDQN

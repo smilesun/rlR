@@ -1,0 +1,42 @@
+---
+title: "Repeated Experiment"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+    dev: svg
+vignette: >
+  %\VignetteIndexEntry{Repeated Experiment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+library(rlR)
+set.seed(123)
+knitr::opts_chunk$set(cache = TRUE, collapse = FALSE, dev = "svg", fig.height = 3.5)
+knitr::knit_hooks$set(document = function(x){
+  gsub("```\n*```r*\n*", "", x)
+})
+library(reticulate)
+os = import("os")
+os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
+```
+
+# rlR: repeated experiment
+
+It make sense to repeatedly  evaluate  how an algorithm works for a particular scenario or environment. rlR provides the function `rlR::repExperiment` to serve this need. One could also use different cores to execute seperate experiment.
+
+
+```{r eval=F}
+library(doMC)
+registerDoMC(5)
+# or
+library(doParallel)
+cl <- makeCluster(5)
+registerDoParallel(cl)
+res = repExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = getDefaultConf("AgentDQN"), nrep = 5, nepi = 150)
+```
+

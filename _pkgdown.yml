@@ -9,6 +9,8 @@ navbar:
     menu:
       - text: Specify Custom Environment
         href: articles/define_custom_environments.html
+      - text: Repeated Experiment
+        href: articles/repeated_experiment.html
       - text: Customize Neural Network Functional Approximator
         href: articles/customized_brain_mountainCar.html
       - text: Play Atari Games 
