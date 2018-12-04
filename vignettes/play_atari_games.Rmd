@@ -41,9 +41,13 @@ subsample = function(state) {
 ```
 
 
+For Atari Games, it makes more since to stack several recent frames since the agent need to know what is
+happening and with only one frame it is hard to judge the current situation. So we have the `observ_stack_len`
+parameter. 
+
 ```{r}
 library(rlR)
-env = makeGymEnv("Seaquest-v0", observ_stack_len = 2L, state_preprocess = list(fun = subsample))
+env = makeGymEnv("Seaquest-v0", observ_stack_len = 4L, state_preprocess = list(fun = subsample))
 env$overview()
 ```
 
@@ -54,6 +58,12 @@ env$snapshot(preprocess = F)
 
 ```{r}
 conf = getDefaultConf("AgentFDQN")
+``
+
+The rlR package has been optimized to handle replay memory in a very efficient way, to ensure performance,
+you could also use the following parameters which has a bigger replay memory.
+
+```{r}
 conf$set(replay.batchsize = 32, 
   replay.freq = 1L, 
   console = TRUE, 
@@ -61,11 +71,11 @@ conf$set(replay.batchsize = 32,
   agent.lr = 0.00025, 
   agent.update.target.freq = 1e4,
   replay.memname = "Png", 
-  render = T, 
+  render = F, 
   policy.minEpsilon = 0.1, 
-  agent.start.learn = 1e4L, 
-  policy.aneal.steps = 3e5,
-  replay.mem.size = 3e5, 
+  agent.start.learn = 5e4L, 
+  policy.aneal.steps = 1e6,
+  replay.mem.size = 1e6, 
   log = FALSE, 
   agent.clip.td = TRUE, 
   policy.decay.type = "decay_linear")
@@ -100,6 +110,6 @@ agent$customizeBrain(value_fun = makeCnnCritic)
 ```
 
 ```{r eval=FALSE}
-agent$learn(5000L)
+agent$learn(1000L)
 agent$plotPerf()
 ```
