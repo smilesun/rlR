@@ -79,11 +79,14 @@ You can also install python dependencies without using rlR facility function, fo
 All python libraries that are required could be installed either in a virtual environment or in system native python using pip:
 
 ```{bash, eval=F}
+pip install --upgrade pip  # set your prefered path to the search path first
+pip install -r requirement.txt
+# or
 pip install tensorflow
 pip install keras
 pip install gym
 pip install cmake
-pip install gym[atari]
+pip install gym[atari]  # this need to be runned even you use require.txt for installation
 ```
 where 'cmake' is required to build atari environments.
 

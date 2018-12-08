@@ -13,6 +13,20 @@
 
 NULL # nocov
 
+.onAttach <- function(libname, pkgname) {
+  py_config = reticulate::py_discover_config()
+  pynow = Sys.which("python")
+  m1 = sprintf("system default python is %s", pynow)
+  m2 = sprintf("detected available python paths are: \n")
+  m3 = sprintf("to set the python path you want, execute:\n")
+  packageStartupMessage(m1)
+  packageStartupMessage(m2
+    )
+  print(py_config)
+  packageStartupMessage(m3)
+  print("reticulate::use_python('/path/to/your/python')")
+}
+
 #' @title Test if tensorflow works from R session
 #'
 #' @description Test if tensorflow works from R session
