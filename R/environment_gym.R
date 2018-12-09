@@ -118,6 +118,27 @@ EnvGym = R6::R6Class("EnvGym",
         action = action - 1L  # The class in which the current code lies is Gym Specific
         action = as.integer(action)
       }
+      s_r_d_info = self$env$step(action) # repeat the same choice for self$repeat_n_act times. length(list_s_r_d_info) = self$repeat_n_act
+      names(s_r_d_info) = c("state", "reward", "done", "info")
+      s_r_d_info[["rewards"]] = sign(s_r_d_info[[2L]])
+      s_r_d_info[["state"]] = self$state_preprocess(s_r_d_info[["state"]])  # preprocessing
+      if (self$flag_stack_frame) s_r_d_info[["state"]] = self$stackLatestFrame(s_r_d_info[["state"]])
+      #FIXME: might be buggy if continous space get preprocessed
+      if (grepl("Box", toString(self$env$action_space))) s_r_d_info[["state"]] = t(s_r_d_info[["state"]])  # for continous action, transpose the state space, for "Pendulum-v0" etc, the state return is 3*1 instead of 1*3
+      s_r_d_info
+    },
+
+
+    step2 = function(action_input) {
+      action = action_input
+      if (!is.null(self$act_cheat)) {
+        # act_cheat must be applied before minus 1 operation below since R has no 0 index!
+        action = as.integer(self$act_cheat[action] + 1L)  # gym convention here
+      }
+      if (!self$flag_continous) {
+        action = action - 1L  # The class in which the current code lies is Gym Specific
+        action = as.integer(action)
+      }
       list_s_r_d_info = lapply(1:self$repeat_n_act, function(i) self$env$step(action)) # repeat the same choice for self$repeat_n_act times. length(list_s_r_d_info) = self$repeat_n_act
       rewards = sapply(list_s_r_d_info, function(x) x[[2L]]) # extract reward for each action repeat: the second element of each s_r_d_info return is reward
       rewards = sapply(rewards, sign)  # reward clipping
@@ -217,14 +238,13 @@ EnvGym = R6::R6Class("EnvGym",
         r = self$env$step(a)
       }
       if (preprocess) {
-        pimg = self$state_preprocess(r[[1L]])
-        self$showImage(pimg)
+        img = self$state_preprocess(r[[1L]])
       } else {
         img = self$env$render(mode = "rgb_array")
         img = img / 255.
+      }
         self$env$close()
         self$showImage(img)
-      }
     }
     )
    )
