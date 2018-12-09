@@ -43,17 +43,17 @@ repExperiment = function(sname, aname, conf, nrep = 5L, nepi, value_fun = NULL, 
   list.r = lapply(list.res, function(res) {
     res$perf$list.reward.epi})
   init = list.r[[1L]]
-  agent = list.res[[1L]]$agent
+  agent = makeAgent(aname, env, conf = conf)
   len = agent$env$maxStepPerEpisode
   convert2SameLen = function(init1) {
     init2 = vector(mode = "numeric", length = len)
     init2[1:length(init1)] = init1
     init2
   }
-  for (i in 2:length(list.r)) {
+  for (i in 1:length(list.r)) {
     init = lapply(1:length(init), function(j) convert2SameLen(init[[j]]) + convert2SameLen(list.r[[i]][[j]]))
   }
-  init = lapply(init, function(vec) vec/nrep)
+  init = lapply(init, function(vec) vec / nrep)
   agent$interact$perf$list.reward.epi = init
   plot = agent$plotPerf()
   return(list(plot = plot, list.r = list.r))
