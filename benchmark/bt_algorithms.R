@@ -9,7 +9,7 @@ nn4mountainCar = function(name, env) {
 # instance is the return for problem
 rl_algo_dqn = function(data, job, instance) {
   env = makeGymEnv(name = instance)
-  agent = makeAgent("AgentDQN", env = env)
+  agent = initAgent("AgentDQN", env = env)
   if (instance == "MountainCar-v0") {
     model = nn4mountainCar()
     agent$customizeBrain(model)
@@ -21,35 +21,35 @@ rl_algo_dqn = function(data, job, instance) {
 
 rl_algo_ddqn = function(data, job, instance) {
   env = makeGymEnv(name = instance)
-  agent = makeAgent("AgentDDQN", env = env)
+  agent = initAgent("AgentDDQN", env = env)
   perf = agent$learn(data$iteration)
   return(perf = perf)  # key for table join
 }
 
 rl_algo_fdqn = function(data, job, instance) {
   env = makeGymEnv(name = instance)
-  agent = makeAgent("AgentFDQN", env = env)
+  agent = initAgent("AgentFDQN", env = env)
   perf = agent$learn(data$iteration)
   return(perf = perf)  # key for table join
 }
 
 rl_algo_pg = function(data, job, instance) {
   env = makeGymEnv(name = instance)
-  agent = makeAgent("AgentPG", env = env)
+  agent = initAgent("AgentPG", env = env)
   perf = agent$learn(data$iteration)
   return(perf = perf)  # key for table join
 }
 
 rl_algo_pgb = function(data, job, instance) {
   env = makeGymEnv(name = instance)
-  agent = makeAgent("AgentPGBaseline", env = env)
+  agent = initAgent("AgentPGBaseline", env = env)
   perf = agent$learn(data$iteration)
   return(perf = perf)  # key for table join
 }
 
 rl_algo_pgac = function(data, job, instance) {
   env = makeGymEnv(name = instance)
-  agent = makeAgent("AgentActorCritic", env = env)
+  agent = initAgent("AgentActorCritic", env = env)
   perf = agent$learn(data$iteration)
   return(perf = perf)  # key for table join
 }

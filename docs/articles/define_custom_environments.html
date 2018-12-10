@@ -89,7 +89,7 @@
       <h1>Define custom environment for deep reinforcement learn</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/vignettes/define_custom_environments.Rmd"><code>vignettes/vignettes/define_custom_environments.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/define_custom_environments.Rmd"><code>vignettes/define_custom_environments.Rmd</code></a></small>
       <div class="hidden name"><code>define_custom_environments.Rmd</code></div>
 
     </div>
@@ -175,7 +175,7 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 ## $AgentActorCritic
 ## [1] "Actor Critic Method"
 conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentDQN"</span>)
-agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
+agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
 perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">learn</span>(<span class="dv">3</span>)
 ## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
 ##  Episode Over 

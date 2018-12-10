@@ -89,6 +89,6 @@ Afterwards you could choose one of the available  Agents to learn on this newly 
 env = MyEnv$new()
 listAvailAgent(env)
 conf = getDefaultConf("AgentDQN")
-agent = makeAgent("AgentDQN", env, conf)
+agent = initAgent("AgentDQN", env, conf)
 perf = agent$learn(3)
 ```

@@ -16,7 +16,7 @@ ReplayMem = R6::R6Class("ReplayMem",
       self$conf = conf
       self$agent = agent
       # observ_stack_len is set via the Environment::setAgent() function
-      # agent = makeAgent("AgentFDQN", env, conf) has incorporated environment into Agent.
+      # agent = initAgent("AgentFDQN", env, conf) has incorporated environment into Agent.
       self$reset()
     },
 

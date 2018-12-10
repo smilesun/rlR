@@ -53,7 +53,7 @@ env$overview()
 conf = getDefaultConf("AgentDQN")
 conf$show()
 conf$set(render = FALSE, console = FALSE)
-agent = makeAgent("AgentDQN", env, conf)
+agent = initAgent("AgentDQN", env, conf)
 agent$learn(200L)  
 agent$plotPerf()
 ```

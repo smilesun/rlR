@@ -89,7 +89,7 @@
       <h1>Cutomized Neural Network for Mountain Car Problem</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/vignettes/customized_brain_mountainCar.Rmd"><code>vignettes/vignettes/customized_brain_mountainCar.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/customized_brain_mountainCar.Rmd"><code>vignettes/customized_brain_mountainCar.Rmd</code></a></small>
       <div class="hidden name"><code>customized_brain_mountainCar.Rmd</code></div>
 
     </div>
@@ -124,7 +124,7 @@ mfun =<span class="st"> </span><span class="cf">function</span>(state_dim, act_c
 <p>$$ Learning</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentDQN"</span>)
 conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">console =</span> <span class="ot">TRUE</span>, <span class="dt">render =</span> <span class="ot">TRUE</span>, <span class="dt">policy.maxEpsilon =</span> <span class="fl">0.15</span>, <span class="dt">policy.minEpsilon =</span> <span class="dv">0</span>, <span class="dt">policy.decay =</span> <span class="fl">1.0</span> <span class="op">/</span><span class="st"> </span><span class="fl">1.01</span>, <span class="dt">replay.batchsize =</span> <span class="dv">10</span>, <span class="dt">replay.epochs =</span> <span class="dv">4</span>, <span class="dt">agent.lr.decay =</span> <span class="dv">1</span>, <span class="dt">agent.gamma =</span> <span class="fl">0.95</span>)
-agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
+agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
 agent<span class="op">$</span><span class="kw">customizeBrain</span>(<span class="dt">value_fun =</span> mfun)
 perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">learn</span>(50L)</code></pre></div>
 </div>
