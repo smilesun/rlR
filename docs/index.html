@@ -198,24 +198,23 @@ pip install virtualenv
 ##  [7] "Pooyan-ram-v4"                  "Gopher-ram-v0"                 
 ##  [9] "HandManipulateBlock-v0"         "Pooyan-ram-v0"</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v1"</span>)
-<span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>(env)</code></pre></div>
-<pre><code>## $AgentDQN
-## [1] "Deep Q learning"
-## 
-## $AgentFDQN
-## [1] "Frozen Target Deep Q Learning"
-## 
-## $AgentDDQN
-## [1] "Double Deep QLearning"
-## 
-## $AgentPG
-## [1] "Policy Gradient Monte Carlo"
-## 
-## $AgentPGBaseline
-## [1] "Policy Gradient with Baseline"
-## 
-## $AgentActorCritic
-## [1] "Actor Critic Method"</code></pre>
+<span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre></div>
+<pre><code>##                name
+## 1:         AgentDQN
+## 2:        AgentFDQN
+## 3:        AgentDDQN
+## 4:          AgentPG
+## 5:  AgentPGBaseline
+## 6: AgentActorCritic
+## 7:        AgentDDPG
+##                                                       note
+## 1:                                         Deep Q learning
+## 2:                           Frozen Target Deep Q Learning
+## 3:                                   Double Deep QLearning
+## 4:                             Policy Gradient Monte Carlo
+## 5:                           Policy Gradient with Baseline
+## 6:                                     Actor Critic Method
+## 7: Deep Deterministic Policy Gradient for Continous Action</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span><span class="kw">overview</span>()</code></pre></div>
 <pre><code>## 
 ## action cnt: 2 

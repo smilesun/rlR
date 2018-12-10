@@ -104,7 +104,7 @@ sudo apt-get install -y libxt-dev
 library(rlR)
 listGymEnvs()[1L:10L]
 env = makeGymEnv("CartPole-v1")
-listAvailAgent(env)
+listAvailAgent()
 ```
 
 ```{r}

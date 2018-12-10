@@ -156,24 +156,23 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 )</code></pre></div>
 <p>Afterwards you could choose one of the available Agents to learn on this newly defined environments.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span>MyEnv<span class="op">$</span><span class="kw">new</span>()
-<span class="kw"><a href="../reference/listAvailAgent.html">listAvailAgent</a></span>(env)
-## $AgentDQN
-## [1] "Deep Q learning"
-## 
-## $AgentFDQN
-## [1] "Frozen Target Deep Q Learning"
-## 
-## $AgentDDQN
-## [1] "Double Deep QLearning"
-## 
-## $AgentPG
-## [1] "Policy Gradient Monte Carlo"
-## 
-## $AgentPGBaseline
-## [1] "Policy Gradient with Baseline"
-## 
-## $AgentActorCritic
-## [1] "Actor Critic Method"
+<span class="kw"><a href="../reference/listAvailAgent.html">listAvailAgent</a></span>()
+##                name
+## 1:         AgentDQN
+## 2:        AgentFDQN
+## 3:        AgentDDQN
+## 4:          AgentPG
+## 5:  AgentPGBaseline
+## 6: AgentActorCritic
+## 7:        AgentDDPG
+##                                                       note
+## 1:                                         Deep Q learning
+## 2:                           Frozen Target Deep Q Learning
+## 3:                                   Double Deep QLearning
+## 4:                             Policy Gradient Monte Carlo
+## 5:                           Policy Gradient with Baseline
+## 6:                                     Actor Critic Method
+## 7: Deep Deterministic Policy Gradient for Continous Action
 conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentDQN"</span>)
 agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
 perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">learn</span>(<span class="dv">3</span>)

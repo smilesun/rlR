@@ -131,12 +131,10 @@ model %>%
 
 #' @title List implemented Agents
 #' @description List all implemented Agents
-#' @param env Environment to run the agent on.
 #' @export
-listAvailAgent = function(env) {
+listAvailAgent = function() {
   tb = list(AgentDQN = "Deep Q learning", AgentFDQN =  "Frozen Target Deep Q Learning", AgentDDQN = "Double Deep QLearning", AgentPG = "Policy Gradient Monte Carlo", AgentPGBaseline = "Policy Gradient with Baseline", AgentActorCritic = "Actor Critic Method", AgentDDPG = "Deep Deterministic Policy Gradient for Continous Action")
-  if (env$flag_continous) return(tb[7L])
-  else return(tb[1:6L])
+  data.table(name = names(tb), note = unlist(tb))
 }
 
 #' @title list environments from OPENAI gym
