@@ -10,8 +10,8 @@ conf$set(replay.batchsize = 32,
   render = F,
   policy.minEpsilon = 0.1,
   agent.start.learn = 5e4L,
-  policy.aneal.steps = 1e6,
-  replay.mem.size = 1e6,
+  policy.aneal.steps = 4e5,
+  replay.mem.size = 4e5,
   log = FALSE,
   agent.clip.td = TRUE,
   policy.decay.type = "decay_linear")
@@ -39,4 +39,4 @@ makeCnnCritic = function(state_dim, act_cnt) {
 library(doParallel)
 cl = makeCluster(5)
 registerDoParallel(cl)
-res = repExperiment(sname = "Seaquest-v0", aname = "AgentFDQN", conf = conf, nrep = 5, nepi = 200, value_fun = makeCnnCritic, observ_stack_len = 2L, state_preprocess = list(fun = rlR:::subsample))
+res = repExperiment(sname = "Seaquest-v0", aname = "AgentFDQN", conf = conf, nrep = 5, nepi = 200, value_fun = makeCnnCritic, observ_stack_len = 3L, state_preprocess = list(fun = rlR:::subsample))
