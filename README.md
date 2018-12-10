@@ -63,6 +63,7 @@ For Unix user
     pip install virtualenv
     ```
   - Anaconda
+  - Native system  python that ships with your OS. (you have to install python libraries mannually in this case, see instructions below)
 - Install dependencies through 
   - if you have python virtualenv available:
     
@@ -76,26 +77,78 @@ For Unix user
     ```
 
 For Windows user
-- Ensure that you have Anaconda available.
+- Ensure that you have Anaconda available **or** a native local system python installed(in this case you also have to install python libraries mannually, see instructions below)
 - Install dependencies through `{r eval=FALSE} rlR::installDepConda(gpu = FALSE)` 
 
 If you want to have gpu support, simply set the gpu argument to be true in the function call.
 
 ### Mannual python dependency installation
-You can also install python dependencies without using rlR facility function, for example, you can open an anaconda virtual environment  'r-tensorflow' by
+You can also install python dependencies without using rlR facility function, for example, you can open an anaconda virtual environment  "r-tensorflow" by `source activate r-tensorflow`
+
+All python libraries that are required could be installed either in a virtual environment or in system native python using pip:
+
 
 ```bash
-source activate r-tensorflow`
+pip install --upgrade pip  # set your prefered path to the search path first
+pip install -r requirement.txt
+# or
+pip install tensorflow
+pip install keras
 pip install gym
 pip install cmake
-pip install gym[atari]
+pip install gym[atari]  # this need to be runned even you use require.txt for installation
 ```
+where 'cmake' is required to build atari environments.
 
+### Independencies for visualization of environments
+The R package imager is required if you want to visualize different environments but the other functionality of rlR is not affected by this R package. For ubuntu, the R package imager depends on libraries which could be installed
+
+
+```bash
+sudo apt-get install -y libfftw3-dev libx11-dev libtiff-dev
+sudo apt-get install -y libcairo2-dev
+sudo apt-get install -y libxt-dev
+```
 
 ## Usage
 
 ```r
 library(rlR)
+```
+
+```
+## system default python is /usr/bin/python
+```
+
+```
+## detected available python paths are:
+```
+
+```
+## python:         /home/sunxd/.virtualenvs/r-tensorflow/bin/python
+## libpython:      /usr/lib/python2.7/config-x86_64-linux-gnu/libpython2.7.so
+## pythonhome:     /usr:/usr
+## virtualenv:     /home/sunxd/.virtualenvs/r-tensorflow/bin/activate_this.py
+## version:        2.7.15rc1 (default, Apr 15 2018, 21:51:34)  [GCC 7.3.0]
+## numpy:          /home/sunxd/.virtualenvs/r-tensorflow/local/lib/python2.7/site-packages/numpy
+## numpy_version:  1.15.2
+## 
+## python versions found: 
+##  /usr/bin/python
+##  /usr/bin/python3
+##  /home/sunxd/.virtualenvs/r-tensorflow/bin/python
+##  /home/sunxd/python3virtualEnvDir/bin/python
+```
+
+```
+## to set the python path you want, execute:
+```
+
+```
+## [1] "reticulate::use_python('/path/to/your/python')"
+```
+
+```r
 listGymEnvs()[1L:10L]
 ```
 
@@ -109,7 +162,11 @@ listGymEnvs()[1L:10L]
 
 ```r
 env = makeGymEnv("CartPole-v1")
-env$overview()
+```
+
+
+```r
+env
 ```
 
 ```
@@ -119,62 +176,64 @@ env$overview()
 ## discrete action
 ```
 
+
+
+If you have R package "imager" installed, you could get a snapshot of the environment by
+
 ```r
-listAvailAgent(env)
+env$snapshot()
 ```
 
-```
-## $AgentDQN
-## [1] "Deep Q learning"
-## 
-## $AgentFDQN
-## [1] "Frozen Target Deep Q Learning"
-## 
-## $AgentDDQN
-## [1] "Double Deep QLearning"
-## 
-## $AgentPG
-## [1] "Policy Gradient Monte Carlo"
-## 
-## $AgentPGBaseline
-## [1] "Policy Gradient with Baseline"
-## 
-## $AgentActorCritic
-## [1] "Actor Critic Method"
-```
 
 
 ```r
 options(width=1000)
-listAvailConf()[, .(name, note, name)]
+listAvailConf()[, .(name, note)]
 ```
 
 ```
-##                         name                                                                                                                      note                     name
-##  1:                   render                                                                                    Whether to show rendering video or not                   render
-##  2:                      log                                                                             Whether to log important information on drive                      log
-##  3:                  console                                                                            Whether to enable debug info output to console                  console
-##  4:              agent.gamma                                                                             The discount factor in reinforcement learning              agent.gamma
-##  5:     agent.flag.reset.net                                                                                      Whether to reset the neural network      agent.flag.reset.net
-##  6:           agent.lr.decay                                                                        The decay factor of the learning rate at each step           agent.lr.decay
-##  7:                 agent.lr                                                                                               learning rate for the agent                 agent.lr
-##  8:        agent.store.model                                                                            whether to store the model of the agent or not        agent.store.model
-##  9: agent.update.target.freq                                                                                How often should the target network be set agent.update.target.freq
-## 10:        agent.start.learn                                                                            after how many transitions should replay begin        agent.start.learn
-## 11:            agent.clip.td                                                                                                  whether to clip TD error            agent.clip.td
-## 12:        policy.maxEpsilon                                                                                      The maximum epsilon exploration rate        policy.maxEpsilon
-## 13:        policy.minEpsilon                                                                                      The minimum epsilon exploration rate        policy.minEpsilon
-## 14:        policy.decay.rate                                                                                                            the decay rate        policy.decay.rate
-## 15:        policy.decay.type                                                        the way to decay epsion, can be decay_geo, decay_exp, decay_linear        policy.decay.type
-## 16:       policy.aneal.steps how many steps needed to decay from maximum epsilon to minmum epsilon, only valid when policy.decay.type = 'decay_linear'       policy.aneal.steps
-## 17:   policy.softmax.magnify                                                                                                                      <NA>   policy.softmax.magnify
-## 18:         replay.batchsize                                                                     how many samples to take from replay memory each time         replay.batchsize
-## 19:           replay.memname                                                                                                 The type of replay memory           replay.memname
-## 20:          replay.mem.size                                                                                             The size of the replay memory          replay.mem.size
-## 21:            replay.epochs                                                               How many gradient decent epochs to carry out for one replay            replay.epochs
-## 22:              replay.freq                                                                                   how many steps to wait until one replay              replay.freq
-##                         name                                                                                                                      note                     name
+##                         name                                                               note
+##  1:                   render                             Whether to show rendering video or not
+##  2:                      log                      Whether to log important information on drive
+##  3:                  console                     Whether to enable debug info output to console
+##  4:              agent.gamma                      The discount factor in reinforcement learning
+##  5:     agent.flag.reset.net                               Whether to reset the neural network 
+##  6:           agent.lr.decay                 The decay factor of the learning rate at each step
+##  7:                 agent.lr                                        learning rate for the agent
+##  8:        agent.store.model                     whether to store the model of the agent or not
+##  9: agent.update.target.freq                         How often should the target network be set
+## 10:        agent.start.learn                     after how many transitions should replay begin
+## 11:            agent.clip.td                                           whether to clip TD error
+## 12:        policy.maxEpsilon                               The maximum epsilon exploration rate
+## 13:        policy.minEpsilon                               The minimum epsilon exploration rate
+## 14:        policy.decay.rate                                                     the decay rate
+## 15:        policy.decay.type the way to decay epsion, can be decay_geo, decay_exp, decay_linear
+## 16:       policy.aneal.steps                 only valid when policy.decay.type = 'decay_linear'
+## 17:   policy.softmax.magnify                                                               <NA>
+## 18:         replay.batchsize              how many samples to take from replay memory each time
+## 19:           replay.memname                                          The type of replay memory
+## 20:          replay.mem.size                                      The size of the replay memory
+## 21:            replay.epochs        How many gradient decent epochs to carry out for one replay
+## 22:              replay.freq                            how many steps to wait until one replay
+##                         name                                                               note
 ```
+
+
+```r
+listAvailAgent()
+```
+
+```
+##                name                                                    note
+## 1:         AgentDQN                                         Deep Q learning
+## 2:        AgentFDQN                           Frozen Target Deep Q Learning
+## 3:        AgentDDQN                                   Double Deep QLearning
+## 4:          AgentPG                             Policy Gradient Monte Carlo
+## 5:  AgentPGBaseline                           Policy Gradient with Baseline
+## 6: AgentActorCritic                                     Actor Critic Method
+## 7:        AgentDDPG Deep Deterministic Policy Gradient for Continous Action
+```
+
 
 ```r
 conf = getDefaultConf("AgentDQN")
@@ -209,7 +268,7 @@ conf$show()
 ```
 
 ```r
-conf$set(render = FALSE, console = FALSE)   # Since this file is generated by Rmarkdown, we do not want other output message to blur the markdown file.
+conf$set(render = FALSE, console = FALSE)   # Since this file is generated by Rmarkdown, we do not want other output message to blur the markdown file. In practice, you could set any configuration at once by looking at listAvailConf
 ```
 
 
@@ -224,4 +283,3 @@ proc.time() - ptmi
 ```r
 agent$plotPerf()
 ```
-![plot of chunk mplot](inst/figures/mplot-1.png)
