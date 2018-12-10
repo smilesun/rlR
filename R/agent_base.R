@@ -1,3 +1,31 @@
+#' @title Agent
+#' @format \code{\link{R6Class}} object
+#' @description
+#' An abstract \code{\link{R6Class}} to represent Agent
+#' @section Methods:
+#' \describe{
+#'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes}
+#'   \item{plotPerf()}{[\code{function}] \cr plot performance}
+#' }
+#' @return [\code{\link{Agent}}].
+#' @export
+Agent = R6Class("Agent", public = list())
+
+#' @title Initialize an Agent with an environment
+#' @description Initialize the agent with an environment from where the agent can learn.
+#' @param name The name of the Agent
+#' @param env The environment to initialize the Agent
+#' @param conf The configuration
+#' @return [\code{\link{AgentArmed}}].
+#' @examples initAgent("AgentDQN", makeGymEnv(name ="CartPole-v0"), getDefaultConf("AgentDQN"))
+#' @export
+initAgent = function(name, env, conf = NULL) {
+  ee = parse(text = sprintf("%s$new(env = env, conf = conf)", name))
+  agent = eval(ee)  # the text is with respect to the passed arguments
+  env$setAgent(agent)  # so env has hook to all objects in agent
+  agent
+}
+
 #' @title Discrete Action Agent
 #'
 #' @format \code{\link{R6Class}} object
@@ -19,13 +47,12 @@
 #' }
 #'
 #' @section Methods:
-#' \describe{
-#'   \item{updatePara(name, val)}{[\code{function}] \cr Function to update parameter setting.}
-#'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes}
-#' }
+#' Inherited from \code{Agent}:
+#' @inheritSection Agent Methods
 #' @return [\code{\link{AgentArmed}}].
 #' @export
 AgentArmed = R6::R6Class("AgentArmed",
+  inherit = Agent,
   public = list(
     # constructor init
     task = NULL,  # string either critic or actor
@@ -210,6 +237,12 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     plotPerf = function() {
       self$interact$perf$plot()
+    },
+
+    print = function() {
+      self$conf$show()
     }
   ) # public
 )
+
+#\item{updatePara(name, val)}{[\code{function}] \cr Function to update parameter setting.}

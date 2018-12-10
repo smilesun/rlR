@@ -90,6 +90,10 @@ Environment = R6::R6Class("Environment",
 
     afterAll = function() {
       # what to do after the whole learning is finished?  could be left empty
+    },
+
+    print = function() {
+      self$overview()
     }
   ),
   private = list(),

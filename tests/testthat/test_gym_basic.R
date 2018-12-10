@@ -7,7 +7,7 @@ test_that("test Cart-Pole works for each Agent", {
   lapply(agent.names, function(agent.name) {
     conf = getDefaultConf(agent.name)
     env = makeGymEnv("CartPole-v0")
-    agent = makeAgent(agent.name, env, conf)
+    agent = initAgent(agent.name, env, conf)
     agent$learn(2)
   })
   expect_true(TRUE)
@@ -20,7 +20,7 @@ test_that("test Cart-Pole and rescue works each Policy based Agent", {
     conf = getDefaultConf(agent.name)
     conf$set(agent.flag.reset.net = TRUE)
     env = makeGymEnv("CartPole-v0")
-    agent = makeAgent(agent.name, env, conf)
+    agent = initAgent(agent.name, env, conf)
     agent$learn(2)
   })
   expect_true(TRUE) 
@@ -39,10 +39,10 @@ test_that("test Cart-Pole and rescue works each Policy based Agent", {
 # })
 
 context("agent")
-test_that("test makeAgent works", {
+test_that("test initAgent works", {
   agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
   env = makeGymEnv("CartPole-v0")
-  lapply(agent.names, function(name) makeAgent(name, env, conf = getDefaultConf(name)))
+  lapply(agent.names, function(name) initAgent(name, env, conf = getDefaultConf(name)))
   expect_true(TRUE)
 })
 

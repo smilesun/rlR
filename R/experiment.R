@@ -35,7 +35,7 @@ repExperiment = function(sname, aname, conf, nrep = 5L, nepi, value_fun = NULL, 
   #requireNamespace(foreach)
   list.res = foreach::foreach(i = 1:nrep) %dopar% {
     env = makeGymEnv(sname, ...)
-    rl.agent = makeAgent(aname, env, conf = conf)
+    rl.agent = initAgent(aname, env, conf = conf)
     if (is.function(value_fun)) rl.agent$customizeBrain(value_fun = value_fun)
     perf = rl.agent$learn(nepi)
     list(agent = rl.agent, perf = perf)

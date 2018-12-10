@@ -99,7 +99,7 @@ makeCnnCritic = function(state_dim, act_cnt) {
 ```
 
 ```{r}
-agent = makeAgent("AgentFDQN", env, conf)
+agent = initAgent("AgentFDQN", env, conf)
 agent$customizeBrain(value_fun = makeCnnCritic)
 ```
 

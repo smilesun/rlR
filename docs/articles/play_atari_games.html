@@ -89,7 +89,7 @@
       <h1>Play Atari Games</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/vignettes/play_atari_games.Rmd"><code>vignettes/vignettes/play_atari_games.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/play_atari_games.Rmd"><code>vignettes/play_atari_games.Rmd</code></a></small>
       <div class="hidden name"><code>play_atari_games.Rmd</code></div>
 
     </div>
@@ -140,7 +140,7 @@ env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">pr
   <span class="dt">replay.memname =</span> <span class="st">"Png"</span>, 
   <span class="dt">render =</span> F, 
   <span class="dt">policy.minEpsilon =</span> <span class="fl">0.1</span>, 
-  <span class="dt">agent.start.learn =</span> 5e4L, 
+  <span class="dt">agent.start.learn =</span> <span class="fl">5e4</span>L, 
   <span class="dt">policy.aneal.steps =</span> <span class="fl">1e6</span>,
   <span class="dt">replay.mem.size =</span> <span class="fl">1e6</span>, 
   <span class="dt">log =</span> <span class="ot">FALSE</span>, 
@@ -165,7 +165,7 @@ env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">pr
   model =<span class="st"> </span><span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> text))
   <span class="kw">return</span>(model)
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/makeAgent.html">makeAgent</a></span>(<span class="st">"AgentFDQN"</span>, env, conf)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentFDQN"</span>, env, conf)
 agent<span class="op">$</span><span class="kw">customizeBrain</span>(<span class="dt">value_fun =</span> makeCnnCritic)
 ## Loading required package: keras</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent<span class="op">$</span><span class="kw">learn</span>(1000L)

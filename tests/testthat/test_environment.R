@@ -3,7 +3,7 @@ test_that("basic environment works", {
   env = rlR::Environment$new()
   env$overview()
   conf = getDefaultConf("AgentDQN")
-  agent = makeAgent("AgentDQN", env, conf)
+  agent = initAgent("AgentDQN", env, conf)
   perf = agent$learn(12)
   expect_class(perf, "Performance")
 })

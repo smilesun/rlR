@@ -3,14 +3,14 @@ AgentDDPG_test = function(iter = 4000, sname = "Pendulum-v0", render = TRUE, con
   conf = rlR.conf.DQN()
   env = makeGymEnv(sname)
   conf$set(render = render, console = console)
-  agent = makeAgent("AgentDDPG", env, conf)
+  agent = initAgent("AgentDDPG", env, conf)
   agent$learn(iter)
 }
 AgentDQN_test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, console = FALSE) {
   conf = rlR.conf.DQN()
   conf$set(console = console, render = render)
   env = makeGymEnv(sname)
-  agent = makeAgent("AgentDQN", env, conf)
+  agent = initAgent("AgentDQN", env, conf)
   agent$learn(iter)
 }
 
@@ -18,7 +18,7 @@ AgentDQN_test_MountainCar = function(iter = 1000L, sname = "CartPole-v0", render
   env = makeGymEnv("MountainCar-v0", act_cheat = c(0, 2))
   conf = getDefaultConf("AgentDQN")
   conf$set(console = TRUE, render = TRUE, policy.maxEpsilon = 0.15, policy.minEpsilon = 0, policy.decay = 1.0 / 1.01, replay.batchsize = 10, replay.epochs = 4, agent.lr.decay = 1, agent.gamma = 0.95)
-  agent = makeAgent("AgentDQN", env, conf)
+  agent = initAgent("AgentDQN", env, conf)
   library(keras)
   mfun = function(state_dim, act_cnt) {
     requireNamespace("keras")
@@ -37,19 +37,19 @@ AgentDQN_test_MountainCar = function(iter = 1000L, sname = "CartPole-v0", render
 
 AgentDQN_test_Pong_ram = function(iter = 1000L, sname = "Bowling-ram-v0", render = FALSE, console = FALSE) {
   env = makeGymEnv(sname, act_cheat = c(2, 3))
-  agent = makeAgent("AgentFDQN", env, rlR.conf.DQN.kungfu())
+  agent = initAgent("AgentFDQN", env, rlR.conf.DQN.kungfu())
   agent$learn(iter)
 }
 
 AgentDQN_testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", render = TRUE, console = TRUE) {
   env = makeGymEnv("KungFuMaster-ram-v0")
-  agent = makeAgent("AgentDQN", env, rlR.conf.DQN.kungfu())
+  agent = initAgent("AgentDQN", env, rlR.conf.DQN.kungfu())
   agent$learn(iter)
 }
 
 AgentDQN_testPong = function(iter = 20L, sname = "Breakout-ram-v0", render = TRUE, console = TRUE) {
   env = makeGymEnv(sname)
-  agent = makeAgent("AgentFDQN", env, rlR.conf.DQN.kungfu())
+  agent = initAgent("AgentFDQN", env, rlR.conf.DQN.kungfu())
   agent$learn(iter)
 }
 
@@ -81,7 +81,7 @@ AgentFDQN_test = function(iter = 1000L, sname = "CartPole-v0", render = FALSE, c
   conf = getDefaultConf("AgentFDQN")
   conf$set(console =console, render = render)
   env = makeGymEnv(sname)
-  agent = makeAgent("AgentFDQN", env, conf)
+  agent = initAgent("AgentFDQN", env, conf)
   perf = agent$learn(iter)
 }
 
@@ -90,7 +90,7 @@ AgentFDQN_longRunCnn = function(sname = "KungFuMaster-v0", iter = 5000, render =
   #@Note: one episode of pong is around 300 steps
   conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-2.2 / 1e6), policy.minEpsilon = 0.1, agent.start.learn = 5e4, replay.mem.size = 1e6, log = FALSE, agent.update.target.freq = 10000L, agent.clip.td = TRUE, policy.decay.type = "linear")
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 4L, act_cheat = c(1, 2, 3))
-  agent = makeAgent("AgentFDQN", env, conf)
+  agent = initAgent("AgentFDQN", env, conf)
   perf = agent$learn(iter)
 }
 
@@ -100,7 +100,7 @@ AgentFDQN_testCnn = function(sname = "KungFuMaster-v0", iter = 5000, render = TR
   #@Note: one episode of pong is around 300 steps
   conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-0.005), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1e6, log = FALSE, agent.update.target.freq = 1000L, agent.clip.td = TRUE, policy.decay.type = "linear")
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 4L)
-  agent = makeAgent("AgentFDQN", env, conf)
+  agent = initAgent("AgentFDQN", env, conf)
   perf = agent$learn(iter)
 }
 
@@ -115,7 +115,7 @@ AgentFDQN_testReplayCnn2 = function() {
   #@Note: one episode of pong is around 300 steps
   conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-0.1), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1000, log = FALSE, agent.update.target.freq = 1000L, agent.clip.td = TRUE, policy.decay.type = "decay_linear", policy.aneal.steps = 1e5)
   env = makeGymEnv(sname, repeat_n_act = 1, observ_stack_len = 1L, act_cheat = 1:13)  ## gym already repeated action
-  agent = makeAgent("AgentFDQN", env, conf)
+  agent = initAgent("AgentFDQN", env, conf)
   perf = agent$learn(iter)
 }
 
@@ -133,7 +133,7 @@ AgentFDQN_testReplayCnn = function() {
   #@Note: one episode of pong is around 300 steps
   conf$set(replay.batchsize = 32, replay.freq = 4L, console = TRUE, agent.lr.decay = 1, agent.lr = 0.00025, replay.memname = "UniformStack", render = render, policy.decay = exp(-1), policy.minEpsilon = 0.1, agent.start.learn = 350L, replay.mem.size = 1e5, log = FALSE, agent.update.target.freq = 1000L, agent.clip.td = TRUE, policy.decay.type = "decay_linear")
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 4L)
-  agent = makeAgent("AgentFDQN", env, conf)
+  agent = initAgent("AgentFDQN", env, conf)
   perf = agent$learn(iter)
 }
 
@@ -176,7 +176,7 @@ AgentFDQN_testReplayEfficientCnn = function() {
     policy.aneal.steps = 1e5) # same with replay size
   env = makeGymEnv(sname, repeat_n_act = 4, observ_stack_len = 1L)
   # state_preprocess = list(fun = identity, dim = NULL)
-  agent = makeAgent("AgentFDQN", env, conf)
+  agent = initAgent("AgentFDQN", env, conf)
   perf = agent$learn(5000L)
 }
 
@@ -184,7 +184,7 @@ hi = function()
 { conf = getDefaultConf("AgentPG")
   conf$set(render = render, console = TRUE)
   env = makeGymEnv(sname)
-  agent = makeAgent("AgentPG", env, conf)
+  agent = initAgent("AgentPG", env, conf)
   agent$learn(iter)
 }
 
@@ -192,7 +192,7 @@ AgentPG_testCNN = function(iter = 1000L, sname = "Pong-v0", render = TRUE, conso
   conf = getDefaultConf("AgentPG")
   conf$set(console = console, render = render, replay.memname = "Online")
   env = makeGymEnv(sname, repeat_n_act = 2L, act_cheat = c(2L, 3L))
-  agent = makeAgent("AgentPG", env, conf)
+  agent = initAgent("AgentPG", env, conf)
   agent$learn(iter)
 }
 
@@ -201,7 +201,7 @@ AgentActorCritic_test = function(iter = 500L, sname = "CartPole-v0", render = FA
   conf = getDefaultConf("AgentActorCritic")
   conf$set(console = console, render = render)
   env = makeGymEnv(sname)
-  agent = makeAgent("AgentActorCritic", env, conf)
+  agent = initAgent("AgentActorCritic", env, conf)
   agent$learn(iter)
 }
 
@@ -209,7 +209,7 @@ AgentActorCritic_testKungfu = function(iter = 20L, sname = "Kungfu-Master-v0", r
   conf = getDefaultConf("AgentActorCritic")
   conf$set(render = TRUE, console = console)
   env = makeGymEnv("KungFuMaster-ram-v0", repeat_n_act = 4)
-  agent = makeAgent("AgentActorCritic", env, conf)
+  agent = initAgent("AgentActorCritic", env, conf)
   agent$learn(iter)
 }
 
@@ -217,7 +217,7 @@ AgentPGBaseline_test = function(iter = 1000L, sname = "CartPole-v0", render = FA
   conf = getDefaultConf("AgentPGBaseline")
   conf$set(console = console, render = render)
   env = makeGymEnv(sname, act_cheat = c(2,3))
-  agent = makeAgent("AgentPGBaseline", env, conf)
+  agent = initAgent("AgentPGBaseline", env, conf)
   perf = agent$learn(iter)
   perf
 }
@@ -262,7 +262,7 @@ mfun_policy = function(state_dim, act_cnt) {
   conf = getDefaultConf("AgentActorCritic")
   conf$set(render = TRUE, console = TRUE)
   env = makeGymEnv("KungFuMaster-ram-v0", repeat_n_act = 4)
-  agent = makeAgent("AgentActorCritic", env, conf)
+  agent = initAgent("AgentActorCritic", env, conf)
   agent$customizeBrain(value_fun = mfun_val, policy_fun = mfun_policy)
   agent$learn(10L)
 }

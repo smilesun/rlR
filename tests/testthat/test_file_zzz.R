@@ -4,7 +4,7 @@ test_that("zzz", {
   checkPyDep()
   listGymEnvs()
   env = makeGymEnv("CartPole-v0")
-  listAvailAgent(env)
+  listAvailAgent()
   rlr_test_if_tensorflow_works()
   rlr_test_if_gym_works()
   rlr_test_if_keras_works()

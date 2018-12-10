@@ -31,7 +31,7 @@ test_that("custom policy network works", {
   conf = getDefaultConf("AgentActorCritic")
   conf$set(console = TRUE)
   env = makeGymEnv("KungFuMaster-ram-v0", repeat_n_act = 4)
-  agent = makeAgent("AgentActorCritic", env, conf)
+  agent = initAgent("AgentActorCritic", env, conf)
   mfun_val = function(state_dim, act_cnt) {
     requireNamespace("keras")
       model = keras::keras_model_sequential()

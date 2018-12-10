@@ -87,8 +87,8 @@ MyEnv = R6::R6Class("MyEnv",
 Afterwards you could choose one of the available  Agents to learn on this newly defined environments. 
 ```{r}
 env = MyEnv$new()
-listAvailAgent(env)
+listAvailAgent()
 conf = getDefaultConf("AgentDQN")
-agent = makeAgent("AgentDQN", env, conf)
+agent = initAgent("AgentDQN", env, conf)
 perf = agent$learn(3)
 ```
