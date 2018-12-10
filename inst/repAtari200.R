@@ -1,4 +1,4 @@
-library(rlR)
+#library(rlR)
 conf = getDefaultConf("AgentFDQN")
 conf$set(replay.batchsize = 32,
   replay.freq = 1L,
@@ -39,4 +39,4 @@ makeCnnCritic = function(state_dim, act_cnt) {
 library(doParallel)
 cl = makeCluster(5)
 registerDoParallel(cl)
-res = repExperiment(sname = "Seaquest-v0", aname = "AgentFDQN", conf = conf, nrep = 5, nepi = 200, value_fun = makeCnnCritic, observ_stack_len = 2L, state_preprocess = list(fun = rlR:::subsample))
+res = repExperiment(sname = "Seaquest-v0", aname = "AgentFDQN", conf = conf, nrep = 5, nepi = 100, value_fun = makeCnnCritic, observ_stack_len = 2L, state_preprocess = list(fun = rlR:::subsample))
