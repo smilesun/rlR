@@ -197,25 +197,8 @@ pip install virtualenv
 ##  [5] "CartPole-v1"                    "Asteroids-ramDeterministic-v4" 
 ##  [7] "Pooyan-ram-v4"                  "Gopher-ram-v0"                 
 ##  [9] "HandManipulateBlock-v0"         "Pooyan-ram-v0"</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v1"</span>)
-<span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre></div>
-<pre><code>##                name
-## 1:         AgentDQN
-## 2:        AgentFDQN
-## 3:        AgentDDQN
-## 4:          AgentPG
-## 5:  AgentPGBaseline
-## 6: AgentActorCritic
-## 7:        AgentDDPG
-##                                                       note
-## 1:                                         Deep Q learning
-## 2:                           Frozen Target Deep Q Learning
-## 3:                                   Double Deep QLearning
-## 4:                             Policy Gradient Monte Carlo
-## 5:                           Policy Gradient with Baseline
-## 6:                                     Actor Critic Method
-## 7: Deep Deterministic Policy Gradient for Continous Action</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span><span class="kw">overview</span>()</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span><span class="kw"><a href="reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v1"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env</code></pre></div>
 <pre><code>## 
 ## action cnt: 2 
 ## state original dim: 4 
@@ -223,31 +206,40 @@ pip install virtualenv
 <p>If you have R package “imager” installed, you could get a snapshot of the environment by</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span><span class="kw">snapshot</span>()</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">width=</span><span class="dv">1000</span>)
-<span class="kw"><a href="reference/listAvailConf.html">listAvailConf</a></span>()[, .(name, note, name)]</code></pre></div>
-<pre><code>##                         name                                                                                                                      note                     name
-##  1:                   render                                                                                    Whether to show rendering video or not                   render
-##  2:                      log                                                                             Whether to log important information on drive                      log
-##  3:                  console                                                                            Whether to enable debug info output to console                  console
-##  4:              agent.gamma                                                                             The discount factor in reinforcement learning              agent.gamma
-##  5:     agent.flag.reset.net                                                                                      Whether to reset the neural network      agent.flag.reset.net
-##  6:           agent.lr.decay                                                                        The decay factor of the learning rate at each step           agent.lr.decay
-##  7:                 agent.lr                                                                                               learning rate for the agent                 agent.lr
-##  8:        agent.store.model                                                                            whether to store the model of the agent or not        agent.store.model
-##  9: agent.update.target.freq                                                                                How often should the target network be set agent.update.target.freq
-## 10:        agent.start.learn                                                                            after how many transitions should replay begin        agent.start.learn
-## 11:            agent.clip.td                                                                                                  whether to clip TD error            agent.clip.td
-## 12:        policy.maxEpsilon                                                                                      The maximum epsilon exploration rate        policy.maxEpsilon
-## 13:        policy.minEpsilon                                                                                      The minimum epsilon exploration rate        policy.minEpsilon
-## 14:        policy.decay.rate                                                                                                            the decay rate        policy.decay.rate
-## 15:        policy.decay.type                                                        the way to decay epsion, can be decay_geo, decay_exp, decay_linear        policy.decay.type
-## 16:       policy.aneal.steps how many steps needed to decay from maximum epsilon to minmum epsilon, only valid when policy.decay.type = 'decay_linear'       policy.aneal.steps
-## 17:   policy.softmax.magnify                                                                                                                      &lt;NA&gt;   policy.softmax.magnify
-## 18:         replay.batchsize                                                                     how many samples to take from replay memory each time         replay.batchsize
-## 19:           replay.memname                                                                                                 The type of replay memory           replay.memname
-## 20:          replay.mem.size                                                                                             The size of the replay memory          replay.mem.size
-## 21:            replay.epochs                                                               How many gradient decent epochs to carry out for one replay            replay.epochs
-## 22:              replay.freq                                                                                   how many steps to wait until one replay              replay.freq
-##                         name                                                                                                                      note                     name</code></pre>
+<span class="kw"><a href="reference/listAvailConf.html">listAvailConf</a></span>()[, .(name, note)]</code></pre></div>
+<pre><code>##                         name                                                               note
+##  1:                   render                             Whether to show rendering video or not
+##  2:                      log                      Whether to log important information on drive
+##  3:                  console                     Whether to enable debug info output to console
+##  4:              agent.gamma                      The discount factor in reinforcement learning
+##  5:     agent.flag.reset.net                               Whether to reset the neural network 
+##  6:           agent.lr.decay                 The decay factor of the learning rate at each step
+##  7:                 agent.lr                                        learning rate for the agent
+##  8:        agent.store.model                     whether to store the model of the agent or not
+##  9: agent.update.target.freq                         How often should the target network be set
+## 10:        agent.start.learn                     after how many transitions should replay begin
+## 11:            agent.clip.td                                           whether to clip TD error
+## 12:        policy.maxEpsilon                               The maximum epsilon exploration rate
+## 13:        policy.minEpsilon                               The minimum epsilon exploration rate
+## 14:        policy.decay.rate                                                     the decay rate
+## 15:        policy.decay.type the way to decay epsion, can be decay_geo, decay_exp, decay_linear
+## 16:       policy.aneal.steps                 only valid when policy.decay.type = 'decay_linear'
+## 17:   policy.softmax.magnify                                                               &lt;NA&gt;
+## 18:         replay.batchsize              how many samples to take from replay memory each time
+## 19:           replay.memname                                          The type of replay memory
+## 20:          replay.mem.size                                      The size of the replay memory
+## 21:            replay.epochs        How many gradient decent epochs to carry out for one replay
+## 22:              replay.freq                            how many steps to wait until one replay
+##                         name                                                               note</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="reference/listAvailAgent.html">listAvailAgent</a></span>()</code></pre></div>
+<pre><code>##                name                                                    note
+## 1:         AgentDQN                                         Deep Q learning
+## 2:        AgentFDQN                           Frozen Target Deep Q Learning
+## 3:        AgentDDQN                                   Double Deep QLearning
+## 4:          AgentPG                             Policy Gradient Monte Carlo
+## 5:  AgentPGBaseline                           Policy Gradient with Baseline
+## 6: AgentActorCritic                                     Actor Critic Method
+## 7:        AgentDDPG Deep Deterministic Policy Gradient for Continous Action</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">conf =<span class="st"> </span><span class="kw"><a href="reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentDQN"</span>)
 conf<span class="op">$</span><span class="kw">show</span>()</code></pre></div>
 <pre><code>##                                      value

@@ -104,7 +104,6 @@ sudo apt-get install -y libxt-dev
 library(rlR)
 listGymEnvs()[1L:10L]
 env = makeGymEnv("CartPole-v1")
-listAvailAgent()
 ```
 
 ```{r}
@@ -121,8 +120,13 @@ env$snapshot()
 
 ```{r eval=TRUE}
 options(width=1000)
-listAvailConf()[, .(name, note, name)]
+listAvailConf()[, .(name, note)]
 ```
+
+```{r}
+listAvailAgent()
+```
+
 ```{r eval=TRUE}
 conf = getDefaultConf("AgentDQN")
 conf$show()

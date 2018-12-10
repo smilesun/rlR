@@ -15,7 +15,7 @@ policy.maxEpsilon = list(name = "policy.maxEpsilon", note = "The maximum epsilon
 policy.minEpsilon = list(name = "policy.minEpsilon", note = "The minimum epsilon exploration rate", value = 0.01),
 policy.decay.rate = list(name = "policy.decay.rate", note = "the decay rate", value = 1.0),
 policy.decay.type = list(name = "policy.decay.type", note = "the way to decay epsion, can be decay_geo, decay_exp, decay_linear", value = "decay_geo"),
-policy.aneal.steps = list(name = "policy.aneal.steps", note = "how many steps needed to decay from maximum epsilon to minmum epsilon, only valid when policy.decay.type = 'decay_linear'", value = 1e6),
+policy.aneal.steps = list(name = "policy.aneal.steps", note = "only valid when policy.decay.type = 'decay_linear'", value = 1e6),
 policy.softmax.magnify = list(name = "policy.softmax.magnify", value = 1),
 replay.batchsize = list(name = "replay.batchsize", note = "how many samples to take from replay memory each time", value = 64),
 replay.memname = list(name = "replay.memname", range = c("Uniform"), note = "The type of replay memory", value = "Uniform"),
