@@ -237,13 +237,12 @@ AgentArmed = R6::R6Class("AgentArmed",
 
     plotPerf = function() {
       self$interact$perf$plot()
+    },
+
+    print = function() {
+      self$conf$show()
     }
   ) # public
 )
 
 #\item{updatePara(name, val)}{[\code{function}] \cr Function to update parameter setting.}
-lsp <- function (package, all.names = FALSE, pattern) {
-    package <- deparse(substitute(package))
-    ls(pos = paste("package", package, sep = ":"), all.names = all.names, 
-        pattern = pattern)
-}
