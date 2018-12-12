@@ -39,6 +39,19 @@ listAvailConf = function() {
 }
 
 # default configuration for each agent which is adjacent to the definition so once definition is modified, it is easy to modify here as well.
+rlR.conf.Table = function() {
+  RLConf$new(
+          render = T,
+          console = T,
+          log = FALSE,
+          policy.maxEpsilon = 1,
+          policy.minEpsilon = 0.01,
+          policy.decay.rate = exp(-0.001),
+          policy.name = "ProbEpsilon",
+          replay.batchsize = 64L,
+          agent.start.learn = 0L)
+}
+
 rlR.conf.DQN = function() {
   RLConf$new(
           render = FALSE,
@@ -96,6 +109,8 @@ getDefaultConf = function(agent_name) {
     list.conf = list()
     list.conf[["AgentActorCritic"]] = rlR.conf.AC()
     list.conf[["AgentDQN"]] = rlR.conf.DQN()
+    list.conf[["AgentRandom"]] = rlR.conf.DQN()
+    list.conf[["AgentTable"]] = rlR.conf.Table()
     list.conf[["AgentFDQN"]] = rlR.conf.FDQN()
     list.conf[["AgentDDQN"]] = rlR.conf.DDQN()
     list.conf[["AgentPG"]] = rlR.conf.PG()

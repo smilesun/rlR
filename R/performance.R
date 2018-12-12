@@ -207,6 +207,7 @@ Performance = R6::R6Class("Performance",
         len = length(self$list_models)
         self$list_models[[len + 1L]] = self$agent$model$clone(deep = TRUE)
       }
-    }
+    },
+    print = function() {}
     )
 )

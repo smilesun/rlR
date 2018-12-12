@@ -57,5 +57,9 @@ RLConf = R6::R6Class("RLConf",
       df = as.data.frame(unlist(list_conf))
       colnames(df) = "value"
       df
-    })
+    },
+    print = function() {
+      print(self$show())
+    }
+    )
 )

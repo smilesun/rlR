@@ -44,8 +44,13 @@ EnvGym = R6::R6Class("EnvGym",
     initStateDim = function() {
       self$state_dim = unlist(self$env$observation_space$shape)
       if (is.null(self$state_dim)) {
-        stop("Compund state space Enviroment not supported!")
+        self$state_dim = self$env$observation_space$n
       }
+
+      if (is.null(self$state_dim)) {
+        stop("environment$observation_space has neither shape or n field!")
+      }
+
       self$flag_tensor = length(self$state_dim) > 1L  # judge if video input before change state_dim
       private$old_dim = self$state_dim
       # keep the array order(only change the dimension) rather than increase the order
@@ -101,7 +106,11 @@ EnvGym = R6::R6Class("EnvGym",
     initSubsample = function() {
       state = self$env$reset()  #FIXME: only return state when reset is called
       hstate = self$state_preprocess(state)
-      return(dim(hstate))
+      new_state_dim = dim(hstate)
+      if (is.null(new_state_dim)) {
+        new_state_dim = private$old_dim
+      }
+      return(new_state_dim)
     },
 
     render = function(...) {
@@ -120,7 +129,7 @@ EnvGym = R6::R6Class("EnvGym",
       }
       list_s_r_d_info = lapply(1:self$repeat_n_act, function(i) self$env$step(action)) # repeat the same choice for self$repeat_n_act times. length(list_s_r_d_info) = self$repeat_n_act
       rewards = sapply(list_s_r_d_info, function(x) x[[2L]]) # extract reward for each action repeat: the second element of each s_r_d_info return is reward
-      rewards = sapply(rewards, sign)  # reward clipping
+      #rewards = sapply(rewards, sign)  # reward clipping
       dones = sapply(list_s_r_d_info, function(x) x[[3L]])
       s_r_d_info = list_s_r_d_info[[self$repeat_n_act]]
       names(s_r_d_info) = c("state", "reward", "done", "info")

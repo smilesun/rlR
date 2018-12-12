@@ -20,7 +20,8 @@ Agent = R6Class("Agent", public = list())
 #' @examples initAgent("AgentRandom", makeGymEnv(name ="CartPole-v0"))
 #' @export
 initAgent = function(name, env, conf = NULL) {
-  if (is.null(conf)) conf = getDefaultConf(name)
+  if (is.character(env)) env = makeGymEnv(env)
+  if (is.null(conf)) conf = getDefaultConf(agent_name = name)
   ee = parse(text = sprintf("%s$new(env = env, conf = conf)", name))
   agent = eval(ee)  # the text is with respect to the passed arguments
   env$setAgent(agent)  # so env has hook to all objects in agent
