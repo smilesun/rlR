@@ -14,7 +14,7 @@ AgentTable = R6Class("AgentTable",
     q_tab = NULL,
     buildConf = function() {
       memname = self$conf$get("replay.memname")
-      self$mem = makeReplayMem("Online", agent = self, conf = self$conf)
+      self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
       policy_name = self$conf$get("policy.name")
       self$policy = makePolicy(policy_name, self)
       self$glogger = RLLog$new(self$conf)
@@ -25,8 +25,11 @@ AgentTable = R6Class("AgentTable",
     act = function(state) {
       state = state + 1
       self$vec.arm.q  = self$q_tab[state, ]
-      best_action = sample(which.max(self$q_tab[state, ]), 1)
-      #best_action = which.max(self$q_tab[state, ])
+      #print(state)
+      best_action = which.max(self$q_tab[state, ])
+      #print(self$q_tab)
+      #print(best_action)
+      best_action = sample(best_action, 1)
       rand_action = sample(self$act_cnt, 1)
       #self$policy$act(state)
       #action = sample(c(best_action, rand_action), 1, prob = c(1 - self$policy$episilon, self$policy$episilon))
@@ -38,8 +41,9 @@ AgentTable = R6Class("AgentTable",
       transact = self$mem$samples[[self$mem$size]]
       alpha = 0.5
       gamma = 0.95
-      delta = alpha * (transact$reward + gamma * max(self$q_tab[transact$state.new + 1L, ]) - self$q_tab[transact$state.old + 1L, transact$action])
-      self$q_tab[transact$state.old + 1L, transact$action] = self$q_tab[transact$state.old + 1L, transact$action]  + delta
+      future = transact$reward + gamma * max(self$q_tab[transact$state.new + 1L, ])
+      delta = future - self$q_tab[transact$state.old + 1L, transact$action]
+      self$q_tab[transact$state.old + 1L, transact$action] = self$q_tab[transact$state.old + 1L, transact$action]  + alpha * delta
     },
 
     afterEpisode = function(interact) {
