@@ -17,9 +17,10 @@ Agent = R6Class("Agent", public = list())
 #' @param env The environment to initialize the Agent
 #' @param conf The configuration
 #' @return [\code{\link{AgentArmed}}].
-#' @examples initAgent("AgentDQN", makeGymEnv(name ="CartPole-v0"), getDefaultConf("AgentDQN"))
+#' @examples initAgent("AgentRandom", makeGymEnv(name ="CartPole-v0"))
 #' @export
 initAgent = function(name, env, conf = NULL) {
+  if (is.null(conf)) conf = getDefaultConf(name)
   ee = parse(text = sprintf("%s$new(env = env, conf = conf)", name))
   agent = eval(ee)  # the text is with respect to the passed arguments
   env$setAgent(agent)  # so env has hook to all objects in agent
@@ -245,4 +246,16 @@ AgentArmed = R6::R6Class("AgentArmed",
   ) # public
 )
 
-#\item{updatePara(name, val)}{[\code{function}] \cr Function to update parameter setting.}
+AgentRandom = R6Class("AgentRandom",
+  inherit = AgentArmed,
+  public = list(
+    initializeConf = function(conf) {
+      if (is.null(conf)) super$initializeConf(getDefaultConf("AgentDQN"))
+    },
+    buildConf = function() {
+    },
+    act = function(state) {
+      sample(self$act_cnt)[1L]
+    }
+  )
+)

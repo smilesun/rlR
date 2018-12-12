@@ -13,3 +13,4 @@
 ^.ackrc
 ^requirement.txt
 ^paper$
+^cran_check.sh
