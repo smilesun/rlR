@@ -17,7 +17,7 @@ Agent = R6Class("Agent", public = list())
 #' @param env The environment to initialize the Agent
 #' @param conf The configuration
 #' @return [\code{\link{AgentArmed}}].
-#' @examples initAgent("AgentRandom", makeGymEnv(name ="CartPole-v0"))
+#' @examples initAgent("AgentDQN", "CartPole-v0")
 #' @export
 initAgent = function(name, env, conf = NULL) {
   if (is.character(env)) env = makeGymEnv(env)
@@ -254,6 +254,18 @@ AgentRandom = R6Class("AgentRandom",
       if (is.null(conf)) super$initializeConf(getDefaultConf("AgentDQN"))
     },
     buildConf = function() {
+      self$replay.size = self$conf$get("replay.batchsize")
+      self$gamma = self$conf$get("agent.gamma")
+      self$epochs = self$conf$get("replay.epochs")
+      self$lr_decay = self$conf$get("agent.lr.decay")
+      self$replay.freq = self$conf$get("replay.freq")
+      self$clip_td_err = self$conf$get("agent.clip.td")
+      memname = self$conf$get("replay.memname")
+      self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
+      policy_name = self$conf$get("policy.name")
+      self$policy = makePolicy(policy_name, self)
+      self$glogger = RLLog$new(self$conf)
+      self$createInteract(self$env)  # ini
     },
     act = function(state) {
       sample(self$act_cnt)[1L]
