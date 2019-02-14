@@ -21,7 +21,12 @@ before_install:
   - sudo apt-get install -y cmake
   - sudo apt-get install -y zlib1g-dev
   - sudo pip3 install scipy
-  - sudo pip3 install tensorflow
+  - sudo pip3 install numpy
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+      pip install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.0.0a0-cp27-none-linux_x86_64.whl;
+    elif [[ "$TRAVIS_PYTHON_VERSION" == "3.4" ]]; then
+      pip install https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-1.0.0a0-cp34-cp34m-linux_x86_64.whl;
+    fi  
   - sudo pip3 install keras
   - sudo pip3 install gym
   - sudo pip3 install gym[atari]
