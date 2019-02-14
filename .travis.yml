@@ -18,7 +18,6 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -y cmake
   - sudo apt-get install -y zlib1g-dev
-  - sudo pip3 install cmake
   - sudo pip3 install tensorflow
   - sudo pip3 install keras
   - sudo pip3 install gym
