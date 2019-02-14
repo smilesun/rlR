@@ -121,9 +121,12 @@ mfun =<span class="st"> </span><span class="cf">function</span>(state_dim, act_c
     model<span class="op">$</span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/reexports">compile</a></span>(<span class="dt">loss =</span> <span class="st">"mse"</span>, <span class="dt">optimizer =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/optimizer_rmsprop">optimizer_rmsprop</a></span>(<span class="dt">lr =</span> <span class="fl">0.001</span>))
     model
 }</code></pre></div>
-<p>$$ Learning</p>
+</div>
+<div id="learning" class="section level2">
+<h2 class="hasAnchor">
+<a href="#learning" class="anchor"></a>Learning</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentDQN"</span>)
-conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">console =</span> <span class="ot">TRUE</span>, <span class="dt">render =</span> <span class="ot">TRUE</span>, <span class="dt">policy.maxEpsilon =</span> <span class="fl">0.15</span>, <span class="dt">policy.minEpsilon =</span> <span class="dv">0</span>, <span class="dt">policy.decay =</span> <span class="fl">1.0</span> <span class="op">/</span><span class="st"> </span><span class="fl">1.01</span>, <span class="dt">replay.batchsize =</span> <span class="dv">10</span>, <span class="dt">replay.epochs =</span> <span class="dv">4</span>, <span class="dt">agent.lr.decay =</span> <span class="dv">1</span>, <span class="dt">agent.gamma =</span> <span class="fl">0.95</span>)
+conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">console =</span> <span class="ot">TRUE</span>, <span class="dt">render =</span> <span class="ot">TRUE</span>, <span class="dt">policy.maxEpsilon =</span> <span class="fl">0.3</span>, <span class="dt">policy.minEpsilon =</span> <span class="dv">0</span>, <span class="dt">policy.decay =</span> <span class="fl">1.0</span> <span class="op">/</span><span class="st"> </span><span class="fl">1.01</span>, <span class="dt">replay.batchsize =</span> <span class="dv">10</span>, <span class="dt">replay.epochs =</span> <span class="dv">4</span>, <span class="dt">agent.lr.decay =</span> <span class="dv">1</span>, <span class="dt">agent.gamma =</span> <span class="fl">0.95</span>)
 agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
 agent<span class="op">$</span><span class="kw">customizeBrain</span>(<span class="dt">value_fun =</span> mfun)
 perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">learn</span>(50L)</code></pre></div>
@@ -140,6 +143,7 @@ perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">le
 <a href="#customized-brain-for-mountain-car-problem">Customized Brain for Mountain Car Problem</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#action-cheat-to-environment">Action cheat to Environment</a></li>
       <li><a href="#define-custom-neural-network">Define custom neural network</a></li>
+      <li><a href="#learning">Learning</a></li>
       </ul>
 </li>
       </ul>

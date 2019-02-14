@@ -1,4 +1,4 @@
-pandoc: 1.19.2.4
+pandoc: 1.19.2.1
 pkgdown: 1.1.0.9000
 pkgdown_sha: ~
 articles:
@@ -6,4 +6,5 @@ articles:
   define_custom_environments: define_custom_environments.html
   play_atari_games: play_atari_games.html
   repeated_experiment: repeated_experiment.html
+  table_learning: table_learning.html
 
