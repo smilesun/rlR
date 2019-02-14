@@ -1,0 +1,37 @@
+---
+title: "Table Learning on Toy-text"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+    dev: svg
+vignette: >
+  %\VignetteIndexEntry{Customized Neural Network for Mountain Car Problem}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+library(rlR)
+set.seed(123)
+knitr::opts_chunk$set(cache = TRUE, collapse = FALSE, dev = "svg", fig.height = 3.5)
+knitr::knit_hooks$set(document = function(x){
+  gsub("```\n*```r*\n*", "", x)
+})
+library(reticulate)
+os = import("os")
+os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
+```
+
+# Toy text and tabular learning
+
+```{r}
+agent = initAgent("AgentTable", "CliffWalking-v0")
+agent$learn(500)
+```
+
+```{r eval=F}
+agent$plotPerf(F)
+```
