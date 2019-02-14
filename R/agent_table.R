@@ -16,7 +16,7 @@ AgentTable = R6Class("AgentTable",
     },
 
     act = function(state) {
-      self$vec.arm.q  = self$q_tab[state + 1L, ]
+      self$vec.arm.q  = self$q_tab[state, ]
       #best_action = sample(which.max(self$q_tab[state + 1L, ]), 1)
       #rand_action = sample(self$act_cnt, 1)
       self$policy$act(state)
@@ -28,9 +28,9 @@ AgentTable = R6Class("AgentTable",
       # Q^{\pi^{*}}(s, a)  = R + max \gamma Q^{\pi^{*}}(s', a)
       transact = self$mem$samples[[self$mem$size]]  # take the latest transaction?
       # self$q_tab has dim: $#states * #actions$
-      future = transact$reward + self$gamma * max(self$q_tab[(transact$state.new + 1L), ])  # state start from 0 in cliaff walker
-      delta = future - self$q_tab[(transact$state.old + 1L), transact$action]
-      self$q_tab[(transact$state.old + 1L), transact$action] = self$q_tab[(transact$state.old + 1), transact$action]  + self$alpha * delta
+      future = transact$reward + self$gamma * max(self$q_tab[(transact$state.new), ])  # state start from 0 in cliaff walker
+      delta = future - self$q_tab[(transact$state.old), transact$action]
+      self$q_tab[(transact$state.old), transact$action] = self$q_tab[(transact$state.old), transact$action]  + self$alpha * delta
     },
 
     afterEpisode = function(interact) {

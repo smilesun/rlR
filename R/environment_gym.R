@@ -91,6 +91,7 @@ EnvGym = R6::R6Class("EnvGym",
       self$flag_continous = ifelse(grepl("float", toString(genv$action_space$dtype)), TRUE, FALSE)  # if action is in continous space
       self$name = name
       self$state_preprocess = state_preprocess$fun
+      if (grepl("Discrete", toString(self$env$observation_space))) self$state_preprocess = function(x) (x + 1L)
       self$act_cheat = act_cheat
       self$repeat_n_act = repeat_n_act
       private$initStateDim()
