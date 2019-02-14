@@ -155,7 +155,7 @@ Performance = R6::R6Class("Performance",
       paste(s1, s2, s3)
     },
 
-    plot = function() {
+    plot = function(smooth = TRUE) {
       self$list.rewardPerEpisode = lapply(self$list.reward.epi, function(x) sum(x))
       env_name = self$agent$env$name
       class_name = class(self$agent)[1]
@@ -163,17 +163,28 @@ Performance = R6::R6Class("Performance",
       rewards = unlist(self$list.rewardPerEpisode)
       df = data.frame(episode = seq_along(rewards),
         rewards = rewards)
-      ggplot2::ggplot(df, aes(episode, rewards), col = "brown1") +
-        geom_point(alpha = 0.2) +
-        theme_bw() +
-        labs(
-          title = title,
-          x = "Episode",
-          y = "Rewards per episode"
-          ) +
-        coord_cartesian(ylim = range(rewards)) +
-        geom_smooth(se = FALSE, size = 1) +
-        geom_hline(yintercept = median(rewards), size = 1, col = "black", lty = 2)
+      if (smooth) {
+        ggplot2::ggplot(df, aes(episode, rewards), col = "brown1") +
+          geom_point(alpha = 0.2) +
+          theme_bw() +
+          labs(
+            title = title,
+            x = "Episode",
+            y = "Rewards per episode"
+            ) +
+          coord_cartesian(ylim = range(rewards)) +
+          geom_smooth(se = FALSE, size = 1) +
+          geom_hline(yintercept = median(rewards), size = 1, col = "black", lty = 2)
+      } else {
+          ggplot2::ggplot(df, aes(episode, rewards)) +
+          geom_line() +
+          theme_bw() +
+          labs(
+            title = title,
+            x = "Episode",
+            y = "Rewards per episode"
+            ) + coord_cartesian(ylim = range(rewards))
+      }
     },
 
     toScalar = function() {

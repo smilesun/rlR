@@ -67,7 +67,7 @@ Interaction = R6::R6Class("Interaction",
 
     checkEpisodeOver = function() {
           if (self$s_r_done_info[[3L]]) {
-            self$rl_env$reset()
+            self$s_r_done_info = self$rl_env$reset()
             self$perf$afterEpisode()
             self$step_in_episode = 0L
             if (self$idx_episode >= self$maxiter) {

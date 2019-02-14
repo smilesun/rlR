@@ -237,8 +237,8 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$interact$run(iter)
     },
 
-    plotPerf = function() {
-      self$interact$perf$plot()
+    plotPerf = function(smooth = T) {
+      self$interact$perf$plot(smooth)
     },
 
     print = function() {

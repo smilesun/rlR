@@ -41,14 +41,17 @@ listAvailConf = function() {
 # default configuration for each agent which is adjacent to the definition so once definition is modified, it is easy to modify here as well.
 rlR.conf.Table = function() {
   RLConf$new(
-          render = T,
+          render = F,
           console = T,
           log = FALSE,
-          policy.maxEpsilon = 1,
-          policy.minEpsilon = 0.01,
-          policy.decay.rate = exp(-0.001),
-          policy.name = "ProbEpsilon",
-          replay.batchsize = 64L,
+          agent.lr = 0.5,
+          agent.gamma = 0.95,
+          policy.maxEpsilon = 0.1,
+          policy.minEpsilon = 0,
+          policy.decay.type = "decay_linear",
+          policy.aneal.steps = 400,
+          #policy.decay.rate = exp(-0.001),
+          policy.name = "EpsilonGreedy",
           agent.start.learn = 0L)
 }
 
@@ -60,7 +63,7 @@ rlR.conf.DQN = function() {
           policy.maxEpsilon = 1,
           policy.minEpsilon = 0.01,
           policy.decay.rate = exp(-0.001),
-          policy.name = "ProbEpsilon",
+          policy.name = "EpsilonGreedy",
           replay.batchsize = 64L,
           agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
 }

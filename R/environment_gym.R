@@ -41,6 +41,8 @@ EnvGym = R6::R6Class("EnvGym",
 
     },
 
+
+
     initStateDim = function() {
       self$state_dim = unlist(self$env$observation_space$shape)
       if (is.null(self$state_dim)) {
@@ -117,11 +119,12 @@ EnvGym = R6::R6Class("EnvGym",
       self$env$render(...)
     },
 
+    # action_input starts from 1 according to R convention since action is caculated by policy
     step = function(action_input) {
       action = action_input
       if (!is.null(self$act_cheat)) {
         # act_cheat must be applied before minus 1 operation below since R has no 0 index!
-        action = as.integer(self$act_cheat[action] + 1L)  # gym convention here
+        action = as.integer(self$act_cheat[action] + 1L)  # gym convention is used in act_cheat(a vector mapping 1,2,3 to gym convention action starting from 0), +1 convert it back to  R convention
       }
       if (!self$flag_continous) {
         action = action - 1L  # The class in which the current code lies is Gym Specific

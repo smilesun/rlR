@@ -1,20 +1,13 @@
-function() {
-  library(profvis)
-  profvis(
-    {
-  agent = initAgent("AgentTable", "CliffWalking-v0")
-  agent$learn(100)
-    }
-  )
-}
-
 AgentTable = R6Class("AgentTable",
   inherit = AgentArmed,
   public = list(
     q_tab = NULL,
+    alpha = NULL,
     buildConf = function() {
       memname = self$conf$get("replay.memname")
       self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
+      self$alpha = self$conf$get("agent.lr")
+      self$gamma = self$conf$get("agent.gamma")
       policy_name = self$conf$get("policy.name")
       self$policy = makePolicy(policy_name, self)
       self$glogger = RLLog$new(self$conf)
@@ -23,27 +16,21 @@ AgentTable = R6Class("AgentTable",
     },
 
     act = function(state) {
-      state = state + 1
-      self$vec.arm.q  = self$q_tab[state, ]
-      #print(state)
-      best_action = which.max(self$q_tab[state, ])
-      #print(self$q_tab)
-      #print(best_action)
-      best_action = sample(best_action, 1)
-      rand_action = sample(self$act_cnt, 1)
-      #self$policy$act(state)
-      #action = sample(c(best_action, rand_action), 1, prob = c(1 - self$policy$episilon, self$policy$episilon))
-      action = sample(c(best_action, rand_action), 1, prob = c(0.9, 0.1))
-      action
+      self$vec.arm.q  = self$q_tab[state + 1L, ]
+      #best_action = sample(which.max(self$q_tab[state + 1L, ]), 1)
+      #rand_action = sample(self$act_cnt, 1)
+      self$policy$act(state)
+      #action = sample(c(best_action, rand_action), 1, prob = c(0.9, 0.1))
+      #action
     },
 
     afterStep = function() {
-      transact = self$mem$samples[[self$mem$size]]
-      alpha = 0.5
-      gamma = 0.95
-      future = transact$reward + gamma * max(self$q_tab[transact$state.new + 1L, ])
-      delta = future - self$q_tab[transact$state.old + 1L, transact$action]
-      self$q_tab[transact$state.old + 1L, transact$action] = self$q_tab[transact$state.old + 1L, transact$action]  + alpha * delta
+      # Q^{\pi^{*}}(s, a)  = R + max \gamma Q^{\pi^{*}}(s', a)
+      transact = self$mem$samples[[self$mem$size]]  # take the latest transaction?
+      # self$q_tab has dim: $#states * #actions$
+      future = transact$reward + self$gamma * max(self$q_tab[(transact$state.new + 1L), ])  # state start from 0 in cliaff walker
+      delta = future - self$q_tab[(transact$state.old + 1L), transact$action]
+      self$q_tab[(transact$state.old + 1L), transact$action] = self$q_tab[(transact$state.old + 1), transact$action]  + self$alpha * delta
     },
 
     afterEpisode = function(interact) {
