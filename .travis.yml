@@ -14,10 +14,8 @@ addons:
 before_install:
   - sudo pip3 install --upgrade setuptools pip wheel
   - sudo apt-get install -y software-properties-common
-  - sudo add-apt-repository -y ppa:george-edison55/cmake-3.x
-  - sudo apt-get update
-  - sudo apt-get install -y cmake
   - sudo apt-get install -y zlib1g-dev
+  - sudo pip3 install cmake
   - sudo pip3 install scipy
   - sudo pip3 install numpy
   - sudo pip3 install tensorflow
