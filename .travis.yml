@@ -4,6 +4,8 @@ sudo: required
 cache: packages
 addons:
   apt:
+    sources:
+      - ppa:jonathonf/python-3.6
     update: true
     packages:
       - python3
