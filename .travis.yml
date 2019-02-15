@@ -18,7 +18,7 @@ before_install:
   - sudo apt-get install -y software-properties-common
   - sudo apt-get install -y zlib1g-dev
   - sudo pip3 install cmake
-  - sudo pip3 install scipy=1.1.0
+  - sudo pip3 install scipy==1.1.0
   - sudo pip3 install numpy==1.14.5
   - sudo pip3 install tensorflow==1.8.0
   - sudo pip3 install keras==2.2.0
