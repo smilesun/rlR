@@ -22,6 +22,7 @@ before_install:
   - sudo pip3 install keras
   - sudo pip3 install gym==0.10.5
   - sudo pip3 install gym[atari]
+  - sudo pip3 install virtualenv
   - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 env:
   matrix:
