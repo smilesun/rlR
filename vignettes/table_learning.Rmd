@@ -8,7 +8,7 @@ output:
       smooth_scroll: false
     dev: svg
 vignette: >
-  %\VignetteIndexEntry{Customized Neural Network for Mountain Car Problem}
+  %\VignetteIndexEntry{Tablular Learning}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
