@@ -14,6 +14,9 @@ addons:
       - build-essential
       - zlib1g-dev
 before_install:
+  - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 1
+  - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 2
+  - sudo update-alternatives  --set python /usr/bin/python3.6
   - sudo pip3 install --upgrade setuptools pip wheel
   - sudo apt-get install -y software-properties-common
   - sudo apt-get install -y zlib1g-dev
@@ -25,7 +28,6 @@ before_install:
   - sudo pip3 install gym==0.10.5
   - sudo pip3 install gym[atari]
   - sudo pip3 install virtualenv
-  - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 env:
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
