@@ -3,6 +3,12 @@ AgentTable = R6Class("AgentTable",
   public = list(
     q_tab = NULL,
     alpha = NULL,
+    initialize = function(env, conf, q_init = 0.0, state_names = NULL) {
+      super$initialize(env, conf)
+      self$q_tab = matrix(q_init, nrow = self$state_dim, ncol = self$act_cnt)
+      if (!is.null(state_names)) rownames(self$q_tab) = state_names
+    },
+
     buildConf = function() {
       memname = self$conf$get("replay.memname")
       self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
@@ -12,7 +18,6 @@ AgentTable = R6Class("AgentTable",
       self$policy = makePolicy(policy_name, self)
       self$glogger = RLLog$new(self$conf)
       self$createInteract(self$env)  # initialize after all other members are initialized!!
-      self$q_tab = matrix(0.0, nrow = self$state_dim, ncol = self$act_cnt)
     },
 
     act = function(state) {

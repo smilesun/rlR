@@ -19,11 +19,15 @@ Agent = R6Class("Agent", public = list())
 #' @return [\code{\link{AgentArmed}}].
 #' @examples initAgent("AgentDQN", "CartPole-v0")
 #' @export
-initAgent = function(name, env, conf = NULL) {
+initAgent = function(name, env, conf = NULL, ...) {
+  #browser()
   if (is.character(env)) env = makeGymEnv(env)
   if (is.null(conf)) conf = getDefaultConf(agent_name = name)
-  ee = parse(text = sprintf("%s$new(env = env, conf = conf)", name))
-  agent = eval(ee)  # the text is with respect to the passed arguments
+  #ee = parse(text = sprintf("%s$new(env = env, conf = conf)", name))
+  fun = get(name)$new
+  agent = do.call(fun, args = list(env = env, conf = conf, ...))
+  #get(name)$new(env = env, conf = conf)
+  #agent = eval(ee)  # the text is with respect to the passed arguments
   env$setAgent(agent)  # so env has hook to all objects in agent
   agent
 }
