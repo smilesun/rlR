@@ -1,4 +1,4 @@
-#' @importFrom magrittr %>% %<>%
+#' @importFrom magrittr %>% %<>% 
 
 PerformancePlots = R6::R6Class(
   "PerformancePlots",
