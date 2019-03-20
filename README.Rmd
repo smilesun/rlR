@@ -29,7 +29,7 @@ see [Python Dependencies Installation and Configuration](https://smilesun.github
 ### Choose an environment to learn
 ```{r}
 library(rlR)
-env = makeGymEnv("CartPole-v1")
+env = makeGymEnv("CartPole-v0")
 env
 ```
 

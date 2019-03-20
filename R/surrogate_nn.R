@@ -2,7 +2,6 @@ SurroNN = R6::R6Class("SurroNN",
   inherit = Surrogate,
   public = list(
     lr = NULL,
-    arch.list = NULL,
     conf = NULL,
     agent = NULL,
     custom_flag = NULL,
@@ -45,14 +44,13 @@ SurroNN = R6::R6Class("SurroNN",
       keras::train_on_batch(object = self$model, x = X_train, y = Y_train, sample_weight = sample_weight)
     },
 
-    train = function(X_train, Y_train, epochs = 1L) {
-      keras::fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
+    train = function(X_train, Y_train, batchsize = NULL, epochs = 1L) {
+      keras::fit(object = self$model, x = X_train, y = Y_train, batchsize = batchsize, epochs = epochs, verbose = 0)
     },
 
     batch_update = function(X_train, Y_train) {
-      keras::fit(object = self$model, x = X_train, y = Y_train)
+      keras::train_on_batch(object = self$model, x = X_train, y = Y_train)
     },
-
 
     pred = function(X) {
       res = keras::predict_on_batch(self$model, X)
@@ -60,11 +58,10 @@ SurroNN = R6::R6Class("SurroNN",
     },
 
     afterEpisode = function() {
-        self$lr =  self$lr * self$agent$lr_decay
-        #FIXME: adjust learning rate with dataframe nrow?
-        keras::k_set_value(self$model$optimizer$lr, self$lr)
         lr = keras::k_get_value(self$model$optimizer$lr)
         self$agent$interact$toConsole("learning rate: %s  \n", lr)
+        self$lr =  self$lr * self$agent$lr_decay
+        keras::k_set_value(self$model$optimizer$lr, self$lr)
     }
     ),
   private = list(
@@ -92,7 +89,6 @@ SurroTF = R6::R6Class("SurroTF",
   inherit = Surrogate,
   public = list(
     lr = NULL,
-    arch.list = NULL,
     conf = NULL,
     agent = NULL,
     custom_flag = NULL,
@@ -146,6 +142,52 @@ SurroTF = R6::R6Class("SurroTF",
     }
   )
 )
+
+SurroGrad = R6::R6Class("SurroGrad",
+  inherit = SurrogateNN,
+  public = list(
+   loss2WeightGrad = function(state, action) {
+      input = self$model$input
+      #input = tf$stop_gradient()
+      output = self$model$output
+      loss = self$model$total_loss
+      #loss$graph$get_collection("variables")
+      #loss$graph$get_collection("trainable_variables")
+      #loss$graph$get_tensor_by_name(iname)
+      #y_ <- tf$placeholder(tf$float32, shape(NULL, self$agent$act_cnt))
+      #ph_a = tf$placeholder(tf$float32, c(NULL, 2), name = "action")
+      #ph_a = tf$stop_gradient(ph_a)
+      targets = self$model$targets
+      sample_weights = self$model$sample_weights[[1]]
+      #aname = self$model$targets[[1L]]$name
+      #cross_entropy = tf$reduce_mean(-tf$reduce_sum(y_ * tf$log(output), reduction_indices=1L))
+      weight = self$model$trainable_weights
+      tf_grad = keras::k_gradients(loss, weight)
+      #tf_grad = tf$gradients(cross_entropy, list(input, targets))
+      #tf_grad = tf$gradients(loss, list(input, targets))
+      #tf_grad = keras::k_gradients(loss, input)
+      #iname = self$model$input$name
+      #oname = self$model$output$name
+      self$sess$run(tensorflow::tf$global_variables_initializer())
+      np = reticulate::import("numpy", convert = FALSE)
+      sstate = np$array(state)
+      sweights = np$array(rep(1, dim(state)[2L]))
+      saction = np$array(action)
+      #feed_dict = py_dict(c(iname, aname), c(sstate, saction))
+      #feed_dict = py_dict(c(iname, "ph_a"), c(sstate, saction))
+      #fun = k_function(list(input, targets), tf_grad)
+      #self$model$optimizer$get_gradients(loss, weight)
+      feed_dict = py_dict(c(input, targets, sample_weights), c(sstate, saction, sweights))
+      self$sess$run(tf_grad, feed_dict)
+    },
+
+    getGradients = function(state) {
+      yhat = self$pred(state)
+      grad = self$loss2WeightGrad(state = state, action = yhat)
+    }
+    )
+)
+
 
 
 

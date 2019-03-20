@@ -20,17 +20,19 @@ or
 devtools::install_github("smilesun/rlR", dependencies = TRUE)
 ```
 
+## Python dependency
+
 rlR use keras with tensorflow as its backend for neural network as functional approximator and OpenAI gym.
 
-[Python Dependencies Installation and Configuration](https://smilesun.github.io/rlR/articles/python_dependencies.html)
+see [Python Dependencies Installation and Configuration](https://smilesun.github.io/rlR/articles/python_dependencies.html)
 
-## Functional Approximator
+## Example of Neural Network as Functional Approximator
 
 ### Choose an environment to learn
 
 ```r
 library(rlR)
-env = makeGymEnv("CartPole-v1")
+env = makeGymEnv("CartPole-v0")
 env
 ```
 

@@ -1,6 +1,5 @@
 # @title Policy Gradient
-#
-# @format \code{\link{R6Class}} object
+# # @format \code{\link{R6Class}} object
 # @description Policy Gradient
 #
 # @section Methods:
@@ -42,7 +41,8 @@ AgentPG = R6::R6Class("AgentPG",
         arr_states_old = simplify2array(list_states_old)
         norder = length(dim(arr_states_old))
         self$replay.x = aperm(arr_states_old, c(norder, 1:(norder - 1)))
-        self$replay.y = array(simplify2array(list_targets), dim = c(batchsize, self$act_cnt))
+        self$replay.y = t(simplify2array(list_targets))
+        # self$replay.y = array(, dim = c(batchsize, self$act_cnt))
     },
 
     setAmf = function(batchsize) {
@@ -58,7 +58,8 @@ AgentPG = R6::R6Class("AgentPG",
     replay = function(batchsize) {
         self$setAmf(batchsize)
         self$getXY(batchsize)
-        self$brain$train(self$replay.x, self$replay.y * self$amf)  # update the policy model
+        self$replay.y =  diag(self$amf) %*%  self$replay.y
+        self$brain$batch_update(self$replay.x, self$replay.y)  # update the policy model
     },
 
     setReturn = function() {
