@@ -219,7 +219,7 @@ EnvGym = R6::R6Class("EnvGym",
       self$showImage(s)
     },
 
-    snapshot = function(steps = 25L, preprocess = TRUE) {
+    snapshot = function(steps = 25L, preprocess) {
       checkmate::assert_int(steps)
       ss = self$env$reset()
       if (is.null(self$env$action_space$sample)) {

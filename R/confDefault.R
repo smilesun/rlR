@@ -58,14 +58,14 @@ rlR.conf.Table = function() {
 rlR.conf.DQN = function() {
   RLConf$new(
           render = FALSE,
-          console = FALSE,
+          console = TRUE,
           log = FALSE,
           policy.maxEpsilon = 1,
           policy.minEpsilon = 0.01,
           policy.decay.rate = exp(-0.001),
           policy.name = "EpsilonGreedy",
-          replay.batchsize = 64L,
-          agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
+          replay.batchsize = 64L
+          )
 }
 
 rlR.conf.FDQN = function() {
@@ -74,15 +74,17 @@ rlR.conf.FDQN = function() {
 
 rlR.conf.PG = function() {
   RLConf$new(
+          agent.lr = 1e-4,
           render = FALSE,
           console = FALSE,
-          policy.maxEpsilon = 1,
-          policy.decay = exp(-0.001),
-          policy.minEpsilon = 0.01,
-          policy.name = "ProbEpsilon",
+          flag_rescue = FALSE,
+          agent.flag.reset.net = FALSE,
+          policy.softmax.base = 1,
+          policy.softmax.magnify = 1.001,
+          policy.name = "SoftMax",
           replay.memname = "Latest",
-          replay.epochs = 1L,
-          agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
+          replay.epochs = 1L
+          )
 }
 
 rlR.conf.AC = function() {

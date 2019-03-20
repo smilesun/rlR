@@ -11,11 +11,6 @@
 AgentDQN = R6::R6Class("AgentDQN",
   inherit = AgentArmed,
   public = list(
-    initialize = function(env, conf) {
-       super$initialize(env, conf)
-       self$setBrain()
-    },
-
     setBrain = function() {
        self$task = "value_fun"
        self$brain = SurroNN$new(self)

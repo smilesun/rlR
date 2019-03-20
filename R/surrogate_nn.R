@@ -8,91 +8,20 @@ SurroNN = R6::R6Class("SurroNN",
     custom_flag = NULL,
     action_input = NULL,
     sess = NULL,
-    initialize = function(agent, arch_list_name = "agent.nn.arch", ...) {
-      par_list = list(...)
+    initialize = function(agent) {
       self$agent = agent
       self$act_cnt = self$agent$act_cnt
       self$custom_flag = FALSE
-      if ("act_cnt" %in% names(par_list)) {
-        self$act_cnt = par_list[["act_cnt"]]
-      }
       self$state_dim = self$agent$state_dim
       self$conf = self$agent$conf
-      if (!is.null(self$conf)) {
-        self$arch.list = self$conf$get(arch_list_name)
-        self$arch.list$lr = self$conf$get("agent.lr")
-        self$lr = self$arch.list$lr
-      }
+      self$lr = self$conf$get("agent.lr")
       self$model = self$makeModel()
       self$sess = agent$sess
     },
 
-    initNetworkCreator = function() {
-      if (self$agent$env$flag_tensor) {
-        self$agent$network_build_funs[["policy_fun"]]  = function(state_dim, act_cnt) {
-          makeCnnActor(input_shape = state_dim, act_cnt = act_cnt)
-        }
-        self$agent$network_build_funs[["value_fun"]] = function(state_dim, act_cnt) {
-          makeCnnCritic(input_shape = state_dim, act_cnt = act_cnt)
-        }
-      } else {
-        self$agent$network_build_funs[["value_fun"]] = function(state_dim, act_cnt) {
-          makeKerasModel(input_shape = state_dim, output_shape = act_cnt, arch.list = self$arch.list)
-        }
-        self$agent$network_build_funs[["policy_fun"]] = function(state_dim, act_cnt) {
-          makeKerasModel(input_shape = state_dim, output_shape = act_cnt, arch.list = self$arch.list)
-        }
-      }
-
-  },
-
+    #@depend self$agent$task
     makeModel = function() {
-      if (self$agent$env$flag_continous) {
-        model = self$agent$createBrain()  # the agent itself is responsible for creating the brain
-        return(model)
-      }
-      self$initNetworkCreator()
       do.call(self$agent$network_build_funs[[self$agent$task]], args = list(state_dim = self$state_dim, act_cnt = self$act_cnt))
-    },
-
-    # calculate gradients with respect to input arm instead of weights
-    calGradients2Action = function(state_input, action_input, output = NULL) {
-      output = self$model$output
-      # FIXME: hard coded here.
-      input_action = self$model$input[[1L]]
-      input_action_shape = input_action$shape
-      tf_grad = keras::k_gradients(output, input_action)
-      aname = input_action$name
-      sname = self$model$input[[2L]]$name
-      oname = self$model$output$name
-      #FIXME: do we need initializer here?
-      self$sess$run(tensorflow::tf$global_variables_initializer())
-      np = reticulate::import("numpy", convert = FALSE)
-      sstate = np$array(state_input)
-      saction = np$array(action_input)
-      feed_dict = py_dict(c(sname, aname), c(sstate, saction))
-      #FIXME: do we need to provide the output as well?
-      #feed_dict = py_dict(c(sname, aname, oname), c(sstate, saction, output))
-      self$sess$run(tf_grad, feed_dict)
-    },
-
-    calGradients = function(state, action) {
-      output = self$model$output
-      input = self$model$trainable_weights
-      tf_grad = keras::k_gradients(output, input)
-      iname = self$model$input$name
-      oname = self$model$output$name
-      self$sess$run(tensorflow::tf$global_variables_initializer())
-      np = reticulate::import("numpy", convert = FALSE)
-      sstate = np$array(state)
-      saction = np$array(action)
-      feed_dict = py_dict(c(iname, oname), c(sstate, saction))
-      self$sess$run(tf_grad, feed_dict)
-    },
-
-    getGradients = function(state) {
-      res = self$pred(state)
-      grad = self$calGradients(state = state, action = res)
     },
 
     setModel = function(obj) {
@@ -112,9 +41,18 @@ SurroNN = R6::R6Class("SurroNN",
       keras::save_model_hdf5(object = self$model, file_path = file_path)
     },
 
+    train_weighted = function(X_train, Y_train, sample_weight) {
+      keras::train_on_batch(object = self$model, x = X_train, y = Y_train, sample_weight = sample_weight)
+    },
+
     train = function(X_train, Y_train, epochs = 1L) {
       keras::fit(object = self$model, x = X_train, y = Y_train, epochs = epochs, verbose = 0)
     },
+
+    batch_update = function(X_train, Y_train) {
+      keras::fit(object = self$model, x = X_train, y = Y_train)
+    },
+
 
     pred = function(X) {
       res = keras::predict_on_batch(self$model, X)
@@ -146,6 +84,111 @@ SurroNN = R6::R6Class("SurroNN",
         value
       }
     }
-  ),
-  active = list()
+  )
 )
+
+
+SurroDDPG = R6::R6Class("SurroDDPG",
+  inherit = SurrogateNN,
+  public = list(
+    makeModel = function() {
+        model = self$agent$createBrain()  # the agent itself is responsible for creating the brain
+        return(model)
+    },
+
+    # calculate gradients with respect to input arm instead of weights
+    calGradients2Action = function(state_input, action_input, output = NULL) {
+      output = self$model$output
+      # FIXME: hard coded here.
+      input_action = self$model$input[[1L]]
+      input_action_shape = input_action$shape
+      tf_grad = keras::k_gradients(output, input_action)  # Returns the gradients of 'variables' w.r.t. 'loss'.
+      aname = input_action$name
+      sname = self$model$input[[2L]]$name
+      oname = self$model$output$name
+      #FIXME: do we need initializer here?
+      self$sess$run(tensorflow::tf$global_variables_initializer())
+      np = reticulate::import("numpy", convert = FALSE)
+      sstate = np$array(state_input)
+      saction = np$array(action_input)
+      feed_dict = py_dict(c(sname, aname), c(sstate, saction))
+      #FIXME: do we need to provide the output as well?
+      #feed_dict = py_dict(c(sname, aname, oname), c(sstate, saction, output))
+      self$sess$run(tf_grad, feed_dict)
+    },
+
+    calGradients = function(state, action) {
+      output = self$model$output
+      input = self$model$trainable_weights
+      tf_grad = keras::k_gradients(output, input)
+      iname = self$model$input$name
+      oname = self$model$output$name
+      ph_a = tf$placeholder(tf$float32, c(NULL, 2), name = "action")
+      self$sess$run(tensorflow::tf$global_variables_initializer())
+      np = reticulate::import("numpy", convert = FALSE)
+      sstate = np$array(state)
+      saction = np$array(action)
+      feed_dict = py_dict(c(iname, "ph_a"), c(sstate, saction))
+      self$sess$run(tf_grad, feed_dict)
+    },
+
+    loss2WeightGrad= function(state, action) {
+      input = self$model$input
+      #input = tf$stop_gradient()
+      output = self$model$output
+      loss = self$model$total_loss
+      #loss$graph$get_collection("variables")
+      #loss$graph$get_collection("trainable_variables")
+      #loss$graph$get_tensor_by_name(iname)
+      #y_ <- tf$placeholder(tf$float32, shape(NULL, self$agent$act_cnt))
+      #ph_a = tf$placeholder(tf$float32, c(NULL, 2), name = "action")
+      #ph_a = tf$stop_gradient(ph_a)
+      targets = self$model$targets
+      sample_weights = self$model$sample_weights[[1]]
+      #aname = self$model$targets[[1L]]$name
+      #cross_entropy = tf$reduce_mean(-tf$reduce_sum(y_ * tf$log(output), reduction_indices=1L))
+      weight = self$model$trainable_weights
+      tf_grad = keras::k_gradients(loss, weight)
+      #tf_grad = tf$gradients(cross_entropy, list(input, targets))
+      #tf_grad = tf$gradients(loss, list(input, targets))
+      #tf_grad = keras::k_gradients(loss, input)
+      #iname = self$model$input$name
+      #oname = self$model$output$name
+      self$sess$run(tensorflow::tf$global_variables_initializer())
+      np = reticulate::import("numpy", convert = FALSE)
+      sstate = np$array(state)
+      sweights = np$array(rep(1, dim(state)[2L]))
+      saction = np$array(action)
+      #feed_dict = py_dict(c(iname, aname), c(sstate, saction))
+      #feed_dict = py_dict(c(iname, "ph_a"), c(sstate, saction))
+      #fun = k_function(list(input, targets), tf_grad)
+      #self$model$optimizer$get_gradients(loss, weight)
+      feed_dict = py_dict(c(input, targets, sample_weights), c(sstate, saction, sweights))
+      self$sess$run(tf_grad, feed_dict)
+    },
+
+    getGradients = function(state) {
+      yhat = self$pred(state)
+      grad = self$loss2WeightGrad(state = state, action = yhat)
+    }
+    )
+)
+
+
+
+# continous_cross_entropy = function(act_chosen) {
+# 
+# }
+# 
+# library(keras)
+# quantile <- 0.5
+# tilted_loss <- function(q, y, f) {
+#   e <- y - f
+#   k_mean(k_maximum(q * e, (q - 1) * e), axis = 2)
+# }
+# 
+# sess <- k_get_session()
+# ys <- k_constant(c(1,2,3,4), shape = c(2,2))
+# yhats <- k_constant(c(1,3,3,4), shape = c(2,2))
+# sess$run(tilted_loss(quantile, ys, yhats))
+

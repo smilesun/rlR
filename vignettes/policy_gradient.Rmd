@@ -1,0 +1,74 @@
+---
+title: "Policy Gradient Method"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+    dev: svg
+vignette: >
+  %\VignetteIndexEntry{Policy Gradient Method}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+set.seed(123)
+library(rlR)
+knitr::opts_chunk$set(cache = TRUE, collapse = FALSE, dev = "svg", fig.height = 3.5)
+knitr::knit_hooks$set(document = function(x){
+  gsub("```\n*```r*\n*", "", x)
+})
+library(reticulate)
+```
+
+
+```{r eval=FALSE}
+rlR:::makePolicyNet
+```
+
+## Monte Carlo Policy Gradient
+```{r eval=FALSE}
+  library(magrittr)
+  library(keras)
+  env = makeGymEnv("CartPole-v0")
+  conf = getDefaultConf("AgentPG")
+  conf$set(console = T, policy.name = "EpsilonGreedy", policy.maxEpsilon = 0.001)
+  agent = initAgent("AgentPG", env, conf)
+  agent$customizeBrain(list(policy_fun = rlR:::makePolicyNet))
+  agent$learn(200L)
+
+```
+
+
+```{r mplot, eval=FALSE,fig.path="inst/figures/", warning=FALSE, message=FALSE, eval=FALSE}
+agent$plotPerf()
+```
+
+
+## Monte Carlo Policy Gradient With Baseline
+
+```{r}
+pg.bl.agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.0001)", decay = 0.9, clipnorm = 5)
+pg.bl.agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)
+
+value_fun = makeNetFun(pg.bl.agent.nn.arch.actor, flag_critic = T)
+policy_fun = makeNetFun(pg.bl.agent.nn.arch.critic)
+ 
+```
+
+
+
+```{r eval=FALSE}
+env = makeGymEnv("CartPole-v0")
+conf = getDefaultConf("AgentPGBaseline")
+conf$set(console = T, agent.lr = 1e-5)
+agent = initAgent("AgentPGBaseline", env, conf)
+agent$customizeBrain(list(value_fun = value_fun, policy_fun = policy_fun))
+agent$learn(2000L)
+```
+
+```{r mplot, eval=FALSE,fig.path="inst/figures/", warning=FALSE, message=FALSE, eval=FALSE}
+agent$plotPerf()
+```

@@ -20,14 +20,10 @@ Agent = R6Class("Agent", public = list())
 #' @examples initAgent("AgentDQN", "CartPole-v0")
 #' @export
 initAgent = function(name, env, conf = NULL, ...) {
-  #browser()
   if (is.character(env)) env = makeGymEnv(env)
   if (is.null(conf)) conf = getDefaultConf(agent_name = name)
-  #ee = parse(text = sprintf("%s$new(env = env, conf = conf)", name))
   fun = get(name)$new
   agent = do.call(fun, args = list(env = env, conf = conf, ...))
-  #get(name)$new(env = env, conf = conf)
-  #agent = eval(ee)  # the text is with respect to the passed arguments
   env$setAgent(agent)  # so env has hook to all objects in agent
   agent
 }
@@ -68,7 +64,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     interact = NULL,
     clip_td_err = NULL,
     mem = NULL,  # replay memory
-    advantage = NULL,
+    vec_dis_return = NULL,
     list.acts = NULL,
     act_cnt = NULL,
     state_dim = NULL,
@@ -111,17 +107,14 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     # user creation of brain from outside
-    customizeBrain = function(policy_fun = NULL, value_fun = NULL) {
-       if (!is.null(policy_fun)) {
-          checkCustomNetwork(policy_fun, self$state_dim, self$act_cnt)
-          self$network_build_funs[["policy_fun"]] = policy_fun
-       }
-       if (!is.null(value_fun)) {
-          checkCustomNetwork(value_fun, self$state_dim, self$act_cnt)
-          self$network_build_funs[["value_fun"]] = value_fun
-       }
-       #NOTE: setBrain does not exist in base class!!
-       self$setBrain()
+    customizeBrain = function(dict) {
+      for (name in names(dict)) {
+        fun = dict[[name]]
+        checkmate::assert_choice(name, choices = c("value_fun", "policy_fun"))
+        checkCustomNetwork(fun, self$state_dim, self$act_cnt)
+        self$network_build_funs[[name]] = fun
+      }
+      self$setBrain()
     },
 
     # seperate initializeConf allow for reconfiguration
@@ -151,7 +144,6 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$policy = makePolicy(policy_name, self)
       self$glogger = RLLog$new(self$conf)
       self$createInteract(self$env)  # initialize after all other members are initialized!!
-      self$setBrain()  #NOTE: setBrain does not exist for base class!
     },
 
     # transform observation to  the replay memory
@@ -166,15 +158,6 @@ AgentArmed = R6::R6Class("AgentArmed",
       stepidx = interact$step_in_episode + 1L
       ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
       self$mem$add(ins)
-    },
-
-    #     extractTarget = function(ins) {
-    #       stop("not implemented")
-    #     },
-    # 
-
-    setAdvantage = function(adv) {
-      self$advantage = adv
     },
 
     replay = function(batchsize) {

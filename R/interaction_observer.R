@@ -70,14 +70,12 @@ Interaction = R6::R6Class("Interaction",
             self$s_r_done_info = self$rl_env$reset()
             self$perf$afterEpisode()
             self$step_in_episode = 0L
-            if (self$idx_episode >= self$maxiter) {
-              private$continue_flag = FALSE
-            }
+            if (self$idx_episode >= self$maxiter) private$continue_flag = FALSE
             self$rl_agent$afterEpisode(self)
-            sucess_flag = self$perf$success()
-            if (sucess_flag) {
-              private$continue_flag = FALSE
-            }
+            # sucess_flag = self$perf$success()
+            # if (sucess_flag) {
+            #   private$continue_flag = FALSE
+            # }
         }
         #gc()
     },
