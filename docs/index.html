@@ -108,13 +108,17 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"smilesun/rlR"</span>)</code></pre></div>
 <p>or</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"smilesun/rlR"</span>, <span class="dt">dependencies =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<p>rlR use keras with tensorflow as its backend for neural network as functional approximator and OpenAI gym.</p>
-<p><a href="https://smilesun.github.io/rlR/articles">Python Dependencies Installation and Configuration</a></p>
 </div>
 </div>
-<div id="functional-approximator" class="section level2">
+<div id="python-dependency" class="section level2">
 <h2 class="hasAnchor">
-<a href="#functional-approximator" class="anchor"></a>Functional Approximator</h2>
+<a href="#python-dependency" class="anchor"></a>Python dependency</h2>
+<p>rlR use keras with tensorflow as its backend for neural network as functional approximator and OpenAI gym.</p>
+<p>see <a href="https://smilesun.github.io/rlR/articles/python_dependencies.html">Python Dependencies Installation and Configuration</a></p>
+</div>
+<div id="example-of-neural-network-as-functional-approximator" class="section level2">
+<h2 class="hasAnchor">
+<a href="#example-of-neural-network-as-functional-approximator" class="anchor"></a>Example of Neural Network as Functional Approximator</h2>
 <div id="choose-an-environment-to-learn" class="section level3">
 <h3 class="hasAnchor">
 <a href="#choose-an-environment-to-learn" class="anchor"></a>Choose an environment to learn</h3>
@@ -139,6 +143,22 @@ agent<span class="op">$</span><span class="kw">learn</span>(200L)  </code></pre>
 <a href="#look-at-the-performance" class="anchor"></a>Look at the performance</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent<span class="op">$</span><span class="kw">plotPerf</span>(F)</code></pre></div>
 </div>
+</div>
+<div id="specify-a-task-to-be-sovled-by-creating-your-own-environment" class="section level2">
+<h2 class="hasAnchor">
+<a href="#specify-a-task-to-be-sovled-by-creating-your-own-environment" class="anchor"></a>Specify a task to be sovled by creating your own Environment</h2>
+<p>see <a href="https://smilesun.github.io/rlR/articles/define_custom_environments.html">Custom Environment</a></p>
+</div>
+<div id="more-examples" class="section level2">
+<h2 class="hasAnchor">
+<a href="#more-examples" class="anchor"></a>More Examples</h2>
+<ul>
+<li><a href="https://smilesun.github.io/rlR/articles/custom_configuration.html">Configuration</a></li>
+<li><a href="https://smilesun.github.io/rlR/articles/table_learning.html">Tabular Learning</a></li>
+<li><a href="https://smilesun.github.io/rlR/articles/repeated_experiment.html">Repeated Experiment</a></li>
+<li>Discover in <a href="https://smilesun.github.io/rlR/">Documentation</a>
+</li>
+</ul>
 </div>
 </div>
   </div>
