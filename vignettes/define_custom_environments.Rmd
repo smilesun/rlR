@@ -28,12 +28,18 @@ os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
 # rlR: Define custom environments for Deep Reinforcement learning in R
 
 ## Environment class
+
 If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment which must inherit the `rlR::Environment` Class. You could define other public and private members as you like which do not collide with the names in `rlR::Environment`.
 
 ```{r}
 library(rlR)
-library(R6)
 help(topic="Environment", package = "rlR")
+```
+
+## An Environment that does not make sense
+
+```{r}
+library(R6)
 MyEnv = R6::R6Class("MyEnv",
   inherit = rlR::Environment,
   public = list(
@@ -84,11 +90,10 @@ MyEnv = R6::R6Class("MyEnv",
 )
 ```
 
+
 Afterwards you could choose one of the available  Agents to learn on this newly defined environments. 
 ```{r}
 env = MyEnv$new()
-listAvailAgent()
-conf = getDefaultConf("AgentDQN")
-agent = initAgent("AgentDQN", env, conf)
+agent = initAgent("AgentDQN", env)
 perf = agent$learn(3)
 ```

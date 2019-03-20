@@ -17,11 +17,6 @@ AgentDDQN = R6::R6Class("AgentDDQN",
     brain_u = NULL,  # u: to be updated
     brain_h = NULL,  # h: to help
     p.next.h = NULL,
-    initialize = function(env, conf) {
-      super$initialize(env, conf)
-      self$setBrain()
-    },
-
     setBrain = function() {
       super$setBrain()  # current setBrain will overwrite super$setBrain()
       self$brain2 = SurroNN$new(self)

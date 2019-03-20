@@ -49,8 +49,9 @@ AgentPG = R6::R6Class("AgentPG",
         self$setReturn()
         vec_discount = cumprod(rep(self$gamma, batchsize))
         amf = self$vec_dis_return * vec_discount
+        amf = self$vec_dis_return
         amf = amf - mean(amf)
-        self$amf = amf / sqrt(sum(amf ^ 2))
+        self$amf = amf / sd(amf)
     },
 
     # replay is executed at the end of episode for each step of the episode, batch size is always set to be the episode length
@@ -80,7 +81,7 @@ AgentPG$test = function() {
   library(keras)
   env = makeGymEnv("CartPole-v0")
   conf = getDefaultConf("AgentPG")
-  conf$set(console = T, policy.name = "EpsilonGreedy", policy.maxEpsilon = 0.001)
+  conf$set(console = T, policy.name = "EpsilonGreedy", policy.maxEpsilon = 0, policy.minEpsilon = 0, agent.lr = 0.02)
   agent = initAgent("AgentPG", env, conf)
   agent$customizeBrain(list(policy_fun = rlR:::makePolicyNet))
   agent$learn(200L)

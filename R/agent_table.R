@@ -22,11 +22,7 @@ AgentTable = R6Class("AgentTable",
 
     act = function(state) {
       self$vec.arm.q  = self$q_tab[state, ]
-      #best_action = sample(which.max(self$q_tab[state + 1L, ]), 1)
-      #rand_action = sample(self$act_cnt, 1)
       self$policy$act(state)
-      #action = sample(c(best_action, rand_action), 1, prob = c(0.9, 0.1))
-      #action
     },
 
     afterStep = function() {

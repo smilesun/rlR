@@ -88,6 +88,69 @@ SurroNN = R6::R6Class("SurroNN",
 )
 
 
+SurroTF = R6::R6Class("SurroTF",
+  inherit = Surrogate,
+  public = list(
+    lr = NULL,
+    arch.list = NULL,
+    conf = NULL,
+    agent = NULL,
+    custom_flag = NULL,
+    action_input = NULL,
+    sess = NULL,
+    tf_obs = NULL,
+    tf_acts = NULL,
+    all_act_prob = NULL,
+    makeModel = function() {
+        tf = import("tensorflow")
+        with(tf$name_scope('inputs'), {
+            self$tf_obs = tf$placeholder(tf$float32, shape(NULL, 4), name = "observations")
+            self$tf_acts = tf$placeholder(tf$int32, shape(NULL, 2), name = "actions_num")
+            self$tf_vt = tf$placeholder(tf$float32, shape(NULL, 4), name = "actions_value")
+        })
+        # fc1
+        layer = tf$layers$dense(
+            inputs = self$tf_obs,
+            units = 10L,
+            activation = tf$nn$tanh,  # tanh activation
+            kernel_initializer = tf$random_normal_initializer(mean = 0, stddev = 0.3),
+            bias_initializer=tf$constant_initializer(0.1),
+            name = 'fc1'
+        )
+        # fc2
+        all_act = tf$layers$dense(
+            inputs = layer,
+            units = self.act_cnt,
+            activation = None,
+            kernel_initializer = tf$random_normal_initializer(mean = 0, stddev = 0.3),
+            bias_initializer = tf$constant_initializer(0.1),
+            name = 'fc2'
+        )
+
+        self$all_act_prob = tf.nn.softmax(all_act, name='act_prob')  # use softmax to convert to probability
+
+        with(tf$name_scope('loss'), {
+            neg_log_prob = tf$nn$sparse_softmax_cross_entropy_with_logits(logits=all_act, labels=self.tf_acts)   # this is negative log of chosen action
+            loss = tf$reduce_mean(neg_log_prob * self$tf_vt)  # reward guided loss
+        })
+
+        with(tf$name_scope('train'), {
+            self$train_op = tf$train$AdamOptimizer(self$lr)$minimize(loss)
+        })
+    },
+
+    train = function(X_train, Y_train, epochs = 1L) {
+    },
+
+    pred = function(X) {
+    }
+  )
+)
+
+
+
+
+
 SurroDDPG = R6::R6Class("SurroDDPG",
   inherit = SurrogateNN,
   public = list(

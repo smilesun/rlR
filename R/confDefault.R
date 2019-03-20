@@ -64,9 +64,13 @@ rlR.conf.DQN = function() {
           policy.minEpsilon = 0.01,
           policy.decay.rate = exp(-0.001),
           policy.name = "EpsilonGreedy",
-          replay.batchsize = 64L
-          )
+          replay.batchsize = 64L)
 }
+
+agent.brain.dict.AgentDQN = function() list(value_fun = rlR:::makeValueNet)
+agent.brain.dict.AgentFDQN = function() list(value_fun = rlR:::makeValueNet)
+agent.brain.dict.AgentDDQN = function() list(value_fun = rlR:::makeValueNet)
+agent.brain.dict.AgentPG = function() list(policy_fun = rlR:::makePolicyNet)
 
 rlR.conf.FDQN = function() {
   rlR.conf.DQN()
@@ -74,17 +78,19 @@ rlR.conf.FDQN = function() {
 
 rlR.conf.PG = function() {
   RLConf$new(
-          agent.lr = 1e-4,
+          agent.lr = 1e-2,
           render = FALSE,
           console = FALSE,
           flag_rescue = FALSE,
+          agent.gamma = 0.99,
+          policy.maxEpsilon = 0,
+          policy.minEpsilon = 0,
           agent.flag.reset.net = FALSE,
           policy.softmax.base = 1,
           policy.softmax.magnify = 1.001,
-          policy.name = "SoftMax",
+          policy.name = "EpsilonGreedy",
           replay.memname = "Latest",
-          replay.epochs = 1L
-          )
+          replay.epochs = 1L)
 }
 
 rlR.conf.AC = function() {

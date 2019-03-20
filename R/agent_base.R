@@ -19,12 +19,13 @@ Agent = R6Class("Agent", public = list())
 #' @return [\code{\link{AgentArmed}}].
 #' @examples initAgent("AgentDQN", "CartPole-v0")
 #' @export
-initAgent = function(name, env, conf = NULL, ...) {
+initAgent = function(name, env, conf = NULL, custom_brain = F, ...) {
   if (is.character(env)) env = makeGymEnv(env)
   if (is.null(conf)) conf = getDefaultConf(agent_name = name)
   fun = get(name)$new
   agent = do.call(fun, args = list(env = env, conf = conf, ...))
   env$setAgent(agent)  # so env has hook to all objects in agent
+  if ((! custom_brain) & (name != "AgentTable")) agent$customizeBrain(get(paste0("agent.brain.dict.", name))())
   agent
 }
 
@@ -111,7 +112,7 @@ AgentArmed = R6::R6Class("AgentArmed",
       for (name in names(dict)) {
         fun = dict[[name]]
         checkmate::assert_choice(name, choices = c("value_fun", "policy_fun"))
-        checkCustomNetwork(fun, self$state_dim, self$act_cnt)
+        #checkCustomNetwork(fun, self$state_dim, self$act_cnt)
         self$network_build_funs[[name]] = fun
       }
       self$setBrain()
@@ -218,6 +219,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     afterEpisode = function() {
       self$policy$afterEpisode()
       self$mem$afterEpisode()
+      self$brain$afterEpisode()
     },
 
     learn = function(iter) {

@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.com/smilesun/rlR.svg?branch=master)](https://travis-ci.com/smilesun/rlR)
 [![Coverage Status](https://coveralls.io/repos/github/smilesun/rlR/badge.svg?branch=master)](https://coveralls.io/github/smilesun/rlR?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/d0oyb358bh3e8r7r?svg=true)](https://ci.appveyor.com/project/smilesun/rlr)
+
 [Documentation](https://smilesun.github.io/rlR/)
 
 # rlR: (Deep) Reinforcement learning in R
@@ -17,8 +18,9 @@ or
 devtools::install_github("smilesun/rlR", dependencies = TRUE)
 ```
 
-rlR use tensorflow as its backend for neural network as functional approximator.
-so python dependency is needed. 
+rlR use keras with tensorflow as its backend for neural network as functional approximator and OpenAI gym.
+
+[Python Dependencies Installation and Configuration](https://smilesun.github.io/rlR/articles/python_dependencies.html)
 
 ## Functional Approximator
 
@@ -34,16 +36,10 @@ If you have R package "imager" installed, you could get a snapshot of the enviro
 env$snapshot(preprocess = F)
 ```
 
-### Choose a functional approximator to the value function
-Neural Network functional approximator builder
-```{r}
-rlR:::makeValueNet
-```
 
 ### Initialize agent with the environment
 ```{r learn, eval=FALSE} 
 agent = initAgent("AgentDQN", env)
-agent$customizeBrain(rlR:::makeValueNet, "value_fun")
 agent$learn(200L)  
 ```
 
@@ -51,3 +47,6 @@ agent$learn(200L)
 ```{r mplot, eval=FALSE,fig.path="inst/figures/", warning=FALSE, message=FALSE, eval=FALSE}
 agent$plotPerf(F)
 ```
+
+## More Examples
+see [Documentation](https://smilesun.github.io/rlR/)

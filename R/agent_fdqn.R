@@ -16,7 +16,6 @@ AgentFDQN = R6::R6Class("AgentFDQN",
     initialize = function(env, conf) {
       super$initialize(env, conf)
       self$updateFreq = self$conf$get("agent.update.target.freq")
-      self$setBrain()
     },
 
     setBrain = function() {

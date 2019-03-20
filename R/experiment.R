@@ -32,16 +32,14 @@ makeGymEnv = function(name ="CartPole-v0", ...) {
 # registerDoMC(4)
 # res = repExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = getDefaultConf("AgentDQN"), nrep = 5, nepi = 200)
 repExperiment = function(sname, aname, conf, nrep = 5L, nepi, value_fun = NULL, ...) {
-  list.res = foreach::foreach(i = 1:nrep) %dopar% {
+  list.agent = foreach::foreach(i = 1:nrep) %dopar% {
     env = makeGymEnv(sname, ...)
-    rl.agent = initAgent(aname, env, conf = conf)
-    if (is.function(value_fun)) rl.agent$customizeBrain(value_fun = value_fun)
-    perf = rl.agent$learn(nepi)
-    list(agent = rl.agent, perf = perf)
+    agent = initAgent(aname, env, conf)
+    agent$learn(nepi)
+    agent
   }
-  list.agent = lapply(list.res, function(res) res$agent)
-  list.r = lapply(list.res, function(res) {
-    res$perf$list.reward.epi})
+  list.r = lapply(list.agent, function(agent) {
+    agent$interact$perf$list.reward.epi})
   list.len = lapply(1:nrep, function(i) lapply(list.r[[i]], function(x) length(x)))
   len = max(unlist(list.len))
   init.list = lapply(1:nepi, function(j) vector(mode = "numeric", length = len))

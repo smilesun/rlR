@@ -92,7 +92,7 @@
       <h1>Define custom environment for deep reinforcement learn</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/define_custom_environments.Rmd"><code>vignettes/define_custom_environments.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/vignettes/define_custom_environments.Rmd"><code>vignettes/vignettes/define_custom_environments.Rmd</code></a></small>
       <div class="hidden name"><code>define_custom_environments.Rmd</code></div>
 
     </div>
@@ -107,8 +107,12 @@
 <a href="#environment-class" class="anchor"></a>Environment class</h2>
 <p>If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment which must inherit the <code><a href="../reference/Environment.html">rlR::Environment</a></code> Class. You could define other public and private members as you like which do not collide with the names in <code><a href="../reference/Environment.html">rlR::Environment</a></code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
-<span class="kw">library</span>(R6)
-<span class="kw">help</span>(<span class="dt">topic=</span><span class="st">"Environment"</span>, <span class="dt">package =</span> <span class="st">"rlR"</span>)
+<span class="kw">help</span>(<span class="dt">topic=</span><span class="st">"Environment"</span>, <span class="dt">package =</span> <span class="st">"rlR"</span>)</code></pre></div>
+</div>
+<div id="an-environment-that-does-not-make-sense" class="section level2">
+<h2 class="hasAnchor">
+<a href="#an-environment-that-does-not-make-sense" class="anchor"></a>An Environment that does not make sense</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(R6)
 MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/R6/topics/R6Class">R6Class</a></span>(<span class="st">"MyEnv"</span>,
   <span class="dt">inherit =</span> rlR<span class="op">::</span>Environment,
   <span class="dt">public =</span> <span class="kw">list</span>(
@@ -159,32 +163,32 @@ MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a 
 )</code></pre></div>
 <p>Afterwards you could choose one of the available Agents to learn on this newly defined environments.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span>MyEnv<span class="op">$</span><span class="kw">new</span>()
-<span class="kw"><a href="../reference/listAvailAgent.html">listAvailAgent</a></span>()
-##                name
-## 1:         AgentDQN
-## 2:        AgentFDQN
-## 3:        AgentDDQN
-## 4:          AgentPG
-## 5:  AgentPGBaseline
-## 6: AgentActorCritic
-## 7:        AgentDDPG
-##                                                       note
-## 1:                                         Deep Q learning
-## 2:                           Frozen Target Deep Q Learning
-## 3:                                   Double Deep QLearning
-## 4:                             Policy Gradient Monte Carlo
-## 5:                           Policy Gradient with Baseline
-## 6:                                     Actor Critic Method
-## 7: Deep Deterministic Policy Gradient for Continous Action
-conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentDQN"</span>)
-agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
+agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentDQN"</span>, env)
 perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">learn</span>(<span class="dv">3</span>)
 ## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
 ##  Episode Over 
+## Episode: 1 finished with steps:6, rewards:6.000000 global step 6 
+## Last 100 episodes average reward 6.000000 
+## Epsilon0.999000 
+## rand steps:6 
+## replaymem size GB:9.78261232376099e-06 
+## learning rate: 0.000999000505544245  
 ## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
 ##  Episode Over 
+## Episode: 2 finished with steps:6, rewards:6.000000 global step 12 
+## Last 100 episodes average reward 6.000000 
+## Epsilon0.998002 
+## rand steps:6 
+## replaymem size GB:1.9557774066925e-05 
+## learning rate: 0.000998002011328936  
 ## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
 ##  Episode Over 
+## Episode: 3 finished with steps:6, rewards:6.000000 global step 18 
+## Last 100 episodes average reward 6.000000 
+## Epsilon0.997004 
+## rand steps:6 
+## replaymem size GB:2.92733311653137e-05 
+## learning rate: 0.000997004448436201  
 ## [1] "interaction finished!"</code></pre></div>
 </div>
 </div>
@@ -198,6 +202,7 @@ perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">le
 <li>
 <a href="#rlr-define-custom-environments-for-deep-reinforcement-learning-in-r">rlR: Define custom environments for Deep Reinforcement learning in R</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#environment-class">Environment class</a></li>
+      <li><a href="#an-environment-that-does-not-make-sense">An Environment that does not make sense</a></li>
       </ul>
 </li>
       </ul>
