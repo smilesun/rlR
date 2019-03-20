@@ -6,8 +6,7 @@ makePolicyNet =  function(state_dim, act_cnt) {
   }
  model = keras_model_sequential();
  model %>% layer_dense(units = 10, activation = 'tanh', input_shape = c(state_dim), kernel_initializer = keras::initializer_random_normal(mean = 0, std = 0.3), bias_initializer = keras::initializer_constant(0.1), name = "input") %>% layer_dense(units = act_cnt, activation = 'softmax', kernel_initializer = keras::initializer_random_normal(mean = 0, std = 0.3), bias_initializer = keras::initializer_constant(0.1), name = "output")
- #model$compile(loss = loss, optimizer = optimizer_rmsprop(lr = 1e-2, decay = 0, clipnorm = 5.0))
- model$compile(loss = "categorical_crossentropy", optimizer = optimizer_adam())
+ model$compile(loss = loss, optimizer = optimizer_rmsprop(lr = 1e-2, decay = 0, clipnorm = 5.0))
  return(model)
 }
 
