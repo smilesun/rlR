@@ -47,7 +47,7 @@ env$overview()
 
 ```{r eval=FALSE}
 env$snapshot(preprocess = T)
-env$snapshot(preprocess = F)
+env$snapshot(steps = 500, preprocess = F)
 ```
 
 ```{r}

@@ -131,7 +131,7 @@ env =<span class="st"> </span><span class="kw"><a href="../reference/makeGymEnv.
 ## with stacking: 61, 80, 4 
 ## discrete action</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">preprocess =</span> T)
-env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">preprocess =</span> F)</code></pre></div>
+env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">steps =</span> <span class="dv">500</span>, <span class="dt">preprocess =</span> F)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentFDQN"</span>)</code></pre></div>
 <p>The rlR package has been optimized to handle replay memory in a very efficient way, to ensure performance, you could also use the following parameters which has a bigger replay memory.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">replay.batchsize =</span> <span class="dv">32</span>, 
