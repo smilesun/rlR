@@ -48,5 +48,12 @@ agent$learn(200L)
 agent$plotPerf(F)
 ```
 
+## Specify a task to be sovled by creating your own Environment
+
+see [Custom Environment](https://smilesun.github.io/rlR/articles/define_custom_environments.html)
+
 ## More Examples
-see [Documentation](https://smilesun.github.io/rlR/)
+- [Configuration](https://smilesun.github.io/rlR/articles/custom_configuration.html)
+- [Tabular Learning](https://smilesun.github.io/rlR/articles/table_learning.html)
+- [Repeated Experiment](https://smilesun.github.io/rlR/articles/repeated_experiment.html)
+- Discover in [Documentation](https://smilesun.github.io/rlR/)
