@@ -103,15 +103,15 @@ rlR.conf.PGBaseline = function() {
 }
 
 quicktest = function() { 
-  pg.bl.agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.0001)", decay = 0.9, clipnorm = 5)
-  pg.bl.agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)
-  value_fun = makeNetFun(pg.bl.agent.nn.arch.critic, flag_critic = T)
-  policy_fun = makeNetFun(pg.bl.agent.nn.arch.actor)
+  #pg.bl.agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.0001)", decay = 0.9, clipnorm = 5)
+  #pg.bl.agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)
+  #value_fun = makeNetFun(pg.bl.agent.nn.arch.critic, flag_critic = T)
+  #policy_fun = makeNetFun(pg.bl.agent.nn.arch.actor)
   env = makeGymEnv("CartPole-v0")
   conf = getDefaultConf("AgentPGBaseline")
   conf$set(console = T, agent.lr = 1e-5)
-  agent = initAgent("AgentPGBaseline", env, conf)
-  agent$customizeBrain(list(value_fun = value_fun, policy_fun = policy_fun))
+  agent = initAgent("AgentPGBaseline", env, conf, custom_brain = F)
+  #agent$customizeBrain(list(value_fun = value_fun, policy_fun = policy_fun))
   agent$learn(2000L)
 }
 
@@ -152,7 +152,8 @@ AgentPGCompactBL = R6::R6Class("AgentPGCompactBL",
           list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
           list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
           y_actor = t(simplify2array(list.targets.actor))
-          y_actor = y_actor * self$amf
+          y_actor =  diag(self$amf) %*%  y_actor
+          y_actor =  diag(self$delta) %*%  y_actor
           y_critic = array(unlist(list.targets.critic), dim = c(len, 1L))
           self$brain_actor$train(self$replay.x, y_actor)  # update the policy model
           self$brain_critic$train(self$replay.x, y_critic)  # update the policy model

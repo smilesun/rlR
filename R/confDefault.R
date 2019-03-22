@@ -39,7 +39,7 @@ listAvailConf = function() {
 }
 
 # default configuration for each agent which is adjacent to the definition so once definition is modified, it is easy to modify here as well.
-rlR.conf.Table = function() {
+rlR.conf.AgentTable = function() {
   RLConf$new(
           render = F,
           console = T,
@@ -55,7 +55,7 @@ rlR.conf.Table = function() {
           agent.start.learn = 0L)
 }
 
-rlR.conf.DQN = function() {
+rlR.conf.AgentDQN  = rlR.conf.AgentFDQN  = rlR.conf.AgentDDQN = function() {
   RLConf$new(
           render = FALSE,
           console = TRUE,
@@ -71,12 +71,9 @@ agent.brain.dict.AgentDQN = function() list(value_fun = rlR:::makeValueNet)
 agent.brain.dict.AgentFDQN = function() list(value_fun = rlR:::makeValueNet)
 agent.brain.dict.AgentDDQN = function() list(value_fun = rlR:::makeValueNet)
 agent.brain.dict.AgentPG = function() list(policy_fun = rlR:::makePolicyNet)
+agent.brain.dict.AgentPGBaseline = function() list(policy_fun = rlR:::makePolicyNet, value_fun = rlR:::makeValueNet)
 
-rlR.conf.FDQN = function() {
-  rlR.conf.DQN()
-}
-
-rlR.conf.PG = function() {
+rlR.conf.AgentPG = rlR.conf.AgentPGBaseline = function() {
   RLConf$new(
           agent.lr = 1e-2,
           render = FALSE,
@@ -93,7 +90,7 @@ rlR.conf.PG = function() {
           replay.epochs = 1L)
 }
 
-rlR.conf.AC = function() {
+rlR.conf.AgentActorCritic = function() {
   conf = RLConf$new(
     render = FALSE,
     log = FALSE,
@@ -117,18 +114,7 @@ rlR.conf.AC = function() {
 #' @examples
 #' conf = rlR::getDefaultConf("AgentDQN")
 getDefaultConf = function(agent_name) {
-    list.conf = list()
-    list.conf[["AgentActorCritic"]] = rlR.conf.AC()
-    list.conf[["AgentDQN"]] = rlR.conf.DQN()
-    list.conf[["AgentRandom"]] = rlR.conf.DQN()
-    list.conf[["AgentTable"]] = rlR.conf.Table()
-    list.conf[["AgentFDQN"]] = rlR.conf.FDQN()
-    list.conf[["AgentDDQN"]] = rlR.conf.DDQN()
-    list.conf[["AgentPG"]] = rlR.conf.PG()
-    list.conf[["AgentPGBaseline"]] = rlR.conf.PGBaseline()
-    res = list.conf[[agent_name]]
-    if(is.null(res)) stop("no such configuration")
-    return(res)
+    get(paste0("rlR.conf.", agent_name))()
 }
 
 #' @title show Default Configuration

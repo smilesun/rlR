@@ -12,6 +12,13 @@ makePolicyNet =  function(state_dim, act_cnt) {
  return(model)
 }
 
+makeValueNet =  function(state_dim, act_cnt) {
+ model = keras_model_sequential();
+ model %>% layer_dense(units = 20, activation = 'relu', input_shape = c(state_dim), kernel_regularizer = regularizer_l2(l = 0.0), bias_regularizer = regularizer_l2(l=0.0)) %>% layer_dense(units = 1L, activation = 'linear')
+ model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 25e-5, decay = 0, clipnorm = 1.0))
+ return(model)
+}
+
 
 
 
@@ -83,13 +90,6 @@ makeNetFun = function(arch.list, flag_critic = F) {
   function(state_dim, act_cnt) {
     makeKerasModel(input_shape =state_dim, output_shape = act_cnt, arch.list = arch.list)
   }
-}
-
-makeValueNet =  function(state_dim, act_cnt) {
- model = keras_model_sequential();
- model %>% layer_dense(units = 64, activation = 'relu', input_shape = c(state_dim), kernel_regularizer = regularizer_l2(l = 0.0), bias_regularizer = regularizer_l2(l=0.0)) %>% layer_dense(units = act_cnt, activation = 'linear')
- model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 25e-5, decay = 0, clipnorm = 1.0))
- return(model)
 }
 
 makeCnnActor = function(input_shape = c(32, 32, 3), act_cnt = 10L) {
