@@ -11,10 +11,6 @@
 AgentActorCritic = R6::R6Class("AgentActorCritic",
   inherit = AgentPGBaseline,
   public = list(
-    initialize = function(env, conf) {
-      super$initialize(env, conf)
-    },
-
     replay = function(batchsize) {
       self$getReplayYhat(batchsize)  # self$list.rewards are extracted here
       self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)

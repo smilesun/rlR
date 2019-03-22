@@ -47,7 +47,8 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
           list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
           list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
           y_actor = t(simplify2array(list.targets.actor))
-          y_actor = y_actor * self$amf
+          y_actor =  diag(self$amf) %*%  y_actor
+          y_actor =  diag(as.vector(self$delta)) %*%  y_actor
           y_critic = array(unlist(list.targets.critic), dim = c(len, 1L))
           self$brain_actor$train(self$replay.x, y_actor)  # update the policy model
           self$brain_critic$train(self$replay.x, y_critic)  # update the policy model
@@ -59,14 +60,12 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
       },
 
       extractActorTarget = function(i) {
-          act = self$list.acts[[i]]
-          delta = (+1.0) * as.vector(self$delta[i])
-          #FIXME: interestingly, multiply advantage by -1 also works
-          vec.act = rep(0L, self$act_cnt)
-          vec.act[act] = 1.0
-          target = delta * array(vec.act, dim = c(1L, self$act_cnt))
-          return(target)
-    },
+        act = self$list.acts[[i]]
+        vec.act = rep(0L, self$act_cnt)
+        vec.act[act] = 1.0
+        target = vec.act
+        return(target)
+      },
 
       adaptLearnRate = function() {
           self$brain_actor$lr =  self$brain_actor$lr * self$lr_decay
@@ -91,18 +90,7 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
     ) # public
 )
 
-rlR.conf.PGBaseline = function() {
-  RLConf$new(
-           render = FALSE,
-           policy.name = "ProbEpsilon",
-           policy.epsilon = 1,
-           policy.minEpsilon = 0.01,
-           policy.decay = exp(-0.001),
-           replay.memname = "Latest"
-          )
-}
-
-quicktest = function() { 
+quicktest = function() {
   #pg.bl.agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.0001)", decay = 0.9, clipnorm = 5)
   #pg.bl.agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)
   #value_fun = makeNetFun(pg.bl.agent.nn.arch.critic, flag_critic = T)
@@ -112,7 +100,7 @@ quicktest = function() {
   conf$set(console = T, agent.lr = 1e-5)
   agent = initAgent("AgentPGBaseline", env, conf, custom_brain = F)
   #agent$customizeBrain(list(value_fun = value_fun, policy_fun = policy_fun))
-  agent$learn(2000L)
+  agent$learn(200L)
 }
 
 AgentPGCompactBL = R6::R6Class("AgentPGCompactBL",
