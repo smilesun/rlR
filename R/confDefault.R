@@ -71,7 +71,7 @@ rlR.conf.AgentPG = rlR.conf.AgentPGBaseline = function() {
   RLConf$new(
           agent.lr = 1e-2,
           render = FALSE,
-          console = FALSE,
+          console = TRUE,
           flag_rescue = FALSE,
           agent.gamma = 0.99,
           policy.maxEpsilon = 0,
@@ -88,15 +88,17 @@ rlR.conf.AgentActorCritic = function() {
   conf = RLConf$new(
     render = FALSE,
     log = FALSE,
-    console = FALSE,
-    policy.name = "EpsilonGreedy",
-    policy.maxEpsilon = 1,
-    policy.minEpsilon = 0.02,
-    policy.decay = exp(-0.001),
+    agent.lr = 1e-2,
+    agent.gamma = 0.9,
+    agent.lr.decay = 1,
+    console = TRUE,
+    policy.name = "Prob",
+    policy.maxEpsilon = 0,
+    policy.minEpsilon = 0,
     replay.epochs = 1L,
-    replay.memname = "Latest",
-    agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
-    agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr =1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
+    replay.memname = "Latest"
+    #agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
+    #agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr =1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
     )
 }
 
@@ -137,8 +139,7 @@ RLSufix = "rl.log.R"
 )
 
 
-agent.brain.dict.AgentDQN = function() list(value_fun = rlR:::makeValueNet)
-agent.brain.dict.AgentFDQN = function() list(value_fun = rlR:::makeValueNet)
-agent.brain.dict.AgentDDQN = function() list(value_fun = rlR:::makeValueNet)
+agent.brain.dict.AgentDQN =  agent.brain.dict.AgentFDQN = agent.brain.dict.AgentDDQN = function() list(value_fun = rlR:::makeValueNet)
 agent.brain.dict.AgentPG = function() list(policy_fun = rlR:::makePolicyNet)
-agent.brain.dict.AgentPGBaseline =  agent.brain.dict.AgentActorCritic = function() list(policy_fun = rlR:::makePolicyNet, value_fun = rlR:::makeValueNet)
+agent.brain.dict.AgentPGBaseline  = function() list(policy_fun = rlR:::makePolicyNet, value_fun = rlR:::makeValueNet)
+agent.brain.dict.AgentActorCritic = function() list(policy_fun = rlR:::makePolicyNet2, value_fun = rlR:::makeValueNet2)

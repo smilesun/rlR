@@ -222,7 +222,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     afterEpisode = function() {
       self$policy$afterEpisode()
       self$mem$afterEpisode()
-      self$brain$afterEpisode()
+      if (!is.null(self$brain)) self$brain$afterEpisode()
     },
 
     learn = function(iter) {
