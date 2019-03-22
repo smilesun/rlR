@@ -1,5 +1,5 @@
 # @title Policy Gradient
-# # @format \code{\link{R6Class}} object
+# @format \code{\link{R6Class}} object
 # @description Policy Gradient
 #
 # @section Methods:
@@ -75,16 +75,57 @@ AgentPG = R6::R6Class("AgentPG",
     ) # public
 )
 
-AgentPG$test = function() {
+
+AgentPGTEMP = R6::R6Class("AgentPGTEMP",
+  inherit = AgentPG,
+  public = list(
+    flag_rescue = NULL,
+    amf = NULL,
+
+    initialize = function(env, conf) {
+      super$initialize(env, conf = conf)
+      self$setBrain()
+    },
+
+    setBrain = function() {
+      self$brain = SurroTF$new(self)
+      self$model = self$brain
+    },
+
+    #@override
+    afterEpisode = function(interact) {
+      self$replay(self$interact$perf$total_steps)   # key difference here
+      super$afterEpisode()
+    }
+    ) # public
+)
+
+
+AgentPG$test2 = function() {
   set.seed(1)
   library(rlR)
   library(magrittr)
   library(keras)
   env = makeGymEnv("CartPole-v0")
   conf = getDefaultConf("AgentPG")
-  conf$set(console = T, policy.name = "EpsilonGreedy", policy.maxEpsilon = 0, policy.minEpsilon = 0, agent.lr = 0.02)
+  conf$set(console = T, policy.maxEpsilon = 0, policy.minEpsilon = 0, agent.lr = 0.02)
   agent = initAgent("AgentPG", env, conf)
-  agent$customizeBrain(list(policy_fun = rlR:::makePolicyNet))
+  agent$learn(200L)
+}
+
+
+
+AgentPG$test = function() {
+  set.seed(1)
+  library(rlR)
+  library(magrittr)
+  library(keras)
+#  tf = import(tensorflow)
+#  tf$enable_eager_execution()
+  env = makeGymEnv("CartPole-v0")
+  conf = getDefaultConf("AgentPG")
+  conf$set(console = T, policy.maxEpsilon = 0, policy.minEpsilon = 0, agent.lr = 0.02)
+  agent = initAgent("AgentPG", env, conf, custom_brain = T)
   agent$learn(200L)
 }
 

@@ -25,7 +25,10 @@ initAgent = function(name, env, conf = NULL, custom_brain = F, ...) {
   fun = get(name)$new
   agent = do.call(fun, args = list(env = env, conf = conf, ...))
   env$setAgent(agent)  # so env has hook to all objects in agent
-  if ((! custom_brain) & (name != "AgentTable")) agent$customizeBrain(get(paste0("agent.brain.dict.", name))())
+  if (!custom_brain) {
+    fun_build_net = get(paste0("agent.brain.dict.", name))
+    agent$customizeBrain(fun_build_net())
+  }
   agent
 }
 

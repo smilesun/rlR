@@ -88,7 +88,7 @@ rlR.conf.PG = function() {
           agent.flag.reset.net = FALSE,
           policy.softmax.base = 1,
           policy.softmax.magnify = 1.001,
-          policy.name = "EpsilonGreedy",
+          policy.name = "Prob",
           replay.memname = "Latest",
           replay.epochs = 1L)
 }

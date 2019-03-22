@@ -14,8 +14,8 @@ SurroNN = R6::R6Class("SurroNN",
       self$state_dim = self$agent$state_dim
       self$conf = self$agent$conf
       self$lr = self$conf$get("agent.lr")
-      self$model = self$makeModel()
       self$sess = agent$sess
+      self$model = self$makeModel()
     },
 
     #@depend self$agent$task
@@ -86,7 +86,7 @@ SurroNN = R6::R6Class("SurroNN",
 
 
 SurroTF = R6::R6Class("SurroTF",
-  inherit = Surrogate,
+  inherit = SurroNN,
   public = list(
     lr = NULL,
     conf = NULL,
@@ -94,19 +94,21 @@ SurroTF = R6::R6Class("SurroTF",
     custom_flag = NULL,
     action_input = NULL,
     sess = NULL,
-    tf_obs = NULL,
+    tf_states = NULL,
     tf_acts = NULL,
+    tf_return = NULL,   # return
+    train_op = NULL,
     all_act_prob = NULL,
     makeModel = function() {
         tf = import("tensorflow")
-        with(tf$name_scope('inputs'), {
-            self$tf_obs = tf$placeholder(tf$float32, shape(NULL, 4), name = "observations")
-            self$tf_acts = tf$placeholder(tf$int32, shape(NULL, 2), name = "actions_num")
-            self$tf_vt = tf$placeholder(tf$float32, shape(NULL, 4), name = "actions_value")
+        with(tf$name_scope("inputs"), {
+            self$tf_states = tf$placeholder(tf$float32, shape(NULL, self$state_dim), name = "state")
+            self$tf_acts = tf$placeholder(tf$int32, shape(NULL), name = "actions_num")
+            self$tf_return = tf$placeholder(tf$float32, shape(NULL), name = "actions_value")
         })
         # fc1
         layer = tf$layers$dense(
-            inputs = self$tf_obs,
+            inputs = self$tf_states,
             units = 10L,
             activation = tf$nn$tanh,  # tanh activation
             kernel_initializer = tf$random_normal_initializer(mean = 0, stddev = 0.3),
@@ -116,29 +118,52 @@ SurroTF = R6::R6Class("SurroTF",
         # fc2
         all_act = tf$layers$dense(
             inputs = layer,
-            units = self.act_cnt,
-            activation = None,
+            units = self$act_cnt,
+            activation = NULL,
             kernel_initializer = tf$random_normal_initializer(mean = 0, stddev = 0.3),
             bias_initializer = tf$constant_initializer(0.1),
             name = 'fc2'
         )
 
-        self$all_act_prob = tf.nn.softmax(all_act, name='act_prob')  # use softmax to convert to probability
+        self$all_act_prob = tf$nn$softmax(all_act, name = 'act_prob')  # use softmax to convert to probability
 
-        with(tf$name_scope('loss'), {
-            neg_log_prob = tf$nn$sparse_softmax_cross_entropy_with_logits(logits=all_act, labels=self.tf_acts)   # this is negative log of chosen action
-            loss = tf$reduce_mean(neg_log_prob * self$tf_vt)  # reward guided loss
+        with(tf$name_scope("loss"), {
+            neg_log_prob = tf$nn$sparse_softmax_cross_entropy_with_logits(logits = all_act, labels = self$tf_acts)   # this is negative log of chosen action
+            #neg_log_prob = tf$reduce_sum(-tf$log(self$all_act_prob) * tf$one_hot(self$tf_acts, self$agent$act_cnt), axis = 1)
+            loss = tf$reduce_mean(neg_log_prob * self$tf_return)  # reward guided loss
         })
 
-        with(tf$name_scope('train'), {
+        with(tf$name_scope("train"), {
             self$train_op = tf$train$AdamOptimizer(self$lr)$minimize(loss)
         })
+        self$sess$run(tensorflow::tf$global_variables_initializer())
     },
 
-    train = function(X_train, Y_train, epochs = 1L) {
+    batch_update = function(X_train, Y_train) {
+        acts = unlist(self$agent$list.acts)
+        acts =  acts - 1L
+        np = import("numpy")
+        acts = np$array(acts)
+        #acts = np$reshape(acts, nrow(X_train))
+        #np$shape(acts)
+        #acts = array(acts, dim = c(nrow(X_train), 1L))
+        returns = self$agent$amf
+        #returns = array(self$agent$amf, dim = c(nrow(X_train), 1L))
+        #returns = np$reshape(returns, nrow(X_train))
+        #np$shape(returns)
+        returns = np$array(returns)
+        #self$sess$run(self$train_op, py_dict(c(self$tf_obs, self$tf_acts, self$tf_vt), c(self$agent$replay.x, acts, returns)))
+        self$sess$run(self$train_op, dict("inputs/state:0" = X_train,  "inputs/actions_num:0" = acts, "inputs/actions_value:0" = returns))
     },
 
     pred = function(X) {
+      np = import("numpy")
+      obs = np$array(X)
+      self$sess$run(self$all_act_prob, dict("inputs/state:0" = obs))
+      # py_dict does not work in this case self$sess$run(self$all_act_prob, py_dict(self$tf_obs$name, obs))
+    },
+
+    afterEpisode = function() {
     }
   )
 )

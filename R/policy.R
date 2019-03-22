@@ -62,6 +62,18 @@ Policy = R6::R6Class("Policy",
   )
 )
 
+
+PolicyProb = R6::R6Class("PolicyProb",
+  inherit = Policy,
+  public = list(
+   act = function(state) {
+      sample.int(self$host$act_cnt, prob = self$host$vec.arm.q, size = 1L)
+    }
+    )
+  )
+
+
+
 PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
   inherit = Policy,
   public = list(

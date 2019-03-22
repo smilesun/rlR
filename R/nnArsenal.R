@@ -1,14 +1,14 @@
 makePolicyNet =  function(state_dim, act_cnt) {
-  loss = function(y_true, y_pred) {
+  fun_loss = function(y_true, y_pred) {
     k_b = keras::backend()
-    sloss = -k_b$sum(y_true * tf$log(y_pred))
+    hh = k_b$print_tensor(y_true)
+    temp = y_true * k_b$log(y_pred)
+    sloss = -k_b$sum(temp)
     cross_entropy =  k_b$mean(sloss)
   }
  model = keras_model_sequential();
  model %>% layer_dense(units = 10, activation = 'tanh', input_shape = c(state_dim), kernel_initializer = keras::initializer_random_normal(mean = 0, std = 0.3), bias_initializer = keras::initializer_constant(0.1), name = "input") %>% layer_dense(units = act_cnt, activation = 'softmax', kernel_initializer = keras::initializer_random_normal(mean = 0, std = 0.3), bias_initializer = keras::initializer_constant(0.1), name = "output")
-
- model$compile(loss = "categorical_crossentropy", optimizer = optimizer_rmsprop(lr = 1e-2, decay = 0, clipnorm = 5.0))
- #model$compile(loss = loss, optimizer = optimizer_rmsprop(lr = 1e-2, decay = 0, clipnorm = 5.0))
+ model$compile(loss = fun_loss, optimizer = optimizer_rmsprop(lr = 1e-2, decay = 0, clipnorm = 5.0))
  return(model)
 }
 
@@ -41,7 +41,6 @@ makeCompactableNetTF = function(state_dim, act_cnt) {
  w_critic = tf$Variable(tf$zeros(shape(hun, 1L)))
  b_critic = tf$Variable(tf$zeros(shape(1L)))
  loss_critic <- tf$reduce_mean(0.5 * (critic - critic_target) ^ 2)
- return(model)
 }
 
 
