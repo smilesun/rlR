@@ -38,34 +38,33 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$np = reticulate::import("numpy", convert = FALSE)
       self$tau = 0.1
       super$initialize(env, conf)
-      self$setBrain()
     },
 
     createBrain = function() {
       if (self$task == "value_fun") {
-        tuple = createCriticNetwork(state_dim = self$state_dim, action_dim = 1L)
+        tuple = createCriticNetwork.AgentDDPG(state_dim = self$state_dim, action_dim = 1L)
         self$input_action_update = tuple$input_action
         self$input_state_update = tuple$input_state
         return(tuple$model)
       } else if (self$task == "policy_fun"){
-        tuple = createActorNetwork(state_dim = self$state_dim, action_dim = 1L)
+        tuple = createActorNetwork.AgentDDPG(state_dim = self$state_dim, action_dim = 1L)
         self$input_state_actor_update = tuple$input_state
         self$input_actor_update_weights = tuple$weights
         return(tuple$model)
       }
     },
 
-    customizeBrain = function() {
-      stop("not supported!")
+    customizeBrain = function(fun) {
+      self$setBrain()
     },
 
     setBrain = function() {
       self$task = "value_fun"
-      self$brain_critic_target = SurroNN$new(self)
-      self$brain_critic_update = SurroNN$new(self)
+      self$brain_critic_target = SurroDDPG$new(self)
+      self$brain_critic_update = SurroDDPG$new(self)
       self$task = "policy_fun"
-      self$brain_actor_target = SurroNN$new(self)
-      self$brain_actor_update = SurroNN$new(self)
+      self$brain_actor_target = SurroDDPG$new(self)
+      self$brain_actor_update = SurroDDPG$new(self)
       self$model = self$brain_critic_update
       self$trainActorSessInit()
       self$sess$run(tf$initialize_all_variables())
@@ -247,7 +246,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
 
 # normal 1 arm output network with only state as input
-createActorNetwork = function(state_dim = 3, action_dim = 1L) {
+createActorNetwork.AgentDDPG = function(state_dim = 3, action_dim = 1L) {
   input_state = keras::layer_input(shape = state_dim)
   states_hidden = input_state %>%
     layer_dense(units = 27, activation = "relu")
@@ -265,7 +264,7 @@ createActorNetwork = function(state_dim = 3, action_dim = 1L) {
 }
 
 # both state and action are inputs!
-createCriticNetwork = function(state_dim, action_dim) {
+createCriticNetwork.AgentDDPG = function(state_dim, action_dim) {
   input_state = keras::layer_input(shape = state_dim)
   input_action = keras::layer_input(shape = action_dim, name = "input_action")
   action_hidden = input_action %>%
@@ -289,3 +288,13 @@ createCriticNetwork = function(state_dim, action_dim) {
     )
   return(list(model = model, input_action = input_action, input_state = input_state))
 }
+
+agent.brain.dict.AgentDDPG = function() list(policy_fun = createActorNetwork.AgentDDPG, value_fun = createCriticNetwork.AgentDDPG)
+
+AgentDDPG$test = function() {
+  env = makeGymEnv("Pendulum-v0")
+  agent = initAgent("AgentDDPG", env)
+  agent$learn(2000L)
+}
+
+

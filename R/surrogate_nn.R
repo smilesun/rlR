@@ -219,7 +219,7 @@ SurroGrad = R6::R6Class("SurroGrad",
 
 
 SurroDDPG = R6::R6Class("SurroDDPG",
-  inherit = SurrogateNN,
+  inherit = SurroNN,
   public = list(
     makeModel = function() {
         model = self$agent$createBrain()  # the agent itself is responsible for creating the brain

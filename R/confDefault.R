@@ -84,7 +84,7 @@ rlR.conf.AgentPG = rlR.conf.AgentPGBaseline = function() {
           replay.epochs = 1L)
 }
 
-rlR.conf.AgentActorCritic = function() {
+rlR.conf.AgentActorCritic = rlR.conf.AgentDDPG = function() {
   conf = RLConf$new(
     render = FALSE,
     log = FALSE,
