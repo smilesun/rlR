@@ -249,8 +249,8 @@ SurroDDPG = R6::R6Class("SurroDDPG",
 
     calGradients = function(state, action) {
       output = self$model$output
-      input = self$model$trainable_weights
-      tf_grad = keras::k_gradients(output, input)
+      mweights = self$model$trainable_weights
+      tf_grad = keras::k_gradients(output, mweights)
       iname = self$model$input$name
       oname = self$model$output$name
       ph_a = tf$placeholder(tf$float32, c(NULL, 2), name = "action")

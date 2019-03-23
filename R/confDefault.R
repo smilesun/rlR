@@ -84,7 +84,7 @@ rlR.conf.AgentPG = rlR.conf.AgentPGBaseline = function() {
           replay.epochs = 1L)
 }
 
-rlR.conf.AgentActorCritic = rlR.conf.AgentDDPG = function() {
+rlR.conf.AgentActorCritic = function() {
   conf = RLConf$new(
     render = FALSE,
     log = FALSE,
@@ -99,6 +99,22 @@ rlR.conf.AgentActorCritic = rlR.conf.AgentDDPG = function() {
     replay.memname = "Latest"
     #agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
     #agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr =1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
+    )
+}
+
+rlR.conf.AgentDDPG = function() {
+  conf = RLConf$new(
+    render = FALSE,
+    log = FALSE,
+    agent.lr = 1e-2,
+    agent.gamma = 0.9,
+    agent.lr.decay = 1,
+    console = TRUE,
+    policy.name = "Prob",
+    policy.maxEpsilon = 0,
+    policy.minEpsilon = 0,
+    replay.epochs = 1L,
+    replay.memname = "Uniform"
     )
 }
 
