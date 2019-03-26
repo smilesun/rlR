@@ -2,7 +2,6 @@ context("gym_basic")
 
 test_that("test Cart-Pole works for each Agent", {
   skip_on_cran()
-  rlR.conf.AC()
   agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
   lapply(agent.names, function(agent.name) {
     conf = getDefaultConf(agent.name)

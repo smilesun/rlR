@@ -10,8 +10,7 @@ createActorNetwork.AgentDDPG.torc = function(state_dim = 3, action_dim = 1L) {
   opt = keras::optimizer_adam(lr = 0.0001)
   model %>% compile(
     optimizer = opt,
-    loss = "mse",
-    metrics = c("accuracy")
+    loss = "mse"
     )
   return(list(model = model, input_state = input_state, weights = model$trainable_weights))
 }
@@ -36,8 +35,7 @@ createCriticNetwork.AgentDDPG.torc = function(state_dim, action_dim) {
   opt = keras::optimizer_adam(lr = 0.0001)
   model %>% compile(
     optimizer = opt,
-    loss = "mse",
-    metrics = c("accuracy")
+    loss = "mse"
     )
   return(list(model = model, input_action = input_action, input_state = input_state))
 }
@@ -75,9 +73,17 @@ createActorNetwork.AgentDDPG = function(state_dim = 3, action_dim = 1L) {
     layer_dense(units = action_dim, activation = "tanh")  # only 1L output!
   model = keras::keras_model(inputs = input_state, outputs = states_hidden2)
   opt = keras::optimizer_adam(0.001)
+  fun_loss = function(y_true, y_pred) {
+    # currently not used at all
+    k_b = keras::backend()
+    hh = k_b$print_tensor(y_true)
+    temp = y_true * k_b$log(y_pred)
+    sloss = -k_b$sum(temp)
+    cross_entropy =  k_b$mean(sloss)
+  }
   model %>% compile(
     optimizer = opt,
-    loss = "mse"
+    loss = fun_loss
     )
   return(list(model = model, input_state = input_state, weights = model$trainable_weights))
 }
