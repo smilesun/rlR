@@ -10,6 +10,7 @@ test_that("test Cart-Pole works for each Agent", {
     agent = initAgent(agent.name, env, conf)
     agent$learn(2)
   })
+  # checkmate:: assert_true(agent$interact$perf$getAccPerf() > 20)
   expect_true(TRUE)
 })
 

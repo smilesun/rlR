@@ -60,8 +60,7 @@ createCriticNetwork.AgentDDPG = function(state_dim, action_dim) {
   opt = keras::optimizer_adam(lr = 0.002)
   model %>% compile(
     optimizer = opt,
-    loss = "mse",
-    metrics = c("accuracy")
+    loss = "mse"
     )
   return(list(model = model, input_action = input_action, input_state = input_state))
 }
@@ -78,8 +77,7 @@ createActorNetwork.AgentDDPG = function(state_dim = 3, action_dim = 1L) {
   opt = keras::optimizer_adam(0.001)
   model %>% compile(
     optimizer = opt,
-    loss = "mse",
-    metrics = c("accuracy")
+    loss = "mse"
     )
   return(list(model = model, input_state = input_state, weights = model$trainable_weights))
 }

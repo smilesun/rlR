@@ -67,23 +67,6 @@ rlR.conf.AgentDQN  = rlR.conf.AgentFDQN  = rlR.conf.AgentDDQN = function() {
           replay.batchsize = 64L)
 }
 
-rlR.conf.AgentPG = rlR.conf.AgentPGBaseline = function() {
-  RLConf$new(
-          agent.lr = 1e-2,
-          render = FALSE,
-          console = TRUE,
-          flag_rescue = FALSE,
-          agent.gamma = 0.99,
-          policy.maxEpsilon = 0,
-          policy.minEpsilon = 0,
-          agent.flag.reset.net = FALSE,
-          policy.softmax.base = 1,
-          policy.softmax.magnify = 1.001,
-          policy.name = "Prob",
-          replay.memname = "Latest",
-          replay.epochs = 1L)
-}
-
 rlR.conf.AgentActorCritic = function() {
   conf = RLConf$new(
     render = FALSE,
@@ -104,7 +87,7 @@ rlR.conf.AgentActorCritic = function() {
 
 rlR.conf.AgentDDPG = function() {
   conf = RLConf$new(
-    render = FALSE,
+    render = TRUE,
     log = FALSE,
     agent.lr = 1e-2,
     agent.gamma = 0.9,
@@ -155,7 +138,7 @@ RLSufix = "rl.log.R"
 )
 
 
-agent.brain.dict.AgentDQN =  agent.brain.dict.AgentFDQN = agent.brain.dict.AgentDDQN = function() list(value_fun = rlR:::makeValueNet)
+agent.brain.dict.AgentDQN =  agent.brain.dict.AgentFDQN = agent.brain.dict.AgentDDQN = function() list(value_fun = rlR:::makeValueNet.DQN)
 agent.brain.dict.AgentPG = function() list(policy_fun = rlR:::makePolicyNet)
 agent.brain.dict.AgentPGBaseline  = function() list(policy_fun = rlR:::makePolicyNet, value_fun = rlR:::makeValueNet)
 agent.brain.dict.AgentActorCritic = function() list(policy_fun = rlR:::makePolicyNet2, value_fun = rlR:::makeValueNet2)

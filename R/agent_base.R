@@ -2,11 +2,7 @@
 #' @format \code{\link{R6Class}} object
 #' @description
 #' An abstract \code{\link{R6Class}} to represent Agent
-#' @section Methods:
-#' \describe{
-#'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes}
-#'   \item{plotPerf()}{[\code{function}] \cr plot performance}
-#' }
+#' @section Methods: #' \describe{ #'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes} #'   \item{plotPerf()}{[\code{function}] \cr plot performance} #' }
 #' @return [\code{\link{Agent}}].
 #' @export
 Agent = R6Class("Agent", public = list())

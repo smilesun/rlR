@@ -57,3 +57,10 @@ AgentDQN = R6::R6Class("AgentDQN",
     }
     ) # public
 )
+
+AgentDQN$test = function() {
+  library(rlR)
+  env = makeGymEnv("CartPole-v0")
+  agent = initAgent("AgentDQN", env)
+  agent$learn(200L)
+}

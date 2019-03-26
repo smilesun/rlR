@@ -12,9 +12,9 @@ test_that("test basic replay_mem works", {
 })
 
 test_that("test stack replay_mem works", {
-  conf = rlR.conf.DQN()
-  conf$set(replay.memname = "UniformStack", replay.mem.size = 70L)  # bigger than batchsize
-  env = rlR::Environment$new()
+  # conf = rlR.conf.DQN()
+  # conf$set(replay.memname = "UniformStack", replay.mem.size = 70L)  # bigger than batchsize
+   env = rlR::Environment$new()
   env$overview()
   env = makeGymEnv("Pong-v0", observ_stack_len = 4L, state_preprocess = list(fun = subsample))
   agent = initAgent("AgentFDQN", env, conf)
@@ -38,17 +38,17 @@ test_that("test stack replay_mem works", {
 })
 
 
-test_that("test uniformStack_mem works", {
-  skip_on_cran()
-  conf = rlR.conf.DQN()
-  conf$set(replay.memname = "UniformStack", replay.mem.size = 70L)  # bigger than batchsize
-  env = makeGymEnv("Pong-v0", repeat_n_act = 400, observ_stack_len = 2, state_preprocess = list(fun = subsample))
-  env$overview()
-  agent = initAgent("AgentFDQN", env, conf)
-  agent$learn(3)
-  expect_class(agent, "AgentFDQN")
-})
-
+# test_that("test uniformStack_mem works", {
+#   skip_on_cran()
+#   conf = rlR.conf.DQN()
+#   conf$set(replay.memname = "UniformStack", replay.mem.size = 70L)  # bigger than batchsize
+#   env = makeGymEnv("Pong-v0", repeat_n_act = 400, observ_stack_len = 2, state_preprocess = list(fun = subsample))
+#   env$overview()
+#   agent = initAgent("AgentFDQN", env, conf)
+#   agent$learn(3)
+#   expect_class(agent, "AgentFDQN")
+# })
+# 
 context("interact")
 test_that("test interact base works", {
   inter = InteractionBase$new()

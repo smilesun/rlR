@@ -1,3 +1,12 @@
+dqn.agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)")
+makeValueNet.DQN =  function(state_dim, act_cnt) {
+ model = keras_model_sequential();
+ model %>% layer_dense(units = 64, activation = 'relu', input_shape = c(state_dim), kernel_regularizer = regularizer_l2(l = 0.0), bias_regularizer = regularizer_l2(l=0.0)) %>% layer_dense(units = act_cnt, activation = 'linear')
+ model$compile(loss = 'mse', optimizer = optimizer_rmsprop(lr = 25e-5, decay = 0, clipnorm = 1.0))
+ return(model)
+}
+
+
 makePolicyNet =  function(state_dim, act_cnt) {
   fun_loss = function(y_true, y_pred) {
     k_b = keras::backend()
@@ -11,6 +20,8 @@ makePolicyNet =  function(state_dim, act_cnt) {
  model$compile(loss = fun_loss, optimizer = optimizer_rmsprop(lr = 1e-2, decay = 0, clipnorm = 5.0))
  return(model)
 }
+
+
 
 makeValueNet =  function(state_dim, act_cnt) {
  model = keras_model_sequential();
@@ -73,7 +84,6 @@ makeCompactableNetTF = function(state_dim, act_cnt) {
 }
 
 
-dqn.agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)")
 pg.agent.nn.arch = list(nhidden = 8, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)")
 pg.bl.agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0.0001)", decay = 0.9, clipnorm = 5)
 pg.bl.agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=0)", decay = 0.9, clipnorm = 5)

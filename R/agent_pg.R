@@ -114,18 +114,25 @@ AgentPG$test2 = function() {
 }
 
 
+rlR.conf.AgentPG = rlR.conf.AgentPGBaseline = function() {
+  RLConf$new(
+          agent.lr = 1e-2,
+          render = FALSE,
+          console = TRUE,
+          flag_rescue = FALSE,
+          agent.gamma = 0.99,
+          policy.maxEpsilon = 0,
+          policy.minEpsilon = 0,
+          agent.flag.reset.net = FALSE,
+          policy.name = "Prob",
+          replay.memname = "Latest",
+          replay.epochs = 1L)
+}
 
 AgentPG$test = function() {
-  set.seed(1)
-  library(rlR)
-  library(magrittr)
-  library(keras)
-#  tf = import(tensorflow)
-#  tf$enable_eager_execution()
   env = makeGymEnv("CartPole-v0")
   conf = getDefaultConf("AgentPG")
-  conf$set(console = T, policy.maxEpsilon = 0, policy.minEpsilon = 0, agent.lr = 0.02)
-  agent = initAgent("AgentPG", env, conf, custom_brain = T)
+  agent = initAgent("AgentPG", env, conf, custom_brain = F)
   agent$learn(200L)
 }
 

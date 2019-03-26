@@ -13,6 +13,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     tau = NULL,  # bilinear combination of target and update network
     optimize = NULL,
     grad2a = NULL,
+    #a_bound = NULL,
     ph_critic2act = NULL,  # place holder
     actor_pred = NULL,
     model = NULL,
@@ -38,6 +39,11 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$np = reticulate::import("numpy", convert = FALSE)
       self$tau = 0.1
       super$initialize(env, conf)
+      # if (!is.null(self$env$env$action_space.high)) {
+      #   self$a_bound = self$env$env$action_space.high
+      # } else {
+      #   stop("no bounds available for action")
+      # }
       self$ph_critic2act = tf$placeholder(dtype = tf$float32, shape = shape(NULL, self$act_cnt), name = "criticQ2a")  # place holder for action
     },
 
