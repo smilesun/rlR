@@ -92,10 +92,12 @@ rlR.conf.AgentDDPG = function() {
     agent.lr = 1e-2,
     agent.gamma = 0.9,
     agent.lr.decay = 1,
+    agent.start.learn = 1e4,
     console = TRUE,
     policy.name = "Prob",
     policy.maxEpsilon = 0,
     policy.minEpsilon = 0,
+    replay.batchsize = 32,   # saves a lot of time compared to when batchsize = 64
     replay.epochs = 1L,
     replay.memname = "Uniform"
     )

@@ -156,12 +156,10 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     },
 
     replay = function(size) {
-      tic()
       self$setBatch(size)
       self$trainCritic()
       self$trainActor()
       self$updateModel()  # time consuming 0.3 s
-      toc()
     },
 
     # Ornstein–Uhlenbeck process: c(Gaussian Process, Markov Process, Temporirily Homogeneous)
@@ -254,7 +252,6 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 agent.brain.dict.AgentDDPG = function() list(policy_fun = createActorNetwork.AgentDDPG, value_fun = createCriticNetwork.AgentDDPG)
 
 AgentDDPG$test = function() {
-  library(tictoc)
   env = makeGymEnv("Pendulum-v0")
   agent = initAgent("AgentDDPG", env)
   agent$learn(100L)
