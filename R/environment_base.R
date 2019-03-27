@@ -32,6 +32,8 @@
 #'   Print out information to user about the environment, can be left empty}
 #'   \item{afterAll()}{[\code{function}] \cr
 #'   What needs to be done after learning is finished, could be left empty}
+#'   \item{evaluateArm(vec_arm)}{[\code{function}] \cr
+#'   process value of vec_arm which is the same length vector as action count act_cnt to only generate legal action, by default doing nothing}
 #' }
 #' @return [\code{\link{Environment}}].
 #' @export
@@ -40,21 +42,15 @@ Environment = R6::R6Class("Environment",
     act_cnt = NULL,
     state_dim = NULL,
     name = NULL,
-    flag_continous = NULL,
-    flag_tensor = NULL,
+    flag_continous = FALSE,
+    flag_tensor = FALSE,
     observ_stack_len = 1L,
     maxStepPerEpisode = 1e4L,
     agent = NULL,  # used to get access to replaymem
-    initialize = function(...) {
-      self$act_cnt = c(2)
-      self$state_dim = c(4)
-      self$name = "rlR.base.env"
-      self$flag_continous = FALSE
-      self$flag_tensor = FALSE
-      self$observ_stack_len = 1L
+    initialize = function() {
     },
 
-    evaluateArm= function(vec_arm) {
+    evaluateArm = function(vec_arm) {
       return(vec_arm)
     },
 
@@ -64,8 +60,8 @@ Environment = R6::R6Class("Environment",
       self$agent$mem$observ_stack_len = self$observ_stack_len
     },
 
-    render = function(...) {
-      # you could leave this field empty
+    render = function() {
+
     },
 
     overview = function() {
@@ -75,9 +71,32 @@ Environment = R6::R6Class("Environment",
     },
 
     reset = function() {
+    },
+
+    step = function(action) {
+    },
+
+    afterAll = function() {
+    },
+
+    print = function() {
+      self$overview()
+    }
+  )
+)
+
+EnvToy = R6::R6Class("EnvToy",
+  inherit = Environment,
+  public = list(
+    initialize = function(...) {
+      self$act_cnt = c(2)
+      self$state_dim = c(4)
+    },
+
+    reset = function() {
       return(list(
           state = array(rnorm(self$state_dim), dim = self$state_dim),
-          reward = 1.0,
+          reward = NULL,
           done = FALSE,
           info = list()
       ))
@@ -90,16 +109,6 @@ Environment = R6::R6Class("Environment",
           done = TRUE,
           info = list()
       ))
-    },
-
-    afterAll = function() {
-      # what to do after the whole learning is finished?  could be left empty
-    },
-
-    print = function() {
-      self$overview()
     }
-  ),
-  private = list(),
-  active = list()
+  )
 )

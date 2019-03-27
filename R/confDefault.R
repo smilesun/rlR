@@ -38,23 +38,6 @@ listAvailConf = function() {
   rlR.conf.dt
 }
 
-# default configuration for each agent which is adjacent to the definition so once definition is modified, it is easy to modify here as well.
-rlR.conf.AgentTable = function() {
-  RLConf$new(
-          render = F,
-          console = T,
-          log = FALSE,
-          agent.lr = 0.5,
-          agent.gamma = 0.95,
-          policy.maxEpsilon = 0.1,
-          policy.minEpsilon = 0,
-          policy.decay.type = "decay_linear",
-          policy.aneal.steps = 400,
-          #policy.decay.rate = exp(-0.001),
-          policy.name = "EpsilonGreedy",
-          agent.start.learn = 0L)
-}
-
 rlR.conf.AgentDQN  = rlR.conf.AgentFDQN  = rlR.conf.AgentDDQN = function() {
   RLConf$new(
           render = FALSE,

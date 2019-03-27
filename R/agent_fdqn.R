@@ -71,3 +71,7 @@ AgentFDQN = R6::R6Class("AgentFDQN",
     }
   )
 )
+
+AgentFDQN$info = function() {
+ "Frozen Target Deep Q Learning"
+}

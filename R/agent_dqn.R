@@ -58,6 +58,10 @@ AgentDQN = R6::R6Class("AgentDQN",
     ) # public
 )
 
+AgentDQN$info = function (variables) {
+  "Deep Q learning"
+}
+
 AgentDQN$test = function() {
   library(rlR)
   env = makeGymEnv("CartPole-v0")

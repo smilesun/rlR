@@ -39,6 +39,27 @@ AgentTable = R6Class("AgentTable",
     },
 
     print = function() {
+      self$q_tab
     }
   )
 )
+
+AgentTable$info = function() {
+  "Tabular Learning"
+}
+
+rlR.conf.AgentTable = function() {
+  RLConf$new(
+          render = F,
+          console = T,
+          log = FALSE,
+          agent.lr = 0.5,
+          agent.gamma = 0.95,
+          policy.maxEpsilon = 0.1,
+          policy.minEpsilon = 0,
+          policy.decay.type = "decay_linear",
+          policy.aneal.steps = 400,
+          #policy.decay.rate = exp(-0.001),
+          policy.name = "EpsilonGreedy",
+          agent.start.learn = 0L)
+}

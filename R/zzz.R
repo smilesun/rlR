@@ -14,19 +14,36 @@
 NULL # nocov
 
 .onAttach <- function(libname, pkgname) {
-  # try(expr = {
-  # py_config = reticulate::py_discover_config()
-  # pynow = Sys.which("python")
-  # m1 = sprintf("\nsystem default python is %s", pynow)
-  # m2 = sprintf("\ndetected available python paths are: \n")
-  # m3 = sprintf("\nto set the python path you want, execute:\n")
-  # packageStartupMessage(m1)
-  # packageStartupMessage(m2)
-  # packageStartupMessage(py_config)
-  # packageStartupMessage(m3)
-  # packageStartupMessage("reticulate::use_python('/path/to/your/python')")
-  # }, silent = TRUE)
+   try(expr = {
+   packageStartupMessage("- type 'reticulate::py_discover_config()' to check default python")
+   packageStartupMessage("- to use a different python path, execute the following after package is loaded:")
+   packageStartupMessage("reticulate::use_python('/path/to/your/python')")
+   }, silent = TRUE)
 }
+
+#' @title List implemented Agents
+#' @description List all implemented Agents
+#' @export
+listAvailAgent = function() {
+  all = getNamespaceExports("rlR")
+  all =  all[which(sapply(all, function(x) grepl("^Agent", x)))]
+  kickout = c("Agent", "AgentArmed")
+  all = setdiff(all, kickout)
+  list_res = lapply(all, function(x) get(x)$info())
+  names(list_res) = all
+  list_res
+}
+
+#' @title list environments from OPENAI gym
+#' @description List all Gym Environments without testing them
+#' @export
+listGymEnvs = function() {
+  envs = reticulate::import("gym.envs")
+  all_spec = envs$registry$env_specs
+  res = sapply(all_spec, function(x) x$id)
+  names(res) = NULL
+}
+
 
 #' @title Test if tensorflow works from R session
 #'
@@ -128,24 +145,6 @@ model %>%
   }, silent = FALSE)
   if (class(res)[1L] == "try-error") return(FALSE)
   return(TRUE)
-}
-
-#' @title List implemented Agents
-#' @description List all implemented Agents
-#' @export
-listAvailAgent = function() {
-  tb = list(AgentDQN = "Deep Q learning", AgentFDQN =  "Frozen Target Deep Q Learning", AgentDDQN = "Double Deep QLearning", AgentPG = "Policy Gradient Monte Carlo", AgentPGBaseline = "Policy Gradient with Baseline", AgentActorCritic = "Actor Critic Method", AgentDDPG = "Deep Deterministic Policy Gradient for Continous Action")
-  data.table(name = names(tb), note = unlist(tb))
-}
-
-#' @title list environments from OPENAI gym
-#' @description List all Gym Environments without testing them
-#' @export
-listGymEnvs = function() {
-  envs = reticulate::import("gym.envs")
-  all_spec = envs$registry$env_specs
-  res = sapply(all_spec, function(x) x$id)
-  names(res) = NULL
 }
 
 rlR.debug = FALSE  # nocov

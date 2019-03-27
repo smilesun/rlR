@@ -70,6 +70,10 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
     )
   )
 
+AgentActorCritic$info = function() {
+  "Actor Critic Method"
+}
+
 AgentActorCritic$test = function() {
   env = makeGymEnv("CartPole-v0")
   agent = initAgent("AgentActorCritic", env)

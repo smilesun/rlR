@@ -251,8 +251,16 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
 agent.brain.dict.AgentDDPG = function() list(policy_fun = createActorNetwork.AgentDDPG, value_fun = createCriticNetwork.AgentDDPG)
 
+AgentDDPG$info = function() {
+  "Deep Deterministic Policy Gradient for Continous Control"
+}
+
 AgentDDPG$test = function() {
+library("profvis")
+profvis({
   env = makeGymEnv("Pendulum-v0")
   agent = initAgent("AgentDDPG", env)
-  agent$learn(100L)
+  agent$learn(2L)
+}
+)
 }

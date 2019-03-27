@@ -5,11 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Define custom environment for deep reinforcement learn • rlR</title>
+<title>Custom Learning Environment • rlR</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cosmo/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Define custom environment for deep reinforcement learn">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Custom Learning Environment">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -89,7 +89,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Define custom environment for deep reinforcement learn</h1>
+      <h1>Custom Learning Environment</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/smilesun/rlR/blob/master/vignettes/define_custom_environments.Rmd"><code>vignettes/define_custom_environments.Rmd</code></a></small>
@@ -99,97 +99,69 @@
 
     
     
-<div id="rlr-define-custom-environments-for-deep-reinforcement-learning-in-r" class="section level1">
+<div id="rlr-define-custom-task-to-solve" class="section level1">
 <h1 class="hasAnchor">
-<a href="#rlr-define-custom-environments-for-deep-reinforcement-learning-in-r" class="anchor"></a>rlR: Define custom environments for Deep Reinforcement learning in R</h1>
+<a href="#rlr-define-custom-task-to-solve" class="anchor"></a>rlR: Define Custom Task to solve</h1>
 <div id="environment-class" class="section level2">
 <h2 class="hasAnchor">
 <a href="#environment-class" class="anchor"></a>Environment class</h2>
-<p>If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment which must inherit the <code><a href="../reference/Environment.html">rlR::Environment</a></code> Class. You could define other public and private members as you like which do not collide with the names in <code><a href="../reference/Environment.html">rlR::Environment</a></code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
-<span class="kw">help</span>(<span class="dt">topic=</span><span class="st">"Environment"</span>, <span class="dt">package =</span> <span class="st">"rlR"</span>)</code></pre></div>
+<p>If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment which must inherit the <code><a href="../reference/Environment.html">rlR::Environment</a></code> Class. You could define other public and private members as you like which do not collide with the names in <code><a href="../reference/Environment.html">rlR::Environment</a></code>. Type the following to have a look at the documentation of <code><a href="../reference/Environment.html">rlR::Environment</a></code></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">help</span>(<span class="dt">topic=</span><span class="st">"Environment"</span>, <span class="dt">package =</span> <span class="st">"rlR"</span>)</code></pre></div>
 </div>
-<div id="an-environment-that-does-not-make-sense" class="section level2">
+<div id="a-toy-example" class="section level2">
 <h2 class="hasAnchor">
-<a href="#an-environment-that-does-not-make-sense" class="anchor"></a>An Environment that does not make sense</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(R6)
-MyEnv =<span class="st"> </span>R6<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/R6/topics/R6Class">R6Class</a></span>(<span class="st">"MyEnv"</span>,
-  <span class="dt">inherit =</span> rlR<span class="op">::</span>Environment,
-  <span class="dt">public =</span> <span class="kw">list</span>(
-    <span class="dt">step_cnt =</span> <span class="ot">NULL</span>,  <span class="co"># a variable that base class does not have</span>
-    <span class="dt">s_r_d_info =</span> <span class="ot">NULL</span>,
-    <span class="dt">initialize =</span> <span class="cf">function</span>(<span class="dt">state_dim =</span> <span class="dv">4</span>, <span class="dt">act_cnt =</span> <span class="dv">2</span>) {
-      super<span class="op">$</span><span class="kw">initialize</span>()
-      self<span class="op">$</span>flag_continous =<span class="st"> </span><span class="ot">FALSE</span>  <span class="co"># non-continuous action</span>
-      self<span class="op">$</span>state_dim =<span class="st"> </span>state_dim
-      self<span class="op">$</span>act_cnt =<span class="st"> </span>act_cnt
-      self<span class="op">$</span>step_cnt =<span class="st"> </span>0L
-      self<span class="op">$</span>s_r_d_info =<span class="st"> </span><span class="kw">list</span>(
-            <span class="dt">state =</span> <span class="kw">array</span>(<span class="kw">rnorm</span>(self<span class="op">$</span>state_dim), <span class="dt">dim =</span> self<span class="op">$</span>state_dim),
-            <span class="dt">reward =</span> <span class="fl">1.0</span>,
-            <span class="dt">done =</span> <span class="ot">FALSE</span>,
-            <span class="dt">info =</span> <span class="kw">list</span>()
-      )
-    },
-
-    <span class="dt">render =</span> <span class="cf">function</span>(...) {
-      <span class="co"># you could leave this field empty. </span>
-    },
-
-    <span class="co"># this function will be called at each step of the learning</span>
-    <span class="dt">step =</span> <span class="cf">function</span>(action) {
-      <span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">"calling step %s"</span>, self<span class="op">$</span>step_cnt))
-      self<span class="op">$</span>step_cnt =<span class="st"> </span>self<span class="op">$</span>step_cnt <span class="op">+</span><span class="st"> </span>1L
-      <span class="cf">if</span>(self<span class="op">$</span>step_cnt <span class="op">&gt;</span><span class="st"> </span>5L) {
-        self<span class="op">$</span>s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">TRUE</span>
-        <span class="kw">cat</span>(<span class="kw">sprintf</span>(<span class="st">"</span><span class="ch">\n</span><span class="st"> Episode Over </span><span class="ch">\n</span><span class="st">"</span>))
-        <span class="kw">return</span>(self<span class="op">$</span>s_r_d_info)
-      }
-      <span class="kw">return</span>(self<span class="op">$</span>s_r_d_info)
-    },
-
-    <span class="co"># this function will be called at the beginning of the learning and at the end of each episode</span>
-    <span class="dt">reset =</span> <span class="cf">function</span>() {
-      self<span class="op">$</span>step_cnt =<span class="st"> </span><span class="dv">0</span>
-      self<span class="op">$</span>s_r_d_info[[<span class="st">"done"</span>]] =<span class="st"> </span><span class="ot">FALSE</span>
-      self<span class="op">$</span>s_r_d_info
-    },
-
-    <span class="dt">afterAll =</span> <span class="cf">function</span>() {
-      <span class="kw">print</span>(<span class="st">"interaction finished!"</span>)
-      <span class="co"># what to do after the whole learning is finished?  could be left empty</span>
-    }
-  )
-)</code></pre></div>
-<p>Afterwards you could choose one of the available Agents to learn on this newly defined environments.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span>MyEnv<span class="op">$</span><span class="kw">new</span>()
-agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentDQN"</span>, env)
-perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">learn</span>(<span class="dv">3</span>)
-## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
-##  Episode Over 
-## Episode: 1 finished with steps:6, rewards:6.000000 global step 6 
-## Last 100 episodes average reward 6.000000 
+<a href="#a-toy-example" class="anchor"></a>A toy Example</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span>rlR<span class="op">:::</span>EnvToy<span class="op">$</span><span class="kw">new</span>()</code></pre></div>
+<p><code>rlR:::EnvToy</code> is an R6 class which inherit <code><a href="../reference/Environment.html">rlR::Environment</a></code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(env)
+## [1] "EnvToy"      "Environment" "R6"</code></pre></div>
+<p>There are 3 methods you must override when defining your own Environment class.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span>initialize  <span class="co"># the fields 'act_cnt' and  'state_dim' must be defined here</span>
+## function (...) 
+## {
+##     self$act_cnt = c(2)
+##     self$state_dim = c(4)
+## }
+## &lt;environment: 0x561e91fb0350&gt;</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span>reset  <span class="co"># The return must be a  list with fields state(must be an array), reward = NULL, done = FALSE, and info = list()</span>
+## function () 
+## {
+##     return(list(state = array(rnorm(self$state_dim), dim = self$state_dim), 
+##         reward = NULL, done = FALSE, info = list()))
+## }
+## &lt;environment: 0x561e91fb0350&gt;</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span>step  <span class="co"># The return must be a list with fields state(must be an array), reward(numeric), done(Boolean), and info (list of anything or empty list)</span>
+## function (action) 
+## {
+##     return(list(state = array(rnorm(self$state_dim), dim = self$state_dim), 
+##         reward = 1, done = TRUE, info = list()))
+## }
+## &lt;environment: 0x561e91fb0350&gt;</code></pre></div>
+</div>
+<div id="testing" class="section level2">
+<h2 class="hasAnchor">
+<a href="#testing" class="anchor"></a>Testing</h2>
+<p>Afterwards you could choose one of the available Agents to check if the newly defined environments works.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentDQN"</span>, env)
+agent<span class="op">$</span><span class="kw">learn</span>(<span class="dv">3</span>)
+## Episode: 1 finished with steps:1, rewards:1.000000 global step 1 
+## Last 100 episodes average reward 1.000000 
 ## Epsilon0.999000 
-## rand steps:6 
-## replaymem size GB:9.78261232376099e-06 
-## learning rate: 0.000999000505544245  
-## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
-##  Episode Over 
-## Episode: 2 finished with steps:6, rewards:6.000000 global step 12 
-## Last 100 episodes average reward 6.000000 
+## rand steps:1 
+## replaymem size GB:1.66147947311401e-06 
+## learning rate: 0.000250000011874363  
+## Episode: 2 finished with steps:1, rewards:1.000000 global step 2 
+## Last 100 episodes average reward 1.000000 
 ## Epsilon0.998002 
-## rand steps:6 
-## replaymem size GB:1.9557774066925e-05 
-## learning rate: 0.000998002011328936  
-## calling step 0calling step 1calling step 2calling step 3calling step 4calling step 5
-##  Episode Over 
-## Episode: 3 finished with steps:6, rewards:6.000000 global step 18 
-## Last 100 episodes average reward 6.000000 
+## rand steps:1 
+## replaymem size GB:3.28570604324341e-06 
+## learning rate: 0.000999000505544245  
+## Episode: 3 finished with steps:1, rewards:1.000000 global step 3 
+## Last 100 episodes average reward 1.000000 
 ## Epsilon0.997004 
-## rand steps:6 
-## replaymem size GB:2.92733311653137e-05 
-## learning rate: 0.000997004448436201  
-## [1] "interaction finished!"</code></pre></div>
+## rand steps:1 
+## replaymem size GB:4.91738319396973e-06 
+## learning rate: 0.000998002011328936</code></pre></div>
 </div>
 </div>
   </div>
@@ -200,9 +172,10 @@ perf =<span class="st"> </span>agent<span class="op">$</span><span class="kw">le
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li>
-<a href="#rlr-define-custom-environments-for-deep-reinforcement-learning-in-r">rlR: Define custom environments for Deep Reinforcement learning in R</a><ul class="nav nav-pills nav-stacked">
+<a href="#rlr-define-custom-task-to-solve">rlR: Define Custom Task to solve</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#environment-class">Environment class</a></li>
-      <li><a href="#an-environment-that-does-not-make-sense">An Environment that does not make sense</a></li>
+      <li><a href="#a-toy-example">A toy Example</a></li>
+      <li><a href="#testing">Testing</a></li>
       </ul>
 </li>
       </ul>

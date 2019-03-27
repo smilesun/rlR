@@ -147,16 +147,9 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     # transform observation to  the replay memory
-    observe = function(interact) {
-      state.old = interact$s_old
-      action = interact$action
-      reward = interact$s_r_done_info[[2L]]
-      state.new = interact$s_r_done_info[[1L]]
-      done = interact$s_r_done_info[[3L]]
-      info = interact$s_r_done_info[[4L]]
-      episode = interact$idx_episode + 1L
-      stepidx = interact$step_in_episode + 1L
-      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
+    observe = function() {
+      ins = self$mem$mkInst(state.old = self$interact$s_old, action = self$interact$action, reward = self$interact$s_r_done_info[[2L]]
+, state.new =  self$interact$s_r_done_info[[1L]], done = self$interact$s_r_done_info[[3L]], info = list(episode = self$interact$idx_episode + 1L, stepidx =  self$interact$step_in_episode + 1L, info = self$interact$s_r_done_info[[4L]]))
       self$mem$add(ins)
     },
 
@@ -239,28 +232,28 @@ AgentArmed = R6::R6Class("AgentArmed",
   ) # public
 )
 
-AgentRandom = R6Class("AgentRandom",
-  inherit = AgentArmed,
-  public = list(
-    initializeConf = function(conf) {
-      if (is.null(conf)) super$initializeConf(getDefaultConf("AgentDQN"))
-    },
-    buildConf = function() {
-      self$replay.size = self$conf$get("replay.batchsize")
-      self$gamma = self$conf$get("agent.gamma")
-      self$epochs = self$conf$get("replay.epochs")
-      self$lr_decay = self$conf$get("agent.lr.decay")
-      self$replay.freq = self$conf$get("replay.freq")
-      self$clip_td_err = self$conf$get("agent.clip.td")
-      memname = self$conf$get("replay.memname")
-      self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
-      policy_name = self$conf$get("policy.name")
-      self$policy = makePolicy(policy_name, self)
-      self$glogger = RLLog$new(self$conf)
-      self$createInteract(self$env)  # ini
-    },
-    act = function(state) {
-      sample(self$act_cnt)[1L]
-    }
-  )
-)
+# AgentRandom = R6Class("AgentRandom",
+#   inherit = AgentArmed,
+#   public = list(
+#     initializeConf = function(conf) {
+#       if (is.null(conf)) super$initializeConf(getDefaultConf("AgentDQN"))
+#     },
+#     buildConf = function() {
+#       self$replay.size = self$conf$get("replay.batchsize")
+#       self$gamma = self$conf$get("agent.gamma")
+#       self$epochs = self$conf$get("replay.epochs")
+#       self$lr_decay = self$conf$get("agent.lr.decay")
+#       self$replay.freq = self$conf$get("replay.freq")
+#       self$clip_td_err = self$conf$get("agent.clip.td")
+#       memname = self$conf$get("replay.memname")
+#       self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
+#       policy_name = self$conf$get("policy.name")
+#       self$policy = makePolicy(policy_name, self)
+#       self$glogger = RLLog$new(self$conf)
+#       self$createInteract(self$env)  # ini
+#     },
+#     act = function(state) {
+#       sample(self$act_cnt)[1L]
+#     }
+#   )
+# )

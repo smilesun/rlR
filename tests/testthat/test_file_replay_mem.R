@@ -1,16 +1,16 @@
-context("replay_mem")
-test_that("test basic replay_mem works", {
-  conf = getDefaultConf("AgentFDQN")
-  env = rlR::Environment$new()
-  env$overview()
-  agent = initAgent("AgentFDQN", env)
-  mem = ReplayMem$new(agent, conf)
-  mem$reset()
-  ins = mem$mkInst(state.old = array(rep(1, 4)), action = c(1, 2), reward = 1, state.new = array(rep(2, 4)), done = TRUE, info = list())
-  mem$add(ins)
-  expect_class(mem, "ReplayMem")
-})
-
+# context("replay_mem")
+# test_that("test basic replay_mem works", {
+#   conf = getDefaultConf("AgentFDQN")
+#   env = rlR::Environment$new()
+#   env$overview()
+#   agent = initAgent("AgentFDQN", env)
+#   mem = ReplayMem$new(agent, conf)
+#   mem$reset()
+#   ins = mem$mkInst(state.old = array(rep(1, 4)), action = c(1, 2), reward = 1, state.new = array(rep(2, 4)), done = TRUE, info = list())
+#   mem$add(ins)
+#   expect_class(mem, "ReplayMem")
+# })
+# 
 # test_that("test stack replay_mem works", {
 #   conf = getDefaultConf("AgentFDQN")
 #   env = rlR::Environment$new()

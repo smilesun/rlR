@@ -76,30 +76,30 @@ AgentPG = R6::R6Class("AgentPG",
 )
 
 
-AgentPGTEMP = R6::R6Class("AgentPGTEMP",
-  inherit = AgentPG,
-  public = list(
-    flag_rescue = NULL,
-    amf = NULL,
-
-    initialize = function(env, conf) {
-      super$initialize(env, conf = conf)
-      self$setBrain()
-    },
-
-    setBrain = function() {
-      self$brain = SurroTF$new(self)
-      self$model = self$brain
-    },
-
-    #@override
-    afterEpisode = function(interact) {
-      self$replay(self$interact$perf$total_steps)   # key difference here
-      super$afterEpisode()
-    }
-    ) # public
-)
-
+# AgentPGTEMP = R6::R6Class("AgentPGTEMP",
+#   inherit = AgentPG,
+#   public = list(
+#     flag_rescue = NULL,
+#     amf = NULL,
+# 
+#     initialize = function(env, conf) {
+#       super$initialize(env, conf = conf)
+#       self$setBrain()
+#     },
+# 
+#     setBrain = function() {
+#       self$brain = SurroTF$new(self)
+#       self$model = self$brain
+#     },
+# 
+###@override
+#     afterEpisode = function(interact) {
+#       self$replay(self$interact$perf$total_steps)   # key difference here
+#       super$afterEpisode()
+#     }
+#     ) # public
+# )
+# 
 
 AgentPG$test2 = function() {
   set.seed(1)
@@ -129,6 +129,10 @@ rlR.conf.AgentPG = rlR.conf.AgentPGBaseline = function() {
           replay.epochs = 1L)
 }
 
+AgentPG$info = function() {
+   "Policy Gradient Monte Carlo"
+}
+
 AgentPG$test = function() {
   env = makeGymEnv("CartPole-v0")
   conf = getDefaultConf("AgentPG")
@@ -136,29 +140,29 @@ AgentPG$test = function() {
   agent$learn(200L)
 }
 
-AgentPGTF = R6::R6Class("AgentPGTF",
-  inherit = AgentPG,
-  public = list(
-    flag_rescue = NULL,
-    amf = NULL,
-    gradients = function(interact) {
-        self$setReturn(interact)  # total.step is calculated here
-        self$getXY(self$interact$perf$total.step)
-        vec_discount = cumprod(rep(self$gamma, interact$perf$total.step))
-        amf = self$vec_dis_return * vec_discount
-        amf = amf - mean(amf)
-        amf = amf / sqrt(sum(amf ^ 2))
-        agg = self$brain$getGradients(array(self$replay.x[1, ], dim = c(1, self$state_dim)))
-        for (i in 2: dim(self$replay.x)[1L]) {
-           grads = self$brain$getGradients(array(self$replay.x[i, ], dim = c(1, self$state_dim)))
-           grads = lapply(grads, function(x) x * amf[i])
-           agg = lapply(length(agg), function(i) agg[[i]] + grads[[i]])
-        }
-        agg
-        self$model$model$optimizer$apply_gradients
-        self$model$model$optimizer$get_updates(self$replay.x[1, ])
-        names(self$model$model$optimizer)
-        self$model$model$optimizer$from_config
-    }
-  )
-)
+# AgentPGTF = R6::R6Class("AgentPGTF",
+#   inherit = AgentPG,
+#   public = list(
+#     flag_rescue = NULL,
+#     amf = NULL,
+#     gradients = function(interact) {
+#         self$setReturn(interact)  # total.step is calculated here
+#         self$getXY(self$interact$perf$total.step)
+#         vec_discount = cumprod(rep(self$gamma, interact$perf$total.step))
+#         amf = self$vec_dis_return * vec_discount
+#         amf = amf - mean(amf)
+#         amf = amf / sqrt(sum(amf ^ 2))
+#         agg = self$brain$getGradients(array(self$replay.x[1, ], dim = c(1, self$state_dim)))
+#         for (i in 2: dim(self$replay.x)[1L]) {
+#            grads = self$brain$getGradients(array(self$replay.x[i, ], dim = c(1, self$state_dim)))
+#            grads = lapply(grads, function(x) x * amf[i])
+#            agg = lapply(length(agg), function(i) agg[[i]] + grads[[i]])
+#         }
+#         agg
+#         self$model$model$optimizer$apply_gradients
+#         self$model$model$optimizer$get_updates(self$replay.x[1, ])
+#         names(self$model$model$optimizer)
+#         self$model$model$optimizer$from_config
+#     }
+#   )
+# )

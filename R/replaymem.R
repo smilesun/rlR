@@ -226,10 +226,6 @@ ReplayMemOnline = R6::R6Class("ReplayMemOnline",
 )
 
 makeReplayMem = function(name, agent, conf) {
-  all = getNamespaceExports("rlR")
-  mem.idx = which(sapply(all, function(x) grepl("ReplayMem", x)))
-  # assert(paste0("ReplayMem", name) %in% all[mem.idx])
-  tex = sprintf("ReplayMem%s$new(agent = agent, conf = conf)", name)
-  mem = eval(parse(text = tex))
-  return(mem)
+  mname = paste0("ReplayMem", name)
+  get(mname)$new(agent = agent, conf = conf)
 }

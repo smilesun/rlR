@@ -159,8 +159,7 @@ SurroTF = R6::R6Class("SurroTF",
     },
 
     pred = function(X) {
-      np = import("numpy")
-      obs = np$array(X)
+      obs = self$np$array(X)
       self$sess$run(self$all_act_prob, dict("inputs/state:0" = obs))
       # py_dict does not work in this case self$sess$run(self$all_act_prob, py_dict(self$tf_obs$name, obs))
     },
@@ -238,10 +237,8 @@ SurroDDPG = R6::R6Class("SurroDDPG",
       aname = input_action$name
       sname = self$model$input[[2L]]$name
       oname = self$model$output$name
-
-      np = reticulate::import("numpy", convert = FALSE)
-      sstate = np$array(state_input)
-      saction = np$array(action_input)
+      sstate = self$np$array(state_input)
+      saction = self$np$array(action_input)
       feed_dict = py_dict(c(sname, aname), c(sstate, saction))
       #FIXME: do we need to provide the output as well?
       #feed_dict = py_dict(c(sname, aname, oname), c(sstate, saction, output))

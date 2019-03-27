@@ -1,20 +1,3 @@
-#' @title Wrapper for Gym OpenAI environment
-#' @description Depends on Gym API definition
-#' @param name The name defined in gym
-#' @param ... Other Parameters to pass to EnvGym
-#' @return The wrapped environment
-#' @export
-makeGymEnv = function(name ="CartPole-v0", ...) {
-  gspace = reticulate::import("gym.spaces", delay_load = TRUE)
-  gym = reticulate::import("gym", delay_load = TRUE)
-  gym$logger$set_level(40)  # supress warning
-  gym$logger$setLevel(40)
-  genv = gym$make(name)
-  env = EnvGym$new(genv, name, ...)  # EnvGym is a wrapper to original gym environment
-  return(env)
-}
-
-
 #' @title Repeat experiment
 #'
 #' @description Repeat the experiment for serveral times
