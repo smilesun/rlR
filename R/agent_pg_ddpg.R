@@ -102,13 +102,6 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     },
 
     # actor is also with loss mse since action is continous!!
-    extractActorTarget = function(i) {
-      act = self$list.acts[[i]]
-      #FIXME: how to find a target here?
-      target = self$advantage[i, ] + self$actor_pred[i, ]
-      return(target)
-    },
-
     #trainActorSessInit = function(state_input, input_criticQ2act) {
     trainActorSessInit = function() {
       # chain rule: set initial value of the gradient to be -ph_critic2act
@@ -146,13 +139,6 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       # w in Q(w, a, s) is updated via bellman equation  with fixed (a:a_i, s:s_i)
       # $\theta$  in $\mu_{\theta}(s)$ is updated in a way to maximize the Q(s_i, a=\mu(s_i))
       # gradient for $\theta$ is $\nabla_{\theta} Q(s_i, a = \mu(s_i)) = $\nabla_{a} Q(s_i, a = \mu(s_i)) %*% \nabla_{a} Q(s_i, a = \mu(s_i))$ which is matrix multiplication for chain rule, so element wise mulitiplication for usuall policy network does not work here.
-
-      #self$actor_pred =  self$brain_actor_update$pred(self$tb.state)
-      #self$advantage = self$grad2a * self$actor_pred
-      #len = dim(self$replay.x)[1L]
-      #list.targets = lapply(1:len, self$extractActorTarget)
-      #tb.targets = Reduce(rbind, list.targets)
-      #self$fitActor(self$tb.state, tb.targets)
     },
 
     replay = function(size) {
