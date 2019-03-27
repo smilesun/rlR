@@ -87,7 +87,7 @@ rlR.conf.AgentActorCritic = function() {
 
 rlR.conf.AgentDDPG = function() {
   conf = RLConf$new(
-    render = TRUE,
+    render = FALSE,
     log = FALSE,
     agent.lr = 1e-2,
     agent.gamma = 0.9,

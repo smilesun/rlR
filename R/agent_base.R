@@ -166,11 +166,15 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$model$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
     },
 
+    mlog = function() {
+      self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
+      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
+    },
+
     evaluateArm = function(state) {
       state = array_reshape(state, c(1L, dim(state)))
-      self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
       self$vec.arm.q = self$model$pred(state)
-      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
+      self$vec.arm.q = self$env$evaluateArm(self$vec.arm.q)
     },
 
     getYhat = function(list.states.old) {

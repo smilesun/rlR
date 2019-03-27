@@ -13,6 +13,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     tau = NULL,  # bilinear combination of target and update network
     optimize = NULL,
     grad2a = NULL,
+    explore = NULL,
     #a_bound = NULL,
     ph_critic2act = NULL,  # place holder
     actor_pred = NULL,
@@ -25,22 +26,23 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     input_actor_update_weights = NULL,
     brain_actor_update = NULL,
     brain_critic_update = NULL,
-    brain_actor_target = NULL,
-    brain_critic_target = NULL,
+    brain_actor_target = NULL,   # used to predict $a$ in bellman equation
+    brain_critic_target = NULL,  # used to create target in bellman equation
     replay_actions = NULL,
     np = NULL,
     batch_acts = NULL,  # acts from replay memory
     batch_acts_target_policy = NULL,  # acts according to policy with respect to states
-    batch_acts_update_policy = NULL,  # acts according to policy with respect to states
+    batch_predicted_acts = NULL,  # acts according to policy with respect to states
     batch_state = NULL,
     batch_state_new = NULL,
     batch_targets_critic = NULL,
     initialize = function(env, conf) {
+      self$explore = 1.0
       self$np = reticulate::import("numpy", convert = FALSE)
       self$tau = 0.1
       super$initialize(env, conf)
-      # if (!is.null(self$env$env$action_space.high)) {
-      #   self$a_bound = self$env$env$action_space.high
+      # if (!is.null(self$env$env$action_space$high)) {
+      #   self$a_bound = self$env$env$action_space$high, low
       # } else {
       #   stop("no bounds available for action")
       # }
@@ -74,7 +76,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$brain_actor_update = SurroDDPG$new(self)
       self$model = self$brain_critic_update
       self$trainActorSessInit()
-      self$sess$run(tf$initialize_all_variables())
+      self$sess$run(tf$global_variables_initializer())
     },
 
     # target: $r_i + gamma Q_{target}(s_new, \mu(s))$, target $a$ is computed through policy (self$p.next), while the input $a$ is from replay memory
@@ -123,20 +125,21 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$optimize = opt$apply_gradients(grad_and_vars)  # grad_and_vars is "List of (gradient, variable) pairs as returned by compute_gradients()", opt$apply_gradients is the second step of opt$minimize where the first part is opt$compute_gradient
     },
 
-    trainActorSess = function(state_input, input_criticQ2act) {
+    trainActor = function() {
+      self$setCriticGradient()
       sname = self$brain_actor_update$model$input$name
       aname = self$ph_critic2act$name
-      sstate = self$np$array(state_input)
-      scritic2act = self$np$array(input_criticQ2act)
+      sstate = self$np$array(self$batch_state)
+      scritic2act = self$np$array(self$grad2a)
       feed_dict = py_dict(c(sname, aname), c(sstate, scritic2act))
       self$sess$run(self$optimize, feed_dict = feed_dict)
     },
 
-    trainActorPrepare = function() {
+    setCriticGradient = function() {
       # $a = \mu(s_i)$
-      self$batch_acts_update_policy = self$brain_actor_update$pred(self$batch_state)
+      self$batch_predicted_acts = self$brain_actor_update$pred(self$batch_state)
       # $\nabla_aQ(s_i, a = \mu(s_i))$
-      self$grad2a = self$brain_critic_update$calGradients2Action(state_input = self$batch_state, action_input = self$batch_acts_update_policy)
+      self$grad2a = self$brain_critic_update$calGradients2Action(state_input = self$batch_state, action_input = self$batch_predicted_acts)
       self$grad2a = self$grad2a[[1L]]   # the return from tensorflow is a list, grad2a should be a batch_size * scalar
       #NOTE: grad2a is $\nabla_a Q(s_i, a = \mu(s_i))$ where $\mu(s_i)$ is the policy network
       # s ->[policy \mu_{\theta}(s)] a | (a, s) ->[value] Q(w,a,s)
@@ -153,11 +156,12 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     },
 
     replay = function(size) {
+      tic()
       self$setBatch(size)
       self$trainCritic()
-      self$trainActorPrepare()
-      self$trainActorSess(self$batch_state, self$grad2a)
-      self$updateModel()
+      self$trainActor()
+      self$updateModel()  # time consuming 0.3 s
+      toc()
     },
 
     # Ornstein–Uhlenbeck process: c(Gaussian Process, Markov Process, Temporirily Homogeneous)
@@ -178,7 +182,8 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
     evaluateArm = function(state) {
       act_cc_nn = self$brain_actor_update$pred(state)
-      self$vec.arm.q = act_cc_nn + self$policy$epsilon * self$ou(act_cc_nn)  # continous action
+      self$vec.arm.q = act_cc_nn + self$explore * self$ou(act_cc_nn)  # continous action
+      self$explore = max(self$explore - 1e-5, 0)
     },
 
     act = function(state) {
@@ -213,8 +218,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
     fitUpdateCriticNetwork = function(action_input, state_input, yhat) {
       #FIXME: the fixed order of action_input and state_input might be problematic
-      res = keras::fit(self$brain_critic_update$model, x = list(action_input, state_input), y = yhat, epochs = 1L, verbose = FALSE)
-      return(res)
+      keras::fit(self$brain_critic_update$model, x = list(action_input, state_input), y = yhat, epochs = 1L, verbose = FALSE)
     },
 
     getYhat = function(...) {
@@ -250,7 +254,8 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 agent.brain.dict.AgentDDPG = function() list(policy_fun = createActorNetwork.AgentDDPG, value_fun = createCriticNetwork.AgentDDPG)
 
 AgentDDPG$test = function() {
+  library(tictoc)
   env = makeGymEnv("Pendulum-v0")
   agent = initAgent("AgentDDPG", env)
-  agent$learn(2000L)
+  agent$learn(100L)
 }

@@ -54,6 +54,10 @@ Environment = R6::R6Class("Environment",
       self$observ_stack_len = 1L
     },
 
+    evaluateArm= function(vec_arm) {
+      return(vec_arm)
+    },
+
     # environment get a hook to agent so it can access the replay memory
     setAgent = function(agent) {
       self$agent = agent

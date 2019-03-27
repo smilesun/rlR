@@ -7,7 +7,9 @@ SurroNN = R6::R6Class("SurroNN",
     custom_flag = NULL,
     action_input = NULL,
     sess = NULL,
+    np = NULL,
     initialize = function(agent) {
+      self$np = reticulate::import("numpy", convert = FALSE)
       self$agent = agent
       self$act_cnt = self$agent$act_cnt
       self$custom_flag = FALSE
@@ -227,7 +229,7 @@ SurroDDPG = R6::R6Class("SurroDDPG",
     },
 
     # calculate gradients with respect to input arm instead of weights
-    calGradients2Action = function(state_input, action_input, output = NULL) {
+    calGradients2Action = function(state_input, action_input) {
       output = self$model$output
       # FIXME: hard coded here.
       input_action = self$model$input[[1L]]
@@ -236,8 +238,7 @@ SurroDDPG = R6::R6Class("SurroDDPG",
       aname = input_action$name
       sname = self$model$input[[2L]]$name
       oname = self$model$output$name
-      #FIXME: do we need initializer here?
-      self$sess$run(tensorflow::tf$global_variables_initializer())
+
       np = reticulate::import("numpy", convert = FALSE)
       sstate = np$array(state_input)
       saction = np$array(action_input)
