@@ -1,0 +1,70 @@
+dist: xenial
+language: r
+sudo: required
+cache: packages
+addons:
+  apt:
+    sources:
+      - ppa:jonathonf/python-3.6
+    update: true
+    packages:
+      - python3
+      - python3-pip 
+      - python3-dev 
+      - build-essential
+      - zlib1g-dev
+before_install:
+  - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 1
+  - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 2
+  - sudo update-alternatives  --set python /usr/bin/python3
+  - sudo pip3 install --upgrade setuptools pip wheel
+  - sudo apt-get install -y software-properties-common
+  - sudo apt-get install -y zlib1g-dev
+  - sudo pip3 install cmake
+  - sudo pip3 install scipy==1.1.0
+  - sudo pip3 install numpy==1.14.5
+  - sudo pip3 install tensorflow==1.8.0
+  - sudo pip3 install keras==2.2.0
+  - sudo pip3 install gym==0.10.5
+  - sudo pip3 install gym[atari]
+  - sudo pip3 install virtualenv
+env:
+  matrix:
+  - _R_CHECK_LENGTH_1_CONDITION_=true
+r:
+  - devel
+  - release
+r_packages:
+  - devtools
+  - covr
+r_github_packages:
+  - codecov/example-r
+  - hadley/pkgdown
+  - rstudio/keras
+before_script:
+  - R --no-save <<< 'library("devtools"); document()'
+  - R --no-save <<< 'library("tensorflow"); # install_tensorflow()'
+  - R --no-save <<< 'library("keras"); # install_keras()'
+  - R --no-save <<< 'reticulate::py_discover_config()'
+after_success:
+  - Rscript -e 'covr::codecov()'
+  - Rscript -e "covr::coveralls()"
+  - 'if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_R_VERSION_STRING" == "release" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
+    R --no-save <<< "devtools::install(); pkgdown::build_site()";
+    git checkout master;
+    export TRAVIS_COMMIT_MSG="$(git log --format=%B --no-merges -n 1)";
+    git config --global user.name "Travis CI";
+    git config --global user.email "$COMMIT_AUTHOR_EMAIL";
+    git config credential.helper "store --file=.git/credentials";
+    echo "https://${GH_TOKEN}:@github.com" >> .git/credentials;
+    git config push.default matching;
+    git add --force man/*;
+    git add --force README.md;
+    git add --force docs/*;
+    git rm -r --cached $(find . -type d -name "*_cache");
+    git commit man DESCRIPTION NAMESPACE README.md docs -m "update auto-generated documentation [ci skip]" -m "$TRAVIS_COMMIT_MSG" || true;
+    git push;
+  fi;'
+  - 'if [[ "$TRAVIS_R_VERSION_STRING" == "devel" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
+    Rscript -e "covr::coveralls()";
+  fi;'
