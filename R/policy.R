@@ -1,33 +1,26 @@
 Policy = R6::R6Class("Policy",
   public = list(
-    epsilon = NULL,
     decay_rate = NULL,
     host = NULL,
-    min_epsilon = NULL,
-    max_epsilon = NULL,
     gstep_idx = NULL,
     action = NULL,
     random_cnt = NULL,
     random_action = NULL,
-    softmax_magnify = NULL,
-    decay_type = NULL,
-    decayEpsilon = NULL,
+    fun_aneal = NULL,
     total_aneal_step = NULL,
+    epsilon = NULL,
+    min_epsilon = NULL,
+    max_epsilon = NULL,
     initialize = function(host) {
       self$random_cnt = 0L
       self$host = host
       self$decay_rate = self$host$conf$get("policy.decay.rate")
+      self$total_aneal_step = self$host$conf$get("policy.aneal.steps")
+      self$fun_aneal = get(self$host$conf$get("policy.decay.type"), envir = self)
       self$min_epsilon = self$host$conf$get("policy.minEpsilon")
       self$max_epsilon = self$host$conf$get("policy.maxEpsilon")
-      self$decay_type = self$host$conf$get("policy.decay.type")
-      self$total_aneal_step = self$host$conf$get("policy.aneal.steps")
-      if (self$decay_type == "decay_geo") self$decayEpsilon = self$decayGeo
-      else if (self$decay_type == "decay_exp") self$decayEpsilon = self$decayExp
-      else if (self$decay_type == "decay_linear") self$decayEpsilon = self$decayEpsilonLinear
-      else stop("decay type can only be 'decay_geo' or 'decay_exp' or 'decay_linear'")
       self$epsilon = self$max_epsilon
       self$gstep_idx = 1
-      self$softmax_magnify = self$host$conf$get("policy.softmax.magnify")
     },
 
     sampleRandomAct = function(state) {
@@ -40,35 +33,46 @@ Policy = R6::R6Class("Policy",
       return(action)
     },
 
-    info = function() {
-        self$host$interact$toConsole("Epsilon%f \n", self$epsilon)
-        self$host$glogger$log.nn$info("rand steps:%d \n", self$random_cnt)
-        self$host$interact$toConsole("rand steps:%i \n", self$random_cnt)  # same message to console
-        self$random_cnt = 0L
-    },
-
-    decayGeo = function() {
+    decay_geo = function() {
         temp = self$epsilon * self$decay_rate
         self$epsilon = max(temp, self$min_epsilon)
     },
 
-    decayExp = function() {
+    decay_exp = function() {
         self$epsilon =  self$min_epsilon + (self$max_epsilon - self$min_epsilon) * exp(self$decay_rate * self$gstep_idx)
         self$gstep_idx = self$gstep_idx + 1L
     },
 
-    decayEpsilonLinear = function() {
+    decay_linear = function() {
         self$epsilon =  self$max_epsilon - (self$gstep_idx / self$total_aneal_step) * (self$max_epsilon - self$min_epsilon)
         # if self$gstep_idx > self$total_aneal_step
         self$epsilon = max(self$epsilon, self$min_epsilon)
         self$gstep_idx = self$gstep_idx + 1L
     },
 
-    # empty method so child class could do nothing when afterEpisode being called
+    afterStep = function() {
+    },
+
     afterEpisode = function() {
+      self$host$interact$toConsole("Epsilon%f \n", self$epsilon)
+      self$host$glogger$log.nn$info("rand steps:%d \n", self$random_cnt)
+      self$host$interact$toConsole("rand steps:%i \n", self$random_cnt)  # same message to console
+      self$random_cnt = 0L
     }
   )
+)
+
+
+PolicyProb = R6::R6Class("PolicyProb",
+  inherit = Policy,
+  public = list(
+   act = function(state) {
+      sample.int(self$host$act_cnt, prob = self$host$vec.arm.q, size = 1L)
+    }
+    )
   )
+
+
 
 PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
   inherit = Policy,
@@ -94,12 +98,12 @@ PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
     },
 
     afterStep = function() {
-      self$decayEpsilon()
+      self$fun_aneal()
     },
 
     afterEpisode = function() {
-      self$decayEpsilon()  # FIXME: not necessary here since we always decrease by step?
-      self$info()
+      self$fun_aneal()  # FIXME: not necessary here since we always decrease by step?
+      super$afterEpisode()
     }
     )
   )
@@ -127,11 +131,15 @@ PolicyProbEpsilon = R6::R6Class("PolicyProbEpsilon",
     )
   )
 
-PolicyPG = R6::R6Class("PolicyPG",
-  inherit = PolicyEpsilonGreedy,
+PolicySoftMax = R6::R6Class("PolicySoftMax",
+  inherit = Policy,
   public = list(
+    softmax_magnify = NULL,
+    softmax_base = NULL,
     initialize = function(host) {
       super$initialize(host)
+      self$softmax_base = self$host$conf$get("policy.softmax.base")
+      self$softmax_magnify = self$host$conf$get("policy.softmax.magnify")
     },
 
     # softmax will magnify the difference
@@ -140,24 +148,28 @@ PolicyPG = R6::R6Class("PolicyPG",
       prob = exp(self$softmax_magnify * z)
       prob = prob / sum(prob)
       action = sample.int(self$host$act_cnt, prob = prob)[1L]
-      action = rmultinom(n = 1L, size = self$host$act_cnt, prob = prob)  # FIXME: any difference between multinomial and sample.int?
-      arm = which.max(action)
-      return(arm)
+      #action = rmultinom(n = 1L, size = self$host$act_cnt, prob = prob)  # FIXME: any difference between multinomial and sample.int?
+      #action = which.max(action)
+      if (action != which.max(self$host$vec.arm.q))  self$random_cnt = self$random_cnt + 1L
+      return(action)
     },
 
     act = function(state) {
       self$action = self$softmax(state)
-      self$toss()  # epsilon chance
+      #self$toss()  # epsilon chance
       return(self$action)
     },
 
     afterEpisode = function() {
-      # self$decayEpsilon()
+      self$host$interact$toConsole("softmax_base %f \n", self$softmax_base)
+      self$softmax_base = self$softmax_magnify * self$softmax_base
+      super$afterEpisode()
     }
+
     )
   )
 
 makePolicy = function(name, host) {
   fn = paste0("Policy", name)
-  return(eval(parse(text = sprintf("%s$new(host = host)", fn))))
+  get(fn)$new(host = host)
 }

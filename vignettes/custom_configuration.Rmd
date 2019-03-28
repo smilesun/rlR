@@ -1,0 +1,47 @@
+---
+title: "Custom Configuration"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+    dev: svg
+vignette: >
+  %\VignetteIndexEntry{Custom Configuration}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+library(rlR)
+set.seed(123)
+knitr::opts_chunk$set(cache = TRUE, collapse = FALSE, dev = "svg", fig.height = 3.5)
+knitr::knit_hooks$set(document = function(x){
+  gsub("```\n*```r*\n*", "", x)
+})
+```
+
+
+# Configure
+
+```{r eval=TRUE}
+options(width=1000)
+listAvailConf()[, .(name, note)]
+```
+
+```{r eval=TRUE}
+conf = getDefaultConf("AgentDQN")
+conf
+conf$set(render = FALSE, console = FALSE)
+```
+
+```{r learn, eval=FALSE} 
+agent = initAgent("AgentDQN", env, conf)
+agent$customizeBrain(makeValueNet, "value_fun")
+agent$learn(200L)  
+```
+
+```{r mplot, eval=FALSE,fig.path="inst/figures/", warning=FALSE, message=FALSE, eval=FALSE}
+agent$plotPerf(F)
+```

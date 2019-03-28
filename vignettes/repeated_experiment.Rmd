@@ -37,6 +37,5 @@ registerDoMC(5)
 library(doParallel)
 cl <- makeCluster(5)
 registerDoParallel(cl)
-res = repExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = getDefaultConf("AgentDQN"), nrep = 5, nepi = 150)
+res = repExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = getDefaultConf("AgentDQN"), nrep = 5, nepi = 5)
 ```
-

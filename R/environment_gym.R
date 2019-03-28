@@ -1,3 +1,26 @@
+#' @title Wrapper for Gym OpenAI environment
+#' @description Depends on Gym API definition
+#' @param name The name defined in gym
+#' @param ... Other Parameters to pass to EnvGym
+#' @return The wrapped environment
+#' @export
+makeGymEnv = function(name ="CartPole-v0", atari = FALSE, state_preprocess = list(fun = identity, par = NULL), act_cheat = NULL, repeat_n_act = 1L, observ_stack_len = 1L) {
+  gspace = reticulate::import("gym.spaces", delay_load = TRUE)
+  gym = reticulate::import("gym", delay_load = TRUE)
+  gym$logger$set_level(40)  # supress warning
+  gym$logger$setLevel(40)
+  genv = gym$make(name)
+  flag_continous = ifelse(grepl("float", toString(genv$action_space$dtype)), TRUE, FALSE)  # if action is in continous space
+  env = NULL
+  if (atari) {
+    env = EnvGymAtari$new(genv, name, state_preprocess = list(fun = identity, par = NULL), act_cheat = NULL, repeat_n_act = repeat_n_act, observ_stack_len = observ_stack_len)
+  } else {
+    env = EnvGym$new(genv, name, state_preprocess = list(fun = identity, par = NULL), act_cheat = NULL, repeat_n_act = repeat_n_act, observ_stack_len = observ_stack_len)  # EnvGym is a wrapper to original gym environment
+  }
+  return(env)
+}
+
+
 # The Discrete space allows a fixed range of non-negative numbers, so in this case valid actions are either 0 or 1
 # The Box space represents an n-dimensional box, so valid observations will be an array of 4 numbers
 # note all processing to image should be consistent in EnvGym::reset, EnvGym::step and replaymem
@@ -77,6 +100,7 @@ EnvGym = R6::R6Class("EnvGym",
     state_cache = NULL,   # store adjacent states to stack into short history
     flag_stack_frame = NULL,
     flag_tensor = NULL,
+    flag_box = NULL,
     # act_cheat is a vector like c(5,7) which maps arm 1 to action 5 and arm 2 to action 7.
     # rendering the Pong-v0 in a ipy-notebook shows that the ball needs 20 frames to travel
     # observ_stack_len is the number of observations one should stack, but will not change the order of the state tensor
@@ -89,15 +113,16 @@ EnvGym = R6::R6Class("EnvGym",
       self$observ_stack_len = observ_stack_len
       self$env = genv
       self$flag_continous = ifelse(grepl("float", toString(genv$action_space$dtype)), TRUE, FALSE)  # if action is in continous space
+      self$flag_box = grepl("Box", toString(self$env$action_space))
       self$name = name
       self$state_preprocess = state_preprocess$fun
-      if (grepl("Discrete", toString(self$env$observation_space))) self$state_preprocess = function(x) (x + 1L)
+      if (grepl("Discrete", toString(self$env$observation_space))) self$state_preprocess = function(x) x + 1L
       self$act_cheat = act_cheat
       self$repeat_n_act = repeat_n_act
       private$initStateDim()
       private$initActCnt()
-      temp = self$env$spec$max_episode_steps
-      if (!is.null(temp)) self$maxStepPerEpisode =  temp
+      env_max_step = self$env$spec$max_episode_steps
+      if (!is.null(env_max_step)) self$maxStepPerEpisode =  env_max_step
       else self$maxStepPerEpisode = 1e4
     },
 
@@ -120,7 +145,6 @@ EnvGym = R6::R6Class("EnvGym",
       self$env$render(...)
     },
 
-    # action_input starts from 1 according to R convention since action is caculated by policy
     step = function(action_input) {
       action = action_input
       if (!is.null(self$act_cheat)) {
@@ -131,22 +155,10 @@ EnvGym = R6::R6Class("EnvGym",
         action = action - 1L  # The class in which the current code lies is Gym Specific
         action = as.integer(action)
       }
-      list_s_r_d_info = lapply(1:self$repeat_n_act, function(i) self$env$step(action)) # repeat the same choice for self$repeat_n_act times. length(list_s_r_d_info) = self$repeat_n_act
-      rewards = sapply(list_s_r_d_info, function(x) x[[2L]]) # extract reward for each action repeat: the second element of each s_r_d_info return is reward
-      #rewards = sapply(rewards, sign)  # reward clipping
-      dones = sapply(list_s_r_d_info, function(x) x[[3L]])
-      s_r_d_info = list_s_r_d_info[[self$repeat_n_act]]
+      s_r_d_info  = self$env$step(action)
       names(s_r_d_info) = c("state", "reward", "done", "info")
-      s_r_d_info[["reward"]] = sum(rewards)
-      s_r_d_info[["done"]] = any(dones)
       s_r_d_info[["state"]] = self$state_preprocess(s_r_d_info[["state"]])  # preprocessing
-      # if (self$flag_tensor) {
-      #   s_r_d_info[["state"]] = pmax(s_r_d_info[["state"]], private$old_state)  # remove flickering
-      #   private$old_state = s_r_d_info[["state"]]
-      # }
-      if (self$flag_stack_frame) s_r_d_info[["state"]] = self$stackLatestFrame(s_r_d_info[["state"]])
-      #FIXME: might be buggy if continous space get preprocessed
-      if (grepl("Box", toString(self$env$action_space))) s_r_d_info[["state"]] = t(s_r_d_info[["state"]])  # for continous action, transpose the state space, for "Pendulum-v0" etc, the state return is 3*1 instead of 1*3
+      if (self$flag_box) s_r_d_info[["state"]] = t(s_r_d_info[["state"]])  # for continous action, transpose the state space, for "Pendulum-v0" etc, the state return is 3*1 instead of 1*3
       s_r_d_info
     },
 
@@ -219,7 +231,7 @@ EnvGym = R6::R6Class("EnvGym",
       self$showImage(s)
     },
 
-    snapshot = function(steps = 25L, preprocess = TRUE) {
+    snapshot = function(steps = 25L, preprocess) {
       checkmate::assert_int(steps)
       ss = self$env$reset()
       if (is.null(self$env$action_space$sample)) {
@@ -241,3 +253,62 @@ EnvGym = R6::R6Class("EnvGym",
     }
     )
    )
+
+
+EnvGymAtari = R6::R6Class("EnvGymAtari",
+  inherit = EnvGym,
+  public = list(
+
+    # action_input starts from 1 according to R convention since action is caculated by policy
+    step = function(action_input) {
+      action = action_input
+      if (!is.null(self$act_cheat)) {
+        # act_cheat must be applied before minus 1 operation below since R has no 0 index!
+        action = as.integer(self$act_cheat[action] + 1L)  # gym convention is used in act_cheat(a vector mapping 1,2,3 to gym convention action starting from 0), +1 convert it back to  R convention
+      }
+      if (!self$flag_continous) {
+        action = action - 1L  # The class in which the current code lies is Gym Specific
+        action = as.integer(action)
+      }
+      list_s_r_d_info = lapply(1:self$repeat_n_act, function(i) self$env$step(action)) # repeat the same choice for self$repeat_n_act times. length(list_s_r_d_info) = self$repeat_n_act
+      rewards = sapply(list_s_r_d_info, function(x) x[[2L]]) # extract reward for each action repeat: the second element of each s_r_d_info return is reward
+      #rewards = sapply(rewards, sign)  # reward clipping
+      dones = sapply(list_s_r_d_info, function(x) x[[3L]])
+      s_r_d_info = list_s_r_d_info[[self$repeat_n_act]]
+      names(s_r_d_info) = c("state", "reward", "done", "info")
+      s_r_d_info[["reward"]] = sum(rewards)
+      s_r_d_info[["done"]] = any(dones)
+      s_r_d_info[["state"]] = self$state_preprocess(s_r_d_info[["state"]])  # preprocessing
+      # if (self$flag_tensor) {
+      #   s_r_d_info[["state"]] = pmax(s_r_d_info[["state"]], private$old_state)  # remove flickering
+      #   private$old_state = s_r_d_info[["state"]]
+      # }
+      if (self$flag_stack_frame) s_r_d_info[["state"]] = self$stackLatestFrame(s_r_d_info[["state"]])
+      #FIXME: might be buggy if continous space get preprocessed
+      if (grepl("Box", toString(self$env$action_space))) s_r_d_info[["state"]] = t(s_r_d_info[["state"]])  # for continous action, transpose the state space, for "Pendulum-v0" etc, the state return is 3*1 instead of 1*3
+      s_r_d_info
+    }
+  )
+)
+
+EnvGymActCheat = R6::R6Class("EnvGymActCheat",
+  inherit = EnvGym,
+  public = list(
+    step = function(action_input) {
+      action = action_input
+      if (!is.null(self$act_cheat)) {
+        # act_cheat must be applied before minus 1 operation below since R has no 0 index!
+        action = as.integer(self$act_cheat[action] + 1L)  # gym convention is used in act_cheat(a vector mapping 1,2,3 to gym convention action starting from 0), +1 convert it back to  R convention
+      }
+      if (!self$flag_continous) {
+        action = action - 1L  # The class in which the current code lies is Gym Specific
+        action = as.integer(action)
+      }
+      s_r_d_info  = self$env$step(action)
+      names(s_r_d_info) = c("state", "reward", "done", "info")
+      s_r_d_info[["state"]] = self$state_preprocess(s_r_d_info[["state"]])  # preprocessing
+      #FIXME: might be buggy if continous space get preprocessed
+      if (grepl("Box", toString(self$env$action_space))) s_r_d_info[["state"]] = t(s_r_d_info[["state"]])  # for continous action, transpose the state space, for "Pendulum-v0" etc, the state return is 3*1 instead of 1*3
+      s_r_d_info
+    })
+)

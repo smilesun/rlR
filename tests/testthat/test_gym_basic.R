@@ -1,19 +1,60 @@
 context("gym_basic")
 
-test_that("test Cart-Pole works for each Agent", {
-  skip_on_cran()
-  rlR.conf.AC()
+test_that("cran test initAgent works", {
   agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
-  lapply(agent.names, function(agent.name) {
-    conf = getDefaultConf(agent.name)
-    env = makeGymEnv("CartPole-v0")
-    agent = initAgent(agent.name, env, conf)
-    agent$learn(2)
-  })
+  env = makeGymEnv("CartPole-v0")
+  lapply(agent.names, function(name) initAgent(name, env, conf = getDefaultConf(name)))
   expect_true(TRUE)
 })
 
-test_that("test Cart-Pole and rescue works each Policy based Agent", {
+test_that("Basic test Cart-Pole could run with agents", {
+  skip_on_cran()
+  agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
+  lapply(agent.names, function(agent.name) {
+    env = makeGymEnv("CartPole-v0")
+    agent = initAgent(agent.name, env)
+    agent$learn(1L)
+    expect_true(T, info = agent.name)
+  })
+})
+
+test_that("test Cart-Pole works for each Policy Agent", {
+  skip_on_cran()
+  agent.names = c("AgentPG", "AgentPGBaseline", "AgentActorCritic")
+  lapply(agent.names, function(agent.name) {
+    print(agent.name)
+    conf = getDefaultConf(agent.name)
+    env = makeGymEnv("CartPole-v0")
+    agent = initAgent(agent.name, env, conf)
+    agent$learn(60)
+    expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
+  })
+})
+
+test_that("test Cart-Pole works for DQN Agent", {
+  skip_on_cran()
+  env = makeGymEnv("CartPole-v0")
+  agent = initAgent("AgentDQN", env)
+  agent$learn(100)
+  expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
+})
+
+
+test_that("test Cart-Pole works for each Value Agent", {
+  skip_on_cran()
+  agent.names = c("AgentFDQN", "AgentDDQN")
+  lapply(agent.names, function(agent.name) {
+    print(agent.name)
+    conf = getDefaultConf(agent.name)
+    env = makeGymEnv("CartPole-v0")
+    agent = initAgent(agent.name, env, conf)
+    agent$learn(200)
+    expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
+  })
+})
+
+
+test_that("test rescue works each Policy based Agent", {
   skip_on_cran()
   agent.names = c("AgentPG", "AgentPGBaseline", "AgentActorCritic")
   lapply(agent.names, function(agent.name) {
@@ -23,32 +64,5 @@ test_that("test Cart-Pole and rescue works each Policy based Agent", {
     agent = initAgent(agent.name, env, conf)
     agent$learn(2)
   })
-  expect_true(TRUE) 
-})
-
-
-# test_that("test Cart-Pole works for each Agent", {
-#   skip_on_cran()
-#   testEnv()  # test Base Environment class works
-#   agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
-#   lapply(agent.names, function(agent.name) {
-#     tex = paste0(agent.name, sprintf("$test(iter = 3, sname = '%s', render = FALSE)", "CartPole-v0"))
-#     perf = eval(parse(text = tex))
-#   })
-#   expect_true(TRUE)
-# })
-
-context("agent")
-test_that("test initAgent works", {
-  agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
-  env = makeGymEnv("CartPole-v0")
-  lapply(agent.names, function(name) initAgent(name, env, conf = getDefaultConf(name)))
   expect_true(TRUE)
-})
-
-context("conf")
-test_that("test conf", {
-  conf = RLConf$new()
-  expect_class(conf, "RLConf")
-  RLLog$new(conf)
 })

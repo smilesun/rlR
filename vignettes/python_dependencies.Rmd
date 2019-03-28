@@ -1,0 +1,108 @@
+---
+title: "Python Dependency"
+output:
+  html_document:
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+    dev: svg
+vignette: >
+  %\VignetteIndexEntry{Python Dependency}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE, cache = FALSE}
+library(rlR)
+set.seed(123)
+knitr::opts_chunk$set(cache = TRUE, collapse = FALSE, dev = "svg", fig.height = 3.5)
+knitr::knit_hooks$set(document = function(x){
+  gsub("```\n*```r*\n*", "", x)
+})
+library(reticulate)
+```
+
+
+# Configure to connect to python
+To run the examples,  you need to have the python packages `numpy-1.14.5`, `tensorflow-1.8.0`, `keras-2.1.6`, `gym-0.10.5` installed in the **same** python path. 
+
+This python path can be your system default python path or a virtual environment(either system python virtual environment or anaconda virtual environment).
+
+Other package versions might also work but not tested.
+
+To look at all python paths you have, in a R session, run
+```{r eval=FALSE}
+reticulate::py_discover_config()
+```
+
+Check which is your system default python:
+```{r eval=FALSE}
+Sys.which("python")
+```
+
+If you want to use a python path other than this system default, run the following(replace the '/usr/bin/python' with the python path you want) before doing anything else with reticulate.
+```{r eval=FALSE}
+reticulate::use_python("/usr/bin/python", required=TRUE)
+```
+**"Note that you can only load one Python interpreter per R session so the use_python call only applies before you actually initialize the interpreter."** Which means if you changed your mind, you have to close the current R session and open a new R session.
+
+Confirm from the following if the first path is the one you wanted
+```{r eval=FALSE}
+reticulate::py_config()
+```
+
+### Python dependencies installation by rlR function
+It is not recommended to mix things up with the system python, so by default, the rlR facility will install the dependencies to virtual environment named 'r-tensorflow' either to your system virtualenv or Anaconda virtualenv.
+
+For Unix user
+- Ensure that you have **either** of the following available
+  - Python Virtual Environment: 
+    ```{bash eval=F}
+    pip install virtualenv
+    ```
+  - Anaconda
+  - Native system  python that ships with your OS. (you have to install python libraries mannually in this case, see instructions below)
+- Install dependencies through 
+  - if you have python virtualenv available:
+    ```{r eval=F}
+    rlR::installDep2SysVirtualEnv(gpu = FALSE)
+    ```
+  - if you have anaconda available:
+    ```{r eval=FALSE}
+    rlR::installDepConda(conda_path = "auto", gpu = FALSE)
+    ```
+
+For Windows user
+- Ensure that you have Anaconda available **or** a native local system python installed(in this case you also have to install python libraries mannually, see instructions below)
+- Install dependencies through `{r eval=FALSE} rlR::installDepConda(gpu = FALSE)` 
+
+If you want to have gpu support, simply set the gpu argument to be true in the function call.
+
+### Mannual python dependency installation
+You can also install python dependencies without using rlR facility function, for example, you can open an anaconda virtual environment  "r-tensorflow" by `source activate r-tensorflow`
+
+All python libraries that are required could be installed either in a virtual environment or in system native python using pip:
+
+```{bash, eval=F}
+pip install --upgrade pip  # set your prefered path to the search path first
+pip install -r requirement.txt
+# or
+pip install tensorflow
+pip install keras
+pip install gym
+pip install cmake
+pip install gym[atari]  # this need to be runned even you use require.txt for installation
+```
+where 'cmake' is required to build atari environments.
+
+
+
+# Independencies for visualization of environments
+The R package imager is required if you want to visualize different environments but the other functionality of rlR is not affected by this R package. For ubuntu, the R package imager depends on libraries which could be installed
+
+```{bash, eval=F}
+sudo apt-get install -y libfftw3-dev libx11-dev libtiff-dev
+sudo apt-get install -y libcairo2-dev
+sudo apt-get install -y libxt-dev
+```

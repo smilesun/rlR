@@ -16,7 +16,7 @@ addons:
 before_install:
   - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 1
   - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 2
-  - sudo update-alternatives  --set python /usr/bin/python3.6
+  - sudo update-alternatives  --set python /usr/bin/python3
   - sudo pip3 install --upgrade setuptools pip wheel
   - sudo apt-get install -y software-properties-common
   - sudo apt-get install -y zlib1g-dev

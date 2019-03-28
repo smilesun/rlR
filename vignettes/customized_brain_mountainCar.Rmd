@@ -39,15 +39,14 @@ act_cheat is a vector where the first element means the first action maps to the
 
 ## Define custom neural network
 ```{r}
-library(keras)
-mfun = function(state_dim, act_cnt) {
+net_fun = function(state_dim, act_cnt) {
   requireNamespace("keras")
   model = keras::keras_model_sequential()
     model %>%
-      layer_dense(units = 10, activation = "relu", input_shape = c(state_dim)) %>%
+      layer_dense(units = 8, activation = "relu", input_shape = c(state_dim)) %>%
       layer_dropout(rate = 0.25) %>%
       layer_dense(units = act_cnt, activation = "linear")
-    model$compile(loss = "mse", optimizer = optimizer_rmsprop(lr = 0.001))
+    model$compile(loss = "mse", optimizer = optimizer_rmsprop(lr = 0.001, clipnorm = 1.0))
     model
 }
 ```
@@ -55,8 +54,8 @@ mfun = function(state_dim, act_cnt) {
 ## Learning
 ```{r eval=FALSE}
 conf = getDefaultConf("AgentDQN")
-conf$set(console = TRUE, render = TRUE, policy.maxEpsilon = 0.3, policy.minEpsilon = 0, policy.decay = 1.0 / 1.01, replay.batchsize = 10, replay.epochs = 4, agent.lr.decay = 1, agent.gamma = 0.95)
-agent = initAgent("AgentDQN", env, conf)
-agent$customizeBrain(value_fun = mfun)
-perf = agent$learn(50L)
+conf$set(console = TRUE, render = TRUE, policy.maxEpsilon = 1, policy.minEpsilon = 0, policy.decay = 1.0 / 1.01, replay.batchsize = 64, replay.epochs = 4, agent.lr.decay = 1, agent.gamma = 0.95)
+agent = initAgent("AgentDQN", env, conf, custom_brain = T)
+agent$customizeBrain(list(value_fun = net_fun))
+agent$learn(200L)
 ```

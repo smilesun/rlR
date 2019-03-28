@@ -2,11 +2,7 @@
 #' @format \code{\link{R6Class}} object
 #' @description
 #' An abstract \code{\link{R6Class}} to represent Agent
-#' @section Methods:
-#' \describe{
-#'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes}
-#'   \item{plotPerf()}{[\code{function}] \cr plot performance}
-#' }
+#' @section Methods: #' \describe{ #'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes} #'   \item{plotPerf()}{[\code{function}] \cr plot performance} #' }
 #' @return [\code{\link{Agent}}].
 #' @export
 Agent = R6Class("Agent", public = list())
@@ -19,16 +15,16 @@ Agent = R6Class("Agent", public = list())
 #' @return [\code{\link{AgentArmed}}].
 #' @examples initAgent("AgentDQN", "CartPole-v0")
 #' @export
-initAgent = function(name, env, conf = NULL, ...) {
-  #browser()
+initAgent = function(name, env, conf = NULL, custom_brain = F, ...) {
   if (is.character(env)) env = makeGymEnv(env)
   if (is.null(conf)) conf = getDefaultConf(agent_name = name)
-  #ee = parse(text = sprintf("%s$new(env = env, conf = conf)", name))
   fun = get(name)$new
   agent = do.call(fun, args = list(env = env, conf = conf, ...))
-  #get(name)$new(env = env, conf = conf)
-  #agent = eval(ee)  # the text is with respect to the passed arguments
   env$setAgent(agent)  # so env has hook to all objects in agent
+  if (!custom_brain) {
+    fun_build_net = get(paste0("agent.brain.dict.", name))
+    agent$customizeBrain(fun_build_net())
+  }
   agent
 }
 
@@ -68,7 +64,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     interact = NULL,
     clip_td_err = NULL,
     mem = NULL,  # replay memory
-    advantage = NULL,
+    vec_dis_return = NULL,
     list.acts = NULL,
     act_cnt = NULL,
     state_dim = NULL,
@@ -111,17 +107,14 @@ AgentArmed = R6::R6Class("AgentArmed",
     },
 
     # user creation of brain from outside
-    customizeBrain = function(policy_fun = NULL, value_fun = NULL) {
-       if (!is.null(policy_fun)) {
-          checkCustomNetwork(policy_fun, self$state_dim, self$act_cnt)
-          self$network_build_funs[["policy_fun"]] = policy_fun
-       }
-       if (!is.null(value_fun)) {
-          checkCustomNetwork(value_fun, self$state_dim, self$act_cnt)
-          self$network_build_funs[["value_fun"]] = value_fun
-       }
-       #NOTE: setBrain does not exist in base class!!
-       self$setBrain()
+    customizeBrain = function(dict) {
+      for (name in names(dict)) {
+        fun = dict[[name]]
+        checkmate::assert_choice(name, choices = c("value_fun", "policy_fun"))
+        #checkCustomNetwork(fun, self$state_dim, self$act_cnt)
+        self$network_build_funs[[name]] = fun
+      }
+      self$setBrain()
     },
 
     # seperate initializeConf allow for reconfiguration
@@ -151,43 +144,19 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$policy = makePolicy(policy_name, self)
       self$glogger = RLLog$new(self$conf)
       self$createInteract(self$env)  # initialize after all other members are initialized!!
-      self$setBrain()  #NOTE: setBrain does not exist for base class!
     },
 
     # transform observation to  the replay memory
-    observe = function(interact) {
-      state.old = interact$s_old
-      action = interact$action
-      reward = interact$s_r_done_info[[2L]]
-      state.new = interact$s_r_done_info[[1L]]
-      done = interact$s_r_done_info[[3L]]
-      info = interact$s_r_done_info[[4L]]
-      episode = interact$idx_episode + 1L
-      stepidx = interact$step_in_episode + 1L
-      ins = self$mem$mkInst(state.old = state.old, action = action, reward = reward, state.new = state.new, done = done, info = list(episode = episode, stepidx = stepidx, info = info))
+    observe = function() {
+      ins = self$mem$mkInst(state.old = self$interact$s_old, action = self$interact$action, reward = self$interact$s_r_done_info[[2L]]
+, state.new =  self$interact$s_r_done_info[[1L]], done = self$interact$s_r_done_info[[3L]], info = list(episode = self$interact$idx_episode + 1L, stepidx =  self$interact$step_in_episode + 1L, info = self$interact$s_r_done_info[[4L]]))
       self$mem$add(ins)
-    },
-
-    #     extractTarget = function(ins) {
-    #       stop("not implemented")
-    #     },
-    # 
-
-    setAdvantage = function(adv) {
-      self$advantage = adv
     },
 
     replay = function(batchsize) {
       self$getXY(batchsize)
       self$glogger$log.nn$info("replaying average ythat vs target error %s", mean(self$replay_delta))
       self$model$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
-    },
-
-    evaluateArm = function(state) {
-      state = array_reshape(state, c(1L, dim(state)))
-      self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
-      self$vec.arm.q = self$model$pred(state)
-      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
     },
 
     getYhat = function(list.states.old) {
@@ -200,24 +169,17 @@ AgentArmed = R6::R6Class("AgentArmed",
       return(p.old)
     },
 
-    getXY = function(batchsize) {
-        self$list.replay = self$mem$sample.fun(batchsize)
-        self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
-        list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
-        list.states.next = lapply(self$list.replay, ReplayMem$extractNextState)
-        self$p.old = self$getYhat(list.states.old)
-        self$p.next = self$getYhat(list.states.next)
-        list.targets = lapply(1:length(self$list.replay), self$extractTarget)
-        self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
-        temp = Reduce(rbind, list.states.old)
-        nr = length(list.states.old)
-        temp = simplify2array(list.states.old) # R array put elements columnwise
-        mdim = dim(temp)
-        norder = length(mdim)
-        self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
-        self$replay.y = t(simplify2array(list.targets))  # array put elements columnwise
-        diff_table = abs(self$replay.y - self$p.old)
-        self$replay_delta = apply(diff_table, 1, mean)
+
+
+    mlog = function() {
+      self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
+      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
+    },
+
+    evaluateArm = function(state) {
+      state = array_reshape(state, c(1L, dim(state)))
+      self$vec.arm.q = self$model$pred(state)
+      self$vec.arm.q = self$env$evaluateArm(self$vec.arm.q)
     },
 
     # in video, states are stacked together with previous frame in Env implementation, so replay-mem becomes indepedent
@@ -235,6 +197,7 @@ AgentArmed = R6::R6Class("AgentArmed",
     afterEpisode = function() {
       self$policy$afterEpisode()
       self$mem$afterEpisode()
+      if (!is.null(self$brain)) self$brain$afterEpisode()
     },
 
     learn = function(iter) {
@@ -251,28 +214,28 @@ AgentArmed = R6::R6Class("AgentArmed",
   ) # public
 )
 
-AgentRandom = R6Class("AgentRandom",
-  inherit = AgentArmed,
-  public = list(
-    initializeConf = function(conf) {
-      if (is.null(conf)) super$initializeConf(getDefaultConf("AgentDQN"))
-    },
-    buildConf = function() {
-      self$replay.size = self$conf$get("replay.batchsize")
-      self$gamma = self$conf$get("agent.gamma")
-      self$epochs = self$conf$get("replay.epochs")
-      self$lr_decay = self$conf$get("agent.lr.decay")
-      self$replay.freq = self$conf$get("replay.freq")
-      self$clip_td_err = self$conf$get("agent.clip.td")
-      memname = self$conf$get("replay.memname")
-      self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
-      policy_name = self$conf$get("policy.name")
-      self$policy = makePolicy(policy_name, self)
-      self$glogger = RLLog$new(self$conf)
-      self$createInteract(self$env)  # ini
-    },
-    act = function(state) {
-      sample(self$act_cnt)[1L]
-    }
-  )
-)
+# AgentRandom = R6Class("AgentRandom",
+#   inherit = AgentArmed,
+#   public = list(
+#     initializeConf = function(conf) {
+#       if (is.null(conf)) super$initializeConf(getDefaultConf("AgentDQN"))
+#     },
+#     buildConf = function() {
+#       self$replay.size = self$conf$get("replay.batchsize")
+#       self$gamma = self$conf$get("agent.gamma")
+#       self$epochs = self$conf$get("replay.epochs")
+#       self$lr_decay = self$conf$get("agent.lr.decay")
+#       self$replay.freq = self$conf$get("replay.freq")
+#       self$clip_td_err = self$conf$get("agent.clip.td")
+#       memname = self$conf$get("replay.memname")
+#       self$mem = makeReplayMem(memname, agent = self, conf = self$conf)
+#       policy_name = self$conf$get("policy.name")
+#       self$policy = makePolicy(policy_name, self)
+#       self$glogger = RLLog$new(self$conf)
+#       self$createInteract(self$env)  # ini
+#     },
+#     act = function(state) {
+#       sample(self$act_cnt)[1L]
+#     }
+#   )
+# )

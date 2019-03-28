@@ -46,8 +46,8 @@ env$overview()
 ```
 
 ```{r eval=FALSE}
-env$snapshot()
-env$snapshot(preprocess = F)
+env$snapshot(preprocess = T)
+env$snapshot(steps = 500, preprocess = F)
 ```
 
 ```{r}
@@ -99,11 +99,10 @@ makeCnnCritic = function(state_dim, act_cnt) {
 ```
 
 ```{r}
-agent = initAgent("AgentFDQN", env, conf)
-agent$customizeBrain(value_fun = makeCnnCritic)
+agent = initAgent("AgentFDQN", env, conf, custom_brain = TRUE)
+agent$customizeBrain(list(value_fun = makeCnnCritic))
 ```
 
-```{r eval=FALSE}
-agent$learn(500L)
-agent$plotPerf()
+```{r, eval = F}
+agent$learn(1L)
 ```

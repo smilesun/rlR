@@ -21,8 +21,8 @@ test_that("default network works", {
   makeKerasModel(input_shape = 2, output_shape = 2, arch.list = agent.nn.arch)
   makeCnnActor(c(32, 32, 3), 10L)
   makeCnnCritic(c(32, 32, 3), 10L)
-  createActorNetwork(3, 2)
-  createCriticNetwork(3, 2)
+  #createActorNetwork(3, 2)
+  #createCriticNetwork(3, 2)
   expect_true(TRUE)
 })
 
@@ -39,7 +39,7 @@ test_that("custom policy network works", {
           layer_dense(units = 512, activation = "relu",
             input_shape = c(state_dim)) %>%
           layer_dropout(rate = 0.25) %>%
-          layer_dense(units = act_cnt,
+          layer_dense(units = 1,
             activation = "linear")
         model$compile(loss = "mse",
           optimizer = optimizer_rmsprop(lr = 0.001))
@@ -59,11 +59,7 @@ test_that("custom policy network works", {
         optimizer = optimizer_rmsprop(lr = 0.001))
       model
 }
-  agent$customizeBrain(policy_fun = mfun_policy)
-  agent$learn(2L)
-  agent$customizeBrain(value_fun = mfun_val, policy_fun = mfun_policy)
-  agent$learn(1L)
-  agent$customizeBrain(value_fun = mfun_val)
+  agent$customizeBrain(list(value_fun = mfun_val, policy_fun = mfun_policy))
   agent$learn(1L)
   expect_true(TRUE)
 })

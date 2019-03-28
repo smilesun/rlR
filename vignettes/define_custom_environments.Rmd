@@ -1,5 +1,5 @@
 ---
-title: "Define custom environment for deep reinforcement learn"
+title: "Custom Learning Environment"
 output:
   html_document:
     toc: true
@@ -25,70 +25,48 @@ os = import("os")
 os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
 ```
 
-# rlR: Define custom environments for Deep Reinforcement learning in R
+# rlR: Define Custom Task to solve
 
 ## Environment class
-If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment which must inherit the `rlR::Environment` Class. You could define other public and private members as you like which do not collide with the names in `rlR::Environment`.
+
+If you want to use this package for your self defined task, you need to implement your own R6 class to represent the environment which must inherit the `rlR::Environment` Class. You could define other public and private members as you like which do not collide with the names in `rlR::Environment`.  Type the following to have a look at the documentation of `rlR::Environment`
 
 ```{r}
-library(rlR)
-library(R6)
 help(topic="Environment", package = "rlR")
-MyEnv = R6::R6Class("MyEnv",
-  inherit = rlR::Environment,
-  public = list(
-    step_cnt = NULL,  # a variable that base class does not have
-    s_r_d_info = NULL,
-    initialize = function(state_dim = 4, act_cnt = 2) {
-      super$initialize()
-      self$flag_continous = FALSE  # non-continuous action
-      self$state_dim = state_dim
-      self$act_cnt = act_cnt
-      self$step_cnt = 0L
-      self$s_r_d_info = list(
-            state = array(rnorm(self$state_dim), dim = self$state_dim),
-            reward = 1.0,
-            done = FALSE,
-            info = list()
-      )
-    },
-
-    render = function(...) {
-      # you could leave this field empty. 
-    },
-
-    # this function will be called at each step of the learning
-    step = function(action) {
-      cat(sprintf("calling step %s", self$step_cnt))
-      self$step_cnt = self$step_cnt + 1L
-      if(self$step_cnt > 5L) {
-        self$s_r_d_info[["done"]] = TRUE
-        cat(sprintf("\n Episode Over \n"))
-        return(self$s_r_d_info)
-      }
-      return(self$s_r_d_info)
-    },
-
-    # this function will be called at the beginning of the learning and at the end of each episode
-    reset = function() {
-      self$step_cnt = 0
-      self$s_r_d_info[["done"]] = FALSE
-      self$s_r_d_info
-    },
-
-    afterAll = function() {
-      print("interaction finished!")
-      # what to do after the whole learning is finished?  could be left empty
-    }
-  )
-)
 ```
 
-Afterwards you could choose one of the available  Agents to learn on this newly defined environments. 
+## A toy Example
+
 ```{r}
-env = MyEnv$new()
-listAvailAgent()
-conf = getDefaultConf("AgentDQN")
-agent = initAgent("AgentDQN", env, conf)
-perf = agent$learn(3)
+env = rlR:::EnvToy$new()
+```
+
+`rlR:::EnvToy` is an R6 class which inherit  `rlR::Environment`. 
+
+```{r}
+class(env)
+```
+
+There are 3 methods you must override when defining your own Environment class.
+
+```{r}
+env$initialize  # the fields 'act_cnt' and  'state_dim' must be defined here
+```
+
+```{r}
+env$reset  # The return must be a  list with fields state(must be an array), reward = NULL, done = FALSE, and info = list()
+```
+
+
+```{r}
+env$step  # The return must be a list with fields state(must be an array), reward(numeric), done(Boolean), and info (list of anything or empty list)
+```
+
+## Testing
+
+Afterwards you could choose one of the available  Agents to check if the newly defined environments works. 
+
+```{r}
+agent = initAgent("AgentDQN", env)
+agent$learn(3)
 ```

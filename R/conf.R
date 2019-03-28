@@ -50,8 +50,8 @@ RLConf = R6::R6Class("RLConf",
       list_param = self$static
       dns = names(list_param)
       ## remove agent.nn
-      flag = sapply(dns, function(x) grepl("agent.nn", x))
-      dns = dns[-which(flag)]
+      #flag = sapply(dns, function(x) grepl("agent.nn", x))
+      #dns = dns[-which(flag)]
       list_conf = lapply(dns, function(x) self$static[[x]])
       names(list_conf) = dns
       df = as.data.frame(unlist(list_conf))

@@ -123,7 +123,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Wrapper for Gym OpenAI environment</h1>
-    <small class="dont-index">Source: <a href='https://github.com/smilesun/rlR/blob/master/R/experiment.R'><code>R/experiment.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/smilesun/rlR/blob/master/R/environment_gym.R'><code>R/environment_gym.R</code></a></small>
     <div class="hidden name"><code>makeGymEnv.Rd</code></div>
     </div>
 
@@ -133,7 +133,9 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>makeGymEnv</span>(<span class='kw'>name</span> <span class='kw'>=</span> <span class='st'>"CartPole-v0"</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>makeGymEnv</span>(<span class='kw'>name</span> <span class='kw'>=</span> <span class='st'>"CartPole-v0"</span>, <span class='kw'>atari</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>state_preprocess</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>identity</span>, <span class='kw'>par</span> <span class='kw'>=</span> <span class='kw'>NULL</span>),
+  <span class='kw'>act_cheat</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>repeat_n_act</span> <span class='kw'>=</span> <span class='fl'>1L</span>, <span class='kw'>observ_stack_len</span> <span class='kw'>=</span> <span class='fl'>1L</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">

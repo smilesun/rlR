@@ -8,7 +8,7 @@ agent.flag.reset.net = list(name = "agent.flag.reset.net", note = "Whether to re
 agent.lr.decay = list(name = "agent.lr.decay", note = "The decay factor of the learning rate at each step", value = exp(-0.001)),  # decaying with regard to step is better since some episode can be too long 
 agent.lr = list(name = "agent.lr", note = "learning rate for the agent", value = 1e-3),
 agent.store.model = list(name = "agent.store.model", note = "whether to store the model of the agent or not", value = FALSE),  #FIXME: exclude this
-agent.update.target.freq = list(name = "agent.update.target.freq", note = "How often should the target network be set", value = 200L),
+agent.update.target.freq = list(name = "agent.update.target.freq", note = "How often should the target network be set", value = 2000L),
 agent.start.learn = list(name = "agent.start.learn", note = "after how many transitions should replay begin", value = 64L),
 agent.clip.td = list(name = "agent.clip.td", note = "whether to clip TD error", value = FALSE),
 policy.maxEpsilon = list(name = "policy.maxEpsilon", note = "The maximum epsilon exploration rate", value = 1.0),
@@ -38,66 +38,38 @@ listAvailConf = function() {
   rlR.conf.dt
 }
 
-# default configuration for each agent which is adjacent to the definition so once definition is modified, it is easy to modify here as well.
-rlR.conf.Table = function() {
-  RLConf$new(
-          render = F,
-          console = T,
-          log = FALSE,
-          agent.lr = 0.5,
-          agent.gamma = 0.95,
-          policy.maxEpsilon = 0.1,
-          policy.minEpsilon = 0,
-          policy.decay.type = "decay_linear",
-          policy.aneal.steps = 400,
-          #policy.decay.rate = exp(-0.001),
-          policy.name = "EpsilonGreedy",
-          agent.start.learn = 0L)
-}
-
-rlR.conf.DQN = function() {
-  RLConf$new(
-          render = FALSE,
-          console = FALSE,
-          log = FALSE,
-          policy.maxEpsilon = 1,
-          policy.minEpsilon = 0.01,
-          policy.decay.rate = exp(-0.001),
-          policy.name = "EpsilonGreedy",
-          replay.batchsize = 64L,
-          agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
-}
-
-rlR.conf.FDQN = function() {
-  rlR.conf.DQN()
-}
-
-rlR.conf.PG = function() {
-  RLConf$new(
-          render = FALSE,
-          console = FALSE,
-          policy.maxEpsilon = 1,
-          policy.decay = exp(-0.001),
-          policy.minEpsilon = 0.01,
-          policy.name = "ProbEpsilon",
-          replay.memname = "Latest",
-          replay.epochs = 1L,
-          agent.nn.arch = list(nhidden = 64, act1 = "relu", act2 = "softmax", loss = "categorical_crossentropy", lr = 25e-3, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0)"))
-}
-
-rlR.conf.AC = function() {
+rlR.conf.AgentActorCritic = function() {
   conf = RLConf$new(
     render = FALSE,
     log = FALSE,
-    console = FALSE,
-    policy.name = "EpsilonGreedy",
-    policy.maxEpsilon = 1,
-    policy.minEpsilon = 0.02,
-    policy.decay = exp(-0.001),
+    agent.lr = 1e-2,
+    agent.gamma = 0.9,
+    agent.lr.decay = 1,
+    console = TRUE,
+    policy.name = "Prob",
+    policy.maxEpsilon = 0,
+    policy.minEpsilon = 0,
     replay.epochs = 1L,
-    replay.memname = "Latest",
-    agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
-    agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr =1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
+    replay.memname = "Latest"
+    #agent.nn.arch.actor = list(nhidden = 64, act1 = "tanh", act2 = "softmax", loss = "categorical_crossentropy", lr = 1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5),
+    #agent.nn.arch.critic = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr =1e-4, kernel_regularizer = "regularizer_l2(l=0.0001)", bias_regularizer = "regularizer_l2(l=1e-4)", decay = 0.9, clipnorm = 5)
+    )
+}
+
+rlR.conf.AgentDDPG = function() {
+  conf = RLConf$new(
+    render = FALSE,
+    log = FALSE,
+    agent.lr = 1e-2,
+    agent.gamma = 0.9,
+    agent.lr.decay = 1,
+    console = TRUE,
+    policy.name = "Prob",
+    policy.maxEpsilon = 0,
+    policy.minEpsilon = 0,
+    replay.batchsize = 32,   # saves a lot of time compared to when batchsize = 64
+    replay.epochs = 1L,
+    replay.memname = "Uniform"
     )
 }
 
@@ -109,18 +81,7 @@ rlR.conf.AC = function() {
 #' @examples
 #' conf = rlR::getDefaultConf("AgentDQN")
 getDefaultConf = function(agent_name) {
-    list.conf = list()
-    list.conf[["AgentActorCritic"]] = rlR.conf.AC()
-    list.conf[["AgentDQN"]] = rlR.conf.DQN()
-    list.conf[["AgentRandom"]] = rlR.conf.DQN()
-    list.conf[["AgentTable"]] = rlR.conf.Table()
-    list.conf[["AgentFDQN"]] = rlR.conf.FDQN()
-    list.conf[["AgentDDQN"]] = rlR.conf.DDQN()
-    list.conf[["AgentPG"]] = rlR.conf.PG()
-    list.conf[["AgentPGBaseline"]] = rlR.conf.PGBaseline()
-    res = list.conf[[agent_name]]
-    if(is.null(res)) stop("no such configuration")
-    return(res)
+    get(paste0("rlR.conf.", agent_name))()
 }
 
 #' @title show Default Configuration
@@ -147,3 +108,9 @@ LOGGERNAMERL = "rl.logger",
 NNSufix = "nn.log",
 RLSufix = "rl.log.R"
 )
+
+
+agent.brain.dict.AgentDQN =  agent.brain.dict.AgentFDQN = agent.brain.dict.AgentDDQN = function() list(value_fun = rlR:::makeValueNet.DQN)
+agent.brain.dict.AgentPG = function() list(policy_fun = rlR:::makePolicyNet)
+agent.brain.dict.AgentPGBaseline  = function() list(policy_fun = rlR:::makePolicyNet, value_fun = rlR:::makeValueNet)
+agent.brain.dict.AgentActorCritic = function() list(policy_fun = rlR:::makePolicyNet2, value_fun = rlR:::makeValueNet2)

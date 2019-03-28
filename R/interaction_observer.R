@@ -70,14 +70,12 @@ Interaction = R6::R6Class("Interaction",
             self$s_r_done_info = self$rl_env$reset()
             self$perf$afterEpisode()
             self$step_in_episode = 0L
-            if (self$idx_episode >= self$maxiter) {
-              private$continue_flag = FALSE
-            }
+            if (self$idx_episode >= self$maxiter) private$continue_flag = FALSE
             self$rl_agent$afterEpisode(self)
-            sucess_flag = self$perf$success()
-            if (sucess_flag) {
-              private$continue_flag = FALSE
-            }
+            # sucess_flag = self$perf$success()
+            # if (sucess_flag) {
+            #   private$continue_flag = FALSE
+            # }
         }
         #gc()
     },
@@ -93,6 +91,52 @@ Interaction = R6::R6Class("Interaction",
     run = function(maxiter) {
       self$step_in_episode = 0L
       self$idx_episode = 0L  # self$idx_episode is relative to maxiter, global episode is in perf 
+      private$continue_flag = TRUE
+      self$maxiter = maxiter
+      self$s_r_done_info = self$rl_env$reset()
+      tryCatch({
+        while (private$continue_flag) {
+          #self$notify("beforeAct")
+          self$s_old = self$s_r_done_info[[1L]]
+          self$action = self$rl_agent$act(self$s_old)
+          #self$glogger$log.nn$info("action taken:%s \n", self$action)
+          self$s_r_done_info = self$rl_env$step(self$action)
+          self$global_step_len = self$global_step_len + 1L
+          #self$notify("afterStep")
+          self$rl_agent$observe()
+          self$perf$r.vec.epi[self$step_in_episode + 1L] = self$s_r_done_info[[2L]]
+          self$step_in_episode = self$step_in_episode + 1L
+          if (self$global_step_len > self$begin_learn) {
+            self$rl_agent$afterStep()
+          }
+          self$checkEpisodeOver()
+
+        }
+        self$perf$extractInfo()
+        return(self$perf)
+    }, finally = {
+      self$rl_agent$sess$close()
+      self$perf$afterAll()
+      self$glogger$afterAll()
+      self$rl_env$afterAll()
+      rlR.global.perf <<- self$perf
+      rlR.global.perf$agent$conf$updatePara("render", FALSE)
+       }) # try catch
+    }, # function run
+
+    finanlize = function() {
+      self$rl_agent$sess$close()
+      self$perf$afterAll()
+      self$glogger$afterAll()
+      self$rl_env$afterAll()
+      #rlR.global.perf <<- self$perf
+      #rlR.global.perf$agent$conf$updatePara("render", FALSE)
+    },
+
+
+    run2 = function(maxiter) {
+      self$step_in_episode = 0L
+      self$idx_episode = 0L
       private$continue_flag = TRUE
       self$maxiter = maxiter
       self$s_r_done_info = self$rl_env$reset()

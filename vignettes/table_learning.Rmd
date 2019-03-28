@@ -28,10 +28,13 @@ os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
 # Toy text and tabular learning
 
 ```{r}
+library(rlR)
 agent = initAgent(name = "AgentTable", env = "CliffWalking-v0", q_init = 0.0, state_names = paste0("s", 1:48))
-# q_init is the initial value for the Q table, default is 0.0
-# state_names are the names of states, default is NULL
 agent$learn(500)
+```
+
+```{r}
+rlR:::visualize(agent$q_tab)
 ```
 
 ```{r eval=F}

@@ -17,11 +17,6 @@ AgentDDQN = R6::R6Class("AgentDDQN",
     brain_u = NULL,  # u: to be updated
     brain_h = NULL,  # h: to help
     p.next.h = NULL,
-    initialize = function(env, conf) {
-      super$initialize(env, conf)
-      self$setBrain()
-    },
-
     setBrain = function() {
       super$setBrain()  # current setBrain will overwrite super$setBrain()
       self$brain2 = SurroNN$new(self)
@@ -101,16 +96,6 @@ AgentDDQN = R6::R6Class("AgentDDQN",
   ) # public
 )
 
-rlR.conf.DDQN = function() {
-  RLConf$new(
-    render = FALSE,
-    console = FALSE,
-    log = FALSE,
-    policy.maxEpsilon = 1,
-    policy.minEpsilon = 0.001,
-    policy.decay = exp(-0.001),
-    policy.name = "EpsilonGreedy",
-    replay.batchsize = 64L,
-    agent.nn.arch = list(nhidden = 64, act1 = "tanh", act2 = "linear", loss = "mse", lr = 0.00025, kernel_regularizer = "regularizer_l2(l=0.0)", bias_regularizer = "regularizer_l2(l=0.0)"))
-
+AgentDDQN$info = function() {
+  "Double Deep Q Learning"
 }

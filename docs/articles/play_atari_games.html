@@ -130,8 +130,8 @@ env =<span class="st"> </span><span class="kw"><a href="../reference/makeGymEnv.
 ## state dim after preprocessing: 61, 80, 1 
 ## with stacking: 61, 80, 4 
 ## discrete action</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span><span class="kw">snapshot</span>()
-env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">preprocess =</span> F)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">preprocess =</span> T)
+env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">steps =</span> <span class="dv">500</span>, <span class="dt">preprocess =</span> F)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">conf =<span class="st"> </span><span class="kw"><a href="../reference/getDefaultConf.html">getDefaultConf</a></span>(<span class="st">"AgentFDQN"</span>)</code></pre></div>
 <p>The rlR package has been optimized to handle replay memory in a very efficient way, to ensure performance, you could also use the following parameters which has a bigger replay memory.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">replay.batchsize =</span> <span class="dv">32</span>, 
@@ -168,11 +168,10 @@ env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">pr
   model =<span class="st"> </span><span class="kw">eval</span>(<span class="kw">parse</span>(<span class="dt">text =</span> text))
   <span class="kw">return</span>(model)
 }</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentFDQN"</span>, env, conf)
-agent<span class="op">$</span><span class="kw">customizeBrain</span>(<span class="dt">value_fun =</span> makeCnnCritic)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentFDQN"</span>, env, conf, <span class="dt">custom_brain =</span> <span class="ot">TRUE</span>)
+agent<span class="op">$</span><span class="kw">customizeBrain</span>(<span class="kw">list</span>(<span class="dt">value_fun =</span> makeCnnCritic))
 ## Loading required package: keras</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent<span class="op">$</span><span class="kw">learn</span>(500L)
-agent<span class="op">$</span><span class="kw">plotPerf</span>()</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent<span class="op">$</span><span class="kw">learn</span>(1L)</code></pre></div>
 </div>
 </div>
   </div>
