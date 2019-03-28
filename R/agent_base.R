@@ -159,17 +159,6 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$model$train(self$replay.x, self$replay.y, self$epochs)  # update the policy model
     },
 
-    mlog = function() {
-      self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
-      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
-    },
-
-    evaluateArm = function(state) {
-      state = array_reshape(state, c(1L, dim(state)))
-      self$vec.arm.q = self$model$pred(state)
-      self$vec.arm.q = self$env$evaluateArm(self$vec.arm.q)
-    },
-
     getYhat = function(list.states.old) {
       nr = length(list.states.old)
       p = dim(list.states.old[[1]])
@@ -180,24 +169,17 @@ AgentArmed = R6::R6Class("AgentArmed",
       return(p.old)
     },
 
-    getXY = function(batchsize) {
-        self$list.replay = self$mem$sample.fun(batchsize)
-        self$glogger$log.nn$info("replaying %s", self$mem$replayed.idx)
-        list.states.old = lapply(self$list.replay, ReplayMem$extractOldState)
-        list.states.next = lapply(self$list.replay, ReplayMem$extractNextState)
-        self$p.old = self$getYhat(list.states.old)
-        self$p.next = self$getYhat(list.states.next)
-        list.targets = lapply(1:length(self$list.replay), self$extractTarget)
-        self$list.acts = lapply(self$list.replay, ReplayMem$extractAction)
-        temp = Reduce(rbind, list.states.old)
-        nr = length(list.states.old)
-        temp = simplify2array(list.states.old) # R array put elements columnwise
-        mdim = dim(temp)
-        norder = length(mdim)
-        self$replay.x = aperm(temp, c(norder, 1:(norder - 1)))
-        self$replay.y = t(simplify2array(list.targets))  # array put elements columnwise
-        diff_table = abs(self$replay.y - self$p.old)
-        self$replay_delta = apply(diff_table, 1, mean)
+
+
+    mlog = function() {
+      self$glogger$log.nn$info("state: %s", paste(state, collapse = " "))
+      self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
+    },
+
+    evaluateArm = function(state) {
+      state = array_reshape(state, c(1L, dim(state)))
+      self$vec.arm.q = self$model$pred(state)
+      self$vec.arm.q = self$env$evaluateArm(self$vec.arm.q)
     },
 
     # in video, states are stacked together with previous frame in Env implementation, so replay-mem becomes indepedent

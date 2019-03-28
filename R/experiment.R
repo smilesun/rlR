@@ -11,9 +11,7 @@
 #' @param ... Other Parameters to pass to GymEnv
 #' @return list of ggplot2 object for performance and list of reward per experiment per episode
 #' @export
-# library(doMC)
-# registerDoMC(4)
-# res = repExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = getDefaultConf("AgentDQN"), nrep = 5, nepi = 200)
+# library(doMC) # registerDoMC(4) # res = repExperiment(sname = "CartPole-v0", aname = "AgentDQN", conf = getDefaultConf("AgentDQN"), nrep = 5, nepi = 200)
 repExperiment = function(sname, aname, conf, nrep = 5L, nepi, value_fun = NULL, ...) {
   list.agent = foreach::foreach(i = 1:nrep) %dopar% {
     env = makeGymEnv(sname, ...)

@@ -8,7 +8,7 @@ agent.flag.reset.net = list(name = "agent.flag.reset.net", note = "Whether to re
 agent.lr.decay = list(name = "agent.lr.decay", note = "The decay factor of the learning rate at each step", value = exp(-0.001)),  # decaying with regard to step is better since some episode can be too long 
 agent.lr = list(name = "agent.lr", note = "learning rate for the agent", value = 1e-3),
 agent.store.model = list(name = "agent.store.model", note = "whether to store the model of the agent or not", value = FALSE),  #FIXME: exclude this
-agent.update.target.freq = list(name = "agent.update.target.freq", note = "How often should the target network be set", value = 200L),
+agent.update.target.freq = list(name = "agent.update.target.freq", note = "How often should the target network be set", value = 2000L),
 agent.start.learn = list(name = "agent.start.learn", note = "after how many transitions should replay begin", value = 64L),
 agent.clip.td = list(name = "agent.clip.td", note = "whether to clip TD error", value = FALSE),
 policy.maxEpsilon = list(name = "policy.maxEpsilon", note = "The maximum epsilon exploration rate", value = 1.0),
@@ -38,18 +38,6 @@ listAvailConf = function() {
   rlR.conf.dt
 }
 
-rlR.conf.AgentDQN  = rlR.conf.AgentFDQN  = rlR.conf.AgentDDQN = function() {
-  RLConf$new(
-          render = FALSE,
-          console = TRUE,
-          log = FALSE,
-          policy.maxEpsilon = 1,
-          policy.minEpsilon = 0.01,
-          policy.decay.rate = exp(-0.001),
-          policy.name = "EpsilonGreedy",
-          replay.batchsize = 64L)
-}
-
 rlR.conf.AgentActorCritic = function() {
   conf = RLConf$new(
     render = FALSE,
@@ -75,7 +63,6 @@ rlR.conf.AgentDDPG = function() {
     agent.lr = 1e-2,
     agent.gamma = 0.9,
     agent.lr.decay = 1,
-    agent.start.learn = 1e4,
     console = TRUE,
     policy.name = "Prob",
     policy.maxEpsilon = 0,

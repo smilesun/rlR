@@ -37,10 +37,12 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     batch_state_new = NULL,
     batch_targets_critic = NULL,
     initialize = function(env, conf) {
+      K = keras::backend()
       self$explore = 1.0
       self$np = reticulate::import("numpy", convert = FALSE)
       self$tau = 0.1
       super$initialize(env, conf)
+      K$set_session(self$sess)
       if (!is.null(self$env$env$action_space$high)) {
          self$a_bound = self$env$env$action_space$high
       } else {
@@ -161,14 +163,17 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       # one step differential equation change, since action_new = action_old + ou(action_old)
       # so d(action) = action_new - action_old = ou(action_old) = \theta(\mu - x_t)dt + \sigma dWt
       # where the difference of Wiener process dWt is white noise
-      theta * (mu - act) + sigma * rnorm(1)
+      theta * (mu - act) + sigma * rnorm(n = 1, mean = 0, sd = 1)
     },
 
     evaluateArm = function(state) {
       act_cc_nn = self$brain_actor_update$pred(state)
+      cat(sprintf("action: %f", act_cc_nn))
       noise = self$explore * self$ou(act_cc_nn)
+      noise = rnorm(n = 1, mean = 0, sd = self$explore)
+      cat(sprintf("noise: %f", noise))
       self$vec.arm.q = act_cc_nn + noise
-      self$explore = max(self$explore - 1e-5, 0)
+      self$explore = self$explore * 0.9995
     },
 
     act = function(state) {
@@ -230,6 +235,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     },
 
     afterEpisode = function(interact) {
+      cat(sprintf("explore factor: %f", self$explore))
       self$policy$afterEpisode()
       self$mem$afterEpisode()
     }
@@ -246,8 +252,9 @@ AgentDDPG$test = function() {
 library("profvis")
 profvis({
   env = makeGymEnv("Pendulum-v0")
-  agent = initAgent("AgentDDPG", env)
-  agent$learn(100L)
+  conf = getDefaultConf("AgentDDPG")
+  agent = initAgent("AgentDDPG", env, conf)
+  agent$learn(300L)
 }
 )
 }

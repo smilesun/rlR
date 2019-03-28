@@ -35,7 +35,6 @@ AgentActorCritic = R6::R6Class("AgentActorCritic",
       list.targets.critic = lapply(1:len, function(i) as.vector(self$extractCriticTarget(i)))
       list.targets.actor = lapply(1:len, function(i) as.vector(self$extractActorTarget(i)))
       y_actor = t(simplify2array(list.targets.actor))
-      #y_actor =  diag(self$amf) %*%  y_actor
       y_actor =  self$amf %*%  y_actor
       y_actor =  self$delta %*%  y_actor
       y_critic = array(unlist(list.targets.critic), dim = c(len, 1L))
