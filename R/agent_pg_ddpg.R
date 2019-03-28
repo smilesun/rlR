@@ -14,7 +14,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     optimize = NULL,
     grad2a = NULL,
     explore = NULL,
-    #a_bound = NULL,
+    a_bound = NULL,
     ph_critic2act = NULL,  # place holder
     actor_pred = NULL,
     model = NULL,
@@ -41,11 +41,11 @@ AgentDDPG = R6::R6Class("AgentDDPG",
       self$np = reticulate::import("numpy", convert = FALSE)
       self$tau = 0.1
       super$initialize(env, conf)
-      # if (!is.null(self$env$env$action_space$high)) {
-      #   self$a_bound = self$env$env$action_space$high, low
-      # } else {
-      #   stop("no bounds available for action")
-      # }
+      if (!is.null(self$env$env$action_space$high)) {
+         self$a_bound = self$env$env$action_space$high
+      } else {
+         self$a_bound = 1.0
+      }
       self$ph_critic2act = tf$placeholder(dtype = tf$float32, shape = shape(NULL, self$act_cnt), name = "criticQ2a")  # place holder for action
     },
 
@@ -166,7 +166,8 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
     evaluateArm = function(state) {
       act_cc_nn = self$brain_actor_update$pred(state)
-      self$vec.arm.q = act_cc_nn + self$explore * self$ou(act_cc_nn)  # continous action
+      noise = self$explore * self$ou(act_cc_nn)
+      self$vec.arm.q = (act_cc_nn + noise) %*% self$a_bound # continous action
       self$explore = max(self$explore - 1e-5, 0)
     },
 
@@ -246,7 +247,7 @@ library("profvis")
 profvis({
   env = makeGymEnv("Pendulum-v0")
   agent = initAgent("AgentDDPG", env)
-  agent$learn(2L)
+  agent$learn(100L)
 }
 )
 }
