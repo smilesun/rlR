@@ -84,7 +84,7 @@ AgentPGBaseline = R6::R6Class("AgentPGBaseline",
         self$glogger$log.nn$info("prediction: %s", paste(self$vec.arm.q, collapse = " "))
       },
 
-       afterEpisode = function(interact) {
+       afterEpisode = function() {
          self$replay(self$interact$perf$total_steps)   # key difference here
       }
     ) # public

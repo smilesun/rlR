@@ -71,7 +71,7 @@ AgentDQN = R6::R6Class("AgentDQN",
         self$policy$afterStep()
     },
 
-    afterEpisode = function(interact) {
+    afterEpisode = function() {
           self$policy$afterEpisode()
           self$mem$afterEpisode()
           self$brain$afterEpisode()

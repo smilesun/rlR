@@ -68,7 +68,7 @@ AgentPG = R6::R6Class("AgentPG",
     },
 
     #@override
-    afterEpisode = function(interact) {
+    afterEpisode = function() {
       self$replay(self$interact$perf$total_steps)   # key difference here
       super$afterEpisode()
     }

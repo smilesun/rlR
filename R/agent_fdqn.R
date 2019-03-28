@@ -81,11 +81,11 @@ AgentFDQN = R6::R6Class("AgentFDQN",
       self$interact$global_step_len - self$last_update > self$updateFreq
     },
 
-    afterEpisode = function(interact) {
+    afterEpisode = function() {
       if (self$shouldUpdateModel()) {
         self$updateModel()
       }
-      super$afterEpisode(interact)
+      super$afterEpisode()
     }
   )
 )
