@@ -61,7 +61,7 @@ test_that("test Cart-Pole works for each Value Agent", {
     conf = getDefaultConf(agent.name)
     env = makeGymEnv("CartPole-v0")
     agent = initAgent(agent.name, env, conf)
-    agent$learn(200)
+    agent$learn(150)
     expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
   })
 })

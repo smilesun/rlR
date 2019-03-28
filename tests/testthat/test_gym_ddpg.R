@@ -4,6 +4,6 @@ test_that("test ddpg works", {
   env = makeGymEnv("Pendulum-v0")
   conf = getDefaultConf("AgentDQN")
   agent = initAgent("AgentDDPG", env, conf)
-  #perf = agent$learn(1)
-  #expect_class(perf, "Performance")
+  agent$learn(1)
+  expect_true(T)
 })

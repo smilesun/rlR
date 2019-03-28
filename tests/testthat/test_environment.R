@@ -7,7 +7,7 @@ test_that("test custom environment EnvToy works", {
   env$afterAll()
   conf = getDefaultConf("AgentDQN")
   agent = initAgent("AgentDQN", env, conf)
-  perf = agent$learn(12)
+  perf = agent$learn(3L)
   expect_class(perf, "Performance")
 })
 
