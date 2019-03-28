@@ -90,7 +90,7 @@ Interaction = R6::R6Class("Interaction",
 
     run = function(maxiter) {
       self$step_in_episode = 0L
-      self$idx_episode = 0L
+      self$idx_episode = 0L  # self$idx_episode is relative to maxiter, global episode is in perf 
       private$continue_flag = TRUE
       self$maxiter = maxiter
       self$s_r_done_info = self$rl_env$reset()
