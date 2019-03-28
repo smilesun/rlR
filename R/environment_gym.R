@@ -178,14 +178,14 @@ EnvGym = R6::R6Class("EnvGym",
     reset = function() {
       s = self$env$reset()
       s = self$state_preprocess(s)
-      #FIXME: is this the right way to initialize old_state? reset is called at episode start?
-      if (self$agent$interact$global_step_len == 0) {
-        private$old_state = s
-        self$state_cache = lapply(1L:self$observ_stack_len, function(x) s)
-      }
-      if (self$flag_stack_frame) {
-        s = self$stackLatestFrame(s)
-      }
+      ##FIXME: is this the right way to initialize old_state? reset is called at episode start?
+      # if (self$agent$interact$global_step_len == 0) {
+      #   private$old_state = s
+      #   self$state_cache = lapply(1L:self$observ_stack_len, function(x) s)
+      # }
+      # if (self$flag_stack_frame) {
+      #   s = self$stackLatestFrame(s)
+      # }
       r = NULL
       return(list(s, r, FALSE, ""))
     },
@@ -259,6 +259,20 @@ EnvGym = R6::R6Class("EnvGym",
 EnvGymAtari = R6::R6Class("EnvGymAtari",
   inherit = EnvGym,
   public = list(
+    reset = function() {
+      s = self$env$reset()
+      s = self$state_preprocess(s)
+      #FIXME: is this the right way to initialize old_state? reset is called at episode start?
+      if (self$agent$interact$global_step_len == 0) {
+        private$old_state = s
+        self$state_cache = lapply(1L:self$observ_stack_len, function(x) s)
+      }
+      if (self$flag_stack_frame) {
+        s = self$stackLatestFrame(s)
+      }
+      r = NULL
+      return(list(s, r, FALSE, ""))
+    },
 
     # action_input starts from 1 according to R convention since action is caculated by policy
     step = function(action_input) {

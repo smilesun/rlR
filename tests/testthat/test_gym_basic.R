@@ -3,6 +3,7 @@ context("gym_basic")
 test_that("cran table", {
   agent = initAgent(name = "AgentTable", env = "CliffWalking-v0")
   agent$learn(1)
+  expect_true(T)
 })
 
 test_that("table", {

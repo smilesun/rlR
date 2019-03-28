@@ -18,6 +18,7 @@ Interaction = R6::R6Class("Interaction",
     printf = NULL,
     begin_learn = NULL,
     global_step_len = NULL,
+    render_fun = NULL,
     initialize = function(rl_env, rl_agent) {
       self$global_step_len = 0L
       self$rl_env = rl_env
@@ -27,6 +28,7 @@ Interaction = R6::R6Class("Interaction",
       checkmate::assert_int(self$begin_learn)
       self$render = private$conf$get("render")
       render_cmd = NULL
+      render_fun = function() NULL
       if (self$render) render_cmd = "render"
       console_cmd = self$rl_agent$conf$get("console")
       if (is.null(console_cmd)) self$consoleFlag = FALSE
@@ -97,6 +99,7 @@ Interaction = R6::R6Class("Interaction",
       tryCatch({
         while (private$continue_flag) {
           #self$notify("beforeAct")
+          if (self$render) self$rl_env$render()
           self$s_old = self$s_r_done_info[[1L]]
           self$action = self$rl_agent$act(self$s_old)
           #self$glogger$log.nn$info("action taken:%s \n", self$action)
