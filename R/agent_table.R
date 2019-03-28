@@ -34,6 +34,9 @@ AgentTable = R6Class("AgentTable",
       self$q_tab[(transact$state.old), transact$action] = self$q_tab[(transact$state.old), transact$action]  + self$alpha * delta
     },
 
+    customizeBrain = function() {
+    },
+
     afterEpisode = function(interact) {
       self$policy$afterEpisode()
     },
@@ -47,6 +50,9 @@ AgentTable = R6Class("AgentTable",
 AgentTable$info = function() {
   "Tabular Learning"
 }
+
+
+agent.brain.dict.AgentTable = function() NULL
 
 rlR.conf.AgentTable = function() {
   RLConf$new(

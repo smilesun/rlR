@@ -169,8 +169,7 @@ env<span class="op">$</span><span class="kw">snapshot</span>(<span class="dt">st
   <span class="kw">return</span>(model)
 }</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentFDQN"</span>, env, conf, <span class="dt">custom_brain =</span> <span class="ot">TRUE</span>)
-agent<span class="op">$</span><span class="kw">customizeBrain</span>(<span class="kw">list</span>(<span class="dt">value_fun =</span> makeCnnCritic))
-## Loading required package: keras</code></pre></div>
+agent<span class="op">$</span><span class="kw">customizeBrain</span>(<span class="kw">list</span>(<span class="dt">value_fun =</span> makeCnnCritic))</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent<span class="op">$</span><span class="kw">learn</span>(1L)</code></pre></div>
 </div>
 </div>

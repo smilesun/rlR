@@ -1,5 +1,17 @@
 context("gym_basic")
 
+test_that("cran table", {
+  agent = initAgent(name = "AgentTable", env = "CliffWalking-v0")
+  agent$learn(1)
+})
+
+test_that("table", {
+  skip_on_cran()
+  agent = initAgent(name = "AgentTable", env = "CliffWalking-v0")
+  agent$learn(500)
+  expect_true(agent$interact$perf$getAccPerf() > -20.0)
+})
+
 test_that("cran test initAgent works", {
   agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
   env = makeGymEnv("CartPole-v0")

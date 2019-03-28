@@ -2,16 +2,23 @@
 #' @format \code{\link{R6Class}} object
 #' @description
 #' An abstract \code{\link{R6Class}} to represent Agent
-#' @section Methods: #' \describe{ #'   \item{learn(iter)}{[\code{function}] \cr Run iter number of Episodes} #'   \item{plotPerf()}{[\code{function}] \cr plot performance} #' }
+#' @section Methods:
+#' \describe{
+#'   \item{learn(iter)}{[\code{function}] \cr
+#'   Run iter number of Episodes}
+#'   \item{plotPerf()}{[\code{function}] \cr
+#'   plot performance}
+#' }
 #' @return [\code{\link{Agent}}].
 #' @export
 Agent = R6Class("Agent", public = list())
 
 #' @title Initialize an Agent with an environment
 #' @description Initialize the agent with an environment from where the agent can learn.
-#' @param name The name of the Agent
+#' @param name The name of the Agent, see \code{\link{listAvailableAgent}}
 #' @param env The environment to initialize the Agent
 #' @param conf The configuration
+#' @param custom_brain Boolean argument: whether to use customized neural network, only for advanced users, not recommended
 #' @return [\code{\link{AgentArmed}}].
 #' @examples initAgent("AgentDQN", "CartPole-v0")
 #' @export
@@ -21,7 +28,7 @@ initAgent = function(name, env, conf = NULL, custom_brain = F, ...) {
   fun = get(name)$new
   agent = do.call(fun, args = list(env = env, conf = conf, ...))
   env$setAgent(agent)  # so env has hook to all objects in agent
-  if (!custom_brain) {
+  if (!custom_brain & name != "AgentTable") {
     fun_build_net = get(paste0("agent.brain.dict.", name))
     agent$customizeBrain(fun_build_net())
   }

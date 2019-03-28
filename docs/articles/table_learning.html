@@ -103,7 +103,7 @@
 <h1 class="hasAnchor">
 <a href="#toy-text-and-tabular-learning" class="anchor"></a>Toy text and tabular learning</h1>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(rlR)
-agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="dt">name =</span> <span class="st">"AgentTable"</span>, <span class="dt">env =</span> <span class="st">"CliffWalking-v0"</span>, <span class="dt">q_init =</span> <span class="fl">0.0</span>, <span class="dt">state_names =</span> <span class="kw">paste0</span>(<span class="st">"s"</span>, <span class="dv">1</span><span class="op">:</span><span class="dv">48</span>))
+agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="dt">name =</span> <span class="st">"AgentTable"</span>, <span class="dt">env =</span> <span class="st">"CliffWalking-v0"</span>)
 agent<span class="op">$</span><span class="kw">learn</span>(<span class="dv">500</span>)
 ## Episode: 1 finished with steps:55, rewards:-55.000000 global step 55 
 ## Last 100 episodes average reward -55.000000 

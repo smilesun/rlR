@@ -122,21 +122,21 @@
 ##     self$act_cnt = c(2)
 ##     self$state_dim = c(4)
 ## }
-## &lt;environment: 0x561e91fb0350&gt;</code></pre></div>
+## &lt;environment: 0x5575e6d5bd78&gt;</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span>reset  <span class="co"># The return must be a  list with fields state(must be an array), reward = NULL, done = FALSE, and info = list()</span>
 ## function () 
 ## {
 ##     return(list(state = array(rnorm(self$state_dim), dim = self$state_dim), 
 ##         reward = NULL, done = FALSE, info = list()))
 ## }
-## &lt;environment: 0x561e91fb0350&gt;</code></pre></div>
+## &lt;environment: 0x5575e6d5bd78&gt;</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env<span class="op">$</span>step  <span class="co"># The return must be a list with fields state(must be an array), reward(numeric), done(Boolean), and info (list of anything or empty list)</span>
 ## function (action) 
 ## {
 ##     return(list(state = array(rnorm(self$state_dim), dim = self$state_dim), 
 ##         reward = 1, done = TRUE, info = list()))
 ## }
-## &lt;environment: 0x561e91fb0350&gt;</code></pre></div>
+## &lt;environment: 0x5575e6d5bd78&gt;</code></pre></div>
 </div>
 <div id="testing" class="section level2">
 <h2 class="hasAnchor">
