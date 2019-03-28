@@ -103,6 +103,6 @@ agent = initAgent("AgentFDQN", env, conf, custom_brain = TRUE)
 agent$customizeBrain(list(value_fun = makeCnnCritic))
 ```
 
-```{r, eval = F}
+```{r}
 agent$learn(1L)
 ```

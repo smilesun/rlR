@@ -30,7 +30,7 @@ os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
 It make sense to repeatedly  evaluate  how an algorithm works for a particular scenario or environment. rlR provides the function `rlR::repExperiment` to serve this need. One could also use different cores to execute seperate experiment.
 
 
-```{r eval=F}
+```{r}
 library(doMC)
 registerDoMC(5)
 # or

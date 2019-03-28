@@ -40,7 +40,6 @@ act_cheat is a vector where the first element means the first action maps to the
 ## Define custom neural network
 ```{r}
 net_fun = function(state_dim, act_cnt) {
-  requireNamespace("keras")
   model = keras::keras_model_sequential()
     model %>%
       layer_dense(units = 8, activation = "relu", input_shape = c(state_dim)) %>%
@@ -52,10 +51,12 @@ net_fun = function(state_dim, act_cnt) {
 ```
 
 ## Learning
-```{r eval=FALSE}
+```{r}
 conf = getDefaultConf("AgentDQN")
 conf$set(console = TRUE, render = TRUE, policy.maxEpsilon = 1, policy.minEpsilon = 0, policy.decay = 1.0 / 1.01, replay.batchsize = 64, replay.epochs = 4, agent.lr.decay = 1, agent.gamma = 0.95)
 agent = initAgent("AgentDQN", env, conf, custom_brain = T)
+library(magrittr)
+library(keras)
 agent$customizeBrain(list(value_fun = net_fun))
-agent$learn(200L)
+agent$learn(1)
 ```

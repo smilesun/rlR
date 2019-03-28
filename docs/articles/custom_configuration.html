@@ -155,9 +155,9 @@ conf
 ## replay.freq                              1
 ## policy.name                  EpsilonGreedy
 conf<span class="op">$</span><span class="kw">set</span>(<span class="dt">render =</span> <span class="ot">FALSE</span>, <span class="dt">console =</span> <span class="ot">FALSE</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
-agent<span class="op">$</span><span class="kw">customizeBrain</span>(makeValueNet, <span class="st">"value_fun"</span>)
-agent<span class="op">$</span><span class="kw">learn</span>(200L)  </code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">env =<span class="st"> </span><span class="kw"><a href="../reference/makeGymEnv.html">makeGymEnv</a></span>(<span class="st">"CartPole-v0"</span>)
+agent =<span class="st"> </span><span class="kw"><a href="../reference/initAgent.html">initAgent</a></span>(<span class="st">"AgentDQN"</span>, env, conf)
+agent<span class="op">$</span><span class="kw">learn</span>(<span class="dv">2</span>)  </code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">agent<span class="op">$</span><span class="kw">plotPerf</span>(F)</code></pre></div>
 </div>
   </div>

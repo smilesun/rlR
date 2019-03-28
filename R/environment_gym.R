@@ -4,18 +4,19 @@
 #' @param ... Other Parameters to pass to EnvGym
 #' @return The wrapped environment
 #' @export
-makeGymEnv = function(name ="CartPole-v0", atari = FALSE, state_preprocess = list(fun = identity, par = NULL), act_cheat = NULL, repeat_n_act = 1L, observ_stack_len = 1L) {
+makeGymEnv = function(name ="CartPole-v0", state_preprocess = list(fun = identity, par = NULL), act_cheat = NULL, repeat_n_act = 1L, observ_stack_len = 1L) {
   gspace = reticulate::import("gym.spaces", delay_load = TRUE)
   gym = reticulate::import("gym", delay_load = TRUE)
   gym$logger$set_level(40)  # supress warning
   gym$logger$setLevel(40)
   genv = gym$make(name)
   flag_continous = ifelse(grepl("float", toString(genv$action_space$dtype)), TRUE, FALSE)  # if action is in continous space
+  atari = grepl("AtariEnv", toString(genv$unwrapped))
   env = NULL
   if (atari) {
-    env = EnvGymAtari$new(genv, name, state_preprocess = list(fun = identity, par = NULL), act_cheat = NULL, repeat_n_act = repeat_n_act, observ_stack_len = observ_stack_len)
+    env = EnvGymAtari$new(genv, name, state_preprocess = state_preprocess, act_cheat = act_cheat, repeat_n_act = repeat_n_act, observ_stack_len = observ_stack_len)
   } else {
-    env = EnvGym$new(genv, name, state_preprocess = list(fun = identity, par = NULL), act_cheat = NULL, repeat_n_act = repeat_n_act, observ_stack_len = observ_stack_len)  # EnvGym is a wrapper to original gym environment
+    env = EnvGym$new(genv, name, state_preprocess = state_preprocess, act_cheat = act_cheat, repeat_n_act = repeat_n_act, observ_stack_len = observ_stack_len)  # EnvGym is a wrapper to original gym environment
   }
   return(env)
 }

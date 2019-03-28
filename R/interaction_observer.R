@@ -88,11 +88,11 @@ Interaction = R6::R6Class("Interaction",
          do.call(obslist[[method]], args = list())
       }},
 
-    run = function(maxiter) {
+    run = function(episodes) {
       self$step_in_episode = 0L
-      self$idx_episode = 0L  # self$idx_episode is relative to maxiter, global episode is in perf 
+      self$idx_episode = 0L  # self$idx_episode is relative to episodes, global episode is in perf 
       private$continue_flag = TRUE
-      self$maxiter = maxiter
+      self$maxiter = episodes
       self$s_r_done_info = self$rl_env$reset()
       tryCatch({
         while (private$continue_flag) {
