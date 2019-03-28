@@ -63,14 +63,35 @@ createCriticNetwork.AgentDDPG = function(state_dim, action_dim) {
   return(list(model = model, input_action = input_action, input_state = input_state))
 }
 
+LayerKMultiply <- R6::R6Class(
+  "KerasLayer",
+  inherit = KerasLayer,
+  
+  public = list(
+    m = NULL,
+    
+    initialize = function(m) {
+      self$m <- m
+    },
+    
+    call = function(x, mask = NULL) {
+      x * self$m
+    }
+  )
+)
 
+layer_LayerKMultiply <- function(object, m) {
+  create_layer(LayerKMultiply, object, list(m = m))
+}
+ 
 
-createActorNetwork.AgentDDPG = function(state_dim = 3, action_dim = 1L) {
+createActorNetwork.AgentDDPG = function(state_dim = 3, action_dim = 1L, a_bound) {
   input_state = keras::layer_input(shape = state_dim)
   states_hidden = input_state %>%
     layer_dense(units = 30, activation = "relu")
   states_hidden2 = states_hidden %>%
     layer_dense(units = action_dim, activation = "tanh")  # only 1L output!
+  output = states_hidden2 %>% layer_LayerKMultiply(m = a_bound)
   model = keras::keras_model(inputs = input_state, outputs = states_hidden2)
   opt = keras::optimizer_adam(0.001)
   fun_loss = function(y_true, y_pred) {

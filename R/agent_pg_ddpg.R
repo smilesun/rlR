@@ -56,7 +56,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
         self$input_state_update = tuple$input_state
         return(tuple$model)
       } else if (self$task == "policy_fun"){
-        tuple = createActorNetwork.AgentDDPG(state_dim = self$state_dim, action_dim = 1L)
+        tuple = createActorNetwork.AgentDDPG(state_dim = self$state_dim, action_dim = 1L, a_bound = self$a_bound)
         self$input_state_actor_update = tuple$input_state
         self$input_actor_update_weights = tuple$weights
         return(tuple$model)
@@ -167,7 +167,7 @@ AgentDDPG = R6::R6Class("AgentDDPG",
     evaluateArm = function(state) {
       act_cc_nn = self$brain_actor_update$pred(state)
       noise = self$explore * self$ou(act_cc_nn)
-      self$vec.arm.q = (act_cc_nn + noise) %*% self$a_bound # continous action
+      self$vec.arm.q = act_cc_nn + noise
       self$explore = max(self$explore - 1e-5, 0)
     },
 
