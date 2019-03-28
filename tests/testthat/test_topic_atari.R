@@ -1,9 +1,10 @@
 context("atari intensive")
-test_test("test Seaquest improves with time", {
+test_that("test Seaquest improves with time", {
   skip_on_cran()
   skip_on_travis()
+  skip("heavy computation")
   env = makeGymEnv("Seaquest-v0", observ_stack_len = 4L, state_preprocess = list(fun = rlR:::subsample))
-  conf = getDefaultConf("AgentFDQN")
+  conf = getDefaultConf("AgentDDQN")
   conf$set(replay.batchsize = 32,
     replay.freq = 1L,
     console = TRUE,
