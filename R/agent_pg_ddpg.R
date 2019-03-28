@@ -168,10 +168,10 @@ AgentDDPG = R6::R6Class("AgentDDPG",
 
     evaluateArm = function(state) {
       act_cc_nn = self$brain_actor_update$pred(state)
-      cat(sprintf("action: %f", act_cc_nn))
+      #cat(sprintf("action: %f", act_cc_nn))
       noise = self$explore * self$ou(act_cc_nn)
       noise = rnorm(n = 1, mean = 0, sd = self$explore)
-      cat(sprintf("noise: %f", noise))
+      #cat(sprintf("noise: %f", noise))
       self$vec.arm.q = act_cc_nn + noise
       self$explore = self$explore * 0.9995
     },
@@ -250,6 +250,7 @@ AgentDDPG$info = function() {
 
 AgentDDPG$test = function() {
 library("profvis")
+library("rlR")
 profvis({
   env = makeGymEnv("Pendulum-v0")
   conf = getDefaultConf("AgentDDPG")
