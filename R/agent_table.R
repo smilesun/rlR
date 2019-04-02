@@ -40,6 +40,7 @@ AgentTable = R6Class("AgentTable",
 
     afterEpisode = function(interact) {
       self$policy$afterEpisode()
+      print(self$q_tab)
     },
 
     print = function() {
