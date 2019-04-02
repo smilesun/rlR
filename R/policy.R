@@ -108,6 +108,22 @@ PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
     )
   )
 
+PolicyEpsGreedTie = R6::R6Class("PolicyEpsGreedTie",
+  inherit = PolicyEpsilonGreedy,
+  public = list(
+    act = function(state) {
+      best_val = max(self$host$vec.arm.q)
+      best_arm = which(self$host$vec.arm.q == best_val)
+      self$action = sample(best_arm, size = 1)
+      self$toss()
+      return(self$action)
+    }
+    )
+)
+
+
+
+
 PolicyProbEpsilon = R6::R6Class("PolicyProbEpsilon",
   inherit = PolicyEpsilonGreedy,
   public = list(

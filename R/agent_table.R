@@ -66,6 +66,6 @@ rlR.conf.AgentTable = function() {
           policy.decay.type = "decay_linear",
           policy.aneal.steps = 400,
           #policy.decay.rate = exp(-0.001),
-          policy.name = "EpsilonGreedy",
+          policy.name = "EpsGreedTie",
           agent.start.learn = 0L)
 }
