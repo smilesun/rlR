@@ -22,6 +22,7 @@ AgentTable = R6Class("AgentTable",
 
     act = function(state) {
       self$vec.arm.q  = self$q_tab[state, ]
+      self$vec.arm.q = self$env$evaluateArm(self$vec.arm.q)
       self$policy$act(state)
     },
 
