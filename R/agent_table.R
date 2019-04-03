@@ -37,7 +37,8 @@ AgentTable = R6Class("AgentTable",
       # Q^{\pi^{*}}(s, a)  = R + max \gamma Q^{\pi^{*}}(s', a)
       transact = self$mem$samples[[self$mem$size]]  # take the latest transaction?
       # self$q_tab has dim: $#states * #actions$
-      future = transact$reward + self$gamma * max(self$q_tab[(transact$state.new), ])  # state start from 0 in cliaff walker
+      if (ReplayMem$extractDone(transact)) future = transact$reward
+      else future = transact$reward + self$gamma * max(self$q_tab[(transact$state.new), ])  # state start from 0 in cliaff walker
       delta = future - self$q_tab[(transact$state.old), transact$action]
       self$q_tab[(transact$state.old), transact$action] = self$q_tab[(transact$state.old), transact$action]  + self$alpha * delta
     },
@@ -49,7 +50,7 @@ AgentTable = R6Class("AgentTable",
       self$policy$afterEpisode()
       cat(sprintf("\n learning rate: %f \n", self$alpha))
       self$alpha = max(self$alpha * self$lr_decay, self$lr_min)
-      if (self$vis_after_episode) self$print()
+      if (self$vis_after_episode) self$print2()
     },
 
     print = function() {
@@ -64,10 +65,9 @@ AgentTable = R6Class("AgentTable",
         checkmate::assert_true(length(self$act_names_per_state) == nrow(self$q_tab))
         colnames_per_row = self$act_names_per_state
         list_act_names = mapply(setNames, rowise_val, colnames_per_row, SIMPLIFY = FALSE)
-        list_act_names = setNames(list.res, rownames(x))
-        return(list_act_names)
-      }
-      return(rowise_val)
+        list_act_names = setNames(list_act_names, names(colnames_per_row))
+        print(list_act_names)
+      } else print(rowise_val)
     }
   )
 )
@@ -80,7 +80,7 @@ AgentTable$test = function() {
   conf = getDefaultConf("AgentTable")
   conf$set(agent.lr.mean = 0.1, agent.lr = 0.5, agent.lr_decay = 1, policy.name = "EpsilonGreedy")
   #conf$set(agent.lr.mean = 0.1, agent.lr = 0.5, agent.lr_decay = 0.9999, policy.name = "EpsilonGreedy")
-  agent = initAgent(name = "AgentTable", env = "CliffWalking-v0", conf = conf)
+  agent = initAgent(name = "AgentTable", env = "CliffWalking-v0", conf = conf, vis_after_episode = T)
   agent$learn(500)
   rlR:::visualize(agent$q_tab)
   agent$plotPerf()
