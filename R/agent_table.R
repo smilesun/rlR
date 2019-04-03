@@ -5,10 +5,10 @@ AgentTable = R6Class("AgentTable",
     alpha = NULL,
     lr_min = NULL,
     act_names_per_state = NULL,
-    vis = NULL,
-    initialize = function(env, conf, q_init = 0.0, state_names = NULL, act_names_per_state = NULL, vis = F) {
+    vis_after_episode = NULL,
+    initialize = function(env, conf, q_init = 0.0, state_names = NULL, act_names_per_state = NULL, vis_after_episode = F) {
       super$initialize(env, conf)
-      self$vis = vis
+      self$vis_after_episode = vis_after_episode
       self$act_names_per_state = act_names_per_state
       self$q_tab = matrix(q_init, nrow = self$state_dim, ncol = self$act_cnt)
       if (!is.null(state_names)) rownames(self$q_tab) = state_names
@@ -49,7 +49,7 @@ AgentTable = R6Class("AgentTable",
       self$policy$afterEpisode()
       cat(sprintf("\n learning rate: %f \n", self$alpha))
       self$alpha = max(self$alpha * self$lr_decay, self$lr_min)
-      if (self$vis) self$print()
+      if (self$vis_after_episode) self$print()
     },
 
     print = function() {
