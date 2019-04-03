@@ -111,8 +111,12 @@ PolicyEpsilonGreedy = R6::R6Class("PolicyEpsilonGreedy",
 PolicyEpsGreedTie = R6::R6Class("PolicyEpsGreedTie",
   inherit = PolicyEpsilonGreedy,
   public = list(
+    sampleRandomAct = function() {
+      self$random_action = sample(which(!is.na(self$host$vec.arm.q)), size = 1)
+    },
+
     act = function(state) {
-      best_val = max(self$host$vec.arm.q)
+      best_val = max(self$host$vec.arm.q, na.rm = T)
       best_arm = which(self$host$vec.arm.q == best_val)
       self$action = sample(best_arm, size = 1)
       self$toss()
