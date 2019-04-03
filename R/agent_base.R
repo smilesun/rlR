@@ -113,6 +113,10 @@ AgentArmed = R6::R6Class("AgentArmed",
       self$vec.arm.q = vector(mode = "numeric", length = self$act_cnt)
     },
 
+    stopLearn = function() {
+      self$interact$stopIter()
+    },
+
     # user creation of brain from outside
     customizeBrain = function(dict) {
       for (name in names(dict)) {

@@ -67,6 +67,10 @@ Interaction = R6::R6Class("Interaction",
       do.call(self$printf, args = c(list(str = str), list(...)))
     },
 
+    stopIter = function() {
+      private$continue_flag = F
+    },
+
     checkEpisodeOver = function() {
           if (self$s_r_done_info[[3L]]) {
             self$s_r_done_info = self$rl_env$reset()
