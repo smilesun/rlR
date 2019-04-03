@@ -5,8 +5,10 @@ AgentTable = R6Class("AgentTable",
     alpha = NULL,
     lr_min = NULL,
     act_names_per_state = NULL,
-    initialize = function(env, conf, q_init = 0.0, state_names = NULL, act_names_per_state = NULL) {
+    vis = NULL,
+    initialize = function(env, conf, q_init = 0.0, state_names = NULL, act_names_per_state = NULL, vis = F) {
       super$initialize(env, conf)
+      self$vis = vis
       self$act_names_per_state = act_names_per_state
       self$q_tab = matrix(q_init, nrow = self$state_dim, ncol = self$act_cnt)
       if (!is.null(state_names)) rownames(self$q_tab) = state_names
@@ -58,6 +60,8 @@ AgentTable = R6Class("AgentTable",
       x = self$q_tab
       rowise_val = split(x, rep(1:nrow(x), each = ncol(x)))
       if (!checkmate::testNull(self$act_names_per_state)) {
+        checkmate::assert_list(self$act_names_per_state)
+        checkmate::assert_true(length(self$act_names_per_state) == nrow(self$q_tab))
         colnames_per_row = self$act_names_per_state
         list_act_names = mapply(setNames, rowise_val, colnames_per_row, SIMPLIFY = FALSE)
         list_act_names = setNames(list.res, rownames(x))
