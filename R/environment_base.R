@@ -54,6 +54,9 @@ Environment = R6::R6Class("Environment",
       return(vec_arm)
     },
 
+    afterEpisode = function() {
+    },
+
     # environment get a hook to agent so it can access the replay memory
     setAgent = function(agent) {
       self$agent = agent

@@ -7,6 +7,7 @@ agent.gamma = list(name = "agent.gamma", note = "The discount factor in reinforc
 agent.flag.reset.net = list(name = "agent.flag.reset.net", note = "Whether to reset the neural network ", value = TRUE),  #FIXME: should be set this?
 agent.lr.decay = list(name = "agent.lr.decay", note = "The decay factor of the learning rate at each step", value = exp(-0.001)),  # decaying with regard to step is better since some episode can be too long 
 agent.lr = list(name = "agent.lr", note = "learning rate for the agent", value = 1e-3),
+agent.lr.min = list(name = "agent.lr.min", note = "minimum learning rate", value = 0),
 agent.store.model = list(name = "agent.store.model", note = "whether to store the model of the agent or not", value = FALSE),  #FIXME: exclude this
 agent.update.target.freq = list(name = "agent.update.target.freq", note = "How often should the target network be set", value = 2000L),
 agent.start.learn = list(name = "agent.start.learn", note = "after how many transitions should replay begin", value = 64L),
