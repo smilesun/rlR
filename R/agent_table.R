@@ -26,7 +26,6 @@ AgentTable = R6Class("AgentTable",
       self$glogger = RLLog$new(self$conf)
       self$createInteract(self$env)  # initialize after all other members are initialized!!
     },
-
     act = function(state) {
       self$vec.arm.q  = self$q_tab[state, ]
       self$vec.arm.q = self$env$evaluateArm(self$vec.arm.q)
