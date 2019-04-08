@@ -78,9 +78,9 @@ AgentTable$info = function() {
 
 AgentTable$test = function() {
   conf = getDefaultConf("AgentTable")
-  conf$set(agent.lr.mean = 0.1, agent.lr = 0.5, agent.lr_decay = 1, policy.name = "EpsilonGreedy")
-  #conf$set(agent.lr.mean = 0.1, agent.lr = 0.5, agent.lr_decay = 0.9999, policy.name = "EpsilonGreedy")
-  agent = initAgent(name = "AgentTable", env = "CliffWalking-v0", conf = conf, vis_after_episode = T)
+  #conf$set(agent.lr.mean = 0.1, agent.lr = 0.5, agent.lr_decay = 1, policy.name = "EpsilonGreedy")
+  conf$set(agent.lr.mean = 0.1, agent.lr = 0.5, agent.lr_decay = 0.9999, policy.name = "EpsGreedTie")
+  agent = initAgent(name = "AgentTable", env = "CliffWalking-v0", conf = conf)
   agent$learn(500)
   rlR:::visualize(agent$q_tab)
   agent$plotPerf()

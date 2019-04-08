@@ -39,7 +39,7 @@ test_that("test Cart-Pole works for each Policy Agent", {
     conf = getDefaultConf(agent.name)
     env = makeGymEnv("CartPole-v0")
     agent = initAgent(agent.name, env, conf)
-    agent$learn(60)
+    agent$learn(80)
     expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
   })
 })
@@ -52,20 +52,22 @@ test_that("test Cart-Pole works for DQN Agent", {
   expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
 })
 
-
-test_that("test Cart-Pole works for each Value Agent", {
+test_that("test AgentFDQN works", {
   skip_on_cran()
-  agent.names = c("AgentFDQN", "AgentDDQN")
-  lapply(agent.names, function(agent.name) {
-    print(agent.name)
-    conf = getDefaultConf(agent.name)
-    env = makeGymEnv("CartPole-v0")
-    agent = initAgent(agent.name, env, conf)
-    agent$learn(200)
-    expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
-  })
+  env = makeGymEnv("CartPole-v0")
+  agent = initAgent("AgentFDQN", env, conf)
+  agent$learn(300)
+  expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
 })
 
+
+test_that("test AgentDDQN works", {
+  skip_on_cran()
+  env = makeGymEnv("CartPole-v0")
+  agent = initAgent("AgentDDQN", env, conf)
+  agent$learn(200)
+  expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
+})
 
 test_that("test rescue works each Policy based Agent", {
   skip_on_cran()
