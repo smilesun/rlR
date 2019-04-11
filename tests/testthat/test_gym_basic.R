@@ -55,7 +55,7 @@ test_that("test Cart-Pole works for DQN Agent", {
 test_that("test AgentFDQN works", {
   skip_on_cran()
   env = makeGymEnv("CartPole-v0")
-  agent = initAgent("AgentFDQN", env, conf)
+  agent = initAgent("AgentFDQN", env)
   agent$learn(300)
   expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
 })
@@ -64,7 +64,7 @@ test_that("test AgentFDQN works", {
 test_that("test AgentDDQN works", {
   skip_on_cran()
   env = makeGymEnv("CartPole-v0")
-  agent = initAgent("AgentDDQN", env, conf)
+  agent = initAgent("AgentDDQN", env)
   agent$learn(200)
   expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
 })

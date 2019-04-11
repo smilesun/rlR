@@ -16,8 +16,9 @@ NULL # nocov
 .onAttach <- function(libname, pkgname) {
    try(expr = {
    packageStartupMessage("- type 'reticulate::py_discover_config()' to check default python")
-   packageStartupMessage("- to use a different python path, execute the following after package is loaded:")
+   packageStartupMessage("- to use a different python path, execute the following immediately after package is loaded:")
    packageStartupMessage("reticulate::use_python('/path/to/your/python')")
+   packageStartupMessage("\nor\n reticulate::use_conda_env('name-of-conda-env')")
    }, silent = TRUE)
 }
 
@@ -117,14 +118,11 @@ installDep2SysVirtualEnv = function(gpu = FALSE) {  # nocov start
 #' @return NULL
 #' @export
 installDepConda = function(conda_path = "auto", gpu = FALSE) { # nocov start
+  str4gpu = ifelse(gpu, "-gpu", "")
   if (conda_path == "auto") cat(sprintf("\ninstalling dependencies using %s \n", Sys.which("conda")))
-  # install_keras will install tensorflow along into the virtual environment called "r-tensorflow"
-  if (gpu) {
-    version = paste0("1.8.0", "-gpu")
-  } else {
-    version = "1.8.0"
-  }
-  keras::install_keras(method = "conda", conda = conda_path, tensorflow = version, extra_packages = c("gym==0.10.5",  "cmake==3.12.0","atari-py==0.1.6"))
+  tf_version = paste0("1.9.0", str4gpu)
+  keras_version = "default"
+  keras::install_keras(method = "conda", conda = conda_path, version = keras_version, tensorflow = tf_version, extra_packages = c("gym==0.10.5",  "cmake==3.12.0", "atari-py==0.1.6"))
 } # nocov end
 
 
