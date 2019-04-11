@@ -57,7 +57,7 @@ test_that("test AgentFDQN works", {
   env = makeGymEnv("CartPole-v0")
   agent = initAgent("AgentFDQN", env)
   agent$learn(300)
-  expect_true(agent$interact$perf$getAccPerf() > 20, info = agent.name)
+  expect_true(agent$interact$perf$getAccPerf() > 20, info = "AgentFDQN")
 })
 
 
