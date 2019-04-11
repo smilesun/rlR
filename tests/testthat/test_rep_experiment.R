@@ -3,7 +3,7 @@ test_that("travis repeat experiment", {
   skip_on_cran()
   skip_on_travis()
   doMC::registerDoMC(4)
-  agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
+  agent.names = c("AgentDQN")  # too many agents takes too long  #agent.names = c("AgentDQN", "AgentFDQN", "AgentDDQN", "AgentPG", "AgentPGBaseline", "AgentActorCritic")
   env = makeGymEnv("CartPole-v0")
   lapply(agent.names, function(name) repExperiment(sname = "CartPole-v0", aname = name, conf = getDefaultConf(name), nrep = 2, nepi = 2))
   expect_true(TRUE)

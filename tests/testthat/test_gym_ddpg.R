@@ -1,7 +1,7 @@
 context("gym_continuous")
 test_that("test ddpg works", {
   skip_on_cran()
-  skip()
+  skip("skipping ddpg")
   env = makeGymEnv("Pendulum-v0")
   conf = getDefaultConf("AgentDQN")
   agent = initAgent("AgentDDPG", env, conf)
