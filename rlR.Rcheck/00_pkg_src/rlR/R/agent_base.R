@@ -21,6 +21,7 @@ Agent = R6Class("Agent", public = list())
 #' @param custom_brain Boolean argument: whether to use customized neural network, only for advanced users, not recommended
 #' @param ... Other possible Parameters for each Agent
 #' @return [\code{\link{AgentArmed}}].
+#' @examples initAgent("AgentDQN", "CartPole-v0")
 #' @export
 initAgent = function(name, env, conf = NULL, custom_brain = F, ...) {
   if (is.character(env)) env = makeGymEnv(env)
