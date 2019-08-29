@@ -1,18 +1,12 @@
 dist: bionic
-language: r
 sudo: required
 cache: packages
-matrix:
-  include:
-    - python:2.7
-    - python:3.6
 addons:
   apt:
     update: true
     packages:
       - python2.7
       - python-pip 
-      - python-dev 
       - build-essential
       - zlib1g-dev
 before_install:
