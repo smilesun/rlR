@@ -15,6 +15,7 @@ addons:
       - build-essential
       - zlib1g-dev
 before_install:
+  - sudo pip install enum34
   - sudo pip install gym
   - sudo pip install gym[atari]
   - sudo pip install tensorflow==1.1.0
