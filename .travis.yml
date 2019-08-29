@@ -29,9 +29,9 @@ r_github_packages:
 - hadley/pkgdown
 - rstudio/keras
 before_script:
-- R --no-save <<< 'library("devtools"); document()'
-- R --no-save <<< 'library("tensorflow"); install_tensorflow()'
-- R --no-save <<< 'library("keras"); install_keras()'
+    - R --no-save <<< 'install.packages("devtools"); devtools::document()'
+    - R --no-save <<< 'install.packages("tensorflow"); tensorflow::install_tensorflow()'
+    - R --no-save <<< 'install.packages("keras"); keras::install_keras()'
 after_success:
 - 'if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_R_VERSION_STRING" == "release" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
     R --no-save <<< "devtools::install(); pkgdown::build_site()";
