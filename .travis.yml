@@ -1,3 +1,7 @@
+matrix:
+  include:
+    - os: linux
+      dist: bionic
 language: r
 sudo: required
 cache: packages
