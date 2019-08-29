@@ -9,10 +9,11 @@ addons:
       - python-pip 
       - build-essential
       - zlib1g-dev
+      - cmake
 before_install:
   - sudo pip install enum34
   - sudo pip install gym
-  - sudo pip install atari-py==0.1.1
+  - sudo pip install atari-py
   - sudo pip install gym[atari]
   - sudo pip install tensorflow==1.1.0
   - sudo pip install numpy==1.12.1
