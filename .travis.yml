@@ -19,9 +19,5 @@ addons:
       - r-base-dev
       - liblapack-dev
 install:
-  - sudo R --no-save <<< 'install.packages("keras", repos = "http://cran.rstudio.com/")'
-  - sudo R --no-save <<< 'keras::install_keras()'
-
-env:
-  matrix:
-  - _R_CHECK_LENGTH_1_CONDITION_=true
+  - sudo R -e -q 'install.packages("keras", repos = "http://cran.rstudio.com/")'
+  - R -e -q 'keras::install_keras()'
