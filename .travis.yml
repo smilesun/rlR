@@ -5,7 +5,7 @@ addons:
   apt:
     update: true
     packages:
-      - python2.7
+      - python
       - python-pip 
       - build-essential
       - zlib1g-dev
