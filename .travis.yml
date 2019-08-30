@@ -1,3 +1,4 @@
+language: r
 dist: bionic
 sudo: required
 cache: packages
