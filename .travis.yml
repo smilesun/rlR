@@ -18,13 +18,13 @@ addons:
       - r-base-dev
       - liblapack-dev
 before_install:
-  - sudo pip install enum34
-  - sudo pip install gym
-  - sudo pip install atari-py
-  - sudo pip install gym[atari]
-  - sudo pip install tensorflow==1.1.0
-  - sudo pip install numpy==1.12.1
-  - sudo pip install h5py==2.7.0
+  - sudo python3 -m pip install enum34
+  - sudo python3 -m pip install gym
+  - sudo python3 -m pip install atari-py
+  - sudo python3 -m pip install gym[atari]
+  - sudo python3 -m pip install tensorflow==1.1.0
+  - sudo python3 -m pip install numpy==1.12.1
+  - sudo python3 -m pip install h5py==2.7.0
 env:
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
