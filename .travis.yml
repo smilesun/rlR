@@ -23,6 +23,7 @@ addons:
       - r-base-dev
       - liblapack-dev
 install:
+  - sudo R --no-save <<< 'install.packages("packrat", repos = "http://cran.rstudio.com/")'
   - R -e "0" --args --bootstrap-packrat
   - R -e "packrat::restore(restart = FALSE)"
   - sudo python3 -m pip install enum34
@@ -41,5 +42,3 @@ install:
 env:
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
-r:
-- release
