@@ -41,7 +41,7 @@ before_script:
     - sudo R --no-save <<< 'install.packages("keras", repos = "http://cran.rstudio.com/")'
     - sudo R --no-save <<< 'devtools::document()'
     - sudo R --no-save <<< 'tensorflow::install_tensorflow()'
-    - sudo R --no-save <<< 'keras::install_keras()'
+    - travis_wait sudo R --no-save <<< 'keras::install_keras()'
 after_success:
 - 'if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_R_VERSION_STRING" == "release" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
     R --no-save <<< "devtools::install(); pkgdown::build_site()";
