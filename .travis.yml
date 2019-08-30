@@ -1,11 +1,7 @@
 language: r
 dist: bionic
 sudo: required
-cache:
-  directories:
-    - $TRAVIS_BUILD_DIR/packrat/src
-    - $TRAVIS_BUILD_DIR/packrat/lib
-  packages: true
+cache: packages
 addons:
   apt:
     update: true
@@ -23,9 +19,6 @@ addons:
       - r-base-dev
       - liblapack-dev
 install:
-  - sudo R --no-save <<< 'install.packages("packrat", repos = "http://cran.rstudio.com/")'
-  - R -e "0" --args --bootstrap-packrat
-  - R -e "packrat::restore(restart = FALSE)"
   - sudo python3 -m pip install enum34
   - sudo python3 -m pip install gym
   - sudo python3 -m pip install atari-py
