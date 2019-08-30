@@ -13,6 +13,7 @@ addons:
       - build-essential
       - zlib1g-dev
       - cmake
+      - r-base-core
 before_install:
   - sudo pip install enum34
   - sudo pip install gym
