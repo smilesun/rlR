@@ -1,6 +1,4 @@
-language:
-  - r
-  - python
+language: r
 dist: bionic
 sudo: required
 cache: packages
@@ -8,11 +6,11 @@ addons:
   apt:
     update: true
     packages:
-      - python
-      - python-pip 
-      - python-all-dev
-      - python-setuptools
-      - python-wheel
+      - python3
+      - python3-pip 
+      - python3-all-dev
+      - python3-setuptools
+      - python3-wheel
       - build-essential
       - zlib1g-dev
       - cmake
