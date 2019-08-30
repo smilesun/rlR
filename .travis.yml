@@ -1,7 +1,11 @@
 language: r
 dist: bionic
 sudo: required
-cache: packages
+cache:
+  directories:
+    - $TRAVIS_BUILD_DIR/packrat/src
+    - $TRAVIS_BUILD_DIR/packrat/lib
+  packages: true
 addons:
   apt:
     update: true
@@ -11,13 +15,16 @@ addons:
       - python3-all-dev
       - python3-setuptools
       - python3-wheel
+      - python3-venv
       - build-essential
       - zlib1g-dev
       - cmake
       - r-base-core
       - r-base-dev
       - liblapack-dev
-before_install:
+install:
+  - R -e "0" --args --bootstrap-packrat
+  - R -e "packrat::restore(restart = FALSE)"
   - sudo python3 -m pip install enum34
   - sudo python3 -m pip install gym
   - sudo python3 -m pip install atari-py
@@ -25,19 +32,14 @@ before_install:
   - sudo python3 -m pip install tensorflow==1.1.0
   - sudo python3 -m pip install numpy==1.12.1
   - sudo python3 -m pip install h5py==2.7.0
+  - sudo R --no-save <<< 'install.packages(c("Matrix", "checkmate", "data.table", "logging", "ggplot2", "abind", "foreach"), repos = "http://cran.rstudio.com/")'
+  - sudo R --no-save <<< 'install.packages("tensorflow", repos = "http://cran.rstudio.com/")'
+  - sudo R --no-save <<< 'install.packages("keras", repos = "http://cran.rstudio.com/")'
+  - sudo R --no-save <<< 'tensorflow::install_tensorflow()'
+  - sudo R --no-save <<< 'keras::install_keras()'
+
 env:
   matrix:
   - _R_CHECK_LENGTH_1_CONDITION_=true
 r:
-- devel
 - release
-r_github_packages:
-- jimhester/covr
-- hadley/pkgdown
-- rstudio/keras
-before_script:
-    - sudo R --no-save <<< 'install.packages(c("Matrix", "checkmate", "data.table", "logging", "ggplot2", "abind", "foreach"), repos = "http://cran.rstudio.com/")'
-    - sudo R --no-save <<< 'install.packages("tensorflow", repos = "http://cran.rstudio.com/")'
-    - sudo R --no-save <<< 'install.packages("keras", repos = "http://cran.rstudio.com/")'
-    - sudo R --no-save <<< 'tensorflow::install_tensorflow()'
-    - sudo R --no-save <<< 'keras::install_keras()'
