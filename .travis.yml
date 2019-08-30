@@ -1,4 +1,6 @@
-language: r
+language:
+  - r
+  - python
 dist: bionic
 sudo: required
 cache: packages
