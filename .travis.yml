@@ -20,16 +20,15 @@ addons:
       - cmake
       - r-base-core
       - r-base-dev
-      - liblapack-dev
-      
-r_packages:
-  - checkmate
-  - data.table
-  - logging
-  - ggplot2
-  - openssl
-  - abind
-  - foreach
+      - liblapack-dev      
+  r_packages:
+    - checkmate
+    - data.table
+    - logging
+    - ggplot2
+    - openssl
+    - abind
+    - foreach
   
 install:
   - sudo R -q -e 'install.packages("keras", repos = "http://cran.rstudio.com/")'
