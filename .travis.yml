@@ -1,31 +1,28 @@
 language: r
 dist: bionic
-sudo: required
+sudo: false
+
 cache: 
-  - packages
-  - ccache
+  packages: TRUE
+  ccache: TRUE
+  directories:
+    - $HOME/.keras
+    - $HOME/.cache/pip
 
 addons:
   apt:
     update: true
     packages:
       - ccache
-      - python3
-      - python3-pip 
-      - python3-all-dev
-      - python3-setuptools
-      - python3-wheel
-      - python3-venv
-      - build-essential
-      - zlib1g-dev
-      - cmake
-      - r-base-core
-      - r-base-dev
-      - liblapack-dev  
       
 before_install:
   - mkdir $HOME/.R && echo -e 'CXX_STD = CXX14\n\nVER=\nCCACHE=ccache\nCC=$(CCACHE) gcc$(VER) -std=gnu99\nCXX=$(CCACHE) g++$(VER)\nC11=$(CCACHE) g++$(VER)\nC14=$(CCACHE) g++$(VER)\nFC=$(CCACHE) gfortran$(VER)\nF77=$(CCACHE) gfortran$(VER)' > $HOME/.R/Makevars
   
 install:
-  - sudo R -q -e 'install.packages(c("keras", "checkmate", "data.table", "logging", "ggplot2", "openssl", "abind", "foreach", "knitr"), repos = "http://cran.rstudio.com/")'
+  - apt-get update
+  - apt-get install python3
+  - python3 -m pip install --upgrade --ignore-installed --user travis virtualenv gym gym[atari]
+  - R -q -e 'install.packages(c("keras", "checkmate", "data.table", "logging", "ggplot2", "openssl", "abind", "foreach", "knitr", "rmarkdown"), repos = "http://cran.rstudio.com/")'
+  - R -e 'keras::install_keras()'
+  - R -e 'tensorflow::tf_config()'
   - R CMD INSTALL .
