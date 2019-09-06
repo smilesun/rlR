@@ -1,7 +1,10 @@
 language: r
 dist: bionic
 sudo: required
-cache: packages
+cache: 
+  - packages
+  - r_packages
+
 addons:
   apt:
     update: true
@@ -18,6 +21,16 @@ addons:
       - r-base-core
       - r-base-dev
       - liblapack-dev
+      
+r_packages:
+  - checkmate
+  - data.table
+  - logging
+  - ggplot2
+  - openssl
+  - abind
+  - foreach
+  
 install:
   - sudo R -q -e 'install.packages("keras", repos = "http://cran.rstudio.com/")'
   - R CMD INSTALL .
