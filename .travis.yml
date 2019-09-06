@@ -20,5 +20,4 @@ addons:
       - liblapack-dev
 install:
   - sudo R -q -e 'install.packages("keras", repos = "http://cran.rstudio.com/")'
-  - R -q -e 'keras::install_keras()'
   - R CMD INSTALL .
