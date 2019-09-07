@@ -20,8 +20,7 @@ before_install:
   
 install:
   - sudo apt update
-  - sudo apt install python3
-  - sudo python3 -m pip install --upgrade --ignore-installed --user travis virtualenv gym gym[atari]
+  - sudo python -m pip install --upgrade --ignore-installed --user travis virtualenv gym gym[atari]
   - sudo R -q -e 'install.packages(c("keras", "checkmate", "data.table", "logging", "ggplot2", "openssl", "abind", "foreach", "knitr", "rmarkdown"), repos = "http://cran.rstudio.com/")'
   - sudo R -e 'keras::install_keras()'
   - sudo R -e 'tensorflow::tf_config()'
