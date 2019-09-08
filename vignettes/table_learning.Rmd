@@ -29,13 +29,13 @@ os$environ[["TF_CPP_MIN_LOG_LEVEL"]]="3"
 
 ```{r}
 library(rlR)
-agent = initAgent(name = "AgentTable", env = "CliffWalking-v0")
+#agent = initAgent(name = "AgentTable", env = "CliffWalking-v0")
 ```
 
 ```{r}
-agent$learn(500)
+#agent$learn(500)
 ```
 
 ```{r eval=F}
-agent$plotPerf()
+#agent$plotPerf()
 ```
