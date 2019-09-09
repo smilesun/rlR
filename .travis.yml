@@ -1,10 +1,11 @@
 language: r
 dist: bionic
 sudo: required
+warnings_are_errors: false
 
 cache: 
-  packages: TRUE
-  ccache: TRUE
+  packages: true
+  ccache: true
   directories:
     - $HOME/.keras
     - $HOME/.cache/pip
