@@ -1,56 +1,37 @@
 language: r
+dist: bionic
 sudo: required
-cache: packages
-matrix:
-  include:
-    - python:2.7
-    - python:3.6
+warnings_are_errors: false
+
+cache: 
+  packages: true
+  ccache: true
+  directories:
+    - $HOME/.keras
+    - $HOME/.cache/pip
+
 addons:
   apt:
     update: true
     packages:
-      - python2.7
-      - python-pip 
-      - python-dev 
-      - build-essential
+      - ccache
       - zlib1g-dev
+      - cmake
+      - r-base-core
+      - r-base-dev
+      - liblapack-dev
+      - python3-pip
+      - python3-setuptools
+      
 before_install:
-  - sudo pip install gym
-  - sudo pip install gym[atari]
-  - sudo pip install tensorflow==1.1.0
-  - sudo pip install numpy==1.12.1
-  - sudo pip install h5py==2.7.0
-env:
-  matrix:
-  - _R_CHECK_LENGTH_1_CONDITION_=true
-r:
-- devel
-- release
-r_github_packages:
-- jimhester/covr
-- hadley/pkgdown
-- rstudio/keras
-before_script:
-- R --no-save <<< 'library("devtools"); document()'
-- R --no-save <<< 'library("tensorflow"); install_tensorflow()'
-- R --no-save <<< 'library("keras"); install_keras()'
-after_success:
-- 'if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_BRANCH" == "master" && "$TRAVIS_R_VERSION_STRING" == "release" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
-    R --no-save <<< "devtools::install(); pkgdown::build_site()";
-    git checkout master;
-    export TRAVIS_COMMIT_MSG="$(git log --format=%B --no-merges -n 1)";
-    git config --global user.name "Travis CI";
-    git config --global user.email "$COMMIT_AUTHOR_EMAIL";
-    git config credential.helper "store --file=.git/credentials";
-    echo "https://${GH_TOKEN}:@github.com" >> .git/credentials;
-    git config push.default matching;
-    git add --force man/*;
-    git add --force README.md;
-    git add --force docs/*;
-    git rm -r --cached $(find . -type d -name "*_cache");
-    git commit man DESCRIPTION NAMESPACE README.md docs -m "update auto-generated documentation [ci skip]" -m "$TRAVIS_COMMIT_MSG" || true;
-    git push;
-  fi;'
-- 'if [[ "$TRAVIS_R_VERSION_STRING" == "devel" && "$TRAVIS_EVENT_TYPE" != "cron" ]] ; then
-    Rscript -e "covr::coveralls()";
-  fi;'
+  - mkdir $HOME/.R && echo -e 'CXX_STD = CXX14\n\nVER=\nCCACHE=ccache\nCC=$(CCACHE) gcc$(VER) -std=gnu99\nCXX=$(CCACHE) g++$(VER)\nC11=$(CCACHE) g++$(VER)\nC14=$(CCACHE) g++$(VER)\nFC=$(CCACHE) gfortran$(VER)\nF77=$(CCACHE) gfortran$(VER)' > $HOME/.R/Makevars
+  
+install:
+  - sudo apt update
+  - sudo ln -sfn /usr/bin/python3.5 /usr/bin/python
+  - sudo python -m pip install --upgrade --ignore-installed --user travis virtualenv gym gym[atari]
+  - sudo R -q -e 'install.packages(c("keras", "checkmate", "data.table", "logging", "ggplot2", "openssl", "abind", "foreach", "knitr", "rmarkdown", "imager", "png", "devtools", "testthat", "covr"), repos = "http://cran.rstudio.com/")'
+  - sudo R -q -e 'keras::install_keras()'
+  - sudo R -q -e 'tensorflow::tf_config()'
+  - sudo R -q -e 'reticulate::py_install("gym")'
+  - sudo R CMD INSTALL .
