@@ -24,6 +24,9 @@ Imports:
     logging,
     ggplot2,
     openssl,
+    RSQLite,
+    png,
+    stringr,
     magrittr,
     abind,
     foreach
